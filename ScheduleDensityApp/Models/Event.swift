@@ -10,93 +10,64 @@ import SwiftData
 
 @Model
 final class Event {
-    var id: UUID
     var title: String
-    var startTime: Date
-    var endTime: Date
+    var startDate: Date  // 시작일 (날짜만)
+    var endDate: Date    // 종료일 (날짜만)
     var color: String // Hex color string
-    var recurrencePattern: RecurrencePattern?
-    var recurrenceDaysOfWeek: [Int]? // For weekly patterns: 1=일, 2=월, 3=화, 4=수, 5=목, 6=금, 7=토
-    var recurrenceEndDate: Date?
+    var hoursPerDay: Double // 하루당 소요시간 (시간 단위)
+    var selectedWeekdays: [Int]? // 선택된 요일 (1=일요일, 2=월요일, ..., 7=토요일), nil이면 모든 요일
 
     init(
-        id: UUID = UUID(),
         title: String,
-        startTime: Date,
-        endTime: Date,
-        color: String = "#FF6B6B",
-        recurrencePattern: RecurrencePattern? = nil,
-        recurrenceDaysOfWeek: [Int]? = nil,
-        recurrenceEndDate: Date? = nil
+        startDate: Date,
+        endDate: Date,
+        color: String = "#FF3B30",
+        hoursPerDay: Double = 2.0,
+        selectedWeekdays: [Int]? = nil
     ) {
-        self.id = id
         self.title = title
-        self.startTime = startTime
-        self.endTime = endTime
+        self.startDate = Calendar.current.startOfDay(for: startDate)
+        self.endDate = Calendar.current.startOfDay(for: endDate)
         self.color = color
-        self.recurrencePattern = recurrencePattern
-        self.recurrenceDaysOfWeek = recurrenceDaysOfWeek
-        self.recurrenceEndDate = recurrenceEndDate
+        self.hoursPerDay = hoursPerDay
+        self.selectedWeekdays = selectedWeekdays
     }
-    
-    // 특정 날짜에 이 이벤트가 발생하는지 확인
+
+    // 특정 날짜에 이 이벤트가 진행 중인지 확인
     func occursOn(date: Date) -> Bool {
         let calendar = Calendar.current
-        let eventDate = calendar.startOfDay(for: startTime)
         let checkDate = calendar.startOfDay(for: date)
 
-        // 반복 패턴이 없는 경우
-        guard let pattern = recurrencePattern else {
-            return calendar.isDate(eventDate, inSameDayAs: checkDate)
-        }
-
-        // 날짜가 이벤트 시작일 이전인지 확인
-        if checkDate < eventDate {
+        // startDate <= checkDate <= endDate 인지 확인
+        guard checkDate >= startDate && checkDate <= endDate else {
             return false
         }
 
-        // 반복 종료일이 있는 경우 체크
-        if let endDate = recurrenceEndDate {
-            let recurrenceEnd = calendar.startOfDay(for: endDate)
-            if checkDate > recurrenceEnd {
-                return false
-            }
+        // 요일 체크 (selectedWeekdays가 nil이면 모든 요일 허용)
+        if let weekdays = selectedWeekdays, !weekdays.isEmpty {
+            let weekday = calendar.component(.weekday, from: checkDate)
+            return weekdays.contains(weekday)
         }
 
-        // 반복 패턴에 따라 확인
-        return pattern.matchesDate(date, daysOfWeek: recurrenceDaysOfWeek)
+        return true
     }
-    
-    // 특정 날짜의 시간대로 이벤트 복사
-    func instanceFor(date: Date) -> EventInstance {
-        let calendar = Calendar.current
-        let timeComponents = calendar.dateComponents([.hour, .minute], from: startTime)
-        let durationComponents = calendar.dateComponents([.hour, .minute], from: startTime, to: endTime)
-        
-        var newStart = calendar.date(bySettingHour: timeComponents.hour ?? 0,
-                                      minute: timeComponents.minute ?? 0,
-                                      second: 0,
-                                      of: date) ?? date
-        
-        var newEnd = calendar.date(byAdding: durationComponents, to: newStart) ?? date
-        
-        return EventInstance(
-            id: UUID(),
-            parentEventId: id,
-            title: title,
-            startTime: newStart,
-            endTime: newEnd,
-            color: color
-        )
-    }
-}
 
-// 특정 날짜의 이벤트 인스턴스 (표시용)
-struct EventInstance: Identifiable {
-    let id: UUID
-    let parentEventId: UUID
-    let title: String
-    let startTime: Date
-    let endTime: Date
-    let color: String
+    // 실제로 표시되는 칸 수 계산 (요일 선택 고려)
+    func actualCellCount() -> Int {
+        let calendar = Calendar.current
+        var count = 0
+        var currentDate = startDate
+
+        while currentDate <= endDate {
+            if occursOn(date: currentDate) {
+                count += 1
+            }
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else {
+                break
+            }
+            currentDate = nextDate
+        }
+
+        return count
+    }
 }

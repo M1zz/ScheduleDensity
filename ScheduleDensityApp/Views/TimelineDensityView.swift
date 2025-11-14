@@ -1,0 +1,1263 @@
+//
+//  TimelineDensityView.swift
+//  ScheduleDensityApp
+//
+//  Created by Claude on 2025-03-01.
+//
+
+import SwiftUI
+import UIKit
+
+struct TimelineDensityView: View {
+    @Bindable var viewModel: ScheduleViewModel
+    @State private var densityData: [DayDensity] = []
+    @State private var selectedDay: DayDensity?
+    @State private var hasScrolledToToday = false
+    @State private var isLoading = true
+    @State private var scrollProxy: ScrollViewProxy?
+    @State private var selectedDateForNewEvent: Date?
+    @State private var showingAddEventSheet = false
+
+    // 드래그 선택 상태
+    @State private var isDraggingSelection = false
+    @State private var dragStartDate: Date?
+    @State private var dragEndDate: Date?
+    @State private var draggedDates: Set<Date> = []
+    @State private var draggedLane: Int?
+
+    // 토스트 메시지 상태
+    @State private var showToast = false
+    @State private var toastMessage = ""
+
+    // 날짜별 시간 분석 상태
+    @State private var selectedDateForTimeAnalysis: DateWrapper?
+
+    var body: some View {
+        mainContent
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        scrollToToday()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "calendar")
+                            Text("오늘")
+                        }
+                    }
+                }
+            }
+            .task {
+                // task를 사용하여 비동기로 데이터 로드
+                refreshData()
+
+                // 0.2초 후 오늘로 스크롤
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    scrollToToday()
+                }
+            }
+            .onChange(of: viewModel.showingAddEvent) { _, isShowing in
+                if !isShowing {
+                    // 시트가 닫힐 때만 새로고침
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        refreshData()
+                    }
+                }
+            }
+            .onChange(of: viewModel.dataRefreshTrigger) { _, _ in
+                // 데이터 삭제 등의 변경 발생 시 새로고침
+                refreshData()
+            }
+            .sheet(isPresented: $showingAddEventSheet) {
+                if let startDate = dragStartDate, let endDate = dragEndDate {
+                    AddEventView(viewModel: viewModel, initialStartDate: startDate, initialEndDate: endDate)
+                } else if let selectedDate = selectedDateForNewEvent {
+                    AddEventView(viewModel: viewModel, initialDate: selectedDate)
+                }
+            }
+            .onChange(of: showingAddEventSheet) { _, isShowing in
+                if !isShowing {
+                    // sheet가 닫힐 때 새로고침 및 선택 상태 초기화
+                    isDraggingSelection = false
+                    dragStartDate = nil
+                    dragEndDate = nil
+                    draggedDates = []
+                    draggedLane = nil
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        refreshData()
+                    }
+                }
+            }
+            .sheet(item: $selectedDateForTimeAnalysis) { dateWrapper in
+                DayTimeAnalysisView(date: dateWrapper.date, viewModel: viewModel)
+            }
+    }
+
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            if isLoading {
+                loadingView
+            } else if densityData.isEmpty {
+                emptyStateView
+            } else {
+                timelineScrollView
+                Divider()
+                selectedDayView
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if showToast {
+                toastView
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .padding(.bottom, 50)
+            }
+        }
+    }
+
+    private var toastView: some View {
+        Text(toastMessage)
+            .font(.system(size: 15, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(
+                Capsule()
+                    .fill(Color.black.opacity(0.8))
+            )
+            .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+    }
+
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .scaleEffect(1.5)
+
+            Text("로딩 중...")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var timelineScrollView: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: 0) {
+                    let allEvents = viewModel.assignLanesToEvents()
+                    let maxLanes = 7
+
+                    // 헤더: 레인 1~7
+                    HStack(spacing: 0) {
+                        // 왼쪽 날짜 공간
+                        Text("날짜")
+                            .font(.system(size: 10, weight: .bold))
+                            .frame(width: 50)
+                            .foregroundColor(.secondary)
+
+                        Divider()
+
+                        // 레인 헤더
+                        ForEach(1...maxLanes, id: \.self) { laneNumber in
+                            Text("\(laneNumber)")
+                                .font(.system(size: 12, weight: .bold))
+                                .frame(width: 40)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .background(Color(.systemBackground))
+
+                    Divider()
+
+                    // 날짜 행들
+                    ForEach(densityData) { dayData in
+                        DateRow(
+                            dayData: dayData,
+                            allEvents: allEvents,
+                            maxLanes: maxLanes,
+                            viewModel: viewModel,
+                            allDensityData: densityData,
+                            onEventTap: { event in
+                                handleEventTap(event)
+                            },
+                            onEmptyCellTap: {
+                                selectedDateForNewEvent = dayData.date
+                                showingAddEventSheet = true
+                            },
+                            onDateLabelTap: {
+                                handleDateLabelTap(dayData.date)
+                            },
+                            isDraggingSelection: isDraggingSelection,
+                            draggedDates: draggedDates,
+                            draggedLane: draggedLane,
+                            onDragStart: { date, lane in
+                                handleDragStart(date, lane: lane)
+                            },
+                            isToday: isToday(dayData.date),
+                            isWeekend: isWeekend(dayData.date)
+                        )
+                        .id(dayData.id)
+                    }
+                }
+            }
+            .onAppear {
+                scrollProxy = proxy
+            }
+            .onChange(of: isLoading) { _, newIsLoading in
+                // 로딩이 완료되면 오늘로 스크롤
+                if !newIsLoading && !hasScrolledToToday && !densityData.isEmpty {
+                    scrollToTodayIfNeeded(proxy: proxy, data: densityData)
+                }
+            }
+        }
+    }
+
+    private func scrollToTodayIfNeeded(proxy: ScrollViewProxy, data: [DayDensity]) {
+        if !data.isEmpty && !hasScrolledToToday {
+            if let todayData = data.first(where: { isToday($0.date) }) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        proxy.scrollTo(todayData.id, anchor: .center)
+                    }
+                    hasScrolledToToday = true
+                }
+            }
+        }
+    }
+
+    private func scrollToToday() {
+        guard let proxy = scrollProxy else { return }
+        if let todayData = densityData.first(where: { isToday($0.date) }) {
+            withAnimation {
+                proxy.scrollTo(todayData.id, anchor: .center)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var selectedDayView: some View {
+        if let selected = selectedDay {
+            eventDetailsView(for: selected)
+                .frame(height: 280)
+        }
+    }
+
+    private func handleDayTap(_ dayData: DayDensity) {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            if selectedDay?.id == dayData.id {
+                selectedDay = nil
+            } else {
+                selectedDay = dayData
+            }
+        }
+    }
+
+    private func handleEventTap(_ event: Event) {
+        // 이벤트를 수정하기 위해 eventToEdit 설정 후 수정 화면 열기
+        viewModel.eventToEdit = event
+        viewModel.showingAddEvent = true
+    }
+
+    private func handleDateLabelTap(_ date: Date) {
+        // 날짜 레이블을 탭하면 시간 분석 화면 열기
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+        selectedDateForTimeAnalysis = DateWrapper(date: normalizedDate)
+    }
+
+    private var emptyStateView: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "calendar.badge.plus")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+
+            Text("일정이 없습니다")
+                .font(.title3)
+                .foregroundColor(.secondary)
+
+            Text("+ 버튼을 눌러 일정을 추가하거나\n샘플 데이터를 추가해보세요")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.top, 100)
+    }
+
+    private func eventDetailsView(for dayData: DayDensity) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // 헤더
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(formattedDate(dayData.date))
+                        .font(.headline)
+                    Text("\(dayData.events.count)개 일정")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Button(action: {
+                    withAnimation {
+                        selectedDay = nil
+                    }
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.gray)
+                        .font(.title3)
+                }
+            }
+            .padding()
+            .background(Color(.systemBackground))
+
+            Divider()
+
+            // 이벤트 리스트
+            if dayData.events.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "calendar.badge.plus")
+                        .font(.system(size: 40))
+                        .foregroundColor(.gray)
+
+                    Text("일정이 없습니다")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemGroupedBackground))
+            } else {
+                List {
+                    ForEach(dayData.events) { event in
+                        EventListCard(event: event)
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    deleteEvent(event)
+                                } label: {
+                                    Label("삭제", systemImage: "trash")
+                                }
+                            }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
+            }
+        }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 M월 d일 (E)"
+        return formatter.string(from: date)
+    }
+
+    private func isToday(_ date: Date) -> Bool {
+        Calendar.current.isDateInToday(date)
+    }
+
+    private func monthDay(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func weekday(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "E"
+        return formatter.string(from: date)
+    }
+
+    private func isWeekend(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: date)
+        return weekday == 1 || weekday == 7
+    }
+
+    private func deleteEvent(_ event: Event) {
+        viewModel.deleteEvent(event)
+        refreshData()
+    }
+
+    private func showToastMessage(_ message: String) {
+        toastMessage = message
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showToast = true
+        }
+
+        // 2초 후 토스트 숨기기
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showToast = false
+            }
+        }
+    }
+
+    private func refreshData() {
+        isLoading = true
+
+        // 비동기로 데이터 로드
+        DispatchQueue.main.async {
+            densityData = viewModel.getAllDensityData()
+            isLoading = false
+        }
+    }
+
+    // 드래그 핸들러
+    private func handleDragStart(_ date: Date, lane: Int) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+
+        // 롱 프레스 시 햅틱
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+
+        if dragStartDate == nil {
+            // 첫 번째 롱프레스: 시작 지점 설정
+            isDraggingSelection = true
+            dragStartDate = normalizedDate
+            dragEndDate = nil
+            draggedLane = lane
+            draggedDates = [normalizedDate]
+
+            // 토스트 메시지 표시
+            showToastMessage("종료일을 꾹 눌러주세요")
+        } else if let startDate = dragStartDate, draggedLane == lane {
+            // 두 번째 롱프레스 (같은 레인): 종료 지점 설정
+            let normalizedStartDate = calendar.startOfDay(for: startDate)
+
+            // 시작일과 종료일을 날짜 순서대로 정렬
+            let earlierDate = min(normalizedStartDate, normalizedDate)
+            let laterDate = max(normalizedStartDate, normalizedDate)
+
+            dragStartDate = earlierDate
+            dragEndDate = laterDate
+
+            // 범위 내 모든 날짜 계산
+            var allDates: Set<Date> = []
+            var currentDate = earlierDate
+            while currentDate <= laterDate {
+                allDates.insert(currentDate)
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+                currentDate = nextDate
+            }
+            draggedDates = allDates
+
+            // 범위 선택 완료 - sheet 열기
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                showingAddEventSheet = true
+            }
+        } else {
+            // 다른 레인을 선택한 경우: 선택 초기화하고 새로 시작
+            dragStartDate = normalizedDate
+            dragEndDate = nil
+            draggedLane = lane
+            draggedDates = [normalizedDate]
+        }
+    }
+
+}
+
+// 날짜 행 (행: 날짜, 열: 레인 1~7)
+struct DateRow: View {
+    let dayData: DayDensity
+    let allEvents: [Event]
+    let maxLanes: Int
+    let viewModel: ScheduleViewModel
+    let allDensityData: [DayDensity]
+    let onEventTap: (Event) -> Void  // 이벤트를 받도록 변경
+    let onEmptyCellTap: () -> Void
+    let onDateLabelTap: () -> Void  // 날짜 레이블 탭
+    let isDraggingSelection: Bool
+    let draggedDates: Set<Date>
+    let draggedLane: Int?
+    let onDragStart: (Date, Int) -> Void
+    let isToday: Bool
+    let isWeekend: Bool
+
+    var body: some View {
+        HStack(spacing: 0) {
+            // 왼쪽: 날짜 레이블
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(monthDay(from: dayData.date))
+                    .font(.system(size: 11, weight: isToday ? .bold : .semibold))
+                    .foregroundColor(isToday ? .blue : .primary)
+                Text(weekday(from: dayData.date))
+                    .font(.system(size: 9))
+                    .foregroundColor(isWeekend ? .red : .secondary)
+            }
+            .frame(width: 50)
+            .padding(.vertical, 2)
+            .background(isToday ? Color.blue.opacity(0.1) : Color.clear)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                onDateLabelTap()
+            }
+
+            Divider()
+
+            // 오른쪽: 레인 1~7 셀들
+            ForEach(1...maxLanes, id: \.self) { laneNumber in
+                let event = getEventForLane(laneNumber: laneNumber)
+                let isActive = event != nil
+                // 이 셀이 드래그 선택되었는지: 날짜가 선택되었고 && 레인이 일치해야 함
+                let isDraggedCell = draggedDates.contains(Calendar.current.startOfDay(for: dayData.date)) &&
+                                    draggedLane == laneNumber
+
+                GridCell(
+                    dayData: dayData,
+                    event: event,
+                    isActive: isActive,
+                    isToday: isToday,
+                    laneNumber: laneNumber,
+                    viewModel: viewModel,
+                    allDensityData: allDensityData,
+                    onTap: {
+                        // event가 있을 때만 onEventTap 호출
+                        if let event = event {
+                            onEventTap(event)
+                        }
+                    },
+                    onEmptyCellTap: onEmptyCellTap,
+                    isDraggingSelection: isDraggingSelection,
+                    isDraggedDate: isDraggedCell,
+                    onDragStart: { onDragStart(dayData.date, laneNumber) },
+                    onDelete: {
+                        // 부모 뷰에게 새로고침 요청
+                        viewModel.dataRefreshTrigger = UUID()
+                    }
+                )
+                .frame(width: 40, height: 40)
+            }
+        }
+        .background(Color(.systemBackground))
+
+        Divider()
+    }
+
+    // 이 레인에 해당하는 일정 찾기
+    private func getEventForLane(laneNumber: Int) -> Event? {
+        let laneIndex = laneNumber - 1
+
+        // 이 날짜에 활성화된 이벤트들 중에서
+        // 해당 레인에 할당된 이벤트 찾기
+        for event in dayData.events {
+            if let assignedLane = viewModel.eventLaneAssignments[event.color],
+               assignedLane == laneIndex {
+                return event
+            }
+        }
+
+        return nil
+    }
+
+    private func monthDay(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func weekday(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "E"
+        return formatter.string(from: date)
+    }
+}
+
+// 그리드 셀
+struct GridCell: View {
+    let dayData: DayDensity
+    let event: Event?
+    let isActive: Bool
+    let isToday: Bool
+    let laneNumber: Int
+    @Bindable var viewModel: ScheduleViewModel
+    let allDensityData: [DayDensity]
+    let onTap: () -> Void
+    let onEmptyCellTap: () -> Void
+    let isDraggingSelection: Bool
+    let isDraggedDate: Bool
+    let onDragStart: () -> Void
+    let onDelete: () -> Void
+
+    @State private var showDeleteAlert = false
+
+    var body: some View {
+        ZStack {
+            // 배경
+            Rectangle()
+                .fill(isToday ? Color.blue.opacity(0.05) : Color(.systemGray6))
+
+            // 드래그 선택 하이라이트 (빈 셀에만)
+            if !isActive && isDraggedDate {
+                Rectangle()
+                    .fill(Color.blue.opacity(0.3))
+            }
+
+            // 일정 색상 (레인별 무지개 색상)
+            if isActive, let event = event {
+                let calendar = Calendar.current
+                let checkDate = calendar.startOfDay(for: dayData.date)
+                let isStart = calendar.isDate(checkDate, inSameDayAs: event.startDate)
+                let isEnd = calendar.isDate(checkDate, inSameDayAs: event.endDate)
+
+                // 레인 번호에 따른 색상 사용
+                let laneColor = ScheduleViewModel.laneColors[laneNumber - 1]
+
+                // 구멍에 들어간 일정인지 확인
+                let isInGap = checkIfInGap(event: event, date: checkDate, lane: laneNumber - 1)
+
+                EventLaneBlock(
+                    isActive: true,
+                    isStart: isStart,
+                    isEnd: isEnd,
+                    color: laneColor,
+                    isInGap: isInGap
+                )
+                .padding(2)
+            }
+        }
+        .overlay(
+            Rectangle()
+                .strokeBorder(
+                    !isActive && isDraggedDate ? Color.blue : Color(.separator),
+                    lineWidth: !isActive && isDraggedDate ? 2 : 0.5
+                )
+        )
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            // 더블탭: 빈 셀만, 날짜 범위 선택
+            if !isActive {
+                onDragStart()
+            }
+        }
+        .onTapGesture {
+            if isActive {
+                onTap()
+            } else {
+                // 선택 모드가 아닐 때만 단일 날짜로 sheet 열기
+                if !isDraggingSelection {
+                    onEmptyCellTap()
+                }
+            }
+        }
+        .onLongPressGesture(minimumDuration: 0.6) {
+            if isActive {
+                // 일정이 있는 셀: 삭제 알림
+                showDeleteAlert = true
+            } else {
+                // 빈 셀: 날짜 범위 선택
+                // 롱프레스로 시작/종료 지점 지정
+                onDragStart()
+            }
+        }
+        .alert("일정 삭제", isPresented: $showDeleteAlert) {
+            Button("취소", role: .cancel) { }
+            Button("삭제", role: .destructive) {
+                if let event = event {
+                    viewModel.deleteEvent(event)
+                    onDelete()  // 삭제 후 뷰 업데이트
+                }
+            }
+        } message: {
+            if let event = event {
+                Text("'\(event.title)' 일정을 삭제하시겠습니까?")
+            }
+        }
+    }
+
+    // 해당 일정이 구멍에 들어간 일정인지 확인
+    private func checkIfInGap(event: Event, date: Date, lane: Int) -> Bool {
+        // 같은 레인의 모든 일정 가져오기
+        let allEvents = viewModel.fetchEvents()
+        let eventsInSameLane = allEvents.filter { otherEvent in
+            guard let assignedLane = viewModel.eventLaneAssignments[otherEvent.color] else { return false }
+            return assignedLane == lane
+        }
+
+        // 이 날짜에 같은 레인의 다른 일정도 활성화되어 있는지 확인
+        for otherEvent in eventsInSameLane {
+            // 자기 자신은 제외
+            if otherEvent.color == event.color {
+                continue
+            }
+
+            // 다른 일정도 이 날짜에 활성화되어 있으면 구멍에 들어간 것
+            if otherEvent.occursOn(date: date) {
+                return true
+            }
+        }
+
+        return false
+    }
+}
+
+struct TimelineDayRow: View {
+    let dayData: DayDensity
+    let maxDensity: Int
+    let allEvents: [Event]
+    let isSelected: Bool
+    let isToday: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // 오늘 표시 (왼쪽)
+            if isToday {
+                Text("오늘")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            } else {
+                // 오늘이 아닌 경우 빈 공간 유지 (정렬 맞추기)
+                Color.clear
+                    .frame(width: 36, height: 20)
+            }
+
+            // 날짜 레이블
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(monthDay(from: dayData.date))
+                    .font(.system(size: 15, weight: isToday ? .bold : .semibold))
+                    .foregroundColor(isToday ? .blue : .primary)
+                Text(weekday(from: dayData.date))
+                    .font(.system(size: 12))
+                    .foregroundColor(isWeekend(dayData.date) ? .red : .secondary)
+            }
+            .frame(width: 60, alignment: .trailing)
+
+            // 막대 그래프 - Gantt 차트 스타일
+            ZStack(alignment: .leading) {
+                // 배경
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isToday ? Color.blue.opacity(0.1) : Color(.systemGray5))
+                    .frame(height: 32)
+
+                // 각 일정의 고정된 레인 유지 (기간 긴 순서로 왼쪽부터)
+                // 항상 7개 레인 유지 (최대 일정 개수)
+                GeometryReader { geometry in
+                    let maxLanes = 7
+                    let calendar = Calendar.current
+                    let checkDate = calendar.startOfDay(for: dayData.date)
+                    let activeEventColors = Set(dayData.events.map { $0.color })
+
+                    HStack(spacing: 2) {
+                        ForEach(0..<maxLanes, id: \.self) { index in
+                            if index < allEvents.count {
+                                let event = allEvents[index]
+                                let isActive = activeEventColors.contains(event.color)
+                                let isStart = isActive && calendar.isDate(checkDate, inSameDayAs: event.startDate)
+                                let isEnd = isActive && calendar.isDate(checkDate, inSameDayAs: event.endDate)
+
+                                EventLaneBlock(
+                                    isActive: isActive,
+                                    isStart: isStart,
+                                    isEnd: isEnd,
+                                    color: event.color,
+                                    isInGap: false  // TimelineDayRow에서는 빗금 패턴 사용 안 함
+                                )
+                                .frame(maxWidth: .infinity)
+                            } else {
+                                // 빈 레인 (투명)
+                                Color.clear
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                }
+
+                // 숫자 레이블
+                HStack {
+                    Spacer()
+                    Text("\(dayData.density)")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(dayData.density > 0 ? .white : .secondary)
+                        .padding(.trailing, 8)
+                }
+                .frame(height: 32)
+            }
+
+            // 선택 표시
+            if isSelected {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.blue)
+            }
+        }
+        .padding(.vertical, 4)
+        .background(isSelected ? Color.blue.opacity(0.08) : Color.clear)
+        .cornerRadius(8)
+    }
+
+    private func monthDay(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func weekday(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "E"
+        return formatter.string(from: date)
+    }
+
+    private func isWeekend(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: date)
+        return weekday == 1 || weekday == 7
+    }
+}
+
+struct EventListCard: View {
+    let event: Event
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // 색상 인디케이터
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color(hex: event.color) ?? .blue)
+                .frame(width: 6)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(event.title)
+                    .font(.system(size: 16, weight: .semibold))
+
+                HStack(spacing: 4) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+
+                    Text("\(formattedDate(event.startDate)) - \(formattedDate(event.endDate))")
+                        .font(.system(size: 13))
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+}
+
+struct EventLaneBlock: View {
+    let isActive: Bool
+    let isStart: Bool
+    let isEnd: Bool
+    let color: String
+    let isInGap: Bool  // 구멍에 들어간 일정인지 여부
+
+    var body: some View {
+        ZStack {
+            if isActive {
+                let eventColor = Color(hex: color) ?? .blue
+                // 시작/끝 칸은 진하게, 중간 칸은 연하게
+                let opacity: Double = (isStart || isEnd) ? 1.0 : 0.65
+
+                // 배경 색상
+                if isStart && isEnd {
+                    // 하루짜리 일정 - 진하게
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(eventColor.opacity(opacity))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                        )
+                        .overlay(
+                            // 구멍에 들어간 일정이면 빗금 패턴
+                            isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6))
+                                .clipShape(RoundedRectangle(cornerRadius: 4)) : nil
+                        )
+                } else if isStart {
+                    // 시작일: 위쪽만 둥근 - 진하게
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 4,
+                        bottomLeadingRadius: 0,
+                        bottomTrailingRadius: 0,
+                        topTrailingRadius: 4
+                    )
+                    .fill(eventColor.opacity(opacity))
+                    .overlay(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 4,
+                            bottomLeadingRadius: 0,
+                            bottomTrailingRadius: 0,
+                            topTrailingRadius: 4
+                        )
+                        .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                    )
+                    .overlay(
+                        isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6))
+                            .clipShape(UnevenRoundedRectangle(
+                                topLeadingRadius: 4,
+                                bottomLeadingRadius: 0,
+                                bottomTrailingRadius: 0,
+                                topTrailingRadius: 4
+                            )) : nil
+                    )
+                } else if isEnd {
+                    // 종료일: 아래쪽만 둥근 - 진하게
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: 0,
+                        bottomLeadingRadius: 4,
+                        bottomTrailingRadius: 4,
+                        topTrailingRadius: 0
+                    )
+                    .fill(eventColor.opacity(opacity))
+                    .overlay(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 0,
+                            bottomLeadingRadius: 4,
+                            bottomTrailingRadius: 4,
+                            topTrailingRadius: 0
+                        )
+                        .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                    )
+                    .overlay(
+                        isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6))
+                            .clipShape(UnevenRoundedRectangle(
+                                topLeadingRadius: 0,
+                                bottomLeadingRadius: 4,
+                                bottomTrailingRadius: 4,
+                                topTrailingRadius: 0
+                            )) : nil
+                    )
+                } else {
+                    // 중간일: 직사각형 - 연하게
+                    Rectangle()
+                        .fill(eventColor.opacity(opacity))
+                        .overlay(
+                            HStack(spacing: 0) {
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.4))
+                                    .frame(width: 1.5)
+                                Spacer()
+                                Rectangle()
+                                    .fill(Color.white.opacity(0.4))
+                                    .frame(width: 1.5)
+                            }
+                        )
+                        .overlay(
+                            isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6)) : nil
+                        )
+                }
+            }
+        }
+    }
+}
+
+// 대각선 빗금 패턴
+struct DiagonalStripesPattern: View {
+    let color: Color
+    let spacing: CGFloat = 3  // 줄 간격 (더 촘촘하게)
+    let lineWidth: CGFloat = 1.5  // 줄 두께
+
+    var body: some View {
+        GeometryReader { geometry in
+            Path { path in
+                let width = geometry.size.width
+                let height = geometry.size.height
+
+                // 45도 대각선 빗금 (왼쪽 위에서 오른쪽 아래로)
+                // 시작점을 왼쪽 위 코너에서 오른쪽으로 이동하며 그림
+                var startX: CGFloat = -height
+
+                while startX < width + height {
+                    // 대각선 시작점
+                    let x1 = startX
+                    let y1: CGFloat = 0
+
+                    // 대각선 끝점 (45도 각도)
+                    let x2 = startX + height
+                    let y2 = height
+
+                    path.move(to: CGPoint(x: x1, y: y1))
+                    path.addLine(to: CGPoint(x: x2, y: y2))
+
+                    startX += spacing
+                }
+            }
+            .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+        }
+    }
+}
+
+// 날짜별 시간 분석 뷰
+struct DayTimeAnalysisView: View {
+    let date: Date
+    @Bindable var viewModel: ScheduleViewModel
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // 날짜 헤더
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(formatDateFull(date))
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Text(formatWeekday(date))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top)
+
+                    // 시간 사용량 요약
+                    let events = getEventsForDate(date)
+                    let totalHours = events.reduce(0.0) { $0 + $1.hoursPerDay }
+                    let sleepHours = viewModel.sleepHoursPerDay
+                    let awakeHours = 24.0 - sleepHours  // 깨어있는 시간
+                    let freeHours = awakeHours - totalHours  // 진짜 자유시간 (음수 가능)
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("일정 시간")
+                                .font(.headline)
+                            Spacer()
+                            Text(String(format: "%.1f시간", totalHours))
+                                .font(.headline)
+                                .foregroundColor(totalHours > 12 ? .red : .primary)
+                        }
+
+                        HStack {
+                            Text("수면 시간")
+                                .font(.subheadline)
+                                .foregroundColor(.indigo)
+                            Spacer()
+                            Text(String(format: "%.1f시간", sleepHours))
+                                .font(.subheadline)
+                                .foregroundColor(.indigo)
+                        }
+
+                        HStack {
+                            Text("자유 시간")
+                                .font(.subheadline)
+                                .foregroundColor(freeHours < 0 ? .red : .secondary)
+                            Spacer()
+                            Text(String(format: "%.1f시간", freeHours))
+                                .font(.subheadline)
+                                .foregroundColor(freeHours < 0 ? .red : .secondary)
+                            if freeHours < 0 {
+                                Text("(과부하)")
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                                    .fontWeight(.bold)
+                            }
+                        }
+
+                        Divider()
+
+                        HStack {
+                            Text("깨어있는 시간")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(String(format: "%.1f시간", awakeHours))
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
+
+                        // 시간 사용 바 (깨어있는 시간 기준)
+                        GeometryReader { geometry in
+                            VStack(spacing: 8) {
+                                // 자유시간 (양수일 때만 표시)
+                                if freeHours > 0 {
+                                    let height = (freeHours / awakeHours) * geometry.size.height
+
+                                    HStack(spacing: 8) {
+                                        Rectangle()
+                                            .fill(Color.gray.opacity(0.3))
+                                            .frame(width: 50, height: height)
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("자유시간")
+                                                .font(.system(size: 14, weight: .medium))
+                                                .foregroundColor(.secondary)
+                                            Text(String(format: "%.1f시간", freeHours))
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        Spacer()
+                                    }
+                                }
+
+                                // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
+                                ForEach(events.indices.reversed(), id: \.self) { index in
+                                    let event = events[index]
+                                    let height = (event.hoursPerDay / awakeHours) * geometry.size.height
+                                    let laneColor = getLaneColor(for: event)
+
+                                    HStack(spacing: 8) {
+                                        Rectangle()
+                                            .fill(laneColor)
+                                            .frame(width: 50, height: height)
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(event.title)
+                                                .font(.system(size: 14, weight: .medium))
+                                            Text(String(format: "%.1f시간", event.hoursPerDay))
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        Spacer()
+                                    }
+                                }
+                            }
+                        }
+                        .frame(height: 400)
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+
+                    // 일정 목록
+                    if !events.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("일정 상세")
+                                .font(.headline)
+                                .padding(.horizontal)
+
+                            ForEach(events) { event in
+                                let laneColor = getLaneColor(for: event)
+                                HStack(spacing: 12) {
+                                    Circle()
+                                        .fill(laneColor)
+                                        .frame(width: 12, height: 12)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(event.title)
+                                            .font(.system(size: 15, weight: .medium))
+                                        HStack(spacing: 8) {
+                                            Text(String(format: "%.1f시간", event.hoursPerDay))
+                                                .font(.system(size: 13))
+                                                .foregroundColor(.secondary)
+                                            Text("•")
+                                                .foregroundColor(.secondary)
+                                            Text("\(formatDateShort(event.startDate)) ~ \(formatDateShort(event.endDate))")
+                                                .font(.system(size: 13))
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                                .background(Color(.systemBackground))
+                            }
+                        }
+                        .padding(.vertical)
+                    }
+
+                    Spacer(minLength: 20)
+                }
+            }
+            .navigationTitle("시간 분석")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("닫기") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private func getEventsForDate(_ date: Date) -> [Event] {
+        let allEvents = viewModel.fetchEvents()
+        let filtered = allEvents.filter { $0.occursOn(date: date) }
+
+        // 레인 번호로 정렬 (레인 번호가 낮을수록 먼저)
+        return filtered.sorted { event1, event2 in
+            let lane1 = viewModel.eventLaneAssignments[event1.color] ?? 999
+            let lane2 = viewModel.eventLaneAssignments[event2.color] ?? 999
+            return lane1 < lane2
+        }
+    }
+
+    // 이벤트의 레인 색상 가져오기
+    private func getLaneColor(for event: Event) -> Color {
+        if let lane = viewModel.eventLaneAssignments[event.color] {
+            return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
+        }
+        return .blue
+    }
+
+    private func formatDateFull(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy년 M월 d일"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: date)
+    }
+
+    private func formatWeekday(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: date)
+    }
+
+    private func formatDateShort(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+}
+
+// DateWrapper for sheet(item:) - Identifiable wrapper around Date
+struct DateWrapper: Identifiable {
+    let id = UUID()
+    let date: Date
+}
+
+// Color extension for hex string
+extension Color {
+    init?(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+
+        guard Scanner(string: hex).scanHexInt64(&int) else {
+            return nil
+        }
+
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            return nil
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+}

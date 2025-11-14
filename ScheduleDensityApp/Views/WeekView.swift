@@ -155,7 +155,7 @@ struct DayColumnView: View {
             let events = viewModel.eventsForDate(date)
             let slots = viewModel.densityForDate(date)
             
-            ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
+            ForEach(Array(events.enumerated()), id: \.offset) { index, event in
                 EventBlockView(event: event, maxDensity: getMaxDensityForEvent(event, slots: slots), offset: index)
             }
         }

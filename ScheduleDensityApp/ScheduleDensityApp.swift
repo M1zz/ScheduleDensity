@@ -1,5 +1,5 @@
 //
-//  ScheduleDensityAppApp.swift
+//  ScheduleDensityApp.swift
 //  ScheduleDensityApp
 //
 //  Created by Claude on 2025-03-01.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct ScheduleDensityAppApp: App {
+struct ScheduleDensityApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Event.self,

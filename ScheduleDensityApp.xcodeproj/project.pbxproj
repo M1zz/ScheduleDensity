@@ -7,11 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1000001 /* ScheduleDensityAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100001 /* ScheduleDensityAppApp.swift */; };
+		A1000001 /* ScheduleDensityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100001 /* ScheduleDensityApp.swift */; };
 		A1000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002 /* ContentView.swift */; };
-		A1000003 /* WeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003 /* WeekView.swift */; };
 		A1000004 /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004 /* AddEventView.swift */; };
-		A1000005 /* RecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005 /* RecommendationView.swift */; };
 		A1000006 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006 /* Event.swift */; };
 		A1000007 /* RecurrencePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100007 /* RecurrencePattern.swift */; };
 		A1000008 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100008 /* ScheduleViewModel.swift */; };
@@ -19,10 +17,13 @@
 		A1000010 /* DensityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100010 /* DensityCalculator.swift */; };
 		A1000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100011 /* Assets.xcassets */; };
 		A1000012 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100012 /* Preview Assets.xcassets */; };
+		A1000015 /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100015 /* TimelineDensityView.swift */; };
+		A1000016 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1100001 /* ScheduleDensityAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppApp.swift; sourceTree = "<group>"; };
+		9CAB49432EC6DD5600EB00E1 /* ScheduleDensityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScheduleDensityApp.entitlements; sourceTree = "<group>"; };
+		A1100001 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
 		A1100002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1100003 /* WeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekView.swift; sourceTree = "<group>"; };
 		A1100004 /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
@@ -34,6 +35,10 @@
 		A1100010 /* DensityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityCalculator.swift; sourceTree = "<group>"; };
 		A1100011 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1100012 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A1100013 /* DensityChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityChartView.swift; sourceTree = "<group>"; };
+		A1100014 /* WeekDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDensityView.swift; sourceTree = "<group>"; };
+		A1100015 /* TimelineDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineDensityView.swift; sourceTree = "<group>"; };
+		A1100016 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1200001 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -59,7 +64,8 @@
 		A1400002 /* ScheduleDensityApp */ = {
 			isa = PBXGroup;
 			children = (
-				A1100001 /* ScheduleDensityAppApp.swift */,
+				9CAB49432EC6DD5600EB00E1 /* ScheduleDensityApp.entitlements */,
+				A1100001 /* ScheduleDensityApp.swift */,
 				A1400004 /* Views */,
 				A1400005 /* ViewModels */,
 				A1400006 /* Models */,
@@ -85,6 +91,10 @@
 				A1100003 /* WeekView.swift */,
 				A1100004 /* AddEventView.swift */,
 				A1100005 /* RecommendationView.swift */,
+				A1100013 /* DensityChartView.swift */,
+				A1100014 /* WeekDensityView.swift */,
+				A1100015 /* TimelineDensityView.swift */,
+				A1100016 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -194,16 +204,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1000001 /* ScheduleDensityAppApp.swift in Sources */,
+				A1000001 /* ScheduleDensityApp.swift in Sources */,
 				A1000002 /* ContentView.swift in Sources */,
-				A1000003 /* WeekView.swift in Sources */,
 				A1000004 /* AddEventView.swift in Sources */,
-				A1000005 /* RecommendationView.swift in Sources */,
 				A1000006 /* Event.swift in Sources */,
 				A1000007 /* RecurrencePattern.swift in Sources */,
 				A1000008 /* ScheduleViewModel.swift in Sources */,
 				A1000009 /* DateExtensions.swift in Sources */,
 				A1000010 /* DensityCalculator.swift in Sources */,
+				A1000015 /* TimelineDensityView.swift in Sources */,
+				A1000016 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,17 +344,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -352,9 +366,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -363,17 +379,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -381,9 +401,11 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
