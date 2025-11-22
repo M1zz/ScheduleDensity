@@ -599,15 +599,22 @@ struct GridCell: View {
                     .fill(Color.blue.opacity(0.3))
             }
 
-            // 일정 색상 (레인별 무지개 색상)
+            // 일정 색상 (레인별 무지개 색상 + 같은 레인 내 변형)
             if isActive, let event = event {
                 let calendar = Calendar.current
                 let checkDate = calendar.startOfDay(for: dayData.date)
                 let isStart = calendar.isDate(checkDate, inSameDayAs: event.startDate)
                 let isEnd = calendar.isDate(checkDate, inSameDayAs: event.endDate)
 
-                // 레인 번호에 따른 색상 사용
-                let laneColor = ScheduleViewModel.laneColors[laneNumber - 1]
+                // 레인 번호에 따른 기본 색상
+                let baseLaneColor = Color(hex: ScheduleViewModel.laneColors[laneNumber - 1]) ?? .blue
+
+                // 같은 레인 내 이벤트 인덱스와 총 개수 가져오기
+                let eventIndex = viewModel.eventIndexInLane[event.color] ?? 0
+                let totalEventsInLane = viewModel.laneEventCounts[laneNumber - 1] ?? 1
+
+                // 색상 변형 적용
+                let variantColor = baseLaneColor.variant(index: eventIndex, totalVariants: totalEventsInLane)
 
                 // 구멍에 들어간 일정인지 확인
                 let isInGap = checkIfInGap(event: event, date: checkDate, lane: laneNumber - 1)
@@ -616,7 +623,7 @@ struct GridCell: View {
                     isActive: true,
                     isStart: isStart,
                     isEnd: isEnd,
-                    color: laneColor,
+                    variantColor: variantColor,
                     isInGap: isInGap
                 )
                 .padding(2)
@@ -759,7 +766,7 @@ struct TimelineDayRow: View {
                                     isActive: isActive,
                                     isStart: isStart,
                                     isEnd: isEnd,
-                                    color: event.color,
+                                    variantColor: Color(hex: event.color) ?? .blue,
                                     isInGap: false  // TimelineDayRow에서는 빗금 패턴 사용 안 함
                                 )
                                 .frame(maxWidth: .infinity)
@@ -861,13 +868,13 @@ struct EventLaneBlock: View {
     let isActive: Bool
     let isStart: Bool
     let isEnd: Bool
-    let color: String
+    let variantColor: Color
     let isInGap: Bool  // 구멍에 들어간 일정인지 여부
 
     var body: some View {
         ZStack {
             if isActive {
-                let eventColor = Color(hex: color) ?? .blue
+                let eventColor = variantColor
                 // 시작/끝 칸은 진하게, 중간 칸은 연하게
                 let opacity: Double = (isStart || isEnd) ? 1.0 : 0.65
 
@@ -1259,5 +1266,60 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+
+    // 색상 믹스 기반 변형 함수
+    // variantIndex: 같은 레인 내의 이벤트 인덱스 (0, 1, 2, ...)
+    // totalVariants: 같은 레인 내의 총 이벤트 수
+    func variant(index variantIndex: Int, totalVariants: Int) -> Color {
+        // 변형이 필요 없는 경우 (단일 이벤트)
+        if totalVariants <= 1 {
+            return self
+        }
+
+        // UIColor로 변환하여 RGB 추출
+        let uiColor = UIColor(self)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        // 믹스 강도 계산 (0.0 ~ 0.5 범위)
+        // 총 이벤트 수가 많을수록 각 단계의 차이를 크게
+        let maxBlendFactor: CGFloat = totalVariants >= 4 ? 0.5 : 0.4
+
+        // 인덱스에 따라 흰색 또는 검정색 믹스
+        // 첫 번째 이벤트: 흰색 믹스 (밝게)
+        // 중간 이벤트: 원색에 가깝게
+        // 마지막 이벤트: 검정색 믹스 (어둡게)
+        let midpoint = CGFloat(totalVariants - 1) / 2.0
+        let position = CGFloat(variantIndex)
+
+        var newRed: CGFloat
+        var newGreen: CGFloat
+        var newBlue: CGFloat
+
+        if position <= midpoint {
+            // 앞쪽 절반: 흰색 믹스 (tint)
+            let blendFactor = (midpoint - position) / midpoint * maxBlendFactor
+            newRed = red + (1.0 - red) * blendFactor
+            newGreen = green + (1.0 - green) * blendFactor
+            newBlue = blue + (1.0 - blue) * blendFactor
+        } else {
+            // 뒤쪽 절반: 검정색 믹스 (shade)
+            let blendFactor = (position - midpoint) / (CGFloat(totalVariants - 1) - midpoint) * maxBlendFactor
+            newRed = red * (1.0 - blendFactor)
+            newGreen = green * (1.0 - blendFactor)
+            newBlue = blue * (1.0 - blendFactor)
+        }
+
+        // 최종 색상이 너무 극단적이지 않도록 제한
+        newRed = max(0.1, min(1.0, newRed))
+        newGreen = max(0.1, min(1.0, newGreen))
+        newBlue = max(0.1, min(1.0, newBlue))
+
+        return Color(red: Double(newRed), green: Double(newGreen), blue: Double(newBlue), opacity: Double(alpha))
     }
 }

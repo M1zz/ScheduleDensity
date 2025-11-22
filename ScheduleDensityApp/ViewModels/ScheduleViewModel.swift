@@ -30,6 +30,10 @@ class ScheduleViewModel {
     // 이벤트별 레인 할당 정보 저장
     var eventLaneAssignments: [String: Int] = [:]  // color를 key로 사용
 
+    // 레인 내 이벤트 인덱스 정보 (색상 변형용)
+    var eventIndexInLane: [String: Int] = [:]  // event.color -> 레인 내 인덱스 (0부터 시작)
+    var laneEventCounts: [Int: Int] = [:]      // lane -> 총 이벤트 수
+
     // 현재 로드된 날짜 범위 추적
     var currentStartDate: Date
     var currentEndDate: Date
@@ -684,10 +688,32 @@ class ScheduleViewModel {
 
         // 레인 할당 정보 저장 (압축된 결과 사용)
         var assignments: [String: Int] = [:]
+        var indexInLane: [String: Int] = [:]
+        var eventCounts: [Int: Int] = [:]
+
+        // 레인별로 이벤트를 그룹화하고 인덱스 부여
+        var laneGroups: [Int: [Event]] = [:]
         for (event, lane) in compactedLanes {
             assignments[event.color] = lane
+            if laneGroups[lane] == nil {
+                laneGroups[lane] = []
+            }
+            laneGroups[lane]?.append(event)
         }
+
+        // 각 레인 내에서 시작 날짜 순으로 정렬 후 인덱스 부여
+        for (lane, events) in laneGroups {
+            let sortedEvents = events.sorted { $0.startDate < $1.startDate }
+            eventCounts[lane] = sortedEvents.count
+
+            for (index, event) in sortedEvents.enumerated() {
+                indexInLane[event.color] = index
+            }
+        }
+
         self.eventLaneAssignments = assignments
+        self.eventIndexInLane = indexInLane
+        self.laneEventCounts = eventCounts
 
         // 압축된 결과로 정렬
         let compactedResult = compactedLanes.sorted { $0.lane < $1.lane }.map { $0.event }
