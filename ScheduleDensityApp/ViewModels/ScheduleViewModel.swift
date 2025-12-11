@@ -20,10 +20,38 @@ struct PeriodAnalysis {
     var busiestDateByHours: Date?   // 시간 기준 가장 바쁜 날
 }
 
+// 일정 통계 정보
+struct EventStatistics {
+    var totalEvents: Int = 0
+    var activeEvents: Int = 0
+    var completedEvents: Int = 0
+    var infiniteEvents: Int = 0
+
+    var highImportanceCount: Int = 0
+    var mediumImportanceCount: Int = 0
+    var lowImportanceCount: Int = 0
+
+    var totalHours: Double = 0.0
+    var averageHoursPerEvent: Double = 0.0
+    var averageHoursPerDay: Double = 0.0
+
+    var busiestDate: Date?
+    var busiestDateHours: Double = 0.0
+    var busiestDateEventCount: Int = 0
+
+    var weekdayDistribution: [Int: Double] = [:]  // 요일별 주간 평균 일정 수
+    var totalWeeks: Int = 0  // 전체 주 수
+    var laneDistribution: [Int: Int] = [:]      // 레인별 일정 수
+
+    var longestEvent: Event?
+    var shortestEvent: Event?
+}
+
 @Observable
 class ScheduleViewModel {
     var showingAddEvent = false
     var eventToEdit: Event? = nil  // 수정할 일정 (nil이면 수정 모드 아님)
+    var lastAddedEventDate: Date? = nil  // 마지막 추가된 일정의 시작일
     var currentWeekStart: Date = Date().startOfWeek
     var dataRefreshTrigger = UUID()
 
@@ -44,6 +72,9 @@ class ScheduleViewModel {
     // 설정: 평균 수면시간 (시간 단위)
     var sleepHoursPerDay: Double
 
+    // 설정: 지나간 이벤트 표시 여부
+    var showPastEvents: Bool
+
     // 레인별 색상 (무지개 순서)
     static let laneColors = [
         "#FF3B30",  // 1번 레인: 빨강
@@ -55,7 +86,7 @@ class ScheduleViewModel {
         "#AF52DE"   // 7번 레인: 보라
     ]
 
-    private var modelContext: ModelContext?
+    var modelContext: ModelContext?
 
     init() {
         currentWeekStart = Date().startOfWeek
@@ -73,6 +104,9 @@ class ScheduleViewModel {
         // 수면시간 로드 (기본값: 7시간)
         let savedSleep = UserDefaults.standard.double(forKey: "sleepHoursPerDay")
         sleepHoursPerDay = savedSleep > 0 ? savedSleep : 7.0
+
+        // 지나간 이벤트 표시 로드 (기본값: false - 숨김)
+        showPastEvents = UserDefaults.standard.bool(forKey: "showPastEvents")
 
         // 설정에 따라 날짜 범위 업데이트
         updateDateRange()
@@ -100,6 +134,12 @@ class ScheduleViewModel {
     func updateSleepHours(_ hours: Double) {
         sleepHoursPerDay = hours
         UserDefaults.standard.set(sleepHoursPerDay, forKey: "sleepHoursPerDay")
+    }
+
+    func updateShowPastEvents(_ show: Bool) {
+        showPastEvents = show
+        UserDefaults.standard.set(showPastEvents, forKey: "showPastEvents")
+        dataRefreshTrigger = UUID()
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -143,6 +183,81 @@ class ScheduleViewModel {
     
     // MARK: - Event Management
 
+    // 증분 동기화: CloudKit에 개별 이벤트 저장 (즉시 실행)
+    private func syncEventToCloudKit(_ event: Event) {
+        // 동기화가 비활성화되어 있으면 CloudKit 저장 안함
+        guard SyncSettingsManager.shared.isSyncEnabled else {
+            print("⏭️ [ViewModel] Sync disabled, skipping CloudKit save")
+            return
+        }
+
+        // iCloud 사용 불가능하면 CloudKit 저장 안함
+        guard CloudKitManager.shared.isAvailable else {
+            print("⏭️ [ViewModel] iCloud not available, skipping CloudKit save")
+            return
+        }
+
+        print("🔄 [ViewModel] Syncing event to CloudKit: \"\(event.title)\"")
+
+        CloudKitManager.shared.saveEvent(event) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let recordName):
+                    print("✅ [ViewModel] Event synced to CloudKit: \(recordName)")
+
+                    // recordName을 Event에 저장
+                    event.cloudKitRecordName = recordName
+
+                    // SwiftData에 다시 저장
+                    guard let context = self?.modelContext else { return }
+                    do {
+                        try context.save()
+                        print("✅ [ViewModel] CloudKit recordName saved to local Event")
+                    } catch {
+                        print("❌ [ViewModel] Failed to save recordName: \(error)")
+                    }
+
+                case .failure(let error):
+                    print("❌ [ViewModel] CloudKit sync failed: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    // CloudKit에서 개별 이벤트 삭제
+    private func deleteEventFromCloudKit(_ event: Event) {
+        // 동기화가 비활성화되어 있으면 CloudKit 삭제 안함
+        guard SyncSettingsManager.shared.isSyncEnabled else {
+            print("⏭️ [ViewModel] Sync disabled, skipping CloudKit delete")
+            return
+        }
+
+        // iCloud 사용 불가능하면 CloudKit 삭제 안함
+        guard CloudKitManager.shared.isAvailable else {
+            print("⏭️ [ViewModel] iCloud not available, skipping CloudKit delete")
+            return
+        }
+
+        // recordName이 없으면 CloudKit에 저장된 적이 없음
+        guard let recordName = event.cloudKitRecordName else {
+            print("⏭️ [ViewModel] No CloudKit record for event \"\(event.title)\", skipping delete")
+            return
+        }
+
+        print("🗑️ [ViewModel] Deleting event from CloudKit: \(recordName)")
+
+        CloudKitManager.shared.deleteEvent(recordName: recordName) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("✅ [ViewModel] Event deleted from CloudKit: \(recordName)")
+                case .failure(let error):
+                    print("❌ [ViewModel] CloudKit delete failed: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
     func addEvent(_ event: Event) {
         guard let context = modelContext else {
             print("⚠️ [ViewModel] addEvent 실패: modelContext가 nil")
@@ -152,6 +267,12 @@ class ScheduleViewModel {
         do {
             try context.save()
             print("✅ [ViewModel] 이벤트 추가됨: \"\(event.title)\" (\(event.startDate) ~ \(event.endDate))")
+
+            // 마지막 추가된 일정의 시작일 저장 (스크롤 용도)
+            lastAddedEventDate = event.startDate
+
+            // 증분 동기화: CloudKit에 개별 저장
+            syncEventToCloudKit(event)
         } catch {
             print("❌ [ViewModel] 이벤트 저장 실패: \(error)")
         }
@@ -162,6 +283,11 @@ class ScheduleViewModel {
             print("⚠️ [ViewModel] deleteEvent 실패: modelContext가 nil")
             return
         }
+
+        // CloudKit에서 먼저 삭제 (삭제 전에 recordName이 필요하므로)
+        deleteEventFromCloudKit(event)
+
+        // 로컬에서 삭제
         context.delete(event)
         do {
             try context.save()
@@ -179,6 +305,9 @@ class ScheduleViewModel {
         do {
             try context.save()
             print("🔄 [ViewModel] 이벤트 업데이트됨: \"\(event.title)\"")
+
+            // 증분 동기화: CloudKit에 개별 업데이트
+            syncEventToCloudKit(event)
         } catch {
             print("❌ [ViewModel] 이벤트 업데이트 실패: \(error)")
         }
@@ -195,9 +324,28 @@ class ScheduleViewModel {
         )
 
         do {
-            let events = try context.fetch(descriptor)
-            print("📊 [ViewModel] 이벤트 조회됨: \(events.count)개")
-            return events
+            let allEvents = try context.fetch(descriptor)
+
+            // 지나간 이벤트 필터링
+            if !showPastEvents {
+                let calendar = Calendar.current
+                let today = calendar.startOfDay(for: Date())
+
+                let activeEvents = allEvents.filter { event in
+                    // 무한 반복 이벤트는 항상 표시
+                    if event.isInfinite {
+                        return true
+                    }
+                    // 종료일이 오늘 이후인 이벤트만 표시
+                    return event.effectiveEndDate() >= today
+                }
+
+                print("📊 [ViewModel] 이벤트 조회됨: 전체 \(allEvents.count)개, 활성 \(activeEvents.count)개")
+                return activeEvents
+            } else {
+                print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트 포함)")
+                return allEvents
+            }
         } catch {
             print("❌ [ViewModel] 이벤트 조회 실패: \(error)")
             return []
@@ -408,6 +556,12 @@ class ScheduleViewModel {
             }
 
             let laneEvents = bestCombination
+
+            // 💡 무한 루프 방지: 배치할 일정이 없으면 종료
+            if laneEvents.isEmpty {
+                print("   ⚠️  더 이상 배치할 일정이 없습니다. 레인 할당 종료.")
+                break
+            }
 
             // 이 레인에 배치
             let totalDays = laneEvents.reduce(0) { sum, event in
@@ -772,6 +926,439 @@ class ScheduleViewModel {
         return names.joined(separator: ",")
     }
     
+    // MARK: - Schedule Intelligence
+
+    // 자유시간 분석 결과
+    struct FreeTimeSlot {
+        var startDate: Date
+        var endDate: Date
+        var availableHours: Double  // 하루 평균 자유시간
+        var score: Double           // 추천 점수 (높을수록 좋음)
+    }
+
+    // 날짜별 자유시간 분석
+    func analyzeFreeTime(from startDate: Date, to endDate: Date) -> [Date: Double] {
+        let calendar = Calendar.current
+        let events = fetchEvents()
+        var freeTimeByDate: [Date: Double] = [:]
+
+        var currentDate = calendar.startOfDay(for: startDate)
+        let end = calendar.startOfDay(for: endDate)
+
+        while currentDate <= end {
+            let eventsOnDate = events.filter { $0.occursOn(date: currentDate) }
+            let totalHours = eventsOnDate.reduce(0.0) { $0 + $1.hoursPerDay }
+            let availableHours = max(0, 24.0 - sleepHoursPerDay - totalHours)
+            freeTimeByDate[currentDate] = availableHours
+
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = nextDate
+        }
+
+        return freeTimeByDate
+    }
+
+    // 일정 추천 알고리즘
+    // 새 일정을 언제 배치하면 좋을지 추천 (자유시간 + 중요도 + 균형 고려)
+    func recommendScheduleSlots(
+        duration: Int,  // 일정 기간 (일 단위)
+        hoursPerDay: Double,
+        importance: EventImportance,
+        selectedWeekdays: [Int]?
+    ) -> [FreeTimeSlot] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        // 향후 3개월 범위에서 추천
+        guard let searchEnd = calendar.date(byAdding: .month, value: 3, to: today) else {
+            return []
+        }
+
+        let freeTimeAnalysis = analyzeFreeTime(from: today, to: searchEnd)
+        let events = fetchEvents()
+
+        var recommendations: [FreeTimeSlot] = []
+        var currentDate = today
+
+        // 가능한 모든 시작일 후보 탐색
+        while currentDate <= searchEnd {
+            guard let slotEnd = calendar.date(byAdding: .day, value: duration - 1, to: currentDate) else {
+                break
+            }
+
+            if slotEnd > searchEnd {
+                break
+            }
+
+            // 이 슬롯의 점수 계산
+            var slotScore = 0.0
+            var totalAvailableHours = 0.0
+            var validDays = 0
+
+            var checkDate = currentDate
+            while checkDate <= slotEnd {
+                // 요일 체크
+                let weekday = calendar.component(.weekday, from: checkDate)
+                if let weekdays = selectedWeekdays, !weekdays.isEmpty {
+                    if !weekdays.contains(weekday) {
+                        guard let nextDate = calendar.date(byAdding: .day, value: 1, to: checkDate) else { break }
+                        checkDate = nextDate
+                        continue
+                    }
+                }
+
+                let availableHours = freeTimeAnalysis[checkDate] ?? 0
+                totalAvailableHours += availableHours
+                validDays += 1
+
+                // 충분한 자유시간이 있는지 확인
+                if availableHours >= hoursPerDay {
+                    slotScore += 10.0  // 기본 점수
+                } else {
+                    slotScore -= 50.0  // 시간 부족 패널티
+                }
+
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: checkDate) else { break }
+                checkDate = nextDate
+            }
+
+            if validDays == 0 {
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+                currentDate = nextDate
+                continue
+            }
+
+            let avgAvailableHours = totalAvailableHours / Double(validDays)
+
+            // 자유시간 점수 (더 많을수록 좋음)
+            slotScore += avgAvailableHours * 5.0
+
+            // 중요도 점수 (중요한 일정은 빠른 날짜 선호)
+            let daysFromNow = calendar.dateComponents([.day], from: today, to: currentDate).day ?? 0
+            if importance == .high {
+                slotScore += max(0, 100.0 - Double(daysFromNow) * 2.0)  // 빠를수록 좋음
+            } else if importance == .medium {
+                slotScore += max(0, 50.0 - Double(daysFromNow) * 1.0)
+            } else {
+                slotScore += 20.0  // 낮은 중요도는 날짜 상관없음
+            }
+
+            // 일정 밀집도 패널티 (일정이 몰려있으면 점수 감소)
+            checkDate = currentDate
+            var nearbyEvents = 0
+            // 전후 7일 확인
+            for dayOffset in -7...7 {
+                guard let nearDate = calendar.date(byAdding: .day, value: dayOffset, to: currentDate) else { continue }
+                let eventsOnDate = events.filter { $0.occursOn(date: nearDate) }
+                nearbyEvents += eventsOnDate.count
+            }
+            slotScore -= Double(nearbyEvents) * 3.0  // 주변에 일정이 많으면 감점
+
+            // 주말 보너스 (여유로운 일정에 좋음)
+            if importance == .low {
+                checkDate = currentDate
+                while checkDate <= slotEnd {
+                    let weekday = calendar.component(.weekday, from: checkDate)
+                    if weekday == 1 || weekday == 7 {  // 일요일 or 토요일
+                        slotScore += 5.0
+                    }
+                    guard let nextDate = calendar.date(byAdding: .day, value: 1, to: checkDate) else { break }
+                    checkDate = nextDate
+                }
+            }
+
+            recommendations.append(FreeTimeSlot(
+                startDate: currentDate,
+                endDate: slotEnd,
+                availableHours: avgAvailableHours,
+                score: slotScore
+            ))
+
+            guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+            currentDate = nextDate
+        }
+
+        // 점수 순으로 정렬하여 상위 10개 반환
+        return recommendations.sorted { $0.score > $1.score }.prefix(10).map { $0 }
+    }
+
+    // 일정 분산 제안
+    // 몰려있는 일정을 자동으로 재배치하여 균형잡힌 스케줄 생성
+    func suggestScheduleBalancing() -> [Event: Date] {
+        let calendar = Calendar.current
+        let events = fetchEvents()
+        var suggestions: [Event: Date] = [:]  // Event -> 새로운 추천 시작일
+
+        // 날짜별 부하 분석 (가중치 고려)
+        let freeTimeAnalysis = analyzeFreeTime(from: currentStartDate, to: currentEndDate)
+        var dailyLoad: [Date: Double] = [:]
+
+        for (date, _) in freeTimeAnalysis {
+            let eventsOnDate = events.filter { $0.occursOn(date: date) }
+            let load = eventsOnDate.reduce(0.0) { $0 + $1.hoursPerDay * $1.importance.weight }
+            dailyLoad[date] = load
+        }
+
+        // 부하가 높은 날짜 찾기 (평균의 1.5배 이상)
+        let avgLoad = dailyLoad.values.reduce(0.0, +) / Double(max(1, dailyLoad.count))
+        let threshold = avgLoad * 1.5
+
+        var overloadedDates: [Date] = []
+        for (date, load) in dailyLoad {
+            if load > threshold {
+                overloadedDates.append(date)
+            }
+        }
+
+        print("📊 [Balance] 평균 부하: \(avgLoad), 임계값: \(threshold)")
+        print("🔴 [Balance] 과부하 날짜: \(overloadedDates.count)개")
+
+        // 과부하 날짜의 일정 중 이동 가능한 것 찾기
+        for date in overloadedDates {
+            let eventsOnDate = events.filter { $0.occursOn(date: date) }
+                .sorted { $0.importance.weight < $1.importance.weight }  // 중요도 낮은 것부터
+
+            for event in eventsOnDate {
+                // 중요도가 낮거나 중간인 일정만 이동 제안
+                if event.importance == .high {
+                    continue
+                }
+
+                // 새로운 시작일 추천
+                let duration = calendar.dateComponents([.day], from: event.startDate, to: event.endDate).day ?? 0 + 1
+                let recommendations = recommendScheduleSlots(
+                    duration: duration,
+                    hoursPerDay: event.hoursPerDay,
+                    importance: event.importance,
+                    selectedWeekdays: event.selectedWeekdays
+                )
+
+                // 원래 날짜와 다른 추천 찾기
+                if let bestSlot = recommendations.first(where: { $0.startDate != event.startDate }) {
+                    suggestions[event] = bestSlot.startDate
+                    print("💡 [Balance] '\(event.title)' 이동 제안: \(event.startDate) → \(bestSlot.startDate)")
+                }
+            }
+        }
+
+        return suggestions
+    }
+
+    // 일정 분산 적용
+    func applyScheduleBalancing(suggestions: [Event: Date]) {
+        let calendar = Calendar.current
+
+        for (event, newStartDate) in suggestions {
+            let duration = calendar.dateComponents([.day], from: event.startDate, to: event.endDate).day ?? 0
+            guard let newEndDate = calendar.date(byAdding: .day, value: duration, to: newStartDate) else {
+                continue
+            }
+
+            print("🔄 [Balance] '\(event.title)' 이동 적용: \(event.startDate) → \(newStartDate)")
+            event.startDate = calendar.startOfDay(for: newStartDate)
+            event.endDate = calendar.startOfDay(for: newEndDate)
+        }
+
+        // 변경사항 저장
+        guard let context = modelContext else { return }
+        do {
+            try context.save()
+            dataRefreshTrigger = UUID()
+            print("✅ [Balance] 일정 분산 완료: \(suggestions.count)개 일정 이동")
+        } catch {
+            print("❌ [Balance] 저장 실패: \(error)")
+        }
+    }
+
+    // MARK: - Statistics
+
+    func calculateStatistics() -> EventStatistics {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        // 모든 이벤트 가져오기 (showPastEvents 설정 무시하고 전체 통계)
+        guard let context = modelContext else {
+            return EventStatistics()
+        }
+
+        let descriptor = FetchDescriptor<Event>(sortBy: [SortDescriptor(\.startDate)])
+        guard let allEvents = try? context.fetch(descriptor) else {
+            return EventStatistics()
+        }
+
+        var stats = EventStatistics()
+
+        // 전체 통계
+        stats.totalEvents = allEvents.count
+        stats.activeEvents = allEvents.filter { event in
+            if event.isInfinite { return true }
+            return event.effectiveEndDate() >= today
+        }.count
+        stats.completedEvents = allEvents.filter { event in
+            if event.isInfinite { return false }
+            return event.effectiveEndDate() < today
+        }.count
+        stats.infiniteEvents = allEvents.filter { $0.isInfinite }.count
+
+        // 중요도별 통계
+        stats.highImportanceCount = allEvents.filter { $0.importance == .high }.count
+        stats.mediumImportanceCount = allEvents.filter { $0.importance == .medium }.count
+        stats.lowImportanceCount = allEvents.filter { $0.importance == .low }.count
+
+        // 시간 통계 (무한 반복은 30일 기준)
+        var totalHours = 0.0
+        for event in allEvents {
+            let endDate: Date
+            if event.isInfinite {
+                // 무한 반복은 30일만 계산
+                endDate = calendar.date(byAdding: .day, value: 30, to: event.startDate) ?? event.startDate
+            } else {
+                endDate = event.effectiveEndDate()
+            }
+
+            let days = calendar.dateComponents([.day], from: event.startDate, to: endDate).day ?? 0
+            let actualDays = days + 1
+            totalHours += event.hoursPerDay * Double(actualDays)
+        }
+        stats.totalHours = totalHours
+        stats.averageHoursPerEvent = allEvents.isEmpty ? 0 : totalHours / Double(allEvents.count)
+
+        // 하루 평균 시간 계산 (전체 기간 중 평균)
+        if let earliestStart = allEvents.map({ $0.startDate }).min(),
+           let latestEnd = allEvents.map({ $0.effectiveEndDate() }).max() {
+            let totalDays = calendar.dateComponents([.day], from: earliestStart, to: latestEnd).day ?? 0 + 1
+            stats.averageHoursPerDay = totalDays > 0 ? totalHours / Double(totalDays) : 0
+        }
+
+        // 가장 바쁜 날 찾기
+        if let earliestStart = allEvents.map({ $0.startDate }).min(),
+           let latestEnd = allEvents.map({ $0.effectiveEndDate() }).max() {
+
+            var maxHours = 0.0
+            var maxCount = 0
+            var busiestDate: Date?
+
+            var currentDate = earliestStart
+            while currentDate <= latestEnd {
+                let eventsOnDate = allEvents.filter { $0.occursOn(date: currentDate) }
+                let hoursOnDate = eventsOnDate.reduce(0.0) { $0 + $1.hoursPerDay }
+                let countOnDate = eventsOnDate.count
+
+                if hoursOnDate > maxHours {
+                    maxHours = hoursOnDate
+                    maxCount = countOnDate
+                    busiestDate = currentDate
+                }
+
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+                currentDate = nextDate
+            }
+
+            stats.busiestDate = busiestDate
+            stats.busiestDateHours = maxHours
+            stats.busiestDateEventCount = maxCount
+        }
+
+        // 요일별 분포 계산 (무한 반복은 30일 기준, 주간 평균으로 표시)
+        var weekdayCount: [Int: Int] = [:]  // 요일별 총 일정 수
+        var weekdayOccurrences: [Int: Int] = [:]  // 요일별 해당 요일이 나타난 횟수
+
+        // 전체 날짜 범위 계산
+        if let earliestStart = allEvents.map({ $0.startDate }).min(),
+           let latestEnd = allEvents.map({
+               if $0.isInfinite {
+                   return calendar.date(byAdding: .day, value: 30, to: $0.startDate) ?? $0.startDate
+               } else {
+                   return $0.effectiveEndDate()
+               }
+           }).max() {
+
+            // 전체 기간의 각 요일 발생 횟수 계산
+            var scanDate = earliestStart
+            while scanDate <= latestEnd {
+                let weekday = calendar.component(.weekday, from: scanDate)
+                weekdayOccurrences[weekday, default: 0] += 1
+
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: scanDate) else { break }
+                scanDate = nextDate
+            }
+
+            // 전체 주 수 계산
+            let totalDays = calendar.dateComponents([.day], from: earliestStart, to: latestEnd).day ?? 0
+            stats.totalWeeks = max(1, (totalDays + 1) / 7)
+        }
+
+        // 각 일정별 요일 카운트
+        for event in allEvents {
+            var currentDate = event.startDate
+            let endDate: Date
+            if event.isInfinite {
+                // 무한 반복은 30일만 계산
+                endDate = calendar.date(byAdding: .day, value: 30, to: event.startDate) ?? event.startDate
+            } else {
+                endDate = event.effectiveEndDate()
+            }
+
+            while currentDate <= endDate {
+                if event.occursOn(date: currentDate) {
+                    let weekday = calendar.component(.weekday, from: currentDate)
+                    weekdayCount[weekday, default: 0] += 1
+                }
+
+                guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }
+                currentDate = nextDate
+            }
+        }
+
+        // 주간 평균 계산
+        var weekdayAverage: [Int: Double] = [:]
+        for weekday in 1...7 {
+            let count = weekdayCount[weekday] ?? 0
+            let occurrences = weekdayOccurrences[weekday] ?? 1
+            let weeks = Double(occurrences) / 7.0  // 해당 요일이 나타난 주 수
+            weekdayAverage[weekday] = weeks > 0 ? Double(count) / weeks : 0
+        }
+        stats.weekdayDistribution = weekdayAverage
+
+        // 레인별 분포 계산
+        let laneAssignedEvents = assignLanesToEvents()
+        var laneDist: [Int: Int] = [:]
+        for event in laneAssignedEvents {
+            if let lane = eventLaneAssignments[event.color] {
+                laneDist[lane, default: 0] += 1
+            }
+        }
+        stats.laneDistribution = laneDist
+
+        // 가장 긴/짧은 일정 (무한 반복은 30일 기준)
+        if !allEvents.isEmpty {
+            let sortedByDuration = allEvents.sorted { event1, event2 in
+                let endDate1: Date
+                if event1.isInfinite {
+                    endDate1 = calendar.date(byAdding: .day, value: 30, to: event1.startDate) ?? event1.startDate
+                } else {
+                    endDate1 = event1.effectiveEndDate()
+                }
+
+                let endDate2: Date
+                if event2.isInfinite {
+                    endDate2 = calendar.date(byAdding: .day, value: 30, to: event2.startDate) ?? event2.startDate
+                } else {
+                    endDate2 = event2.effectiveEndDate()
+                }
+
+                let days1 = calendar.dateComponents([.day], from: event1.startDate, to: endDate1).day ?? 0
+                let days2 = calendar.dateComponents([.day], from: event2.startDate, to: endDate2).day ?? 0
+                return days1 < days2
+            }
+
+            stats.shortestEvent = sortedByDuration.first
+            stats.longestEvent = sortedByDuration.last
+        }
+
+        return stats
+    }
+
     // MARK: - Sample Data
 
     func addSampleEvents() {
@@ -866,7 +1453,12 @@ class ScheduleViewModel {
         let eventCount = events.count
         print("📊 [ViewModel] 삭제할 이벤트: \(eventCount)개")
 
+        // 각 이벤트를 CloudKit과 로컬에서 모두 삭제
         for event in events {
+            // CloudKit에서 먼저 삭제
+            deleteEventFromCloudKit(event)
+
+            // 로컬에서 삭제
             context.delete(event)
         }
 

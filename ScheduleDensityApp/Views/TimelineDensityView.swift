@@ -60,6 +60,12 @@ struct TimelineDensityView: View {
                     // 시트가 닫힐 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         refreshData()
+
+                        // 일정이 추가되었으면 해당 날짜로 스크롤
+                        if let addedDate = viewModel.lastAddedEventDate {
+                            scrollToDate(addedDate)
+                            viewModel.lastAddedEventDate = nil // 초기화
+                        }
                     }
                 }
             }
@@ -85,6 +91,12 @@ struct TimelineDensityView: View {
 
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         refreshData()
+
+                        // 일정이 추가되었으면 해당 날짜로 스크롤
+                        if let addedDate = viewModel.lastAddedEventDate {
+                            scrollToDate(addedDate)
+                            viewModel.lastAddedEventDate = nil // 초기화
+                        }
                     }
                 }
             }
@@ -231,6 +243,24 @@ struct TimelineDensityView: View {
             withAnimation {
                 proxy.scrollTo(todayData.id, anchor: .center)
             }
+        }
+    }
+
+    private func scrollToDate(_ date: Date) {
+        guard let proxy = scrollProxy else { return }
+
+        let calendar = Calendar.current
+        let targetDate = calendar.startOfDay(for: date)
+
+        if let targetData = densityData.first(where: { dayData in
+            calendar.isDate(calendar.startOfDay(for: dayData.date), inSameDayAs: targetDate)
+        }) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    proxy.scrollTo(targetData.id, anchor: .center)
+                }
+            }
+            print("📍 [TimelineView] Scrolling to added event date: \(monthDay(from: date))")
         }
     }
 
@@ -1084,53 +1114,56 @@ struct DayTimeAnalysisView: View {
                         }
 
                         // 시간 사용 바 (깨어있는 시간 기준)
-                        GeometryReader { geometry in
-                            VStack(spacing: 8) {
-                                // 자유시간 (양수일 때만 표시)
-                                if freeHours > 0 {
-                                    let height = (freeHours / awakeHours) * geometry.size.height
+                        // 고정 비율: 1시간당 30픽셀
+                        let pixelsPerHour: CGFloat = 30.0
 
-                                    HStack(spacing: 8) {
-                                        Rectangle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: 50, height: height)
+                        VStack(spacing: 8) {
+                            // 자유시간 (양수일 때만 표시)
+                            if freeHours > 0 {
+                                let height = freeHours * pixelsPerHour
 
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text("자유시간")
-                                                .font(.system(size: 14, weight: .medium))
-                                                .foregroundColor(.secondary)
-                                            Text(String(format: "%.1f시간", freeHours))
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
+                                HStack(spacing: 8) {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 50, height: height)
+                                        .cornerRadius(4)
+
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("자유시간")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.secondary)
+                                        Text(String(format: "%.1f시간", freeHours))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
                                     }
+                                    Spacer()
                                 }
+                            }
 
-                                // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
-                                ForEach(events.indices.reversed(), id: \.self) { index in
-                                    let event = events[index]
-                                    let height = (event.hoursPerDay / awakeHours) * geometry.size.height
-                                    let laneColor = getLaneColor(for: event)
+                            // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
+                            ForEach(events.indices.reversed(), id: \.self) { index in
+                                let event = events[index]
+                                let height = max(event.hoursPerDay * pixelsPerHour, 20)  // 최소 높이 20
+                                let laneColor = getLaneColor(for: event)
 
-                                    HStack(spacing: 8) {
-                                        Rectangle()
-                                            .fill(laneColor)
-                                            .frame(width: 50, height: height)
+                                HStack(spacing: 8) {
+                                    Rectangle()
+                                        .fill(laneColor)
+                                        .frame(width: 50, height: height)
+                                        .cornerRadius(4)
 
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(event.title)
-                                                .font(.system(size: 14, weight: .medium))
-                                            Text(String(format: "%.1f시간", event.hoursPerDay))
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(event.title)
+                                            .font(.system(size: 14, weight: .medium))
+                                        Text(String(format: "%.1f시간", event.hoursPerDay))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
                                     }
+                                    Spacer()
                                 }
                             }
                         }
-                        .frame(height: 400)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding()
                     .background(Color(.systemGray6))
@@ -1204,7 +1237,8 @@ struct DayTimeAnalysisView: View {
 
     // 이벤트의 레인 색상 가져오기
     private func getLaneColor(for event: Event) -> Color {
-        if let lane = viewModel.eventLaneAssignments[event.color] {
+        if let lane = viewModel.eventLaneAssignments[event.color],
+           lane >= 0 && lane < ScheduleViewModel.laneColors.count {
             return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
         }
         return .blue

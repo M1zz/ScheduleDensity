@@ -22,6 +22,10 @@ struct AddEventView: View {
     @State private var periodAnalysis: PeriodAnalysis? = nil
     @State private var showingDeleteAlert = false
     @State private var selectedWeekdays: Set<Int> = [2, 3, 4, 5, 6]  // 기본값: 월~금 선택
+    @State private var importance: EventImportance = .medium
+    @State private var showRecommendations = false
+    @State private var recommendations: [ScheduleViewModel.FreeTimeSlot] = []
+    @State private var isInfinite: Bool = false  // 무한 반복 일정
 
     init(viewModel: ScheduleViewModel, initialDate: Date? = nil, initialStartDate: Date? = nil, initialEndDate: Date? = nil, eventToEdit: Event? = nil) {
         self.viewModel = viewModel
@@ -40,6 +44,8 @@ struct AddEventView: View {
             _hoursPerDay = State(initialValue: event.hoursPerDay)
             // selectedWeekdays가 nil이면 모든 요일로 초기화
             _selectedWeekdays = State(initialValue: Set(event.selectedWeekdays ?? [1, 2, 3, 4, 5, 6, 7]))
+            _importance = State(initialValue: event.importance)
+            _isInfinite = State(initialValue: event.isInfinite)
         }
         // 우선순위: initialStartDate & initialEndDate > initialDate > 기본값
         else if let startDate = initialStartDate, let endDate = initialEndDate {
@@ -64,22 +70,38 @@ struct AddEventView: View {
                         .datePickerStyle(.compact)
                         .onChange(of: startDate) { oldValue, newValue in
                             // 시작일이 종료일보다 뒤면 종료일을 시작일+1로 조정
-                            if newValue > endDate {
+                            if newValue > endDate && !isInfinite {
                                 endDate = Calendar.current.date(byAdding: .day, value: 1, to: newValue) ?? newValue
                             }
                             updateAnalysis()
                         }
 
-                    // 종료일
-                    DatePicker("종료일", selection: $endDate, displayedComponents: .date)
-                        .datePickerStyle(.compact)
-                        .onChange(of: endDate) { oldValue, newValue in
-                            // 종료일이 시작일보다 앞이면 시작일을 종료일-1로 조정
-                            if newValue < startDate {
-                                startDate = Calendar.current.date(byAdding: .day, value: -1, to: newValue) ?? newValue
-                            }
-                            updateAnalysis()
+                    // 무한 반복 토글
+                    Toggle(isOn: $isInfinite) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "repeat")
+                                .foregroundColor(isInfinite ? .blue : .secondary)
+                            Text("무한 반복")
+                                .fontWeight(isInfinite ? .semibold : .regular)
                         }
+                    }
+                    .onChange(of: isInfinite) { _, newValue in
+                        updateAnalysis()
+                        showRecommendations = false
+                    }
+
+                    if !isInfinite {
+                        // 종료일 (무한 반복이 아닐 때만 표시)
+                        DatePicker("종료일", selection: $endDate, displayedComponents: .date)
+                            .datePickerStyle(.compact)
+                            .onChange(of: endDate) { oldValue, newValue in
+                                // 종료일이 시작일보다 앞이면 시작일을 종료일-1로 조정
+                                if newValue < startDate {
+                                    startDate = Calendar.current.date(byAdding: .day, value: -1, to: newValue) ?? newValue
+                                }
+                                updateAnalysis()
+                            }
+                    }
 
                     // 기간 표시
                     HStack {
@@ -87,12 +109,27 @@ struct AddEventView: View {
                             .foregroundColor(.blue)
                         Text("총 기간")
                         Spacer()
-                        let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
-                        Text("\(days + 1)일")
+                        if isInfinite {
+                            HStack(spacing: 4) {
+                                Image(systemName: "infinity")
+                                    .font(.system(size: 14))
+                                Text("(최대 365일)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                             .fontWeight(.semibold)
+                        } else {
+                            let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
+                            Text("\(days + 1)일")
+                                .fontWeight(.semibold)
+                        }
                     }
                 } header: {
                     Text("날짜 선택")
+                } footer: {
+                    if isInfinite {
+                        Text("무한 반복 일정은 시작일부터 최대 365일까지 표시됩니다")
+                    }
                 }
 
                 // 요일 선택 섹션
@@ -156,6 +193,101 @@ struct AddEventView: View {
                             Spacer()
                             Text(String(format: "%.1f시간", hoursPerDay))
                                 .foregroundColor(.secondary)
+                        }
+                    }
+                    .onChange(of: hoursPerDay) { _, _ in
+                        showRecommendations = false
+                    }
+                }
+
+                // 중요도 선택 섹션
+                Section {
+                    Picker("중요도", selection: $importance) {
+                        ForEach(EventImportance.allCases, id: \.self) { imp in
+                            Text(imp.displayName).tag(imp)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: importance) { _, _ in
+                        showRecommendations = false
+                    }
+
+                    HStack(spacing: 8) {
+                        importanceIcon(importance)
+                        Text(importanceDescription(importance))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("중요도")
+                } footer: {
+                    Text("높은 중요도는 빠른 날짜를, 낮은 중요도는 여유로운 날짜를 추천합니다")
+                }
+
+                // 추천 날짜 섹션 (새 일정 추가 시에만)
+                if eventToEdit == nil {
+                    Section {
+                        Button(action: {
+                            generateRecommendations()
+                        }) {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                Text("최적의 날짜 추천받기")
+                                Spacer()
+                                if showRecommendations {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                            }
+                        }
+
+                        if showRecommendations && !recommendations.isEmpty {
+                            ForEach(recommendations.prefix(5), id: \.startDate) { slot in
+                                Button(action: {
+                                    startDate = slot.startDate
+                                    endDate = slot.endDate
+                                    updateAnalysis()
+                                }) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text("\(formatDateShort(slot.startDate)) ~ \(formatDateShort(slot.endDate))")
+                                                .fontWeight(.medium)
+                                            Spacer()
+                                            Text(String(format: "%.0f점", slot.score))
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 2)
+                                                .background(scoreColor(slot.score))
+                                                .foregroundColor(.white)
+                                                .cornerRadius(4)
+                                        }
+
+                                        HStack(spacing: 12) {
+                                            Label(String(format: "%.1fh", slot.availableHours), systemImage: "clock")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+
+                                            let daysFromNow = Calendar.current.dateComponents([.day], from: Date(), to: slot.startDate).day ?? 0
+                                            Label("\(daysFromNow)일 후", systemImage: "calendar")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } else if showRecommendations && recommendations.isEmpty {
+                            Text("추천 가능한 날짜가 없습니다")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    } header: {
+                        Text("🤖 AI 추천")
+                    } footer: {
+                        if showRecommendations && !recommendations.isEmpty {
+                            Text("자유시간, 중요도, 일정 밀집도를 고려한 추천입니다. 탭하여 선택하세요.")
                         }
                     }
                 }
@@ -343,6 +475,8 @@ struct AddEventView: View {
             existingEvent.endDate = endDate
             existingEvent.hoursPerDay = hoursPerDay
             existingEvent.selectedWeekdays = weekdaysToSave
+            existingEvent.importance = importance
+            existingEvent.isInfinite = isInfinite
             viewModel.updateEvent(existingEvent)
             viewModel.eventToEdit = nil  // 수정 완료 후 초기화
         } else {
@@ -354,7 +488,9 @@ struct AddEventView: View {
                 endDate: endDate,
                 color: tempColor,
                 hoursPerDay: hoursPerDay,
-                selectedWeekdays: weekdaysToSave
+                selectedWeekdays: weekdaysToSave,
+                importance: importance,
+                isInfinite: isInfinite
             )
             viewModel.addEvent(event)
         }
@@ -418,5 +554,62 @@ struct AddEventView: View {
         case 7: return "Sat"
         default: return ""
         }
+    }
+
+    // 중요도 아이콘
+    private func importanceIcon(_ importance: EventImportance) -> some View {
+        Group {
+            switch importance {
+            case .high:
+                Image(systemName: "exclamationmark.3")
+                    .foregroundColor(.red)
+            case .medium:
+                Image(systemName: "exclamationmark.2")
+                    .foregroundColor(.orange)
+            case .low:
+                Image(systemName: "exclamationmark")
+                    .foregroundColor(.blue)
+            }
+        }
+    }
+
+    // 중요도 설명
+    private func importanceDescription(_ importance: EventImportance) -> String {
+        switch importance {
+        case .high:
+            return "높음 - 가능한 한 빠른 날짜에 배치됩니다"
+        case .medium:
+            return "보통 - 균형잡힌 날짜에 배치됩니다"
+        case .low:
+            return "낮음 - 여유로운 날짜에 배치됩니다"
+        }
+    }
+
+    // 추천 점수에 따른 색상
+    private func scoreColor(_ score: Double) -> Color {
+        if score >= 100 {
+            return .green
+        } else if score >= 50 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+
+    // 추천 날짜 생성
+    private func generateRecommendations() {
+        let calendar = Calendar.current
+        let duration = calendar.dateComponents([.day], from: startDate, to: endDate).day ?? 0 + 1
+        let weekdaysArray = selectedWeekdays.isEmpty ? nil : Array(selectedWeekdays).sorted()
+
+        recommendations = viewModel.recommendScheduleSlots(
+            duration: duration,
+            hoursPerDay: hoursPerDay,
+            importance: importance,
+            selectedWeekdays: weekdaysArray
+        )
+
+        showRecommendations = true
+        print("💡 [AddEvent] \(recommendations.count)개 추천 생성")
     }
 }
