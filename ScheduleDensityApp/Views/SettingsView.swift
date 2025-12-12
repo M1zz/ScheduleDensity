@@ -29,6 +29,7 @@ struct SettingsView: View {
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
+    @State private var showingTimeRecordingTips = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -44,8 +45,9 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
-                // 일정 관리 섹션
-                Section {
+                Group {
+                    // 일정 관리 섹션
+                    Section {
                     Button(action: {
                         showingEventManagement = true
                     }) {
@@ -210,9 +212,11 @@ struct SettingsView: View {
                 } footer: {
                     Text("일정이 몰려있는 날짜를 감지하고, 자유시간과 중요도를 고려하여 자동으로 일정을 재배치합니다. 중요도가 낮은 일정만 이동됩니다.")
                 }
+                }
 
-                // iCloud 동기화 섹션
-                Section {
+                Group {
+                    // iCloud 동기화 섹션
+                    Section {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
                             Image(systemName: cloudKitManager.isAvailable ? "icloud" : "icloud.slash")
@@ -338,8 +342,10 @@ struct SettingsView: View {
                 } footer: {
                     Text("동기화를 켜면 일정 추가/수정/삭제 시 자동으로 iCloud에 백업됩니다.\n• 수동 백업: 현재 로컬 데이터를 iCloud에 업로드\n• iCloud에서 복원: 앱 재설치 후 백업 데이터 복원")
                 }
+                }
 
-                Section {
+                Group {
+                    Section {
                     Stepper(value: $monthsToShow, in: 1...12) {
                         HStack {
                             Text("표시 기간")
@@ -385,37 +391,33 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    VStack(alignment: .leading, spacing: 12) {
+                    Button(action: {
+                        showingTimeRecordingTips = true
+                    }) {
                         HStack {
-                            Image(systemName: "hourglass")
-                                .foregroundColor(.blue)
-                            Text("스크린 타임 확인")
-                                .font(.headline)
+                            Image(systemName: "lightbulb.fill")
+                                .foregroundColor(.yellow)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("시간 기록 팁")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("스크린 타임으로 숨겨진 시간 찾기")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
                         }
-
-                        Text("iOS 설정 앱의 '스크린 타임' 메뉴에서 앱 사용 시간을 확인하고, 숨겨진 시간 사용을 파악해보세요.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label("소셜 미디어 사용 시간", systemImage: "bubble.left.and.bubble.right")
-                                .font(.caption)
-                            Label("엔터테인먼트 (유튜브/넷플릭스)", systemImage: "play.rectangle")
-                                .font(.caption)
-                            Label("게임", systemImage: "gamecontroller")
-                                .font(.caption)
-                            Label("생산성 앱", systemImage: "briefcase")
-                                .font(.caption)
-                            Label("웹 브라우징", systemImage: "safari")
-                                .font(.caption)
-                        }
-                        .foregroundColor(.secondary)
                     }
                     .padding(.vertical, 4)
                 } header: {
                     Text("시간 사용 확인")
                 } footer: {
                     Text("💡 스크린 타임에서 확인한 시간을 수동으로 일정에 추가할 수 있습니다.")
+                }
                 }
             }
             .navigationTitle("설정")
@@ -444,6 +446,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingStatistics) {
             StatisticsView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingTimeRecordingTips) {
+            TimeRecordingTipsView()
         }
         .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
             Button("취소", role: .cancel) { }
