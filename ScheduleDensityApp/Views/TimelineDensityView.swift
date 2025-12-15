@@ -32,6 +32,9 @@ struct TimelineDensityView: View {
     // 날짜별 시간 분석 상태
     @State private var selectedDateForTimeAnalysis: DateWrapper?
 
+    // 인사이트 카드 표시 여부 (UserDefaults에 저장)
+    @AppStorage("showInsightCards") private var showInsightCards = true
+
     var body: some View {
         mainContent
             .toolbar {
@@ -43,6 +46,17 @@ struct TimelineDensityView: View {
                             Image(systemName: "calendar")
                             Text("오늘")
                         }
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            showInsightCards.toggle()
+                        }
+                    }) {
+                        Image(systemName: showInsightCards ? "chart.bar.fill" : "chart.bar")
+                            .foregroundColor(showInsightCards ? .blue : .gray)
                     }
                 }
             }
@@ -126,6 +140,42 @@ struct TimelineDensityView: View {
             } else if densityData.isEmpty {
                 emptyStateView
             } else {
+                // 인사이트 카드 (토글 가능)
+                if showInsightCards {
+                    VStack(spacing: 0) {
+                        InsightCardsView(insights: viewModel.getWeekInsights())
+                            .background(Color(.systemGroupedBackground))
+
+                        Divider()
+                    }
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                } else {
+                    // 숨겨진 상태 힌트
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            showInsightCards = true
+                        }
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.caption)
+                            Text("인사이트 보기")
+                                .font(.caption)
+                            Image(systemName: "chevron.down")
+                                .font(.caption2)
+                        }
+                        .foregroundColor(.blue)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 16)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(20)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGroupedBackground))
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
                 timelineScrollView
                 Divider()
                 selectedDayView
@@ -1415,5 +1465,269 @@ extension Color {
         newBlue = max(0.1, min(1.0, newBlue))
 
         return Color(red: Double(newRed), green: Double(newGreen), blue: Double(newBlue), opacity: Double(alpha))
+    }
+}
+//
+//  InsightCardsView.swift
+//  ScheduleDensityApp
+//
+//  Created by Claude on 2025-12-16.
+//
+
+import SwiftUI
+
+struct InsightCardsView: View {
+    let insights: WeekInsights
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                // 오늘 카드
+                if let today = insights.todayInsight {
+                    TodayInsightCard(insight: today)
+                }
+
+                // 내일 카드
+                if let tomorrow = insights.tomorrowInsight {
+                    TomorrowInsightCard(insight: tomorrow)
+                }
+
+                // 가장 한가한 날
+                if let freest = insights.freestDay {
+                    FreestDayCard(insight: freest)
+                }
+
+                // 가장 바쁜 날
+                if let busiest = insights.busiestDay {
+                    BusiestDayCard(insight: busiest)
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - 오늘 카드
+struct TodayInsightCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("오늘")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(insight.statusEmoji)
+                    .font(.title2)
+            }
+
+            Text(insight.statusText)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // 밀도 바
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(densityColor)
+                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                }
+            }
+            .frame(height: 6)
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var densityColor: Color {
+        if insight.occupancyRate < 0.3 {
+            return .green
+        } else if insight.occupancyRate < 0.6 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
+
+// MARK: - 내일 카드
+struct TomorrowInsightCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("내일")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(insight.statusEmoji)
+                    .font(.title2)
+            }
+
+            Text(insight.statusText)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // 밀도 바
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(densityColor)
+                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                }
+            }
+            .frame(height: 6)
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var densityColor: Color {
+        if insight.occupancyRate < 0.3 {
+            return .green
+        } else if insight.occupancyRate < 0.6 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
+
+// MARK: - 가장 한가한 날 카드
+struct FreestDayCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "leaf.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+                Spacer()
+                Text("😌")
+                    .font(.title2)
+            }
+
+            Text("가장 한가한 날")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text(dateString)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.green.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .green.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d (E)"
+        return formatter.string(from: insight.date)
+    }
+}
+
+// MARK: - 가장 바쁜 날 카드
+struct BusiestDayCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.red)
+                    .font(.caption)
+                Spacer()
+                Text("🔥")
+                    .font(.title2)
+            }
+
+            Text("가장 바쁜 날")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text(dateString)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.red.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .red.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d (E)"
+        return formatter.string(from: insight.date)
     }
 }
