@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>일정 밀도를 분석하기 위해 캘린더 일정을 가져옵니다. 데이터는 기기에만 저장되며 외부로 전송되지 않습니다.</string>
+</dict>
+</plist>

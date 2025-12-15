@@ -25,6 +25,8 @@
 		A1000020 /* EventManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100020 /* EventManagementView.swift */; };
 		A1000021 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100021 /* StatisticsView.swift */; };
 		A1000022 /* TimeRecordingTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100022 /* TimeRecordingTipsView.swift */; };
+		A1000023 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100023 /* EventKitManager.swift */; };
+		A1000024 /* CalendarImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100024 /* CalendarImportView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,9 @@
 		A1100020 /* EventManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventManagementView.swift; sourceTree = "<group>"; };
 		A1100021 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		A1100022 /* TimeRecordingTipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRecordingTipsView.swift; sourceTree = "<group>"; };
+		A1100023 /* EventKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitManager.swift; sourceTree = "<group>"; };
+		A1100024 /* CalendarImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarImportView.swift; sourceTree = "<group>"; };
+		A1100025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1200001 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -77,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				9CAB49432EC6DD5600EB00E1 /* ScheduleDensityApp.entitlements */,
+				A1100025 /* Info.plist */,
 				A1100001 /* ScheduleDensityApp.swift */,
 				A1400004 /* Views */,
 				A1400005 /* ViewModels */,
@@ -111,6 +117,7 @@
 				A1100020 /* EventManagementView.swift */,
 				A1100021 /* StatisticsView.swift */,
 				A1100022 /* TimeRecordingTipsView.swift */,
+				A1100024 /* CalendarImportView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -155,6 +162,7 @@
 				A1100017 /* CloudKitManager.swift */,
 				A1100018 /* SyncSettingsManager.swift */,
 				A1100019 /* ScreenTimeManager.swift */,
+				A1100023 /* EventKitManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -246,6 +254,8 @@
 				A1000020 /* EventManagementView.swift in Sources */,
 				A1000021 /* StatisticsView.swift in Sources */,
 				A1000022 /* TimeRecordingTipsView.swift in Sources */,
+				A1000023 /* EventKitManager.swift in Sources */,
+				A1000024 /* CalendarImportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,7 +392,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScheduleDensityApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -418,7 +429,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScheduleDensityApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

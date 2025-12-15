@@ -39,6 +39,7 @@ final class Event {
     var color: String // Hex color string
     var hoursPerDay: Double // 하루당 소요시간 (시간 단위)
     var selectedWeekdays: [Int]? // 선택된 요일 (1=일요일, 2=월요일, ..., 7=토요일), nil이면 모든 요일
+    var weeklyPatternData: Data? = nil // 5주×7일(35일) 패턴 데이터 (CloudKit 호환)
     var cloudKitRecordName: String? // CloudKit record ID (동기화용)
     var importanceRaw: String = EventImportance.medium.rawValue // 중요도 (EventImportance enum의 rawValue), 기본값: medium
     var isInfinite: Bool = false // 무한 반복 일정 여부 (true면 종료일 없이 최대 365일까지 표시)
@@ -67,6 +68,25 @@ final class Event {
         }
     }
 
+    // Computed property for weekly pattern (5주×7일 = 35일 패턴)
+    var weeklyPattern: [Bool]? {
+        get {
+            guard let data = weeklyPatternData,
+                  let pattern = try? JSONDecoder().decode([Bool].self, from: data),
+                  pattern.count == 35 else {
+                return nil
+            }
+            return pattern
+        }
+        set {
+            if let pattern = newValue, pattern.count == 35 {
+                weeklyPatternData = try? JSONEncoder().encode(pattern)
+            } else {
+                weeklyPatternData = nil
+            }
+        }
+    }
+
     init(
         title: String,
         startDate: Date,
@@ -74,6 +94,7 @@ final class Event {
         color: String = "#FF3B30",
         hoursPerDay: Double = 2.0,
         selectedWeekdays: [Int]? = nil,
+        weeklyPattern: [Bool]? = nil,
         cloudKitRecordName: String? = nil,
         importance: EventImportance = .medium,
         isInfinite: Bool = false,
@@ -91,6 +112,9 @@ final class Event {
         self.excludedDatesData = try? JSONEncoder().encode(Array(excludedDates.map {
             Calendar.current.startOfDay(for: $0)
         }))
+        if let pattern = weeklyPattern, pattern.count == 35 {
+            self.weeklyPatternData = try? JSONEncoder().encode(pattern)
+        }
     }
 
     // 이 일정의 실제 종료일 계산 (무한 반복 고려)
@@ -114,8 +138,21 @@ final class Event {
             return false
         }
 
+        // 35일 패턴 체크 (우선순위 높음)
+        if let pattern = weeklyPattern {
+            // 시작일로부터 며칠 지났는지 계산
+            let daysSinceStart = calendar.dateComponents([.day], from: startDate, to: checkDate).day ?? 0
+            // 35일 주기로 반복되는 패턴에서의 위치
+            let patternIndex = daysSinceStart % 35
+
+            if patternIndex >= 0 && patternIndex < 35 {
+                if !pattern[patternIndex] {
+                    return false
+                }
+            }
+        }
         // 요일 체크 (selectedWeekdays가 nil이면 모든 요일 허용)
-        if let weekdays = selectedWeekdays, !weekdays.isEmpty {
+        else if let weekdays = selectedWeekdays, !weekdays.isEmpty {
             let weekday = calendar.component(.weekday, from: checkDate)
             if !weekdays.contains(weekday) {
                 return false
@@ -173,7 +210,7 @@ final class Event {
             return
         }
 
-        var current = excludedDates
+        let current = excludedDates
         let cleaned = current.filter { $0 >= cutoffDate }
 
         if current.count != cleaned.count {
