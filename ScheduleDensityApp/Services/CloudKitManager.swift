@@ -84,6 +84,10 @@ class CloudKitManager {
             record["excludedDatesData"] = excludedDatesData as CKRecordValue
         }
 
+        if let weeklyPatternData = event.weeklyPatternData {
+            record["weeklyPatternData"] = weeklyPatternData as CKRecordValue
+        }
+
         database.save(record) { savedRecord, error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -149,6 +153,10 @@ class CloudKitManager {
 
             if let excludedDatesData = event.excludedDatesData {
                 record["excludedDatesData"] = excludedDatesData as CKRecordValue
+            }
+
+            if let weeklyPatternData = event.weeklyPatternData {
+                record["weeklyPatternData"] = weeklyPatternData as CKRecordValue
             }
 
             print("📝 [CloudKit] Created record: \(event.title)")
@@ -319,6 +327,7 @@ class CloudKitManager {
                     let importanceRaw = record["importanceRaw"] as? String ?? EventImportance.medium.rawValue
                     let isInfinite = record["isInfinite"] as? Bool ?? false
                     let excludedDatesData = record["excludedDatesData"] as? Data
+                    let weeklyPatternData = record["weeklyPatternData"] as? Data
 
                     // recordName도 함께 저장하여 증분 동기화 가능하도록
                     let event = Event(
@@ -333,8 +342,9 @@ class CloudKitManager {
                         isInfinite: isInfinite
                     )
 
-                    // Set excluded dates after creation
+                    // Set excluded dates and weekly pattern after creation
                     event.excludedDatesData = excludedDatesData
+                    event.weeklyPatternData = weeklyPatternData
 
                     events.append(event)
 

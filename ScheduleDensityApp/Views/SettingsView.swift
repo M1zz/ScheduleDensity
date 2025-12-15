@@ -30,6 +30,7 @@ struct SettingsView: View {
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
     @State private var showingTimeRecordingTips = false
+    @State private var showingCalendarImport = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -83,6 +84,29 @@ struct SettingsView: View {
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 Text("전체 일정 분석 및 통계")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button(action: {
+                        showingCalendarImport = true
+                    }) {
+                        HStack {
+                            Image(systemName: "calendar.badge.plus")
+                                .foregroundColor(.green)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("캘린더에서 가져오기")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("시스템 캘린더 일정 불러오기")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -449,6 +473,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingTimeRecordingTips) {
             TimeRecordingTipsView()
+        }
+        .sheet(isPresented: $showingCalendarImport) {
+            CalendarImportView(viewModel: viewModel)
         }
         .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
             Button("취소", role: .cancel) { }

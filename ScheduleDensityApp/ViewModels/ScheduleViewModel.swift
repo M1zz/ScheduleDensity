@@ -47,6 +47,42 @@ struct EventStatistics {
     var shortestEvent: Event?
 }
 
+// 주간 인사이트 정보
+struct WeekInsights {
+    var freestDay: DayInsight?      // 가장 한가한 날
+    var busiestDay: DayInsight?     // 가장 바쁜 날
+    var tomorrowInsight: DayInsight? // 내일 정보
+    var todayInsight: DayInsight?    // 오늘 정보
+}
+
+// 일별 인사이트
+struct DayInsight {
+    var date: Date
+    var totalHours: Double
+    var eventCount: Int
+    var occupancyRate: Double // 0.0 ~ 1.0
+
+    var statusEmoji: String {
+        if occupancyRate < 0.3 {
+            return "😌" // 한가함
+        } else if occupancyRate < 0.6 {
+            return "📅" // 보통
+        } else {
+            return "🔥" // 바쁨
+        }
+    }
+
+    var statusText: String {
+        if occupancyRate < 0.3 {
+            return "한가해요"
+        } else if occupancyRate < 0.6 {
+            return "보통이에요"
+        } else {
+            return "바빠요"
+        }
+    }
+}
+
 @Observable
 class ScheduleViewModel {
     var showingAddEvent = false
@@ -459,6 +495,76 @@ class ScheduleViewModel {
         )
         print("📈 [ViewModel] 밀도 데이터 계산 완료: \(densities.count)일치 (이벤트 \(events.count)개)")
         return densities
+    }
+
+    // 주간 인사이트 계산 (오늘부터 7일간)
+    func getWeekInsights() -> WeekInsights {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: today) else {
+            return WeekInsights()
+        }
+
+        let events = fetchEvents()
+        let densities = DensityCalculator.calculateRangeDensity(
+            from: today,
+            to: weekEnd,
+            events: events
+        )
+
+        // 각 날짜별 인사이트 생성
+        let dayInsights: [DayInsight] = densities.map { density in
+            // 해당 날짜의 총 시간 계산
+            let totalHours = density.events.reduce(0.0) { $0 + $1.hoursPerDay }
+            // 점유율 계산 (하루 24시간 기준)
+            let occupancyRate = min(totalHours / 24.0, 1.0)
+
+            return DayInsight(
+                date: density.date,
+                totalHours: totalHours,
+                eventCount: density.events.count,
+                occupancyRate: occupancyRate
+            )
+        }
+
+        guard !dayInsights.isEmpty else {
+            return WeekInsights()
+        }
+
+        // 가장 한가한 날 (occupancyRate가 가장 낮은 날)
+        let freestDay = dayInsights.min(by: { $0.occupancyRate < $1.occupancyRate })
+
+        // 가장 바쁜 날 (occupancyRate가 가장 높은 날)
+        let busiestDay = dayInsights.max(by: { $0.occupancyRate < $1.occupancyRate })
+
+        // 오늘
+        let todayInsight = dayInsights.first
+
+        // 내일
+        let tomorrowInsight = dayInsights.count > 1 ? dayInsights[1] : nil
+
+        return WeekInsights(
+            freestDay: freestDay,
+            busiestDay: busiestDay,
+            tomorrowInsight: tomorrowInsight,
+            todayInsight: todayInsight
+        )
+    }
+
+    // 주간 밀도 데이터 (오늘부터 7일간)
+    func weekDensity() -> [DayDensity] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        guard let weekEnd = calendar.date(byAdding: .day, value: 6, to: today) else {
+            return []
+        }
+
+        let events = fetchEvents()
+        return DensityCalculator.calculateRangeDensity(
+            from: today,
+            to: weekEnd,
+            events: events
+        )
     }
 
     func getEventsForDate(_ date: Date) -> [Event] {
