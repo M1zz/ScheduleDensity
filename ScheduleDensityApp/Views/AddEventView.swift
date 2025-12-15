@@ -26,6 +26,9 @@ struct AddEventView: View {
     @State private var showRecommendations = false
     @State private var recommendations: [ScheduleViewModel.FreeTimeSlot] = []
     @State private var isInfinite: Bool = false  // 무한 반복 일정
+    @State private var showingExceptionDatePicker = false
+    @State private var newExceptionDate = Date()
+    @State private var currentExceptions: Set<Date> = []
 
     init(viewModel: ScheduleViewModel, initialDate: Date? = nil, initialStartDate: Date? = nil, initialEndDate: Date? = nil, eventToEdit: Event? = nil) {
         self.viewModel = viewModel
@@ -46,6 +49,7 @@ struct AddEventView: View {
             _selectedWeekdays = State(initialValue: Set(event.selectedWeekdays ?? [1, 2, 3, 4, 5, 6, 7]))
             _importance = State(initialValue: event.importance)
             _isInfinite = State(initialValue: event.isInfinite)
+            _currentExceptions = State(initialValue: event.excludedDates)
         }
         // 우선순위: initialStartDate & initialEndDate > initialDate > 기본값
         else if let startDate = initialStartDate, let endDate = initialEndDate {
@@ -223,6 +227,103 @@ struct AddEventView: View {
                     Text("중요도")
                 } footer: {
                     Text("높은 중요도는 빠른 날짜를, 낮은 중요도는 여유로운 날짜를 추천합니다")
+                }
+
+                // 예외 날짜 섹션
+                Section {
+                    Button(action: {
+                        showingExceptionDatePicker = true
+                    }) {
+                        HStack {
+                            Image(systemName: "calendar.badge.minus")
+                            Text("예외 날짜 추가")
+                            Spacer()
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                        }
+                    }
+
+                    // 미래 예외
+                    if !futureExceptions.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("예정된 예외")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+
+                            ForEach(futureExceptions, id: \.self) { date in
+                                HStack {
+                                    Image(systemName: "calendar.badge.minus")
+                                        .foregroundColor(.orange)
+                                    Text(formatDateShort(date))
+                                        .font(.subheadline)
+                                    Spacer()
+                                    Button(action: {
+                                        removeException(date)
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.red)
+                                    }
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
+                    }
+
+                    // 과거 예외 (편집 모드에서만)
+                    if eventToEdit != nil && !pastExceptions.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("과거 예외 (30일 후 자동 삭제)")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+
+                            ForEach(pastExceptions, id: \.self) { date in
+                                HStack {
+                                    Image(systemName: "calendar.badge.minus")
+                                        .foregroundColor(.gray)
+                                    Text(formatDateShort(date))
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    Text("지남")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(.vertical, 4)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("예외 날짜")
+                } footer: {
+                    Text("특정 날짜를 일정에서 제외합니다. 과거 예외는 30일 후 자동 삭제됩니다.")
+                }
+                .sheet(isPresented: $showingExceptionDatePicker) {
+                    NavigationView {
+                        VStack {
+                            DatePicker("날짜 선택", selection: $newExceptionDate,
+                                      in: startDate...endDate,
+                                      displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                                .padding()
+                            Spacer()
+                        }
+                        .navigationTitle("예외 날짜 추가")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button("취소") {
+                                    showingExceptionDatePicker = false
+                                }
+                            }
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("추가") {
+                                    addException(newExceptionDate)
+                                    showingExceptionDatePicker = false
+                                }
+                                .disabled(!canAddException(newExceptionDate))
+                            }
+                        }
+                    }
                 }
 
                 // 추천 날짜 섹션 (새 일정 추가 시에만)
@@ -440,8 +541,12 @@ struct AddEventView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("취소") {
+                        print("🚫 [AddEventView] 취소 버튼 클릭")
                         viewModel.eventToEdit = nil  // 취소 시 초기화
+                        viewModel.lastAddedEventDate = nil  // 취소 시 스크롤 위치 초기화
+                        print("🚫 [AddEventView] lastAddedEventDate = nil 설정")
                         dismiss()
+                        print("🚫 [AddEventView] dismiss() 호출")
                     }
                 }
 
@@ -477,6 +582,7 @@ struct AddEventView: View {
             existingEvent.selectedWeekdays = weekdaysToSave
             existingEvent.importance = importance
             existingEvent.isInfinite = isInfinite
+            existingEvent.excludedDates = currentExceptions
             viewModel.updateEvent(existingEvent)
             viewModel.eventToEdit = nil  // 수정 완료 후 초기화
         } else {
@@ -490,7 +596,8 @@ struct AddEventView: View {
                 hoursPerDay: hoursPerDay,
                 selectedWeekdays: weekdaysToSave,
                 importance: importance,
-                isInfinite: isInfinite
+                isInfinite: isInfinite,
+                excludedDates: currentExceptions
             )
             viewModel.addEvent(event)
         }
@@ -611,5 +718,54 @@ struct AddEventView: View {
 
         showRecommendations = true
         print("💡 [AddEvent] \(recommendations.count)개 추천 생성")
+    }
+
+    // MARK: - Exception Helpers
+
+    private var futureExceptions: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return Array(currentExceptions.filter { $0 >= today }).sorted()
+    }
+
+    private var pastExceptions: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return Array(currentExceptions.filter { $0 < today }).sorted()
+    }
+
+    private func addException(_ date: Date) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+        currentExceptions.insert(normalizedDate)
+    }
+
+    private func removeException(_ date: Date) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+        currentExceptions.remove(normalizedDate)
+    }
+
+    private func canAddException(_ date: Date) -> Bool {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+
+        // 이미 예외로 등록되어 있는지 확인
+        guard !currentExceptions.contains(normalizedDate) else {
+            return false
+        }
+
+        // 일정 범위 내인지 확인
+        guard normalizedDate >= startDate && normalizedDate <= endDate else {
+            return false
+        }
+
+        // 요일 선택이 있는 경우, 해당 요일인지 확인
+        if !selectedWeekdays.isEmpty {
+            let weekday = calendar.component(.weekday, from: normalizedDate)
+            return selectedWeekdays.contains(weekday)
+        }
+
+        return true
     }
 }

@@ -57,14 +57,21 @@ struct TimelineDensityView: View {
             }
             .onChange(of: viewModel.showingAddEvent) { _, isShowing in
                 if !isShowing {
-                    // 시트가 닫힐 때만 새로고침
+                    print("🔵 [TimelineView] 일정 추가 시트 닫힘")
+                    // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        refreshData()
+                        print("🔵 [TimelineView] 0.3초 후 실행 시작")
+                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
 
-                        // 일정이 추가되었으면 해당 날짜로 스크롤
+                        // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
                         if let addedDate = viewModel.lastAddedEventDate {
+                            print("✅ [TimelineView] 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            refreshData()
                             scrollToDate(addedDate)
                             viewModel.lastAddedEventDate = nil // 초기화
+                        } else {
+                            print("✅ [TimelineView] 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
                         }
                     }
                 }
@@ -82,20 +89,27 @@ struct TimelineDensityView: View {
             }
             .onChange(of: showingAddEventSheet) { _, isShowing in
                 if !isShowing {
-                    // sheet가 닫힐 때 새로고침 및 선택 상태 초기화
+                    print("🔵 [TimelineView] 드래그 일정 추가 시트 닫힘")
+                    // sheet가 닫힐 때 선택 상태 초기화
                     isDraggingSelection = false
                     dragStartDate = nil
                     dragEndDate = nil
                     draggedDates = []
                     draggedLane = nil
 
+                    // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        refreshData()
+                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
 
-                        // 일정이 추가되었으면 해당 날짜로 스크롤
+                        // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
                         if let addedDate = viewModel.lastAddedEventDate {
+                            print("✅ [TimelineView] 드래그 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            refreshData()
                             scrollToDate(addedDate)
                             viewModel.lastAddedEventDate = nil // 초기화
+                        } else {
+                            print("✅ [TimelineView] 드래그 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
                         }
                     }
                 }
@@ -428,11 +442,14 @@ struct TimelineDensityView: View {
     }
 
     private func refreshData() {
+        print("🔄 [TimelineView] refreshData() 시작 - isLoading = true")
         isLoading = true
 
         // 비동기로 데이터 로드
         DispatchQueue.main.async {
+            print("🔄 [TimelineView] 데이터 로드 중...")
             densityData = viewModel.getAllDensityData()
+            print("🔄 [TimelineView] 데이터 로드 완료 - isLoading = false")
             isLoading = false
         }
     }
@@ -683,13 +700,36 @@ struct GridCell: View {
                 }
             }
         }
+        .contextMenu {
+            if isActive, let event = event {
+                // 일정 수정
+                Button(action: {
+                    viewModel.eventToEdit = event
+                    viewModel.showingAddEvent = true
+                }) {
+                    Label("일정 수정", systemImage: "pencil")
+                }
+
+                // 이 날짜만 제외
+                Button(action: {
+                    addExceptionForDate(event: event, date: dayData.date)
+                }) {
+                    Label("이 날짜만 제외", systemImage: "calendar.badge.minus")
+                }
+
+                Divider()
+
+                // 전체 일정 삭제
+                Button(role: .destructive, action: {
+                    showDeleteAlert = true
+                }) {
+                    Label("전체 일정 삭제", systemImage: "trash")
+                }
+            }
+        }
         .onLongPressGesture(minimumDuration: 0.6) {
-            if isActive {
-                // 일정이 있는 셀: 삭제 알림
-                showDeleteAlert = true
-            } else {
+            if !isActive {
                 // 빈 셀: 날짜 범위 선택
-                // 롱프레스로 시작/종료 지점 지정
                 onDragStart()
             }
         }
@@ -698,12 +738,12 @@ struct GridCell: View {
             Button("삭제", role: .destructive) {
                 if let event = event {
                     viewModel.deleteEvent(event)
-                    onDelete()  // 삭제 후 뷰 업데이트
+                    onDelete()
                 }
             }
         } message: {
             if let event = event {
-                Text("'\(event.title)' 일정을 삭제하시겠습니까?")
+                Text("'\(event.title)' 일정을 전체 삭제하시겠습니까?")
             }
         }
     }
@@ -731,6 +771,26 @@ struct GridCell: View {
         }
 
         return false
+    }
+
+    private func addExceptionForDate(event: Event, date: Date) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+
+        // 이미 예외로 등록되어 있는지 확인
+        if event.excludedDates.contains(normalizedDate) {
+            return
+        }
+
+        // 예외 추가
+        event.addExceptionDate(normalizedDate)
+
+        // 저장 및 새로고침
+        viewModel.updateEvent(event)
+
+        // 햅틱 피드백
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
 }
 

@@ -80,6 +80,10 @@ class CloudKitManager {
             record["selectedWeekdays"] = weekdays as CKRecordValue
         }
 
+        if let excludedDatesData = event.excludedDatesData {
+            record["excludedDatesData"] = excludedDatesData as CKRecordValue
+        }
+
         database.save(record) { savedRecord, error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -141,6 +145,10 @@ class CloudKitManager {
 
             if let weekdays = event.selectedWeekdays {
                 record["selectedWeekdays"] = weekdays as CKRecordValue
+            }
+
+            if let excludedDatesData = event.excludedDatesData {
+                record["excludedDatesData"] = excludedDatesData as CKRecordValue
             }
 
             print("📝 [CloudKit] Created record: \(event.title)")
@@ -310,6 +318,7 @@ class CloudKitManager {
                     let selectedWeekdays = record["selectedWeekdays"] as? [Int]
                     let importanceRaw = record["importanceRaw"] as? String ?? EventImportance.medium.rawValue
                     let isInfinite = record["isInfinite"] as? Bool ?? false
+                    let excludedDatesData = record["excludedDatesData"] as? Data
 
                     // recordName도 함께 저장하여 증분 동기화 가능하도록
                     let event = Event(
@@ -323,6 +332,9 @@ class CloudKitManager {
                         importance: EventImportance(rawValue: importanceRaw) ?? .medium,
                         isInfinite: isInfinite
                     )
+
+                    // Set excluded dates after creation
+                    event.excludedDatesData = excludedDatesData
 
                     events.append(event)
 

@@ -42,11 +42,29 @@ final class Event {
     var cloudKitRecordName: String? // CloudKit record ID (동기화용)
     var importanceRaw: String = EventImportance.medium.rawValue // 중요도 (EventImportance enum의 rawValue), 기본값: medium
     var isInfinite: Bool = false // 무한 반복 일정 여부 (true면 종료일 없이 최대 365일까지 표시)
+    var excludedDatesData: Data? = nil  // CloudKit 호환성을 위해 Data로 저장
 
     // Computed property for importance
     var importance: EventImportance {
         get { EventImportance(rawValue: importanceRaw) ?? .medium }
         set { importanceRaw = newValue.rawValue }
+    }
+
+    // Computed property for excluded dates
+    var excludedDates: Set<Date> {
+        get {
+            guard let data = excludedDatesData,
+                  let dates = try? JSONDecoder().decode([Date].self, from: data) else {
+                return []
+            }
+            let calendar = Calendar.current
+            return Set(dates.map { calendar.startOfDay(for: $0) })
+        }
+        set {
+            let calendar = Calendar.current
+            let normalizedDates = newValue.map { calendar.startOfDay(for: $0) }
+            excludedDatesData = try? JSONEncoder().encode(Array(normalizedDates))
+        }
     }
 
     init(
@@ -58,7 +76,8 @@ final class Event {
         selectedWeekdays: [Int]? = nil,
         cloudKitRecordName: String? = nil,
         importance: EventImportance = .medium,
-        isInfinite: Bool = false
+        isInfinite: Bool = false,
+        excludedDates: Set<Date> = []
     ) {
         self.title = title
         self.startDate = Calendar.current.startOfDay(for: startDate)
@@ -69,6 +88,9 @@ final class Event {
         self.cloudKitRecordName = cloudKitRecordName
         self.importanceRaw = importance.rawValue
         self.isInfinite = isInfinite
+        self.excludedDatesData = try? JSONEncoder().encode(Array(excludedDates.map {
+            Calendar.current.startOfDay(for: $0)
+        }))
     }
 
     // 이 일정의 실제 종료일 계산 (무한 반복 고려)
@@ -95,7 +117,14 @@ final class Event {
         // 요일 체크 (selectedWeekdays가 nil이면 모든 요일 허용)
         if let weekdays = selectedWeekdays, !weekdays.isEmpty {
             let weekday = calendar.component(.weekday, from: checkDate)
-            return weekdays.contains(weekday)
+            if !weekdays.contains(weekday) {
+                return false
+            }
+        }
+
+        // 예외 날짜인지 확인
+        if excludedDates.contains(checkDate) {
+            return false
         }
 
         return true
@@ -119,5 +148,48 @@ final class Event {
         }
 
         return count
+    }
+
+    // MARK: - Exception Date Management
+
+    func addExceptionDate(_ date: Date) {
+        var current = excludedDates
+        let calendar = Calendar.current
+        current.insert(calendar.startOfDay(for: date))
+        excludedDates = current
+    }
+
+    func removeExceptionDate(_ date: Date) {
+        var current = excludedDates
+        let calendar = Calendar.current
+        current.remove(calendar.startOfDay(for: date))
+        excludedDates = current
+    }
+
+    func cleanupOldExceptions() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        guard let cutoffDate = calendar.date(byAdding: .day, value: -30, to: today) else {
+            return
+        }
+
+        var current = excludedDates
+        let cleaned = current.filter { $0 >= cutoffDate }
+
+        if current.count != cleaned.count {
+            excludedDates = Set(cleaned)
+        }
+    }
+
+    func getFutureExceptions() -> [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return Array(excludedDates.filter { $0 >= today }).sorted()
+    }
+
+    func getPastExceptions() -> [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return Array(excludedDates.filter { $0 < today }).sorted()
     }
 }

@@ -110,6 +110,11 @@ class ScheduleViewModel {
 
         // 설정에 따라 날짜 범위 업데이트
         updateDateRange()
+
+        // Clean up old exceptions on launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.cleanupOldExceptions()
+        }
     }
 
     // 날짜 범위 업데이트
@@ -349,6 +354,28 @@ class ScheduleViewModel {
         } catch {
             print("❌ [ViewModel] 이벤트 조회 실패: \(error)")
             return []
+        }
+    }
+
+    // MARK: - Exception Cleanup
+
+    func cleanupOldExceptions() {
+        let events = fetchEvents()
+        var cleanedCount = 0
+
+        for event in events {
+            let beforeCount = event.excludedDates.count
+            event.cleanupOldExceptions()
+            let afterCount = event.excludedDates.count
+
+            if beforeCount != afterCount {
+                cleanedCount += (beforeCount - afterCount)
+                updateEvent(event)
+            }
+        }
+
+        if cleanedCount > 0 {
+            print("🧹 [ViewModel] 30일 지난 예외 \(cleanedCount)개 정리 완료")
         }
     }
 
