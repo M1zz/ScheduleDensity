@@ -15,19 +15,35 @@ struct CalendarImportView: View {
 
     @State private var selectedCalendars: Set<String> = []
     @State private var fetchedEvents: [EKEvent] = []
-    @State private var transformedEvents: [Event] = []
+    @State private var transformedEvents: [(id: String, event: Event)] = []
     @State private var selectedEvents: Set<String> = []
     @State private var isLoading = false
+    @State private var loadingMessage = ""
+    @State private var showEventPreview = false
 
     var body: some View {
         NavigationView {
-            Group {
-                if !eventKitManager.isAuthorized {
-                    authorizationView
-                } else if selectedCalendars.isEmpty || transformedEvents.isEmpty {
-                    calendarSelectionView
-                } else {
-                    eventPreviewView
+            ZStack {
+                Group {
+                    if !eventKitManager.isAuthorized {
+                        authorizationView
+                            .transition(.opacity)
+                    } else if showEventPreview && !transformedEvents.isEmpty {
+                        eventPreviewView
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                    } else {
+                        calendarSelectionView
+                            .transition(.opacity)
+                    }
+                }
+                .animation(.easeInOut(duration: 0.3), value: showEventPreview)
+                .animation(.easeInOut(duration: 0.3), value: eventKitManager.isAuthorized)
+
+                // 로딩 오버레이
+                if isLoading {
+                    loadingOverlay
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: isLoading)
                 }
             }
             .navigationTitle("캘린더 가져오기")
@@ -37,6 +53,36 @@ struct CalendarImportView: View {
                     Button("닫기") { dismiss() }
                 }
             }
+            .onAppear {
+                if eventKitManager.isAuthorized {
+                    eventKitManager.fetchAvailableCalendars()
+                }
+            }
+        }
+    }
+
+    // MARK: - Loading Overlay
+
+    private var loadingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .tint(.white)
+
+                Text(loadingMessage)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+            .padding(30)
+            .background(Color(.systemBackground))
+            .cornerRadius(20)
+            .shadow(radius: 20)
         }
     }
 
@@ -106,22 +152,90 @@ struct CalendarImportView: View {
         }
     }
 
+    // MARK: - Empty Calendar View
+
+    private var emptyCalendarView: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
+            Image(systemName: "calendar.badge.exclamationmark")
+                .font(.system(size: 64))
+                .foregroundColor(.orange)
+
+            VStack(spacing: 12) {
+                Text("캘린더가 없습니다")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("시스템 캘린더 앱에서\n캘린더를 먼저 만들어주세요")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            VStack(spacing: 12) {
+                Button(action: openSystemCalendar) {
+                    HStack {
+                        Image(systemName: "calendar.badge.plus")
+                        Text("캘린더 앱 열기")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(12)
+                }
+
+                Button(action: refreshCalendars) {
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                        Text("새로고침")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.blue)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(12)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("💡 팁")
+                    .font(.headline)
+                    .foregroundColor(.blue)
+
+                Text("1. 캘린더 앱을 열어 새 캘린더를 생성하세요")
+                Text("2. 생성 후 이 화면으로 돌아와 새로고침하세요")
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+
+            Spacer()
+        }
+        .padding()
+    }
+
     // MARK: - Calendar Selection View
 
     private var calendarSelectionView: some View {
         VStack(spacing: 0) {
-            List {
-                Section {
-                    Text("가져올 캘린더를 선택하세요")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-
-                Section("내 캘린더") {
-                    if eventKitManager.calendars.isEmpty {
-                        Text("사용 가능한 캘린더가 없습니다")
+            if eventKitManager.calendars.isEmpty {
+                emptyCalendarView
+            } else {
+                List {
+                    Section {
+                        Text("가져올 캘린더를 선택하세요")
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
-                    } else {
+                    }
+
+                    Section("내 캘린더") {
                         ForEach(eventKitManager.calendars, id: \.calendarIdentifier) { calendar in
                             calendarRow(calendar)
                         }
@@ -133,18 +247,12 @@ struct CalendarImportView: View {
                 VStack(spacing: 0) {
                     Divider()
                     Button(action: loadEventsFromCalendars) {
-                        if isLoading {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                        } else {
-                            Text("다음 (\(selectedCalendars.count)개 선택)")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue)
-                        }
+                        Text("다음 (\(selectedCalendars.count)개 선택)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
                     }
                     .disabled(isLoading)
                 }
@@ -183,34 +291,98 @@ struct CalendarImportView: View {
     }
 
     private func loadEventsFromCalendars() {
-        isLoading = true
+        Task {
+            isLoading = true
+            loadingMessage = "캘린더에서 일정을 가져오는 중..."
 
-        let selected = eventKitManager.calendars.filter {
-            selectedCalendars.contains($0.calendarIdentifier)
+            // 약간의 지연으로 UI 업데이트 보장
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+            let selected = eventKitManager.calendars.filter {
+                selectedCalendars.contains($0.calendarIdentifier)
+            }
+
+            fetchedEvents = eventKitManager.fetchEvents(from: selected)
+
+            loadingMessage = "\(fetchedEvents.count)개 일정 발견!\n변환 중..."
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초
+
+            // EKEvent를 Event로 변환하고 고유 ID 생성
+            transformedEvents = fetchedEvents.compactMap { ekEvent -> (id: String, event: Event)? in
+                guard let event = eventKitManager.transformToAppEvent(ekEvent) else { return nil }
+                // 고유 ID 생성: 제목 + 시작일 + 종료일 + 시간
+                let id = "\(event.title)_\(event.startDate.timeIntervalSince1970)_\(event.endDate.timeIntervalSince1970)_\(event.hoursPerDay)"
+                return (id: id, event: event)
+            }
+
+            // 기본적으로 모두 선택
+            selectedEvents = Set(transformedEvents.map { $0.id })
+
+            if transformedEvents.isEmpty {
+                loadingMessage = "일정을 찾을 수 없습니다"
+                try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초
+                isLoading = false
+            } else {
+                loadingMessage = "완료!"
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5초
+                isLoading = false
+                showEventPreview = true
+            }
         }
-
-        fetchedEvents = eventKitManager.fetchEvents(from: selected)
-
-        // EKEvent를 Event로 변환
-        transformedEvents = fetchedEvents.compactMap {
-            eventKitManager.transformToAppEvent($0)
-        }
-
-        // 기본적으로 모두 선택
-        selectedEvents = Set(transformedEvents.map { $0.color })
-
-        isLoading = false
     }
 
     // MARK: - Event Preview View
 
     private var eventPreviewView: some View {
         VStack(spacing: 0) {
+            // 뒤로가기 버튼
+            HStack {
+                Button(action: {
+                    withAnimation {
+                        showEventPreview = false
+                        transformedEvents = []
+                    }
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                        Text("캘린더 선택")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
+                }
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(Color(.systemGroupedBackground))
+
             List {
                 Section {
-                    Text("향후 3개월간 \(transformedEvents.count)개 일정을 찾았습니다")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("향후 3개월간 \(transformedEvents.count)개 일정을 찾았습니다")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                Text("\(selectedCalendars.count)개 캘린더에서 가져왔습니다")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.tap.fill")
+                                .foregroundColor(.blue)
+                                .font(.caption)
+                            Text("가져올 일정을 선택하거나 해제하세요")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
 
                 Section("가져올 일정") {
@@ -218,8 +390,8 @@ struct CalendarImportView: View {
                         Text("일정이 없습니다")
                             .foregroundColor(.secondary)
                     } else {
-                        ForEach(transformedEvents, id: \.color) { event in
-                            eventPreviewRow(event)
+                        ForEach(transformedEvents, id: \.id) { item in
+                            eventPreviewRow(item.event, id: item.id)
                         }
                     }
                 }
@@ -229,18 +401,12 @@ struct CalendarImportView: View {
                 VStack(spacing: 0) {
                     Divider()
                     Button(action: importSelectedEvents) {
-                        if isLoading {
-                            ProgressView()
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                        } else {
-                            Text("선택한 일정 추가 (\(selectedEvents.count)개)")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                        }
+                        Text("선택한 일정 추가 (\(selectedEvents.count)개)")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
                     }
                     .disabled(isLoading)
                 }
@@ -248,8 +414,8 @@ struct CalendarImportView: View {
         }
     }
 
-    private func eventPreviewRow(_ event: Event) -> some View {
-        let isSelected = selectedEvents.contains(event.color)
+    private func eventPreviewRow(_ event: Event, id: String) -> some View {
+        let isSelected = selectedEvents.contains(id)
 
         return VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -283,7 +449,7 @@ struct CalendarImportView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            toggleEventSelection(event.color)
+            toggleEventSelection(id)
         }
     }
 
@@ -296,21 +462,45 @@ struct CalendarImportView: View {
     }
 
     private func importSelectedEvents() {
-        isLoading = true
+        Task {
+            isLoading = true
+            loadingMessage = "일정을 추가하는 중..."
 
-        let eventsToImport = transformedEvents.filter {
-            selectedEvents.contains($0.color)
+            let eventsToImport = transformedEvents.filter {
+                selectedEvents.contains($0.id)
+            }
+
+            // 약간의 지연으로 피드백 제공
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초
+
+            for (index, item) in eventsToImport.enumerated() {
+                viewModel.addEvent(item.event)
+                if eventsToImport.count > 5 && index % 5 == 0 {
+                    loadingMessage = "일정 추가 중... (\(index + 1)/\(eventsToImport.count))"
+                }
+            }
+
+            loadingMessage = "완료!"
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5초
+
+            isLoading = false
+            dismiss()
         }
-
-        for event in eventsToImport {
-            viewModel.addEvent(event)
-        }
-
-        isLoading = false
-        dismiss()
     }
 
     // MARK: - Helper Methods
+
+    private func openSystemCalendar() {
+        if let url = URL(string: "calshow://") {
+            #if !targetEnvironment(simulator)
+            UIApplication.shared.open(url)
+            #endif
+        }
+    }
+
+    private func refreshCalendars() {
+        eventKitManager.fetchAvailableCalendars()
+    }
 
     private func formatDateRange(_ event: Event) -> String {
         let formatter = DateFormatter()

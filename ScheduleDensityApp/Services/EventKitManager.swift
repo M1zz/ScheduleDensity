@@ -71,8 +71,23 @@ final class EventKitManager {
             calendars: selectedCalendars
         )
 
-        let events = eventStore.events(matching: predicate)
-        print("📅 [EventKit] 3개월간 \(events.count)개 일정 발견")
+        let allEvents = eventStore.events(matching: predicate)
+        print("📅 [EventKit] 3개월간 \(allEvents.count)개 일정 발견 (중복 포함)")
+
+        // 반복 일정 중복 제거: calendarItemIdentifier로 그룹화
+        // calendarItemIdentifier는 반복 일정의 모든 발생에 대해 동일함
+        var uniqueEvents: [String: EKEvent] = [:]
+
+        for event in allEvents {
+            let identifier = event.calendarItemIdentifier
+            // 아직 추가되지 않은 일정만 추가 (첫 번째 발생만 유지)
+            if uniqueEvents[identifier] == nil {
+                uniqueEvents[identifier] = event
+            }
+        }
+
+        let events = Array(uniqueEvents.values)
+        print("📅 [EventKit] 중복 제거 후 \(events.count)개 일정")
         return events
     }
 
