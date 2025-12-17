@@ -21,10 +21,8 @@
 		A1000016 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016 /* SettingsView.swift */; };
 		A1000017 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100017 /* CloudKitManager.swift */; };
 		A1000018 /* SyncSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100018 /* SyncSettingsManager.swift */; };
-		A1000019 /* ScreenTimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100019 /* ScreenTimeManager.swift */; };
 		A1000020 /* EventManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100020 /* EventManagementView.swift */; };
 		A1000021 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100021 /* StatisticsView.swift */; };
-		A1000022 /* TimeRecordingTipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100022 /* TimeRecordingTipsView.swift */; };
 		A1000023 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100023 /* EventKitManager.swift */; };
 		A1000024 /* CalendarImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100024 /* CalendarImportView.swift */; };
 /* End PBXBuildFile section */
@@ -49,10 +47,8 @@
 		A1100016 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1100017 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		A1100018 /* SyncSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsManager.swift; sourceTree = "<group>"; };
-		A1100019 /* ScreenTimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeManager.swift; sourceTree = "<group>"; };
 		A1100020 /* EventManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventManagementView.swift; sourceTree = "<group>"; };
 		A1100021 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
-		A1100022 /* TimeRecordingTipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRecordingTipsView.swift; sourceTree = "<group>"; };
 		A1100023 /* EventKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitManager.swift; sourceTree = "<group>"; };
 		A1100024 /* CalendarImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarImportView.swift; sourceTree = "<group>"; };
 		A1100025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -116,7 +112,6 @@
 				A1100016 /* SettingsView.swift */,
 				A1100020 /* EventManagementView.swift */,
 				A1100021 /* StatisticsView.swift */,
-				A1100022 /* TimeRecordingTipsView.swift */,
 				A1100024 /* CalendarImportView.swift */,
 			);
 			path = Views;
@@ -161,7 +156,6 @@
 			children = (
 				A1100017 /* CloudKitManager.swift */,
 				A1100018 /* SyncSettingsManager.swift */,
-				A1100019 /* ScreenTimeManager.swift */,
 				A1100023 /* EventKitManager.swift */,
 			);
 			path = Services;
@@ -250,10 +244,8 @@
 				A1000016 /* SettingsView.swift in Sources */,
 				A1000017 /* CloudKitManager.swift in Sources */,
 				A1000018 /* SyncSettingsManager.swift in Sources */,
-				A1000019 /* ScreenTimeManager.swift in Sources */,
 				A1000020 /* EventManagementView.swift in Sources */,
 				A1000021 /* StatisticsView.swift in Sources */,
-				A1000022 /* TimeRecordingTipsView.swift in Sources */,
 				A1000023 /* EventKitManager.swift in Sources */,
 				A1000024 /* CalendarImportView.swift in Sources */,
 			);

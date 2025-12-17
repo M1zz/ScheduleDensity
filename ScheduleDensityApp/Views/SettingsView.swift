@@ -29,8 +29,10 @@ struct SettingsView: View {
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
-    @State private var showingTimeRecordingTips = false
     @State private var showingCalendarImport = false
+    @State private var showingAddSampleAlert = false
+    @State private var showingDeleteAllAlert = false
+    @AppStorage("showInsightCards") private var showInsightCards = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -118,6 +120,79 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
 
+                    Divider()
+
+                    Button(action: {
+                        viewModel.showingAddEvent = true
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("일정 추가")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("새로운 일정 만들기")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button(action: {
+                        showingAddSampleAlert = true
+                    }) {
+                        HStack {
+                            Image(systemName: "tray.and.arrow.down.fill")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("샘플 데이터 추가")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("테스트용 샘플 일정 추가")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button(action: {
+                        showingDeleteAllAlert = true
+                    }) {
+                        HStack {
+                            Image(systemName: "trash.fill")
+                                .foregroundColor(.red)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("모든 일정 삭제")
+                                    .font(.headline)
+                                    .foregroundColor(.red)
+                                Text("모든 일정을 삭제합니다")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Divider()
+
                     // 지나간 이벤트 보기 토글
                     Toggle(isOn: $showPastEvents) {
                         HStack(spacing: 8) {
@@ -127,6 +202,22 @@ struct SettingsView: View {
                                 Text("지나간 이벤트 보기")
                                     .font(.headline)
                                 Text("종료일이 지난 일정도 표시")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // 인사이트 보이기 토글
+                    Toggle(isOn: $showInsightCards) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chart.bar.fill")
+                                .foregroundColor(showInsightCards ? .blue : .secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("인사이트 보이기")
+                                    .font(.headline)
+                                Text("일정 분석 및 추천 카드 표시")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -413,35 +504,6 @@ struct SettingsView: View {
                 } header: {
                     Text("수면 시간")
                 }
-
-                Section {
-                    Button(action: {
-                        showingTimeRecordingTips = true
-                    }) {
-                        HStack {
-                            Image(systemName: "lightbulb.fill")
-                                .foregroundColor(.yellow)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("시간 기록 팁")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text("스크린 타임으로 숨겨진 시간 찾기")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("시간 사용 확인")
-                } footer: {
-                    Text("💡 스크린 타임에서 확인한 시간을 수동으로 일정에 추가할 수 있습니다.")
-                }
                 }
             }
             .navigationTitle("설정")
@@ -471,9 +533,6 @@ struct SettingsView: View {
         .sheet(isPresented: $showingStatistics) {
             StatisticsView(viewModel: viewModel)
         }
-        .sheet(isPresented: $showingTimeRecordingTips) {
-            TimeRecordingTipsView()
-        }
         .sheet(isPresented: $showingCalendarImport) {
             CalendarImportView(viewModel: viewModel)
         }
@@ -492,6 +551,22 @@ struct SettingsView: View {
             }
         } message: {
             Text("\(balanceSuggestions.count)개의 일정을 새로운 날짜로 이동하시겠습니까?\n\n이 작업은 일정의 시작/종료일을 변경합니다.")
+        }
+        .alert("샘플 데이터 추가", isPresented: $showingAddSampleAlert) {
+            Button("추가") {
+                viewModel.addSampleEvents()
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("5개의 샘플 일정을 추가하시겠습니까?\n(프로젝트 A, B, 출장, 교육 프로그램, 컨퍼런스)")
+        }
+        .alert("모든 일정 삭제", isPresented: $showingDeleteAllAlert) {
+            Button("삭제", role: .destructive) {
+                viewModel.deleteAllEvents()
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("모든 일정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")
         }
     }
 

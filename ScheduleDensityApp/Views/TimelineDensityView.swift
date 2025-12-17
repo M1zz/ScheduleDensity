@@ -32,8 +32,10 @@ struct TimelineDensityView: View {
     // 날짜별 시간 분석 상태
     @State private var selectedDateForTimeAnalysis: DateWrapper?
 
-    // 인사이트 카드 표시 여부 (UserDefaults에 저장)
-    @AppStorage("showInsightCards") private var showInsightCards = true
+    // 인사이트 설정 (UserDefaults에 저장)
+    @AppStorage("showInsightCards") private var showInsightCards = false
+    // 인사이트 카드 펼침 상태
+    @State private var isInsightExpanded = false
 
     var body: some View {
         mainContent
@@ -46,17 +48,6 @@ struct TimelineDensityView: View {
                             Image(systemName: "calendar")
                             Text("오늘")
                         }
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            showInsightCards.toggle()
-                        }
-                    }) {
-                        Image(systemName: showInsightCards ? "chart.bar.fill" : "chart.bar")
-                            .foregroundColor(showInsightCards ? .blue : .gray)
                     }
                 }
             }
@@ -140,40 +131,68 @@ struct TimelineDensityView: View {
             } else if densityData.isEmpty {
                 emptyStateView
             } else {
-                // 인사이트 카드 (토글 가능)
+                // 인사이트 카드 (설정에서 제어)
                 if showInsightCards {
-                    VStack(spacing: 0) {
-                        InsightCardsView(insights: viewModel.getWeekInsights())
+                    if isInsightExpanded {
+                        // 펼쳐진 상태: 인사이트 카드와 접기 버튼 표시
+                        VStack(spacing: 0) {
+                            // 접기 버튼
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    isInsightExpanded = false
+                                }
+                            }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "chart.bar.fill")
+                                        .font(.caption)
+                                    Text("인사이트 접기")
+                                        .font(.caption)
+                                    Image(systemName: "chevron.up")
+                                        .font(.caption2)
+                                }
+                                .foregroundColor(.blue)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(20)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
+                            .padding(.bottom, 4)
                             .background(Color(.systemGroupedBackground))
 
-                        Divider()
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                } else {
-                    // 숨겨진 상태 힌트
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            showInsightCards = true
+                            InsightCardsView(insights: viewModel.getWeekInsights())
+                                .background(Color(.systemGroupedBackground))
+
+                            Divider()
                         }
-                    }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "chart.bar.fill")
-                                .font(.caption)
-                            Text("인사이트 보기")
-                                .font(.caption)
-                            Image(systemName: "chevron.down")
-                                .font(.caption2)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    } else {
+                        // 접힌 상태: 펼칠 수 있는 버튼(헤더) 표시
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                isInsightExpanded = true
+                            }
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "chart.bar.fill")
+                                    .font(.caption)
+                                Text("인사이트 보기")
+                                    .font(.caption)
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                            }
+                            .foregroundColor(.blue)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(20)
                         }
-                        .foregroundColor(.blue)
+                        .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
-                        .padding(.horizontal, 16)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(20)
+                        .background(Color(.systemGroupedBackground))
+                        .transition(.move(edge: .top).combined(with: .opacity))
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(Color(.systemGroupedBackground))
-                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
 
                 timelineScrollView
