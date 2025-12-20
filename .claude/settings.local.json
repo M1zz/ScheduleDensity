@@ -9,7 +9,8 @@
       "Bash(killall:*)",
       "Bash(/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild:*)",
       "Bash(find:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
