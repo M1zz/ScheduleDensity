@@ -35,13 +35,35 @@ struct BacklogSection: View {
         allItems.filter { $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }.count
     }
 
+    /// 항목별 색상: 카테고리가 있으면 카테고리 색(같은 카테고리=같은 색),
+    /// 없으면 카테고리가 안 쓰는 팔레트에서 겹치지 않게 고유 색을 배정.
+    private var itemColorMap: [String: Color] {
+        let usedCategoryColors = Set(categories.map(\.colorName))
+        let freePool = Rainbow.spectrum.filter { !usedCategoryColors.contains($0.name) }
+        let palette = (freePool.isEmpty ? Rainbow.spectrum : freePool).map { Color(hex: $0.hex) ?? .accentColor }
+
+        var map: [String: Color] = [:]
+        var i = 0
+        for item in weekItems {
+            if let cid = item.categoryID, let cat = categories.first(where: { $0.uuid == cid }) {
+                map[item.dragToken] = cat.displayColor
+            } else if !palette.isEmpty {
+                map[item.dragToken] = palette[i % palette.count]
+                i += 1
+            } else {
+                map[item.dragToken] = .secondary
+            }
+        }
+        return map
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("백로그 — 이번 주", systemImage: "tray.full")
                     .font(.headline)
                 if !weekItems.isEmpty {
-                    Text("(\(filteredItems.count))")
+                    Text("\(filteredItems.count)개 · \(formatDuration(filteredItems.reduce(0) { $0 + $1.durationHours }))")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -95,11 +117,16 @@ struct BacklogSection: View {
             } else if filteredItems.isEmpty {
                 emptyState
             } else {
-                LazyVStack(spacing: 5) {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 150, maximum: 240), spacing: 8)],
+                    alignment: .leading,
+                    spacing: 8
+                ) {
                     ForEach(filteredItems) { item in
-                        BacklogItemRow(
+                        BacklogBlock(
                             item: item,
                             categories: categories,
+                            tint: itemColorMap[item.dragToken] ?? .secondary,
                             onDelete: { context.delete(item); try? context.save() },
                             onSetCategory: { id in item.categoryID = id; try? context.save() }
                         )
@@ -200,65 +227,60 @@ struct FilterChip: View {
     }
 }
 
-struct BacklogItemRow: View {
+/// 드래그해서 요일에 떨어뜨리기 좋은 백로그 블록(카드).
+struct BacklogBlock: View {
     let item: BacklogItem
     let categories: [BacklogCategory]
+    let tint: Color
     let onDelete: () -> Void
     let onSetCategory: (String?) -> Void
 
-    @State private var isHovering = false
+    @State private var hovering = false
 
-    private var category: BacklogCategory? {
-        categories.first { $0.uuid == item.categoryID }
-    }
+    private var category: BacklogCategory? { categories.first { $0.uuid == item.categoryID } }
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "line.3.horizontal")
-                .font(.system(size: 11))
-                .foregroundStyle(.tertiary)
+        HStack(spacing: 7) {
+            RoundedRectangle(cornerRadius: 2)
+                .fill(tint)
+                .frame(width: 3)
 
-            if let category {
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(category.displayColor)
-                        .frame(width: 7, height: 7)
-                    Text(category.name)
-                        .font(.system(size: 11, weight: .medium))
+            VStack(alignment: .leading, spacing: 3) {
+                Text(item.title)
+                    .font(.system(size: 12, weight: .medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: 5) {
+                    if let category {
+                        Text(category.name)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(tint)
+                    }
+                    Text(String(format: "%.1fh", item.durationHours))
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
                 }
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
-                .background(category.displayColor.opacity(0.12), in: Capsule())
-                .foregroundStyle(category.displayColor)
             }
 
-            Text(item.title)
-                .font(.system(size: 13))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text(String(format: "%.1fh", item.durationHours))
-                .font(.system(size: 11))
+            if hovering {
+                Button(action: onDelete) {
+                    Image(systemName: "xmark").font(.system(size: 9))
+                }
+                .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
-                .monospacedDigit()
-
-            Button(action: onDelete) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 10))
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(.secondary)
-            .opacity(isHovering ? 1 : 0)
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 8)
         .padding(.vertical, 7)
-        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.secondary.opacity(0.15), lineWidth: 0.5)
-        )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(tint.opacity(0.30), lineWidth: 0.6))
+        .contentShape(RoundedRectangle(cornerRadius: 8))
         .draggable(item.dragToken)
-        .onHover { isHovering = $0 }
+        .onHover { hovering = $0 }
+        .help("드래그해서 요일에 배치")
         .contextMenu {
             Menu("카테고리 지정") {
                 Button {

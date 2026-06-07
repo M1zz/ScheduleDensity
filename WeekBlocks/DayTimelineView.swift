@@ -13,11 +13,13 @@ struct TimeSegment: Identifiable {
     let color: Color
     let title: String
     let isRoutine: Bool
+    var isFlexible: Bool = false   // 주간 쿼터(시간 유연) → 점선·반투명
+    var isNested: Bool = false     // 루틴 시간 안의 일정 → 루틴 위에 겹쳐(인셋) 표시
 }
 
 enum TimelineLayout {
     /// 하루(0~24h)에 대한 색칠 구간 목록을 계산.
-    static func segments(routines: [Routine], blocks: [PlanBlock]) -> [TimeSegment] {
+    static func segments(routines: [Routine], blocks: [PlanBlock], quota: [Routine] = []) -> [TimeSegment] {
         var segs: [TimeSegment] = []
         var occupied: [(Double, Double)] = []
 
@@ -31,6 +33,7 @@ enum TimelineLayout {
         }
 
         // 2) 계획 블록 — 정확한 시각이 없으므로 시간대 시작 근처 빈 구간에 통째로(겹치지 않게).
+        //    단, '루틴 안' 블록은 빈 구간 배치에서 제외(아래 3단계에서 겹쳐 그림).
         var free = subtract([(0, 24)], occupied)
         func place(desired: Double, _ dur: Double) -> (Double, Double)? {
             let d = min(max(dur, 0), 24)
@@ -46,13 +49,37 @@ enum TimelineLayout {
             return (b.start, b.start + d)
         }
 
+        let freeBlocks = blocks.filter { !$0.withinRoutine }
         let bandStart: [TimeBand: Double] = [.morning: 6, .afternoon: 12, .evening: 18, .night: 23]
         for band in [TimeBand.morning, .afternoon, .evening, .night] {
-            for blk in blocks.filter({ $0.timeBand == band }).sorted(by: { $0.durationHours > $1.durationHours }) {
+            for blk in freeBlocks.filter({ $0.timeBand == band }).sorted(by: { $0.durationHours > $1.durationHours }) {
                 let color: Color = blk.concreteVerified ? .accentColor : .orange
                 if let (s, e) = place(desired: bandStart[band] ?? 12, blk.durationHours) {
                     segs.append(TimeSegment(start: s, end: e, color: color, title: blk.title, isRoutine: false))
                 }
+            }
+        }
+
+        // 3) 주간 쿼터(시간 유연) — 남은 자유 시간에 회당 개수만큼 분산해 유연 블록으로.
+        for q in quota where q.weeklyHours > 0 {
+            let pieces = max(1, q.sessionsPerDay)
+            let each = (q.weeklyHours / 7) / Double(pieces)
+            guard each > 0.05 else { continue }
+            for i in 0..<pieces {
+                let desired = 24.0 * (Double(i) + 0.5) / Double(pieces)  // 하루에 고르게 분산
+                if let (s, e) = place(desired: desired, each) {
+                    segs.append(TimeSegment(start: s, end: e, color: q.displayColor,
+                                            title: q.name, isRoutine: false, isFlexible: true))
+                }
+            }
+        }
+
+        // 4) 루틴 안 일정 — 정확한 시각에 루틴 위로 겹쳐(인셋) 그린다. 빈 구간/자유 시간엔 영향 없음.
+        for blk in blocks where blk.withinRoutine {
+            let start = blk.startHour >= 0 ? blk.startHour : 9
+            for (a, b) in splitAtMidnight(start, start + blk.durationHours) {
+                segs.append(TimeSegment(start: a, end: b, color: .accentColor,
+                                        title: blk.title, isRoutine: false, isNested: true))
             }
         }
         return segs
@@ -121,9 +148,12 @@ struct DayTimelineRow: View {
     let date: Date
     let routines: [Routine]
     let blocks: [PlanBlock]
+    var quotaRoutines: [Routine] = []
 
     private var occupied: Double {
-        routines.reduce(0) { $0 + $1.durationHours } + blocks.reduce(0) { $0 + $1.durationHours }
+        routines.reduce(0) { $0 + $1.durationHours }
+            + blocks.filter { !$0.withinRoutine }.reduce(0) { $0 + $1.durationHours }
+            + quotaRoutines.reduce(0) { $0 + $1.dailyQuotaHours }
     }
     private var freeHours: Double { max(0, 24 - occupied) }
     private var isOverbooked: Bool { occupied > 24.0001 }
@@ -158,22 +188,10 @@ struct DayTimelineRow: View {
                     }
 
                     // 활동 구간
-                    ForEach(TimelineLayout.segments(routines: routines, blocks: blocks)) { seg in
+                    ForEach(TimelineLayout.segments(routines: routines, blocks: blocks, quota: quotaRoutines)) { seg in
                         let x = CGFloat(seg.start) / 24 * w
                         let segW = CGFloat(seg.end - seg.start) / 24 * w
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(seg.color.opacity(0.85))
-                            .frame(width: max(1, segW))
-                            .overlay(alignment: .leading) {
-                                if segW > 38 {
-                                    Text(seg.title)
-                                        .font(.system(size: 9, weight: .medium))
-                                        .foregroundStyle(.white)
-                                        .lineLimit(1)
-                                        .padding(.leading, 4)
-                                        .frame(width: segW, alignment: .leading)
-                                }
-                            }
+                        segmentView(seg, width: max(1, segW))
                             .offset(x: x)
                     }
                 }
@@ -181,11 +199,40 @@ struct DayTimelineRow: View {
             }
             .frame(height: 24)
 
-            Text("자유 \(fmtHours(freeHours))h")
+            Text("남은 시간 \(fmtHours(freeHours))h")
                 .font(.system(size: 11, weight: .medium))
                 .monospacedDigit()
                 .foregroundStyle(isOverbooked ? .red : .secondary)
-                .frame(width: 66, alignment: .trailing)
+                .frame(width: 90, alignment: .trailing)
+        }
+    }
+
+    @ViewBuilder
+    private func segmentView(_ seg: TimeSegment, width: CGFloat) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 3)
+        ZStack {
+            if seg.isFlexible {
+                shape.fill(seg.color.opacity(0.20))
+                shape.strokeBorder(seg.color.opacity(0.75), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
+            } else if seg.isNested {
+                shape.fill(seg.color.opacity(0.95))
+                shape.strokeBorder(Color.white.opacity(0.85), lineWidth: 1)
+            } else {
+                shape.fill(seg.color.opacity(0.85))
+            }
+        }
+        // 루틴 안 일정은 위아래로 살짝 인셋해 루틴 위에 '얹힌' 느낌을 준다.
+        .padding(.vertical, seg.isNested ? 5 : 0)
+        .frame(width: width)
+        .overlay(alignment: .leading) {
+            if width > 30 {
+                Text(seg.title)
+                    .font(.system(size: 9, weight: seg.isNested ? .semibold : .medium))
+                    .foregroundStyle(seg.isFlexible ? seg.color : Color.white)
+                    .lineLimit(1)
+                    .padding(.leading, 4)
+                    .frame(width: width, alignment: .leading)
+            }
         }
     }
 
@@ -214,7 +261,7 @@ struct HourAxis: View {
                 }
             }
             .frame(height: 12)
-            Spacer().frame(width: 66)
+            Spacer().frame(width: 90)
         }
     }
 }

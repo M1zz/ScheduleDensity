@@ -16,6 +16,12 @@ final class PlanBlock {
     /// Whether the user passed the concreteness check at save time.
     var concreteVerified: Bool = false
 
+    /// 회사일 같은 기존 루틴 시간 *안에서* 진행되는 일정인지.
+    /// true면 자유 시간을 추가로 소비하지 않고, 타임라인에서 루틴 위에 겹쳐 표시한다.
+    var withinRoutine: Bool = false
+    /// 정확한 시작 시각(h). -1 = 미설정(시간대 기반 배치). 루틴 내부 일정에서 사용.
+    var startHour: Double = -1
+
     var createdAt: Date = Date()
 
     // Review (populated after the day passes)
@@ -30,7 +36,9 @@ final class PlanBlock {
          successCriteria: String,
          deliverable: String,
          weekStartDate: Date,
-         concreteVerified: Bool = false)
+         concreteVerified: Bool = false,
+         withinRoutine: Bool = false,
+         startHour: Double = -1)
     {
         self.dayRaw = day.rawValue
         self.timeBandRaw = timeBand.rawValue
@@ -40,6 +48,8 @@ final class PlanBlock {
         self.deliverable = deliverable
         self.weekStartDate = weekStartDate
         self.concreteVerified = concreteVerified
+        self.withinRoutine = withinRoutine
+        self.startHour = startHour
         self.createdAt = Date()
     }
 

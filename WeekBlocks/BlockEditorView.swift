@@ -17,8 +17,26 @@ struct BlockEditorView: View {
     @State private var successCriteria: String = ""
     @State private var deliverable: String = ""
 
+    @State private var withinRoutine: Bool = false
+    @State private var startHour: Double = 9
+
     @State private var hasCheckedOnce: Bool = false
     @State private var issues: [ConcretenessIssue] = []
+
+    /// startHour(Double) ↔ Date 브리지 — 시:분 DatePicker용.
+    private var startTimeBinding: Binding<Date> {
+        Binding(
+            get: {
+                let total = Int((startHour * 60).rounded())
+                var c = DateComponents(); c.hour = (total / 60) % 24; c.minute = total % 60
+                return Calendar.current.date(from: c) ?? Date()
+            },
+            set: { d in
+                let c = Calendar.current.dateComponents([.hour, .minute], from: d)
+                startHour = Double(c.hour ?? 0) + Double(c.minute ?? 0) / 60
+            }
+        )
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -32,10 +50,31 @@ struct BlockEditorView: View {
                         .onChange(of: title) { if hasCheckedOnce { revalidate() } }
                 }
 
+                Section {
+                    Toggle("기존 루틴 시간 안에서 진행 (회의 등)", isOn: $withinRoutine)
+                } footer: {
+                    if withinRoutine {
+                        Text("회사일 같은 이미 확보된 시간 안의 일정입니다. 자유 시간을 추가로 쓰지 않고, 타임라인에서 루틴 위에 겹쳐 표시됩니다.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 Section("시간") {
-                    Picker("시간대", selection: $timeBand) {
-                        ForEach(TimeBand.allCases) { band in
-                            Text(band.label).tag(band)
+                    if withinRoutine {
+                        HStack {
+                            Text("시작")
+                            Spacer()
+                            DatePicker("", selection: startTimeBinding, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                            Text("→ " + formatHour(startHour + durationHours))
+                                .font(.callout).foregroundStyle(.secondary).monospacedDigit()
+                        }
+                    } else {
+                        Picker("시간대", selection: $timeBand) {
+                            ForEach(TimeBand.allCases) { band in
+                                Text(band.label).tag(band)
+                            }
                         }
                     }
                     HStack {
@@ -49,33 +88,35 @@ struct BlockEditorView: View {
                     }
                 }
 
-                Section {
-                    TextField("", text: $successCriteria, prompt: Text("예: sink/assign 차이를 노트에 정리하고 예제 실행 성공"), axis: .vertical)
-                        .lineLimit(2...4)
-                        .onChange(of: successCriteria) { if hasCheckedOnce { revalidate() } }
-                } header: {
-                    Text("성공 기준")
-                } footer: {
-                    Text("측정 가능한 문장으로 적어 주세요. \"열심히 한다\", \"잘 한다\"는 통과되지 않습니다.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                Section {
-                    TextField("", text: $deliverable, prompt: Text("예: 정리 노트 1장 + 동작하는 예제 1개"), axis: .vertical)
-                        .lineLimit(1...3)
-                        .onChange(of: deliverable) { if hasCheckedOnce { revalidate() } }
-                } header: {
-                    Text("산출물")
-                } footer: {
-                    Text("끝났을 때 손에 남는 것.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                if hasCheckedOnce {
+                if !withinRoutine {
                     Section {
-                        resultView
+                        TextField("", text: $successCriteria, prompt: Text("예: sink/assign 차이를 노트에 정리하고 예제 실행 성공"), axis: .vertical)
+                            .lineLimit(2...4)
+                            .onChange(of: successCriteria) { if hasCheckedOnce { revalidate() } }
+                    } header: {
+                        Text("성공 기준")
+                    } footer: {
+                        Text("측정 가능한 문장으로 적어 주세요. \"열심히 한다\", \"잘 한다\"는 통과되지 않습니다.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Section {
+                        TextField("", text: $deliverable, prompt: Text("예: 정리 노트 1장 + 동작하는 예제 1개"), axis: .vertical)
+                            .lineLimit(1...3)
+                            .onChange(of: deliverable) { if hasCheckedOnce { revalidate() } }
+                    } header: {
+                        Text("산출물")
+                    } footer: {
+                        Text("끝났을 때 손에 남는 것.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if hasCheckedOnce {
+                        Section {
+                            resultView
+                        }
                     }
                 }
             }
@@ -152,8 +193,10 @@ struct BlockEditorView: View {
             Button("취소") { dismiss() }
                 .keyboardShortcut(.cancelAction)
 
-            Button("구체성 체크") { runCheck() }
-                .keyboardShortcut("k", modifiers: .command)
+            if !withinRoutine {
+                Button("구체성 체크") { runCheck() }
+                    .keyboardShortcut("k", modifiers: .command)
+            }
 
             Button("저장") { save() }
                 .keyboardShortcut(.defaultAction)
@@ -166,7 +209,11 @@ struct BlockEditorView: View {
     // MARK: logic
 
     private var canSave: Bool {
-        hasCheckedOnce && issues.isEmpty
+        if withinRoutine {
+            // 루틴 안 일정은 구체성 검사 없이 제목만 있으면 저장.
+            return !title.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+        return hasCheckedOnce && issues.isEmpty
     }
 
     private func runCheck() {
@@ -189,32 +236,44 @@ struct BlockEditorView: View {
         durationHours = existing.durationHours
         successCriteria = existing.successCriteria
         deliverable = existing.deliverable
-        // For existing blocks, validate immediately so the user sees the state
-        hasCheckedOnce = true
-        revalidate()
+        withinRoutine = existing.withinRoutine
+        if existing.startHour >= 0 { startHour = existing.startHour }
+        // 일반 블록만 즉시 구체성 표시
+        if !withinRoutine {
+            hasCheckedOnce = true
+            revalidate()
+        }
     }
 
     private func save() {
-        guard issues.isEmpty else { return }
+        guard canSave else { return }
+        let t = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let sc = successCriteria.trimmingCharacters(in: .whitespacesAndNewlines)
+        let dv = deliverable.trimmingCharacters(in: .whitespacesAndNewlines)
+
         if let existing {
-            existing.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            existing.title = t
             existing.timeBand = timeBand
             existing.durationHours = durationHours
-            existing.successCriteria = successCriteria.trimmingCharacters(in: .whitespacesAndNewlines)
-            existing.deliverable = deliverable.trimmingCharacters(in: .whitespacesAndNewlines)
+            existing.successCriteria = withinRoutine ? "" : sc
+            existing.deliverable = withinRoutine ? "" : dv
             existing.day = day
             existing.weekStartDate = weekStart
-            existing.concreteVerified = true
+            existing.withinRoutine = withinRoutine
+            existing.startHour = withinRoutine ? startHour : -1
+            existing.concreteVerified = !withinRoutine
         } else {
             let block = PlanBlock(
                 day: day,
                 timeBand: timeBand,
                 durationHours: durationHours,
-                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-                successCriteria: successCriteria.trimmingCharacters(in: .whitespacesAndNewlines),
-                deliverable: deliverable.trimmingCharacters(in: .whitespacesAndNewlines),
+                title: t,
+                successCriteria: withinRoutine ? "" : sc,
+                deliverable: withinRoutine ? "" : dv,
                 weekStartDate: weekStart,
-                concreteVerified: true
+                concreteVerified: !withinRoutine,
+                withinRoutine: withinRoutine,
+                startHour: withinRoutine ? startHour : -1
             )
             context.insert(block)
         }

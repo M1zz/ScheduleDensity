@@ -44,11 +44,14 @@ struct RoutineRow: View {
                 .buttonStyle(.borderless)
 
                 if routine.kind == .fixed {
-                    // 협상 불가능한 고정 루틴은 삭제할 수 없다 (잠금).
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(.secondary)
-                        .help("협상 불가능한 고정 루틴 — 삭제할 수 없습니다")
+                    // 협상 불가 고정 루틴은 실수 삭제 방지를 위해 목록에선 잠금.
+                    // 삭제는 편집(연필) → 삭제 버튼에서 확인 후 가능.
+                    Button { onEdit() } label: {
+                        Image(systemName: "lock.fill").font(.system(size: 12))
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.secondary)
+                    .help("협상 불가 고정 루틴 — 편집에서 삭제할 수 있습니다")
                 } else {
                     Button(role: .destructive) { onDelete() } label: {
                         Image(systemName: "trash")
@@ -87,6 +90,7 @@ struct RoutineEditorView: View {
     @State private var durationHours: Double = 1
     @State private var weeklyHours: Double = 4
     @State private var sessionsPerDay: Int = 0
+    @State private var showingDeleteConfirm = false
 
     private let iconOptions: [String] = [
         "moon.fill", "fork.knife", "figure.run", "figure.walk", "figure.strengthtraining.traditional",
@@ -201,10 +205,14 @@ struct RoutineEditorView: View {
             Divider()
 
             HStack {
-                if let existing, existing.kind != .fixed {
+                if let existing {
                     Button(role: .destructive) {
-                        context.delete(existing); try? context.save()
-                        dismiss()
+                        if existing.kind == .fixed {
+                            showingDeleteConfirm = true   // 고정 루틴은 확인 후 삭제
+                        } else {
+                            context.delete(existing); try? context.save()
+                            dismiss()
+                        }
                     } label: {
                         Text("삭제")
                     }
@@ -220,6 +228,15 @@ struct RoutineEditorView: View {
             .padding(20)
         }
         .onAppear { loadExisting() }
+        .alert("고정 루틴 삭제", isPresented: $showingDeleteConfirm) {
+            Button("삭제", role: .destructive) {
+                if let existing { context.delete(existing); try? context.save() }
+                dismiss()
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("협상 불가 고정 루틴입니다. 이 루틴과 주간 배치가 모두 삭제됩니다. 계속할까요?")
+        }
     }
 
     private var iconPicker: some View {

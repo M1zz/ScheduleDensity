@@ -29,7 +29,8 @@ struct ContentView: View {
     }
 
     private var plannedHours: Double {
-        weekBlocks.reduce(0) { $0 + $1.durationHours }
+        // '루틴 안' 일정은 이미 루틴 시간에 포함되므로 계획 시간(자유 소비)에서 제외.
+        weekBlocks.filter { !$0.withinRoutine }.reduce(0) { $0 + $1.durationHours }
     }
 
     private var freeHours: Double {
@@ -140,15 +141,21 @@ struct ContentView: View {
                 didSeed = true
                 seedDefaultsIfNeeded()
             }
-            seedOccurrencesIfNeeded(for: selectedWeek)
+            reconcileOccurrences(for: selectedWeek)
         }
         .onChange(of: selectedWeek) { _, newWeek in
-            seedOccurrencesIfNeeded(for: newWeek)
+            reconcileOccurrences(for: newWeek)
         }
-        .onChange(of: routines.count) { _, _ in
-            // 고정 루틴을 추가하면 즉시 이번 주 그리드에 자동 배치한다.
-            seedOccurrencesIfNeeded(for: selectedWeek)
+        .onChange(of: routineSignature) { _, _ in
+            // 루틴 추가·삭제·편집(이름·요일·종류) 시 모든 주의 occurrence를 현재 루틴에 맞게 재동기화.
+            let weeks = Set(allOccurrences.map(\.weekStartDate)).union([selectedWeek])
+            for w in weeks { reconcileOccurrences(for: w) }
         }
+    }
+
+    /// 루틴 구성이 바뀌면 onChange가 감지하도록 만드는 시그니처(이름·종류·요일).
+    private var routineSignature: String {
+        routines.map { "\($0.name)|\($0.kindRaw)|\($0.dayMask)" }.joined(separator: ";")
     }
 
     // MARK: subviews
@@ -221,13 +228,19 @@ struct ContentView: View {
 
     private var metricsRow: some View {
         HStack(spacing: 12) {
-            MetricCard(label: "한 주", value: "168", unit: "h")
-            MetricCard(label: "고정 루틴", value: String(format: "%.1f", routineHours), unit: "h")
+            MetricCard(label: "한 주", value: "168", unit: "h", subtitle: "하루 24h")
+            MetricCard(
+                label: "고정 루틴",
+                value: String(format: "%.1f", routineHours),
+                unit: "h",
+                subtitle: "하루 약 \(String(format: "%.1f", routineHours / 7))h"
+            )
             MetricCard(
                 label: "남은 자유 시간",
                 value: String(format: "%.1f", freeHours),
                 unit: "h",
-                tint: .accentColor
+                tint: .accentColor,
+                subtitle: "하루 약 \(String(format: "%.1f", freeHours / 7))h"
             )
             MetricCard(
                 label: "이번 주 계획됨",
@@ -296,7 +309,7 @@ struct ContentView: View {
                 Label("요일별 하루 24시간", systemImage: "clock")
                     .font(.headline)
                 Spacer()
-                Text("고정 루틴은 정해진 시각, 계획은 겹치지 않게 빈 구간에")
+                Text("실선=고정 · 점선=유연 쿼터 · 계획은 빈 구간에")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -309,7 +322,8 @@ struct ContentView: View {
                         day: day,
                         date: dayDate(day),
                         routines: fixedRoutines(on: day),
-                        blocks: weekBlocks.filter { $0.day == day }
+                        blocks: weekBlocks.filter { $0.day == day },
+                        quotaRoutines: routines.filter { $0.kind == .quota }
                     )
                 }
             }
@@ -364,43 +378,39 @@ struct ContentView: View {
 
     // MARK: helpers
 
-    private func seedOccurrencesIfNeeded(for week: Date) {
+    /// 해당 주의 occurrence를 현재 고정 루틴 구성(이름·요일)과 정확히 일치시킨다.
+    /// 루틴을 편집(이름/요일 변경)하거나 추가/삭제해도 그리드·타임라인이 즉시 반영되도록.
+    private func reconcileOccurrences(for week: Date) {
         let cal = Calendar(identifier: .iso8601)
-        let lastWeek = cal.date(byAdding: .day, value: -7, to: week)!
+        let weekOccs = allOccurrences.filter { cal.isDate($0.weekStartDate, inSameDayAs: week) }
+        let fixedRoutinesList = routines.filter { $0.kind == .fixed }
+        let fixedNames = Set(fixedRoutinesList.map(\.name))
 
-        let thisWeekNames = Set(allOccurrences
-            .filter { cal.isDate($0.weekStartDate, inSameDayAs: week) }
-            .map(\.routineName))
+        var changed = false
 
-        for routine in routines where routine.kind == .fixed {
-            guard !thisWeekNames.contains(routine.name) else { continue }
+        // 1) 고아 occurrence 제거 (현재 고정 루틴 이름과 매칭되지 않는 것 — 이름 변경/삭제/종류 변경)
+        for occ in weekOccs where !fixedNames.contains(occ.routineName) {
+            context.delete(occ)
+            changed = true
+        }
 
-            let lastWeekOccs = allOccurrences.filter {
-                $0.routineName == routine.name &&
-                cal.isDate($0.weekStartDate, inSameDayAs: lastWeek)
+        // 2) 각 고정 루틴의 이번 주 배치를 selectedDays와 정확히 일치시킨다
+        for routine in fixedRoutinesList {
+            let existing = weekOccs.filter { $0.routineName == routine.name }
+            let existingDays = Set(existing.map(\.day))
+            let wantDays = routine.selectedDays
+
+            for day in wantDays.subtracting(existingDays) {
+                context.insert(RoutineOccurrence(routineName: routine.name, day: day, weekStartDate: week))
+                changed = true
             }
-
-            if lastWeekOccs.isEmpty {
-                // 최초: dayMask 기반 자동 배치
-                for day in routine.selectedDays {
-                    context.insert(RoutineOccurrence(
-                        routineName: routine.name,
-                        day: day,
-                        weekStartDate: week
-                    ))
-                }
-            } else {
-                // 지난주 배치 그대로 복사
-                for occ in lastWeekOccs {
-                    context.insert(RoutineOccurrence(
-                        routineName: routine.name,
-                        day: occ.day,
-                        weekStartDate: week
-                    ))
-                }
+            for occ in existing where !wantDays.contains(occ.day) {
+                context.delete(occ)
+                changed = true
             }
         }
-        try? context.save()
+
+        if changed { try? context.save() }
     }
 
     private func dropBacklogItem(token: String, day: DayOfWeek) {
