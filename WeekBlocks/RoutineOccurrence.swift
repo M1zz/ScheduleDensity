@@ -13,6 +13,10 @@ final class RoutineOccurrence {
     /// 타임라인에서 이 요일만 따로 드래그해 옮긴 시작 시각(h). -1 = 미설정(루틴 기본 startHour 사용).
     var startHourOverride: Double = -1
 
+    /// 이 주·요일에서만 이 고정 루틴을 숨겼는지. (occurrence를 지우면 reconcile이 되살리므로 플래그로 처리.)
+    /// 루틴 편집에서 해당 요일을 껐다 켜면 occurrence가 새로 만들어져 다시 보인다.
+    var hidden: Bool = false
+
     init(routineName: String, day: DayOfWeek, weekStartDate: Date) {
         self.routineName = routineName
         self.dayRaw = day.rawValue
@@ -34,6 +38,9 @@ final class QuotaPlacement {
     var weekStartDate: Date = Date.currentWeekStart
     var sessionIndex: Int = 0
     var startHour: Double = 0
+
+    /// 이 주·요일·회차의 끼니를 숨겼는지(타임라인에서 한 끼만 삭제).
+    var hidden: Bool = false
 
     init(routineName: String, day: DayOfWeek, weekStartDate: Date, sessionIndex: Int, startHour: Double) {
         self.routineName = routineName

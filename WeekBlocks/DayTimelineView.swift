@@ -26,6 +26,7 @@ struct TimeSegment: Identifiable {
     var source: SegmentSource = .none
     var logicalStart: Double = 0   // 자정을 넘겨 나뉘어도 원본의 '진짜' 시작 시각(드래그 기준)
     var logicalDuration: Double = 0
+    var isGhost: Bool = false       // 삭제(숨김)된 블록 — 흐릿하게 그려 '되살리기'만 가능, 시간엔 영향 없음
 }
 
 enum TimelineLayout {
@@ -34,7 +35,9 @@ enum TimelineLayout {
     /// - quotaPlacement: 이 요일에서 옮긴 식사 등 유연 블록 위치(이름 → [회차: 시각]).
     static func segments(routines: [Routine], blocks: [PlanBlock], quota: [Routine] = [],
                          routineStartOverride: [String: Double] = [:],
-                         quotaPlacement: [String: [Int: Double]] = [:]) -> [TimeSegment] {
+                         quotaPlacement: [String: [Int: Double]] = [:],
+                         quotaHidden: [String: Set<Int>] = [:],
+                         hiddenRoutines: [Routine] = []) -> [TimeSegment] {
         var segs: [TimeSegment] = []
         var occupied: [(Double, Double)] = []
 
@@ -51,6 +54,17 @@ enum TimelineLayout {
                                         source: .fixedRoutine(name: r.name),
                                         logicalStart: start, logicalDuration: r.durationHours))
                 occupied.append((a, b)); piece += 1
+            }
+        }
+
+        // 1.5) 숨긴 고정 루틴 — 유령 블록으로 그 자리에 흐릿하게(시간엔 영향 없음, 되살리기용).
+        for r in hiddenRoutines {
+            let start = resolvedStart(r)
+            for (a, b) in splitAtMidnight(start, start + r.durationHours) {
+                segs.append(TimeSegment(id: "ghostroutine:\(r.name):\(a)", start: a, end: b,
+                                        color: r.displayColor, title: r.name, isRoutine: true,
+                                        source: .fixedRoutine(name: r.name),
+                                        logicalStart: start, logicalDuration: r.durationHours, isGhost: true))
             }
         }
 
@@ -105,6 +119,7 @@ enum TimelineLayout {
             let pieces = max(1, q.sessionsPerDay)
             let each = (q.weeklyHours / 7) / Double(pieces)
             guard each > 0.05 else { continue }
+            let hiddenSessions = quotaHidden[q.name] ?? []
             for i in 0..<pieces {
                 let center = pieces == 1
                     ? (winStart + winEnd) / 2
@@ -113,10 +128,11 @@ enum TimelineLayout {
                 let snappedDefault = ((center - each / 2) / 0.25).rounded() * 0.25
                 let defaultStart = min(max(snappedDefault, 0), 24 - each)
                 let s = min(max(quotaPlacement[q.name]?[i] ?? defaultStart, 0), 24 - each)
+                // 숨긴 끼니는 유령 블록으로(시간엔 영향 없음, 되살리기용).
                 segs.append(TimeSegment(id: "quota:\(q.name):\(i)", start: s, end: s + each,
                                         color: q.displayColor, title: q.name, isRoutine: false,
                                         isFlexible: true, source: .quotaSession(name: q.name, index: i),
-                                        logicalStart: s, logicalDuration: each))
+                                        logicalStart: s, logicalDuration: each, isGhost: hiddenSessions.contains(i)))
             }
         }
 
@@ -221,6 +237,7 @@ struct DayTimelineRow: View {
     let routines: [Routine]
     let blocks: [PlanBlock]
     var quotaRoutines: [Routine] = []
+    var hiddenRoutines: [Routine] = []              // 이 요일·주에서 숨긴 고정 루틴(유령으로 표시·되살리기)
     var occurrences: [RoutineOccurrence] = []      // 이 요일·주의 고정 루틴 배치(위치 override 저장처)
     var quotaPlacements: [QuotaPlacement] = []      // 이 요일·주의 식사 등 위치 저장처
     var weekStart: Date = .currentWeekStart
@@ -235,21 +252,29 @@ struct DayTimelineRow: View {
         return d
     }
     private var quotaPlacementMap: [String: [Int: Double]] {
+        // 숨긴 끼니도 위치는 유지(유령을 원래 자리에 그리려고).
         var d: [String: [Int: Double]] = [:]
         for p in quotaPlacements { d[p.routineName, default: [:]][p.sessionIndex] = p.startHour }
+        return d
+    }
+    private var quotaHiddenMap: [String: Set<Int>] {
+        var d: [String: Set<Int>] = [:]
+        for p in quotaPlacements where p.hidden { d[p.routineName, default: []].insert(p.sessionIndex) }
         return d
     }
 
     private var segments: [TimeSegment] {
         TimelineLayout.segments(routines: routines, blocks: blocks, quota: quotaRoutines,
                                 routineStartOverride: routineStartOverride,
-                                quotaPlacement: quotaPlacementMap)
+                                quotaPlacement: quotaPlacementMap,
+                                quotaHidden: quotaHiddenMap,
+                                hiddenRoutines: hiddenRoutines)
     }
     // 실제로 그려진 구간들의 합집합 = 차지한 시간.
     // 유연(식사) 블록이 회사 등과 겹치면 그 부분은 합집합에서 한 번만 세므로 자유 시간을 깎지 않는다.
     // '루틴 안' 일정은 이미 루틴 시간에 포함되므로 제외.
     private var occupied: Double {
-        TimelineLayout.unionLength(segments.filter { !$0.isNested }.map { ($0.start, $0.end) })
+        TimelineLayout.unionLength(segments.filter { !$0.isNested && !$0.isGhost }.map { ($0.start, $0.end) })
     }
     // 고정으로 반드시 잡아야 하는 시간(루틴 + 자유 계획)의 단순 합. 24h를 넘으면 초과 배정.
     private var hardOccupied: Double {
@@ -314,8 +339,13 @@ struct DayTimelineRow: View {
     private func segmentView(_ seg: TimeSegment, width: CGFloat, rowWidth: CGFloat) -> some View {
         let shape = RoundedRectangle(cornerRadius: 3)
         let dragging = seg.id == dragId
+        let ghost = seg.isGhost
         ZStack {
-            if seg.isFlexible {
+            if ghost {
+                // 삭제(숨김)된 블록 — 아주 흐릿하게 점선으로 자리만 표시.
+                shape.fill(seg.color.opacity(0.06))
+                shape.strokeBorder(seg.color.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+            } else if seg.isFlexible {
                 shape.fill(seg.color.opacity(0.20))
                 shape.strokeBorder(seg.color.opacity(0.75), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
             } else if seg.isNested {
@@ -332,7 +362,8 @@ struct DayTimelineRow: View {
             if width > 30 {
                 Text(seg.title)
                     .font(.system(size: 9, weight: seg.isNested ? .semibold : .medium))
-                    .foregroundStyle(seg.isFlexible ? seg.color : Color.white)
+                    .foregroundStyle(ghost ? seg.color.opacity(0.55) : (seg.isFlexible ? seg.color : Color.white))
+                    .strikethrough(ghost, color: seg.color.opacity(0.5))
                     .lineLimit(1)
                     .padding(.leading, 4)
                     .frame(width: width, alignment: .leading)
@@ -341,21 +372,95 @@ struct DayTimelineRow: View {
         .shadow(color: dragging ? .black.opacity(0.25) : .clear, radius: dragging ? 4 : 0, y: dragging ? 1 : 0)
         .contentShape(Rectangle())
         // 좌표계는 .global — 블록을 offset으로 움직여도 translation이 흔들리지 않게(로컬이면 자기 자신을 쫓아 찐득해짐).
-        // highPriorityGesture로 바깥 ScrollView의 스크롤보다 드래그를 우선.
+        // highPriorityGesture로 바깥 ScrollView의 스크롤보다 드래그를 우선. 유령 블록은 드래그 불가.
         .highPriorityGesture(
             DragGesture(minimumDistance: 2, coordinateSpace: .global)
                 .onChanged { v in
+                    guard !seg.isGhost else { return }
                     dragId = seg.id
                     dragPx = v.translation.width
                 }
                 .onEnded { v in
+                    guard !seg.isGhost else { return }
                     let deltaHours = Double(v.translation.width / max(rowWidth, 1)) * 24
                     commitDrag(seg, deltaHours: deltaHours)
                     dragId = nil
                     dragPx = 0
                 }
         )
-        .help("드래그해서 시각 이동 (15분 단위)")
+        .contextMenu {
+            if ghost {
+                Button { restoreSegment(seg) } label: {
+                    Label(restoreLabel(seg), systemImage: "arrow.uturn.backward")
+                }
+            } else {
+                Button(role: .destructive) { deleteSegment(seg) } label: {
+                    Label(deleteLabel(seg), systemImage: "trash")
+                }
+            }
+        }
+        .help(ghost ? "삭제됨 — 우클릭으로 되살리기" : "드래그해서 시각 이동 (15분 단위) · 우클릭으로 삭제")
+    }
+
+    private func deleteLabel(_ seg: TimeSegment) -> String {
+        switch seg.source {
+        case .fixedRoutine: return "이번 주 \(day.shortLabel)요일에서 빼기"
+        case .quotaSession: return "이 끼니 빼기 (이번 주 \(day.shortLabel))"
+        case .planBlock:    return "이 계획 삭제"
+        case .none:         return "삭제"
+        }
+    }
+
+    private func restoreLabel(_ seg: TimeSegment) -> String {
+        switch seg.source {
+        case .fixedRoutine: return "\(seg.title) 되살리기"
+        case .quotaSession: return "이 끼니 되살리기"
+        default:            return "되살리기"
+        }
+    }
+
+    /// 숨긴(유령) 블록을 다시 보이게 한다.
+    private func restoreSegment(_ seg: TimeSegment) {
+        switch seg.source {
+        case .fixedRoutine(let name):
+            occurrences.first(where: { $0.routineName == name })?.hidden = false
+        case .quotaSession(let name, let index):
+            quotaPlacements.first(where: { $0.routineName == name && $0.sessionIndex == index })?.hidden = false
+        default:
+            return
+        }
+        try? context.save()
+    }
+
+    /// 타임라인에서 블록 하나를 삭제. 종류별로 다르게 반영되어 그리드·남은 시간 등에 즉시 적용된다.
+    /// - 계획 블록: PlanBlock 삭제 → 그리드·지표에서 사라짐
+    /// - 식사(쿼터): 그 주·요일·회차만 숨김 → 그날 남은 시간 늘어남(루틴 정의는 유지)
+    /// - 고정 루틴: 그 주·요일만 숨김 → 그리드·타임라인에서 사라짐(루틴 자체·다른 요일은 유지)
+    private func deleteSegment(_ seg: TimeSegment) {
+        switch seg.source {
+        case .planBlock(let blk):
+            context.delete(blk)
+        case .quotaSession(let name, let index):
+            if let p = quotaPlacements.first(where: { $0.routineName == name && $0.sessionIndex == index }) {
+                p.hidden = true
+            } else {
+                let p = QuotaPlacement(routineName: name, day: day, weekStartDate: weekStart,
+                                       sessionIndex: index, startHour: seg.logicalStart)
+                p.hidden = true
+                context.insert(p)
+            }
+        case .fixedRoutine(let name):
+            if let occ = occurrences.first(where: { $0.routineName == name }) {
+                occ.hidden = true
+            } else {
+                let occ = RoutineOccurrence(routineName: name, day: day, weekStartDate: weekStart)
+                occ.hidden = true
+                context.insert(occ)
+            }
+        case .none:
+            return
+        }
+        try? context.save()
     }
 
     /// 드래그를 끝낸 세그먼트의 새 시작 시각을 계산해 원본 모델에 저장(15분 스냅).

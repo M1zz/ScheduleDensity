@@ -292,7 +292,18 @@ struct ContentView: View {
     private func fixedRoutines(on day: DayOfWeek) -> [Routine] {
         let cal = Calendar(identifier: .iso8601)
         let names = Set(allOccurrences
-            .filter { $0.day == day && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek) }
+            .filter { $0.day == day && !$0.hidden && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek) }
+            .map(\.routineName))
+        return routines
+            .filter { $0.kind == .fixed && names.contains($0.name) }
+            .sorted { $0.startHour < $1.startHour }
+    }
+
+    /// 해당 요일에 숨긴(삭제한) 고정 루틴들 — 타임라인에 유령 블록으로 표시·되살리기용.
+    private func hiddenFixedRoutines(on day: DayOfWeek) -> [Routine] {
+        let cal = Calendar(identifier: .iso8601)
+        let names = Set(allOccurrences
+            .filter { $0.day == day && $0.hidden && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek) }
             .map(\.routineName))
         return routines
             .filter { $0.kind == .fixed && names.contains($0.name) }
@@ -320,6 +331,7 @@ struct ContentView: View {
                         routines: fixedRoutines(on: day),
                         blocks: weekBlocks.filter { $0.day == day },
                         quotaRoutines: routines.filter { $0.kind == .quota },
+                        hiddenRoutines: hiddenFixedRoutines(on: day),
                         occurrences: allOccurrences.filter {
                             $0.day == day && Calendar(identifier: .iso8601).isDate($0.weekStartDate, inSameDayAs: selectedWeek)
                         },
@@ -351,7 +363,7 @@ struct ContentView: View {
                         routines: {
                             let names = Set(allOccurrences
                                 .filter { occ in
-                                    occ.day == day &&
+                                    occ.day == day && !occ.hidden &&
                                     Calendar(identifier: .iso8601).isDate(occ.weekStartDate, inSameDayAs: selectedWeek)
                                 }
                                 .map(\.routineName))
