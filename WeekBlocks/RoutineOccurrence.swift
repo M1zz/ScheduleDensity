@@ -10,10 +10,37 @@ final class RoutineOccurrence {
     var dayRaw: Int = 0
     var weekStartDate: Date = Date.currentWeekStart
 
+    /// 타임라인에서 이 요일만 따로 드래그해 옮긴 시작 시각(h). -1 = 미설정(루틴 기본 startHour 사용).
+    var startHourOverride: Double = -1
+
     init(routineName: String, day: DayOfWeek, weekStartDate: Date) {
         self.routineName = routineName
         self.dayRaw = day.rawValue
         self.weekStartDate = weekStartDate
+    }
+
+    var day: DayOfWeek {
+        get { DayOfWeek(rawValue: dayRaw) ?? .mon }
+        set { dayRaw = newValue.rawValue }
+    }
+}
+
+/// 유연 쿼터(식사 등) 블록을 특정 주·요일·회차에서 드래그해 옮긴 위치를 저장한다.
+/// 저장이 없으면 타임라인이 기본 위치(활동 구간에 균등 분산)로 그린다.
+@Model
+final class QuotaPlacement {
+    var routineName: String = ""
+    var dayRaw: Int = 0
+    var weekStartDate: Date = Date.currentWeekStart
+    var sessionIndex: Int = 0
+    var startHour: Double = 0
+
+    init(routineName: String, day: DayOfWeek, weekStartDate: Date, sessionIndex: Int, startHour: Double) {
+        self.routineName = routineName
+        self.dayRaw = day.rawValue
+        self.weekStartDate = weekStartDate
+        self.sessionIndex = sessionIndex
+        self.startHour = startHour
     }
 
     var day: DayOfWeek {

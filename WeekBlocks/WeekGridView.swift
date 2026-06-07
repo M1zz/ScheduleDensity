@@ -5,6 +5,7 @@ struct DayColumn: View {
     let date: Date
     var canPlan: Bool = true
     let routines: [Routine]
+    var quotaRoutines: [Routine] = []   // 유연 주간 쿼터(식사 등) — 점선 칩으로 표시
     let blocks: [PlanBlock]
     let onAdd: () -> Void
     let onEdit: (PlanBlock) -> Void
@@ -44,7 +45,11 @@ struct DayColumn: View {
                 RoutineChip(routine: routine) { onEditRoutine(routine) }
             }
 
-            if !routines.isEmpty && !blocks.isEmpty {
+            ForEach(quotaRoutines) { routine in
+                RoutineChip(routine: routine) { onEditRoutine(routine) }
+            }
+
+            if !(routines.isEmpty && quotaRoutines.isEmpty) && !blocks.isEmpty {
                 Divider().opacity(0.4)
             }
 
@@ -96,6 +101,18 @@ struct RoutineChip: View {
 
     @State private var hovering = false
 
+    private var isQuota: Bool { routine.kind == .quota }
+
+    // 쿼터(유연)는 점선 테두리 + 더 옅은 배경으로 '시간 유연'임을 드러낸다(타임라인 점선과 일관).
+    private var subtitle: String {
+        if isQuota {
+            var s = String(format: "주 %.1fh", routine.weeklyHours)
+            if routine.sessionsPerDay > 0 { s += " · \(routine.sessionsPerDay)회" }
+            return s
+        }
+        return "\(formatHour(routine.startHour))  \(String(format: "%.1fh", routine.durationHours))"
+    }
+
     var body: some View {
         let color = routine.displayColor
         Button(action: onTap) {
@@ -109,24 +126,26 @@ struct RoutineChip: View {
                     Text(routine.name)
                         .font(.system(size: 12, weight: .semibold))
                         .lineLimit(1)
-                    Text("\(formatHour(routine.startHour))  \(String(format: "%.1fh", routine.durationHours))")
+                    Text(subtitle)
                         .font(.system(size: 10))
                         .opacity(0.7)
                 }
 
                 Spacer()
 
-                Image(systemName: "lock.fill")
+                Image(systemName: isQuota ? "arrow.left.and.right" : "lock.fill")
                     .font(.system(size: 9))
-                    .opacity(0.35)
+                    .opacity(isQuota ? 0.5 : 0.35)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
-            .background(color.opacity(hovering ? 0.18 : 0.12), in: RoundedRectangle(cornerRadius: 7))
+            .background(color.opacity(isQuota ? (hovering ? 0.12 : 0.07) : (hovering ? 0.18 : 0.12)),
+                        in: RoundedRectangle(cornerRadius: 7))
             .overlay(
                 RoundedRectangle(cornerRadius: 7)
-                    .stroke(color.opacity(hovering ? 0.5 : 0.3), lineWidth: 1)
+                    .stroke(color.opacity(hovering ? 0.55 : 0.4),
+                            style: isQuota ? StrokeStyle(lineWidth: 1, dash: [3, 2]) : StrokeStyle(lineWidth: 1))
             )
             .foregroundStyle(color)
         }

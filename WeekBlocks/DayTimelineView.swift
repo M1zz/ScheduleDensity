@@ -6,8 +6,16 @@ import SwiftUI
 // 계획 블록은 정확한 시각이 없으므로 시간대 시작 근처의 빈 구간에 통째로,
 // 루틴·다른 계획과 겹치지 않게 채운다. 남는 구간 = 자유 시간.
 
+/// 세그먼트의 원본 — 드래그로 옮길 때 어느 모델의 시작 시각을 바꿔야 하는지 식별.
+enum SegmentSource {
+    case none
+    case fixedRoutine(name: String)            // 위치는 RoutineOccurrence.startHourOverride 에 저장
+    case planBlock(PlanBlock)                  // 위치는 PlanBlock.startHour 에 저장(자유·루틴 안 공용)
+    case quotaSession(name: String, index: Int) // 위치는 QuotaPlacement 에 저장
+}
+
 struct TimeSegment: Identifiable {
-    let id = UUID()
+    let id: String                 // 재계산해도 같은 출처면 같은 id (드래그 중 안정성)
     let start: Double      // 0...24
     let end: Double
     let color: Color
@@ -15,25 +23,37 @@ struct TimeSegment: Identifiable {
     let isRoutine: Bool
     var isFlexible: Bool = false   // 주간 쿼터(시간 유연) → 점선·반투명
     var isNested: Bool = false     // 루틴 시간 안의 일정 → 루틴 위에 겹쳐(인셋) 표시
+    var source: SegmentSource = .none
+    var logicalStart: Double = 0   // 자정을 넘겨 나뉘어도 원본의 '진짜' 시작 시각(드래그 기준)
+    var logicalDuration: Double = 0
 }
 
 enum TimelineLayout {
     /// 하루(0~24h)에 대한 색칠 구간 목록을 계산.
-    static func segments(routines: [Routine], blocks: [PlanBlock], quota: [Routine] = []) -> [TimeSegment] {
+    /// - routineStartOverride: 이 요일만 따로 옮긴 고정 루틴 시작 시각(이름 → 시각).
+    /// - quotaPlacement: 이 요일에서 옮긴 식사 등 유연 블록 위치(이름 → [회차: 시각]).
+    static func segments(routines: [Routine], blocks: [PlanBlock], quota: [Routine] = [],
+                         routineStartOverride: [String: Double] = [:],
+                         quotaPlacement: [String: [Int: Double]] = [:]) -> [TimeSegment] {
         var segs: [TimeSegment] = []
         var occupied: [(Double, Double)] = []
 
-        // 1) 고정 루틴 — 정해진 시각 그대로. 자정을 넘기면 [s,24] / [0,e-24] 로 나눠 그린다.
+        func resolvedStart(_ r: Routine) -> Double { routineStartOverride[r.name] ?? r.startHour }
+
+        // 1) 고정 루틴 — 정해진 시각(요일별 override 우선) 그대로. 자정을 넘기면 [s,24] / [0,e-24] 로 나눠 그린다.
         //    (예: 수면 22:00+8h → 22~24 와 0~6)
-        for r in routines.sorted(by: { $0.startHour < $1.startHour }) {
-            for (a, b) in splitAtMidnight(r.startHour, r.startHour + r.durationHours) {
-                segs.append(TimeSegment(start: a, end: b, color: r.displayColor, title: r.name, isRoutine: true))
-                occupied.append((a, b))
+        for r in routines.sorted(by: { resolvedStart($0) < resolvedStart($1) }) {
+            let start = resolvedStart(r)
+            var piece = 0
+            for (a, b) in splitAtMidnight(start, start + r.durationHours) {
+                segs.append(TimeSegment(id: "routine:\(r.name):\(piece)", start: a, end: b,
+                                        color: r.displayColor, title: r.name, isRoutine: true,
+                                        source: .fixedRoutine(name: r.name),
+                                        logicalStart: start, logicalDuration: r.durationHours))
+                occupied.append((a, b)); piece += 1
             }
         }
 
-        // 2) 계획 블록 — 정확한 시각이 없으므로 시간대 시작 근처 빈 구간에 통째로(겹치지 않게).
-        //    단, '루틴 안' 블록은 빈 구간 배치에서 제외(아래 3단계에서 겹쳐 그림).
         var free = subtract([(0, 24)], occupied)
         func place(desired: Double, _ dur: Double) -> (Double, Double)? {
             let d = min(max(dur, 0), 24)
@@ -50,40 +70,73 @@ enum TimelineLayout {
         }
 
         let freeBlocks = blocks.filter { !$0.withinRoutine }
+
+        // 2a) 시각이 지정된(드래그된) 계획 블록 — 그 자리에 그대로 둔다(겹쳐도 됨).
+        for blk in freeBlocks where blk.startHour >= 0 {
+            let color: Color = blk.concreteVerified ? .accentColor : .orange
+            let s = blk.startHour
+            var piece = 0
+            for (a, b) in splitAtMidnight(s, s + blk.durationHours) {
+                segs.append(TimeSegment(id: "block:\(blockID(blk)):\(piece)", start: a, end: b,
+                                        color: color, title: blk.title, isRoutine: false,
+                                        source: .planBlock(blk), logicalStart: s, logicalDuration: blk.durationHours))
+                free = subtract(free, [(a, b)]); piece += 1
+            }
+        }
+
+        // 2b) 시각 미지정 계획 블록 — 시간대 시작 근처 빈 구간에 통째로(겹치지 않게) 자동 배치.
         let bandStart: [TimeBand: Double] = [.morning: 6, .afternoon: 12, .evening: 18, .night: 23]
         for band in [TimeBand.morning, .afternoon, .evening, .night] {
-            for blk in freeBlocks.filter({ $0.timeBand == band }).sorted(by: { $0.durationHours > $1.durationHours }) {
+            for blk in freeBlocks.filter({ $0.startHour < 0 && $0.timeBand == band }).sorted(by: { $0.durationHours > $1.durationHours }) {
                 let color: Color = blk.concreteVerified ? .accentColor : .orange
                 if let (s, e) = place(desired: bandStart[band] ?? 12, blk.durationHours) {
-                    segs.append(TimeSegment(start: s, end: e, color: color, title: blk.title, isRoutine: false))
+                    segs.append(TimeSegment(id: "block:\(blockID(blk)):0", start: s, end: e,
+                                            color: color, title: blk.title, isRoutine: false,
+                                            source: .planBlock(blk), logicalStart: s, logicalDuration: blk.durationHours))
                 }
             }
         }
 
-        // 3) 주간 쿼터(시간 유연) — 남은 자유 시간에 회당 개수만큼 분산해 유연 블록으로.
+        // 3) 주간 쿼터(시간 유연) — 끼니/세션 수만큼 하루 활동 구간(아침~저녁)에 분산.
+        //    저장된 위치(드래그)가 있으면 그 자리에, 없으면 기본 위치에. 회사 등 다른 블록과 겹쳐도 되며,
+        //    겹친 시간은 자유 시간을 깎지 않는다 — 남은 시간 계산은 구간 합집합으로 처리.
+        let winStart = 7.5, winEnd = 19.5   // 끼니가 놓이는 하루 활동 구간
         for q in quota where q.weeklyHours > 0 {
             let pieces = max(1, q.sessionsPerDay)
             let each = (q.weeklyHours / 7) / Double(pieces)
             guard each > 0.05 else { continue }
             for i in 0..<pieces {
-                let desired = 24.0 * (Double(i) + 0.5) / Double(pieces)  // 하루에 고르게 분산
-                if let (s, e) = place(desired: desired, each) {
-                    segs.append(TimeSegment(start: s, end: e, color: q.displayColor,
-                                            title: q.name, isRoutine: false, isFlexible: true))
-                }
+                let center = pieces == 1
+                    ? (winStart + winEnd) / 2
+                    : winStart + (winEnd - winStart) * Double(i) / Double(pieces - 1)
+                // 기본 위치도 드래그 격자(15분)에 맞춰, 옮긴 뒤 다시 기본 자리로 드래그해 돌아올 수 있게 한다.
+                let snappedDefault = ((center - each / 2) / 0.25).rounded() * 0.25
+                let defaultStart = min(max(snappedDefault, 0), 24 - each)
+                let s = min(max(quotaPlacement[q.name]?[i] ?? defaultStart, 0), 24 - each)
+                segs.append(TimeSegment(id: "quota:\(q.name):\(i)", start: s, end: s + each,
+                                        color: q.displayColor, title: q.name, isRoutine: false,
+                                        isFlexible: true, source: .quotaSession(name: q.name, index: i),
+                                        logicalStart: s, logicalDuration: each))
             }
         }
 
         // 4) 루틴 안 일정 — 정확한 시각에 루틴 위로 겹쳐(인셋) 그린다. 빈 구간/자유 시간엔 영향 없음.
         for blk in blocks where blk.withinRoutine {
             let start = blk.startHour >= 0 ? blk.startHour : 9
+            var piece = 0
             for (a, b) in splitAtMidnight(start, start + blk.durationHours) {
-                segs.append(TimeSegment(start: a, end: b, color: .accentColor,
-                                        title: blk.title, isRoutine: false, isNested: true))
+                segs.append(TimeSegment(id: "nested:\(blockID(blk)):\(piece)", start: a, end: b,
+                                        color: .accentColor, title: blk.title, isRoutine: false,
+                                        isNested: true, source: .planBlock(blk),
+                                        logicalStart: start, logicalDuration: blk.durationHours))
+                piece += 1
             }
         }
         return segs
     }
+
+    /// 드래그 중 재계산해도 안정적인 PlanBlock 식별자.
+    private static func blockID(_ blk: PlanBlock) -> String { String(describing: blk.persistentModelID) }
 
     /// 자정을 넘기는 구간을 [s,24] 와 [0,e-24] 로 나눈다.
     private static func splitAtMidnight(_ s: Double, _ e: Double) -> [(Double, Double)] {
@@ -121,6 +174,24 @@ enum TimelineLayout {
         return best?.band ?? .afternoon
     }
 
+    /// 구간들의 합집합 총 길이. 서로 겹치는 부분은 한 번만 센다.
+    /// (유연 블록이 다른 일정과 겹치면 그만큼은 자유 시간을 깎지 않도록 하는 데 사용.)
+    static func unionLength(_ intervals: [(Double, Double)]) -> Double {
+        let sorted = intervals.filter { $0.1 > $0.0 }.sorted { $0.0 < $1.0 }
+        var total = 0.0
+        var curStart = -1.0, curEnd = -1.0
+        for (s, e) in sorted {
+            if s > curEnd {
+                if curEnd > curStart { total += curEnd - curStart }
+                curStart = s; curEnd = e
+            } else {
+                curEnd = max(curEnd, e)
+            }
+        }
+        if curEnd > curStart { total += curEnd - curStart }
+        return total
+    }
+
     /// ranges에서 occ 구간들을 뺀 나머지(빈 구간).
     private static func subtract(_ ranges: [(Double, Double)], _ occ: [(Double, Double)]) -> [(Double, Double)] {
         var result: [(Double, Double)] = []
@@ -144,19 +215,49 @@ enum TimelineLayout {
 // MARK: - 한 요일 행
 
 struct DayTimelineRow: View {
+    @Environment(\.modelContext) private var context
     let day: DayOfWeek
     let date: Date
     let routines: [Routine]
     let blocks: [PlanBlock]
     var quotaRoutines: [Routine] = []
+    var occurrences: [RoutineOccurrence] = []      // 이 요일·주의 고정 루틴 배치(위치 override 저장처)
+    var quotaPlacements: [QuotaPlacement] = []      // 이 요일·주의 식사 등 위치 저장처
+    var weekStart: Date = .currentWeekStart
 
+    // 드래그 중인 세그먼트와 이동량(px). 같은 행 안에서만 유효.
+    @State private var dragId: String? = nil
+    @State private var dragPx: CGFloat = 0
+
+    private var routineStartOverride: [String: Double] {
+        var d: [String: Double] = [:]
+        for o in occurrences where o.startHourOverride >= 0 { d[o.routineName] = o.startHourOverride }
+        return d
+    }
+    private var quotaPlacementMap: [String: [Int: Double]] {
+        var d: [String: [Int: Double]] = [:]
+        for p in quotaPlacements { d[p.routineName, default: [:]][p.sessionIndex] = p.startHour }
+        return d
+    }
+
+    private var segments: [TimeSegment] {
+        TimelineLayout.segments(routines: routines, blocks: blocks, quota: quotaRoutines,
+                                routineStartOverride: routineStartOverride,
+                                quotaPlacement: quotaPlacementMap)
+    }
+    // 실제로 그려진 구간들의 합집합 = 차지한 시간.
+    // 유연(식사) 블록이 회사 등과 겹치면 그 부분은 합집합에서 한 번만 세므로 자유 시간을 깎지 않는다.
+    // '루틴 안' 일정은 이미 루틴 시간에 포함되므로 제외.
     private var occupied: Double {
+        TimelineLayout.unionLength(segments.filter { !$0.isNested }.map { ($0.start, $0.end) })
+    }
+    // 고정으로 반드시 잡아야 하는 시간(루틴 + 자유 계획)의 단순 합. 24h를 넘으면 초과 배정.
+    private var hardOccupied: Double {
         routines.reduce(0) { $0 + $1.durationHours }
             + blocks.filter { !$0.withinRoutine }.reduce(0) { $0 + $1.durationHours }
-            + quotaRoutines.reduce(0) { $0 + $1.dailyQuotaHours }
     }
     private var freeHours: Double { max(0, 24 - occupied) }
-    private var isOverbooked: Bool { occupied > 24.0001 }
+    private var isOverbooked: Bool { hardOccupied > 24.0001 }
     private var isToday: Bool { Calendar.current.isDateInToday(date) }
 
     var body: some View {
@@ -188,11 +289,13 @@ struct DayTimelineRow: View {
                     }
 
                     // 활동 구간
-                    ForEach(TimelineLayout.segments(routines: routines, blocks: blocks, quota: quotaRoutines)) { seg in
+                    ForEach(segments) { seg in
                         let x = CGFloat(seg.start) / 24 * w
                         let segW = CGFloat(seg.end - seg.start) / 24 * w
-                        segmentView(seg, width: max(1, segW))
-                            .offset(x: x)
+                        let dragOffset = (seg.id == dragId) ? dragPx : 0
+                        segmentView(seg, width: max(1, segW), rowWidth: w)
+                            .offset(x: x + dragOffset)
+                            .zIndex(seg.id == dragId ? 1 : 0)
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 4))
@@ -208,8 +311,9 @@ struct DayTimelineRow: View {
     }
 
     @ViewBuilder
-    private func segmentView(_ seg: TimeSegment, width: CGFloat) -> some View {
+    private func segmentView(_ seg: TimeSegment, width: CGFloat, rowWidth: CGFloat) -> some View {
         let shape = RoundedRectangle(cornerRadius: 3)
+        let dragging = seg.id == dragId
         ZStack {
             if seg.isFlexible {
                 shape.fill(seg.color.opacity(0.20))
@@ -234,6 +338,57 @@ struct DayTimelineRow: View {
                     .frame(width: width, alignment: .leading)
             }
         }
+        .shadow(color: dragging ? .black.opacity(0.25) : .clear, radius: dragging ? 4 : 0, y: dragging ? 1 : 0)
+        .contentShape(Rectangle())
+        // 좌표계는 .global — 블록을 offset으로 움직여도 translation이 흔들리지 않게(로컬이면 자기 자신을 쫓아 찐득해짐).
+        // highPriorityGesture로 바깥 ScrollView의 스크롤보다 드래그를 우선.
+        .highPriorityGesture(
+            DragGesture(minimumDistance: 2, coordinateSpace: .global)
+                .onChanged { v in
+                    dragId = seg.id
+                    dragPx = v.translation.width
+                }
+                .onEnded { v in
+                    let deltaHours = Double(v.translation.width / max(rowWidth, 1)) * 24
+                    commitDrag(seg, deltaHours: deltaHours)
+                    dragId = nil
+                    dragPx = 0
+                }
+        )
+        .help("드래그해서 시각 이동 (15분 단위)")
+    }
+
+    /// 드래그를 끝낸 세그먼트의 새 시작 시각을 계산해 원본 모델에 저장(15분 스냅).
+    private func commitDrag(_ seg: TimeSegment, deltaHours: Double) {
+        guard abs(deltaHours) > 0.001 else { return }   // 단순 클릭은 무시
+        var newStart = ((seg.logicalStart + deltaHours) / 0.25).rounded() * 0.25
+        // 고정 루틴(수면 등)은 자정을 넘겨도 되므로 시작만 하루 범위로, 나머지는 길이만큼 여유를 둬 자정 넘김 방지.
+        let maxStart: Double
+        if case .fixedRoutine = seg.source { maxStart = 23.75 } else { maxStart = max(0, 24 - seg.logicalDuration) }
+        newStart = min(max(newStart, 0), maxStart)
+
+        switch seg.source {
+        case .fixedRoutine(let name):
+            if let occ = occurrences.first(where: { $0.routineName == name }) {
+                occ.startHourOverride = newStart
+            } else {
+                let occ = RoutineOccurrence(routineName: name, day: day, weekStartDate: weekStart)
+                occ.startHourOverride = newStart
+                context.insert(occ)
+            }
+        case .planBlock(let blk):
+            blk.startHour = newStart
+        case .quotaSession(let name, let index):
+            if let p = quotaPlacements.first(where: { $0.routineName == name && $0.sessionIndex == index }) {
+                p.startHour = newStart
+            } else {
+                context.insert(QuotaPlacement(routineName: name, day: day, weekStartDate: weekStart,
+                                              sessionIndex: index, startHour: newStart))
+            }
+        case .none:
+            return
+        }
+        try? context.save()
     }
 
     private var dayNumber: String {

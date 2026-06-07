@@ -8,6 +8,7 @@ struct ContentView: View {
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var backlogItems: [BacklogItem]
     @Query private var allOccurrences: [RoutineOccurrence]
+    @Query private var allQuotaPlacements: [QuotaPlacement]
 
     @State private var selectedWeek: Date = .currentWeekStart
     @State private var blockSheet: BlockSheetContext?
@@ -242,15 +243,6 @@ struct ContentView: View {
                 tint: .accentColor,
                 subtitle: "하루 약 \(String(format: "%.1f", freeHours / 7))h"
             )
-            MetricCard(
-                label: "이번 주 계획됨",
-                value: String(format: "%.1f", plannedHours),
-                unit: "h",
-                tint: plannedHours > freeHours ? .red : .primary,
-                subtitle: plannedHours > freeHours
-                    ? "자유 시간 초과 \(String(format: "%.1f", plannedHours - freeHours))h"
-                    : "여유 \(String(format: "%.1f", freeHours - plannedHours))h"
-            )
         }
     }
 
@@ -276,9 +268,13 @@ struct ContentView: View {
                 )
                 .frame(minHeight: 120)
             } else {
-                LazyVStack(spacing: 6) {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 180, maximum: 260), spacing: 8)],
+                    alignment: .leading,
+                    spacing: 8
+                ) {
                     ForEach(routines) { routine in
-                        RoutineRow(
+                        RoutineBlock(
                             routine: routine,
                             onEdit: { routineSheet = RoutineSheetContext(routine: routine) },
                             onDelete: {
@@ -323,7 +319,14 @@ struct ContentView: View {
                         date: dayDate(day),
                         routines: fixedRoutines(on: day),
                         blocks: weekBlocks.filter { $0.day == day },
-                        quotaRoutines: routines.filter { $0.kind == .quota }
+                        quotaRoutines: routines.filter { $0.kind == .quota },
+                        occurrences: allOccurrences.filter {
+                            $0.day == day && Calendar(identifier: .iso8601).isDate($0.weekStartDate, inSameDayAs: selectedWeek)
+                        },
+                        quotaPlacements: allQuotaPlacements.filter {
+                            $0.day == day && Calendar(identifier: .iso8601).isDate($0.weekStartDate, inSameDayAs: selectedWeek)
+                        },
+                        weekStart: selectedWeek
                     )
                 }
             }
@@ -356,6 +359,7 @@ struct ContentView: View {
                                 .filter { $0.kind == .fixed && names.contains($0.name) }
                                 .sorted { $0.durationHours > $1.durationHours }
                         }(),
+                        quotaRoutines: routines.filter { $0.kind == .quota }.sorted { $0.weeklyHours > $1.weeklyHours },
                         blocks: weekBlocks.filter { $0.day == day }.sorted { $0.durationHours > $1.durationHours },
                         onAdd: {
                             blockSheet = BlockSheetContext(day: day, block: nil)
@@ -623,16 +627,21 @@ struct Legend: View {
         HStack(spacing: 14) {
             legendDot(color: .accentColor, label: "구체적인 블록")
             legendDot(color: .orange, label: "추상적인 블록")
+            legendDot(color: .secondary, label: "유연 쿼터", dashed: true)
         }
         .font(.caption)
         .foregroundStyle(.secondary)
     }
 
-    private func legendDot(color: Color, label: String) -> some View {
+    private func legendDot(color: Color, label: String, dashed: Bool = false) -> some View {
         HStack(spacing: 5) {
             RoundedRectangle(cornerRadius: 2)
-                .fill(color.opacity(0.25))
-                .overlay(RoundedRectangle(cornerRadius: 2).stroke(color.opacity(0.5), lineWidth: 0.5))
+                .fill(color.opacity(dashed ? 0.10 : 0.25))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2)
+                        .stroke(color.opacity(0.5),
+                                style: dashed ? StrokeStyle(lineWidth: 0.8, dash: [2, 1.5]) : StrokeStyle(lineWidth: 0.5))
+                )
                 .frame(width: 10, height: 10)
             Text(label)
         }

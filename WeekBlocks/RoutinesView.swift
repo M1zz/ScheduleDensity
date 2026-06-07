@@ -76,6 +76,76 @@ struct RoutineRow: View {
     }
 }
 
+/// "고정 루틴 · 협상 불가" 섹션용 블록 카드. 고정·쿼터 두 종류 모두 표시.
+struct RoutineBlock: View {
+    let routine: Routine
+    let onEdit: () -> Void
+    let onDelete: () -> Void
+
+    @State private var hovering = false
+
+    var body: some View {
+        let color = routine.displayColor
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: routine.iconName)
+                    .font(.system(size: 12))
+                    .foregroundStyle(color)
+                    .frame(width: 16)
+                Text(routine.name)
+                    .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(1)
+                Spacer(minLength: 4)
+                if hovering {
+                    Button { onEdit() } label: {
+                        Image(systemName: "pencil").font(.system(size: 11))
+                    }
+                    .buttonStyle(.plain)
+                    if routine.kind == .fixed {
+                        // 협상 불가 고정 루틴 — 실수 삭제 방지로 잠금(편집에서만 삭제).
+                        Image(systemName: "lock.fill").font(.system(size: 10)).foregroundStyle(.secondary)
+                    } else {
+                        Button(role: .destructive) { onDelete() } label: {
+                            Image(systemName: "trash").font(.system(size: 11))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.red)
+                    }
+                } else if routine.kind == .fixed {
+                    Image(systemName: "lock.fill").font(.system(size: 10)).foregroundStyle(.secondary.opacity(0.45))
+                }
+            }
+
+            Text(routine.scheduleDescription)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .lineLimit(2, reservesSpace: true)   // 1줄짜리도 2줄 공간 확보 → 모든 블록 높이 통일
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 6) {
+                if routine.kind == .fixed {
+                    Text(String(format: "%.1fh/일", routine.durationHours))
+                        .font(.system(size: 11, weight: .medium))
+                }
+                Text(String(format: "%.1fh/주", routine.totalWeeklyHours))
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(color.opacity(hovering ? 0.16 : 0.10), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(RoundedRectangle(cornerRadius: 8).stroke(color.opacity(hovering ? 0.45 : 0.28), lineWidth: 1))
+        .contentShape(RoundedRectangle(cornerRadius: 8))
+        .draggable("routine:\(routine.name)")
+        .onHover { hovering = $0 }
+        .onTapGesture(count: 2) { onEdit() }
+        .help(routine.scheduleDescription)
+    }
+}
+
 struct RoutineEditorView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss

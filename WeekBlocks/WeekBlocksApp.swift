@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct WeekBlocksApp: App {
     let container: ModelContainer = {
-        let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self, RoutineOccurrence.self, BacklogCategory.self])
+        let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self, RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self])
         let config = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
