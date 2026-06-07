@@ -2,6 +2,20 @@
 
 일정의 밀도를 시각화하고, 비어있는 시간대를 추천해주는 iOS 앱입니다.
 
+> **패밀리 구조**: 이 프로젝트(`ScheduleDensityApp.xcodeproj`)는 두 개의 타깃을 포함합니다.
+> - **ScheduleDensityApp** (iOS) — 일정 밀도 시각화 + 빈 시간 추천 (`com.example.ScheduleDensityApp`)
+> - **WeekBlocks** (macOS) — 주간 타임블로킹 + 구체성 검사 (표시이름 ScheduleDensity, `com.devkoan.ScheduleDensityApp`)
+>
+> iCloud(CloudKit) 동기화: 패밀리 공유 컨테이너 `iCloud.com.devkoan.ScheduleDensity` 사용.
+> macOS 타깃은 적용 완료(SwiftData `cloudKitDatabase: .private(...)`). iOS 타깃은 미적용(아래 todo 참고).
+>
+> 빌드:
+> ```
+> xcodebuild -scheme ScheduleDensityApp -destination 'generic/platform=iOS' build
+> xcodebuild -scheme WeekBlocks -destination 'platform=macOS' build
+> ```
+> macOS 앱 소스는 `WeekBlocks/` 폴더에 있습니다.
+
 ## 📱 주요 기능
 
 1. **주간 캘린더 뷰**
