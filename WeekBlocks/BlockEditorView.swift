@@ -8,6 +8,8 @@ struct BlockEditorView: View {
     let existing: PlanBlock?
     let day: DayOfWeek
     let weekStart: Date
+    /// 새 블록일 때 고정 루틴을 피해 자동 배정할 시간대.
+    var suggestedBand: TimeBand = .evening
 
     @State private var title: String = ""
     @State private var timeBand: TimeBand = .evening
@@ -83,7 +85,10 @@ struct BlockEditorView: View {
 
             footerBar
         }
-        .onAppear { loadExisting() }
+        .onAppear {
+            if existing == nil { timeBand = suggestedBand }
+            loadExisting()
+        }
     }
 
     // MARK: subviews

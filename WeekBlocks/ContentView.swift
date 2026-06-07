@@ -100,7 +100,11 @@ struct ContentView: View {
             BlockEditorView(
                 existing: ctx.block,
                 day: ctx.day,
-                weekStart: selectedWeek
+                weekStart: selectedWeek,
+                suggestedBand: TimelineLayout.suggestedBand(
+                    routines: fixedRoutines(on: ctx.day),
+                    blocks: weekBlocks.filter { $0.day == ctx.day }
+                )
             )
             .frame(minWidth: 520, minHeight: 540)
         }
@@ -292,7 +296,7 @@ struct ContentView: View {
                 Label("요일별 하루 24시간", systemImage: "clock")
                     .font(.headline)
                 Spacer()
-                Text("블록이 서로 겹치지 않도록 배치 (시각은 근사치)")
+                Text("고정 루틴은 정해진 시각, 계획은 겹치지 않게 빈 구간에")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -418,7 +422,10 @@ struct ContentView: View {
             guard let item = backlogItems.first(where: { $0.dragToken == token }) else { return }
             let block = PlanBlock(
                 day: day,
-                timeBand: .afternoon,
+                timeBand: TimelineLayout.suggestedBand(
+                    routines: fixedRoutines(on: day),
+                    blocks: weekBlocks.filter { $0.day == day }
+                ),
                 durationHours: item.durationHours,
                 title: item.title,
                 successCriteria: "",

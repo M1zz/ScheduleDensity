@@ -2,10 +2,9 @@ import SwiftUI
 
 // MARK: - 요일별 하루 24시간 타임라인
 //
-// 모든 블록(고정 루틴 + 계획)을 **절대 겹치지 않게** 통째로 배치한다.
-// 각 블록은 원하는 시각(루틴=시작 시각, 계획=시간대 시작) 근처의 빈 구간에
-// 통으로 들어가며, 자리가 겹치면 가장 가까운 빈 구간으로 밀려난다.
-// 남는 구간 = 자유 시간.
+// 고정 루틴은 정해진 시각 그대로 그린다(자정을 넘기면 22~24 / 0~6 처럼 나눠서).
+// 계획 블록은 정확한 시각이 없으므로 시간대 시작 근처의 빈 구간에 통째로,
+// 루틴·다른 계획과 겹치지 않게 채운다. 남는 구간 = 자유 시간.
 
 struct TimeSegment: Identifiable {
     let id = UUID()
@@ -17,19 +16,28 @@ struct TimeSegment: Identifiable {
 }
 
 enum TimelineLayout {
-    /// 하루(0~24h)에 대한 색칠 구간 목록을 계산. 모든 블록은 통째로, 서로 겹치지 않게 배치된다.
+    /// 하루(0~24h)에 대한 색칠 구간 목록을 계산.
     static func segments(routines: [Routine], blocks: [PlanBlock]) -> [TimeSegment] {
-        var free: [(Double, Double)] = [(0, 24)]
         var segs: [TimeSegment] = []
+        var occupied: [(Double, Double)] = []
 
-        /// 원하는 시각(desired) 근처의 빈 구간에 길이 dur짜리 블록을 통째로 배치.
-        /// 들어갈 빈 구간이 없으면 nil(과예약 → 그리지 않음, 절대 겹치지 않게).
+        // 1) 고정 루틴 — 정해진 시각 그대로. 자정을 넘기면 [s,24] / [0,e-24] 로 나눠 그린다.
+        //    (예: 수면 22:00+8h → 22~24 와 0~6)
+        for r in routines.sorted(by: { $0.startHour < $1.startHour }) {
+            for (a, b) in splitAtMidnight(r.startHour, r.startHour + r.durationHours) {
+                segs.append(TimeSegment(start: a, end: b, color: r.displayColor, title: r.name, isRoutine: true))
+                occupied.append((a, b))
+            }
+        }
+
+        // 2) 계획 블록 — 정확한 시각이 없으므로 시간대 시작 근처 빈 구간에 통째로(겹치지 않게).
+        var free = subtract([(0, 24)], occupied)
         func place(desired: Double, _ dur: Double) -> (Double, Double)? {
             let d = min(max(dur, 0), 24)
             guard d > 0 else { return nil }
             var best: (dist: Double, start: Double)? = nil
             for slot in free where slot.1 - slot.0 >= d - 1e-9 {
-                let cs = min(max(desired, slot.0), slot.1 - d)   // 빈 구간 안에서 desired에 최대한 가깝게
+                let cs = min(max(desired, slot.0), slot.1 - d)
                 let dist = abs(cs - desired)
                 if best == nil || dist < best!.dist { best = (dist, cs) }
             }
@@ -38,21 +46,9 @@ enum TimelineLayout {
             return (b.start, b.start + d)
         }
 
-        // 1) 고정 루틴 — 시작 시각 순서대로. 자정을 넘기면 아침쪽(0시 근처)에 한 덩어리로.
-        for r in routines.sorted(by: { $0.startHour < $1.startHour }) {
-            let wraps = r.startHour + r.durationHours > 24
-            let desired = wraps ? 0 : r.startHour
-            if let (s, e) = place(desired: desired, r.durationHours) {
-                segs.append(TimeSegment(start: s, end: e, color: r.displayColor, title: r.name, isRoutine: true))
-            }
-        }
-
-        // 2) 계획 블록 — 시간대 시작 시각 근처의 빈 구간에 통째로.
         let bandStart: [TimeBand: Double] = [.morning: 6, .afternoon: 12, .evening: 18, .night: 23]
         for band in [TimeBand.morning, .afternoon, .evening, .night] {
-            let bandBlocks = blocks.filter { $0.timeBand == band }
-                .sorted { $0.durationHours > $1.durationHours }
-            for blk in bandBlocks {
+            for blk in blocks.filter({ $0.timeBand == band }).sorted(by: { $0.durationHours > $1.durationHours }) {
                 let color: Color = blk.concreteVerified ? .accentColor : .orange
                 if let (s, e) = place(desired: bandStart[band] ?? 12, blk.durationHours) {
                     segs.append(TimeSegment(start: s, end: e, color: color, title: blk.title, isRoutine: false))
@@ -60,6 +56,42 @@ enum TimelineLayout {
             }
         }
         return segs
+    }
+
+    /// 자정을 넘기는 구간을 [s,24] 와 [0,e-24] 로 나눈다.
+    private static func splitAtMidnight(_ s: Double, _ e: Double) -> [(Double, Double)] {
+        let start = max(0, s)
+        if e <= 24 { return [(start, e)] }
+        return [(start, 24), (0, min(e - 24, 24))]
+    }
+
+    static let bands: [TimeBand] = [.morning, .afternoon, .evening, .night]
+
+    static func bandIntervals(_ b: TimeBand) -> [(Double, Double)] {
+        switch b {
+        case .morning:   return [(6, 12)]
+        case .afternoon: return [(12, 18)]
+        case .evening:   return [(18, 23)]
+        case .night:     return [(23, 24), (0, 6)]
+        }
+    }
+
+    /// 고정 루틴과 기존 계획을 피해 가장 여유가 많은 시간대를 추천. (새 계획 블록 기본 배정)
+    static func suggestedBand(routines: [Routine], blocks: [PlanBlock]) -> TimeBand {
+        var occ: [(Double, Double)] = []
+        for r in routines {
+            occ.append(contentsOf: splitAtMidnight(r.startHour, r.startHour + r.durationHours))
+        }
+        func length(_ ranges: [(Double, Double)]) -> Double { ranges.reduce(0) { $0 + ($1.1 - $1.0) } }
+
+        var best: (band: TimeBand, free: Double)? = nil
+        for b in bands {
+            let routineFree = length(subtract(bandIntervals(b), occ))
+            let blockHrs = blocks.filter { $0.timeBand == b }.reduce(0) { $0 + $1.durationHours }
+            let free = max(0, routineFree - blockHrs)
+            if best == nil || free > best!.free + 1e-9 { best = (b, free) }
+        }
+        return best?.band ?? .afternoon
     }
 
     /// ranges에서 occ 구간들을 뺀 나머지(빈 구간).

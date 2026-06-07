@@ -12,10 +12,10 @@ struct RoutineRow: View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(Color(nsColor: .controlBackgroundColor))
+                    .fill(routine.displayColor.opacity(0.18))
                     .frame(width: 32, height: 32)
                 Image(systemName: routine.iconName)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(routine.displayColor)
                     .font(.system(size: 14))
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -138,14 +138,22 @@ struct RoutineEditorView: View {
                         HStack {
                             Text("시작")
                             Spacer()
-                            TimeStepper(value: $startHour, range: 0...24, step: 0.5)
+                            DatePicker("", selection: startTimeBinding, displayedComponents: .hourAndMinute)
+                                .labelsHidden()
+                            Text(endTimeLabel)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                                .monospacedDigit()
                         }
                         HStack {
-                            Text("길이 (h)")
+                            Text("길이")
                             Spacer()
                             TextField("", value: $durationHours, format: .number.precision(.fractionLength(0...2)))
-                                .frame(width: 80)
+                                .frame(width: 56)
                                 .multilineTextAlignment(.trailing)
+                            Text("h").foregroundStyle(.secondary)
+                            Stepper("", value: $durationHours, in: 0.25...24, step: 0.5)
+                                .labelsHidden()
                         }
                         HStack {
                             Text("주간 합계")
@@ -232,6 +240,27 @@ struct RoutineEditorView: View {
         }
     }
 
+    /// startHour(Double) ↔ Date 브리지 — 시:분 DatePicker용.
+    private var startTimeBinding: Binding<Date> {
+        Binding(
+            get: {
+                let total = Int((startHour * 60).rounded())
+                var comps = DateComponents()
+                comps.hour = (total / 60) % 24
+                comps.minute = total % 60
+                return Calendar.current.date(from: comps) ?? Date()
+            },
+            set: { newDate in
+                let c = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                startHour = Double(c.hour ?? 0) + Double(c.minute ?? 0) / 60
+            }
+        )
+    }
+
+    private var endTimeLabel: String {
+        "→ " + formatHour(startHour + durationHours)
+    }
+
     private var quotaPreview: String {
         let daily = weeklyHours / 7
         var s = "일 평균 " + formatDuration(daily)
@@ -313,18 +342,3 @@ private struct DayToggle: View {
     }
 }
 
-private struct TimeStepper: View {
-    @Binding var value: Double
-    let range: ClosedRange<Double>
-    let step: Double
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Text(formatHour(value))
-                .monospacedDigit()
-                .frame(width: 60, alignment: .trailing)
-            Stepper("", value: $value, in: range, step: step)
-                .labelsHidden()
-        }
-    }
-}
