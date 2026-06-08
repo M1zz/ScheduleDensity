@@ -2,6 +2,9 @@
 
 일정의 밀도를 시각화하고, 비어있는 시간대를 추천해주는 iOS 앱입니다.
 
+> 🌈 **WeekBlocks(macOS) 지원 페이지** → https://m1zz.github.io/ScheduleDensity/
+> 주간 타임블로킹 앱 WeekBlocks의 사용 안내·FAQ·문의 페이지입니다.
+
 > **패밀리 구조**: 이 프로젝트(`ScheduleDensityApp.xcodeproj`)는 두 개의 타깃을 포함합니다.
 > - **ScheduleDensityApp** (iOS) — 일정 밀도 시각화 + 빈 시간 추천 (`com.example.ScheduleDensityApp`)
 > - **WeekBlocks** (macOS) — 주간 타임블로킹 + 구체성 검사 (표시이름 ScheduleDensity, `com.devkoan.ScheduleDensityApp`)
