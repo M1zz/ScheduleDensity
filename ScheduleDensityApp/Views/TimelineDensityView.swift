@@ -32,6 +32,11 @@ struct TimelineDensityView: View {
     // 날짜별 시간 분석 상태
     @State private var selectedDateForTimeAnalysis: DateWrapper?
 
+    // 인사이트 설정 (UserDefaults에 저장)
+    @AppStorage("showInsightCards") private var showInsightCards = false
+    // 인사이트 카드 펼침 상태
+    @State private var isInsightExpanded = false
+
     var body: some View {
         mainContent
             .toolbar {
@@ -57,9 +62,22 @@ struct TimelineDensityView: View {
             }
             .onChange(of: viewModel.showingAddEvent) { _, isShowing in
                 if !isShowing {
-                    // 시트가 닫힐 때만 새로고침
+                    print("🔵 [TimelineView] 일정 추가 시트 닫힘")
+                    // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        refreshData()
+                        print("🔵 [TimelineView] 0.3초 후 실행 시작")
+                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
+
+                        // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
+                        if let addedDate = viewModel.lastAddedEventDate {
+                            print("✅ [TimelineView] 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            refreshData()
+                            scrollToDate(addedDate)
+                            viewModel.lastAddedEventDate = nil // 초기화
+                        } else {
+                            print("✅ [TimelineView] 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
+                        }
                     }
                 }
             }
@@ -76,15 +94,28 @@ struct TimelineDensityView: View {
             }
             .onChange(of: showingAddEventSheet) { _, isShowing in
                 if !isShowing {
-                    // sheet가 닫힐 때 새로고침 및 선택 상태 초기화
+                    print("🔵 [TimelineView] 드래그 일정 추가 시트 닫힘")
+                    // sheet가 닫힐 때 선택 상태 초기화
                     isDraggingSelection = false
                     dragStartDate = nil
                     dragEndDate = nil
                     draggedDates = []
                     draggedLane = nil
 
+                    // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        refreshData()
+                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
+
+                        // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
+                        if let addedDate = viewModel.lastAddedEventDate {
+                            print("✅ [TimelineView] 드래그 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            refreshData()
+                            scrollToDate(addedDate)
+                            viewModel.lastAddedEventDate = nil // 초기화
+                        } else {
+                            print("✅ [TimelineView] 드래그 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
+                        }
                     }
                 }
             }
@@ -100,6 +131,70 @@ struct TimelineDensityView: View {
             } else if densityData.isEmpty {
                 emptyStateView
             } else {
+                // 인사이트 카드 (설정에서 제어)
+                if showInsightCards {
+                    if isInsightExpanded {
+                        // 펼쳐진 상태: 인사이트 카드와 접기 버튼 표시
+                        VStack(spacing: 0) {
+                            // 접기 버튼
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    isInsightExpanded = false
+                                }
+                            }) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "chart.bar.fill")
+                                        .font(.caption)
+                                    Text("인사이트 접기")
+                                        .font(.caption)
+                                    Image(systemName: "chevron.up")
+                                        .font(.caption2)
+                                }
+                                .foregroundColor(.blue)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 16)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(20)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
+                            .padding(.bottom, 4)
+                            .background(Color(.systemGroupedBackground))
+
+                            InsightCardsView(insights: viewModel.getWeekInsights())
+                                .background(Color(.systemGroupedBackground))
+
+                            Divider()
+                        }
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    } else {
+                        // 접힌 상태: 펼칠 수 있는 버튼(헤더) 표시
+                        Button(action: {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                isInsightExpanded = true
+                            }
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "chart.bar.fill")
+                                    .font(.caption)
+                                Text("인사이트 보기")
+                                    .font(.caption)
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                            }
+                            .foregroundColor(.blue)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .background(Color.blue.opacity(0.1))
+                            .cornerRadius(20)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(Color(.systemGroupedBackground))
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+                }
+
                 timelineScrollView
                 Divider()
                 selectedDayView
@@ -231,6 +326,24 @@ struct TimelineDensityView: View {
             withAnimation {
                 proxy.scrollTo(todayData.id, anchor: .center)
             }
+        }
+    }
+
+    private func scrollToDate(_ date: Date) {
+        guard let proxy = scrollProxy else { return }
+
+        let calendar = Calendar.current
+        let targetDate = calendar.startOfDay(for: date)
+
+        if let targetData = densityData.first(where: { dayData in
+            calendar.isDate(calendar.startOfDay(for: dayData.date), inSameDayAs: targetDate)
+        }) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    proxy.scrollTo(targetData.id, anchor: .center)
+                }
+            }
+            print("📍 [TimelineView] Scrolling to added event date: \(monthDay(from: date))")
         }
     }
 
@@ -398,11 +511,14 @@ struct TimelineDensityView: View {
     }
 
     private func refreshData() {
+        print("🔄 [TimelineView] refreshData() 시작 - isLoading = true")
         isLoading = true
 
         // 비동기로 데이터 로드
         DispatchQueue.main.async {
+            print("🔄 [TimelineView] 데이터 로드 중...")
             densityData = viewModel.getAllDensityData()
+            print("🔄 [TimelineView] 데이터 로드 완료 - isLoading = false")
             isLoading = false
         }
     }
@@ -599,15 +715,22 @@ struct GridCell: View {
                     .fill(Color.blue.opacity(0.3))
             }
 
-            // 일정 색상 (레인별 무지개 색상)
+            // 일정 색상 (레인별 무지개 색상 + 같은 레인 내 변형)
             if isActive, let event = event {
                 let calendar = Calendar.current
                 let checkDate = calendar.startOfDay(for: dayData.date)
                 let isStart = calendar.isDate(checkDate, inSameDayAs: event.startDate)
                 let isEnd = calendar.isDate(checkDate, inSameDayAs: event.endDate)
 
-                // 레인 번호에 따른 색상 사용
-                let laneColor = ScheduleViewModel.laneColors[laneNumber - 1]
+                // 레인 번호에 따른 기본 색상
+                let baseLaneColor = Color(hex: ScheduleViewModel.laneColors[laneNumber - 1]) ?? .blue
+
+                // 같은 레인 내 이벤트 인덱스와 총 개수 가져오기
+                let eventIndex = viewModel.eventIndexInLane[event.color] ?? 0
+                let totalEventsInLane = viewModel.laneEventCounts[laneNumber - 1] ?? 1
+
+                // 색상 변형 적용
+                let variantColor = baseLaneColor.variant(index: eventIndex, totalVariants: totalEventsInLane)
 
                 // 구멍에 들어간 일정인지 확인
                 let isInGap = checkIfInGap(event: event, date: checkDate, lane: laneNumber - 1)
@@ -616,7 +739,7 @@ struct GridCell: View {
                     isActive: true,
                     isStart: isStart,
                     isEnd: isEnd,
-                    color: laneColor,
+                    variantColor: variantColor,
                     isInGap: isInGap
                 )
                 .padding(2)
@@ -646,13 +769,36 @@ struct GridCell: View {
                 }
             }
         }
+        .contextMenu {
+            if isActive, let event = event {
+                // 일정 수정
+                Button(action: {
+                    viewModel.eventToEdit = event
+                    viewModel.showingAddEvent = true
+                }) {
+                    Label("일정 수정", systemImage: "pencil")
+                }
+
+                // 이 날짜만 제외
+                Button(action: {
+                    addExceptionForDate(event: event, date: dayData.date)
+                }) {
+                    Label("이 날짜만 제외", systemImage: "calendar.badge.minus")
+                }
+
+                Divider()
+
+                // 전체 일정 삭제
+                Button(role: .destructive, action: {
+                    showDeleteAlert = true
+                }) {
+                    Label("전체 일정 삭제", systemImage: "trash")
+                }
+            }
+        }
         .onLongPressGesture(minimumDuration: 0.6) {
-            if isActive {
-                // 일정이 있는 셀: 삭제 알림
-                showDeleteAlert = true
-            } else {
+            if !isActive {
                 // 빈 셀: 날짜 범위 선택
-                // 롱프레스로 시작/종료 지점 지정
                 onDragStart()
             }
         }
@@ -661,12 +807,12 @@ struct GridCell: View {
             Button("삭제", role: .destructive) {
                 if let event = event {
                     viewModel.deleteEvent(event)
-                    onDelete()  // 삭제 후 뷰 업데이트
+                    onDelete()
                 }
             }
         } message: {
             if let event = event {
-                Text("'\(event.title)' 일정을 삭제하시겠습니까?")
+                Text("'\(event.title)' 일정을 전체 삭제하시겠습니까?")
             }
         }
     }
@@ -694,6 +840,26 @@ struct GridCell: View {
         }
 
         return false
+    }
+
+    private func addExceptionForDate(event: Event, date: Date) {
+        let calendar = Calendar.current
+        let normalizedDate = calendar.startOfDay(for: date)
+
+        // 이미 예외로 등록되어 있는지 확인
+        if event.excludedDates.contains(normalizedDate) {
+            return
+        }
+
+        // 예외 추가
+        event.addExceptionDate(normalizedDate)
+
+        // 저장 및 새로고침
+        viewModel.updateEvent(event)
+
+        // 햅틱 피드백
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
 }
 
@@ -759,7 +925,7 @@ struct TimelineDayRow: View {
                                     isActive: isActive,
                                     isStart: isStart,
                                     isEnd: isEnd,
-                                    color: event.color,
+                                    variantColor: Color(hex: event.color) ?? .blue,
                                     isInGap: false  // TimelineDayRow에서는 빗금 패턴 사용 안 함
                                 )
                                 .frame(maxWidth: .infinity)
@@ -861,13 +1027,13 @@ struct EventLaneBlock: View {
     let isActive: Bool
     let isStart: Bool
     let isEnd: Bool
-    let color: String
+    let variantColor: Color
     let isInGap: Bool  // 구멍에 들어간 일정인지 여부
 
     var body: some View {
         ZStack {
             if isActive {
-                let eventColor = Color(hex: color) ?? .blue
+                let eventColor = variantColor
                 // 시작/끝 칸은 진하게, 중간 칸은 연하게
                 let opacity: Double = (isStart || isEnd) ? 1.0 : 0.65
 
@@ -1077,53 +1243,56 @@ struct DayTimeAnalysisView: View {
                         }
 
                         // 시간 사용 바 (깨어있는 시간 기준)
-                        GeometryReader { geometry in
-                            VStack(spacing: 8) {
-                                // 자유시간 (양수일 때만 표시)
-                                if freeHours > 0 {
-                                    let height = (freeHours / awakeHours) * geometry.size.height
+                        // 고정 비율: 1시간당 30픽셀
+                        let pixelsPerHour: CGFloat = 30.0
 
-                                    HStack(spacing: 8) {
-                                        Rectangle()
-                                            .fill(Color.gray.opacity(0.3))
-                                            .frame(width: 50, height: height)
+                        VStack(spacing: 8) {
+                            // 자유시간 (양수일 때만 표시)
+                            if freeHours > 0 {
+                                let height = freeHours * pixelsPerHour
 
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text("자유시간")
-                                                .font(.system(size: 14, weight: .medium))
-                                                .foregroundColor(.secondary)
-                                            Text(String(format: "%.1f시간", freeHours))
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
+                                HStack(spacing: 8) {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 50, height: height)
+                                        .cornerRadius(4)
+
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text("자유시간")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.secondary)
+                                        Text(String(format: "%.1f시간", freeHours))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
                                     }
+                                    Spacer()
                                 }
+                            }
 
-                                // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
-                                ForEach(events.indices.reversed(), id: \.self) { index in
-                                    let event = events[index]
-                                    let height = (event.hoursPerDay / awakeHours) * geometry.size.height
-                                    let laneColor = getLaneColor(for: event)
+                            // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
+                            ForEach(events.indices.reversed(), id: \.self) { index in
+                                let event = events[index]
+                                let height = max(event.hoursPerDay * pixelsPerHour, 20)  // 최소 높이 20
+                                let laneColor = getLaneColor(for: event)
 
-                                    HStack(spacing: 8) {
-                                        Rectangle()
-                                            .fill(laneColor)
-                                            .frame(width: 50, height: height)
+                                HStack(spacing: 8) {
+                                    Rectangle()
+                                        .fill(laneColor)
+                                        .frame(width: 50, height: height)
+                                        .cornerRadius(4)
 
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(event.title)
-                                                .font(.system(size: 14, weight: .medium))
-                                            Text(String(format: "%.1f시간", event.hoursPerDay))
-                                                .font(.system(size: 12))
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(event.title)
+                                            .font(.system(size: 14, weight: .medium))
+                                        Text(String(format: "%.1f시간", event.hoursPerDay))
+                                            .font(.system(size: 12))
+                                            .foregroundColor(.secondary)
                                     }
+                                    Spacer()
                                 }
                             }
                         }
-                        .frame(height: 400)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding()
                     .background(Color(.systemGray6))
@@ -1197,7 +1366,8 @@ struct DayTimeAnalysisView: View {
 
     // 이벤트의 레인 색상 가져오기
     private func getLaneColor(for event: Event) -> Color {
-        if let lane = viewModel.eventLaneAssignments[event.color] {
+        if let lane = viewModel.eventLaneAssignments[event.color],
+           lane >= 0 && lane < ScheduleViewModel.laneColors.count {
             return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
         }
         return .blue
@@ -1259,5 +1429,324 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+
+    // 색상 믹스 기반 변형 함수
+    // variantIndex: 같은 레인 내의 이벤트 인덱스 (0, 1, 2, ...)
+    // totalVariants: 같은 레인 내의 총 이벤트 수
+    func variant(index variantIndex: Int, totalVariants: Int) -> Color {
+        // 변형이 필요 없는 경우 (단일 이벤트)
+        if totalVariants <= 1 {
+            return self
+        }
+
+        // UIColor로 변환하여 RGB 추출
+        let uiColor = UIColor(self)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+        // 믹스 강도 계산 (0.0 ~ 0.5 범위)
+        // 총 이벤트 수가 많을수록 각 단계의 차이를 크게
+        let maxBlendFactor: CGFloat = totalVariants >= 4 ? 0.5 : 0.4
+
+        // 인덱스에 따라 흰색 또는 검정색 믹스
+        // 첫 번째 이벤트: 흰색 믹스 (밝게)
+        // 중간 이벤트: 원색에 가깝게
+        // 마지막 이벤트: 검정색 믹스 (어둡게)
+        let midpoint = CGFloat(totalVariants - 1) / 2.0
+        let position = CGFloat(variantIndex)
+
+        var newRed: CGFloat
+        var newGreen: CGFloat
+        var newBlue: CGFloat
+
+        if position <= midpoint {
+            // 앞쪽 절반: 흰색 믹스 (tint)
+            let blendFactor = (midpoint - position) / midpoint * maxBlendFactor
+            newRed = red + (1.0 - red) * blendFactor
+            newGreen = green + (1.0 - green) * blendFactor
+            newBlue = blue + (1.0 - blue) * blendFactor
+        } else {
+            // 뒤쪽 절반: 검정색 믹스 (shade)
+            let blendFactor = (position - midpoint) / (CGFloat(totalVariants - 1) - midpoint) * maxBlendFactor
+            newRed = red * (1.0 - blendFactor)
+            newGreen = green * (1.0 - blendFactor)
+            newBlue = blue * (1.0 - blendFactor)
+        }
+
+        // 최종 색상이 너무 극단적이지 않도록 제한
+        newRed = max(0.1, min(1.0, newRed))
+        newGreen = max(0.1, min(1.0, newGreen))
+        newBlue = max(0.1, min(1.0, newBlue))
+
+        return Color(red: Double(newRed), green: Double(newGreen), blue: Double(newBlue), opacity: Double(alpha))
+    }
+}
+//
+//  InsightCardsView.swift
+//  ScheduleDensityApp
+//
+//  Created by Claude on 2025-12-16.
+//
+
+import SwiftUI
+
+struct InsightCardsView: View {
+    let insights: WeekInsights
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                // 오늘 카드
+                if let today = insights.todayInsight {
+                    TodayInsightCard(insight: today)
+                }
+
+                // 내일 카드
+                if let tomorrow = insights.tomorrowInsight {
+                    TomorrowInsightCard(insight: tomorrow)
+                }
+
+                // 가장 한가한 날
+                if let freest = insights.freestDay {
+                    FreestDayCard(insight: freest)
+                }
+
+                // 가장 바쁜 날
+                if let busiest = insights.busiestDay {
+                    BusiestDayCard(insight: busiest)
+                }
+            }
+            .padding(.horizontal)
+        }
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - 오늘 카드
+struct TodayInsightCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("오늘")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(insight.statusEmoji)
+                    .font(.title2)
+            }
+
+            Text(insight.statusText)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // 밀도 바
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(densityColor)
+                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                }
+            }
+            .frame(height: 6)
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var densityColor: Color {
+        if insight.occupancyRate < 0.3 {
+            return .green
+        } else if insight.occupancyRate < 0.6 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
+
+// MARK: - 내일 카드
+struct TomorrowInsightCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("내일")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(insight.statusEmoji)
+                    .font(.title2)
+            }
+
+            Text(insight.statusText)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            // 밀도 바
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.gray.opacity(0.2))
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(densityColor)
+                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                }
+            }
+            .frame(height: 6)
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var densityColor: Color {
+        if insight.occupancyRate < 0.3 {
+            return .green
+        } else if insight.occupancyRate < 0.6 {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
+
+// MARK: - 가장 한가한 날 카드
+struct FreestDayCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "leaf.fill")
+                    .foregroundColor(.green)
+                    .font(.caption)
+                Spacer()
+                Text("😌")
+                    .font(.title2)
+            }
+
+            Text("가장 한가한 날")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text(dateString)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color.green.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.green.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .green.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d (E)"
+        return formatter.string(from: insight.date)
+    }
+}
+
+// MARK: - 가장 바쁜 날 카드
+struct BusiestDayCard: View {
+    let insight: DayInsight
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "flame.fill")
+                    .foregroundColor(.red)
+                    .font(.caption)
+                Spacer()
+                Text("🔥")
+                    .font(.title2)
+            }
+
+            Text("가장 바쁜 날")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text(dateString)
+                .font(.headline)
+                .fontWeight(.bold)
+
+            HStack(spacing: 12) {
+                Label("\(insight.eventCount)개", systemImage: "calendar")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding()
+        .frame(width: 160)
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.red.opacity(0.3), lineWidth: 1)
+        )
+        .shadow(color: .red.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d (E)"
+        return formatter.string(from: insight.date)
     }
 }
