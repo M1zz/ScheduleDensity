@@ -18,7 +18,9 @@ struct WeekBlocksApp: App {
     }()
 
     var body: some Scene {
-        WindowGroup {
+        // 단일 창 앱: Window 씬을 쓰면 창을 닫아도
+        // "윈도우" 메뉴(및 Dock 아이콘 클릭)로 다시 열 수 있다. (App Store 심사 Guideline 4 대응)
+        Window("무지개 공방", id: "main") {
             ContentView()
         }
         .modelContainer(container)
