@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import CoreData  // NSPersistentStoreRemoteChange (CloudKit 원격 변경 알림)
 
 // 기간 분석 정보
 struct PeriodAnalysis {
@@ -119,6 +120,8 @@ class ScheduleViewModel {
     // 매 fetchEvents 호출마다 CloudKit 스토어를 다시 읽지 않도록 dataRefreshTrigger 기준 캐시.
     private var weekBlocksCache: [Event] = []
     private var weekBlocksCacheToken: UUID? = nil
+    // CloudKit 원격 변경(첫 동기화·다른 기기 변경) 시 화면을 갱신하기 위한 옵저버.
+    private var remoteChangeObserver: NSObjectProtocol?
 
     // 레인별 색상 (무지개 순서)
     static let laneColors = [
@@ -166,6 +169,24 @@ class ScheduleViewModel {
         // Clean up old exceptions on launch
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             self?.cleanupOldExceptions()
+        }
+
+        // CloudKit이 WeekBlocks 데이터를 내려받으면(첫 동기화·원격 변경) 캐시를 비우고 화면 갱신.
+        remoteChangeObserver = NotificationCenter.default.addObserver(
+            forName: .NSPersistentStoreRemoteChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.weekBlocksCacheToken = nil
+            self.dataRefreshTrigger = UUID()
+            print("🔄 [WeekBlocks] 원격 변경 감지 → 데이터 갱신")
+        }
+    }
+
+    deinit {
+        if let remoteChangeObserver {
+            NotificationCenter.default.removeObserver(remoteChangeObserver)
         }
     }
 
