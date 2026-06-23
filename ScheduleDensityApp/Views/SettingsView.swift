@@ -16,6 +16,7 @@ struct SettingsView: View {
     @State private var monthsToShow: Int
     @State private var sleepHours: Double
     @State private var showPastEvents: Bool
+    @State private var showWeekBlocksPlans: Bool
     @State private var isSyncEnabled: Bool
     @State private var showingSyncAlert = false
     @State private var syncAlertTitle = ""
@@ -42,6 +43,7 @@ struct SettingsView: View {
         _monthsToShow = State(initialValue: viewModel.monthsToShow)
         _sleepHours = State(initialValue: viewModel.sleepHoursPerDay)
         _showPastEvents = State(initialValue: viewModel.showPastEvents)
+        _showWeekBlocksPlans = State(initialValue: viewModel.showWeekBlocksPlans)
         _isSyncEnabled = State(initialValue: SyncSettingsManager.shared.isSyncEnabled)
     }
 
@@ -202,6 +204,22 @@ struct SettingsView: View {
                                 Text("지나간 이벤트 보기")
                                     .font(.headline)
                                 Text("종료일이 지난 일정도 표시")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // WeekBlocks(무지개 공방) 계획 표시 토글
+                    Toggle(isOn: $showWeekBlocksPlans) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "macwindow")
+                                .foregroundColor(showWeekBlocksPlans ? .blue : .secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("무지개 공방 계획 표시")
+                                    .font(.headline)
+                                Text("Mac에서 짠 주간 계획을 밀도에 함께 표시 (읽기 전용)")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -574,6 +592,7 @@ struct SettingsView: View {
         viewModel.updateMonthsToShow(monthsToShow)
         viewModel.updateSleepHours(sleepHours)
         viewModel.updateShowPastEvents(showPastEvents)
+        viewModel.updateShowWeekBlocksPlans(showWeekBlocksPlans)
         dismiss()
     }
 

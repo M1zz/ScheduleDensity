@@ -111,6 +111,15 @@ class ScheduleViewModel {
     // 설정: 지나간 이벤트 표시 여부
     var showPastEvents: Bool
 
+    // 설정: Mac '무지개 공방(WeekBlocks)' 계획을 밀도에 합쳐 표시할지 (읽기 전용)
+    var showWeekBlocksPlans: Bool
+
+    // WeekBlocks(macOS) 계획을 같은 iCloud에서 읽어 시각화용 Event로 변환하는 읽기 전용 스토어.
+    private let weekBlocksStore = WeekBlocksStore()
+    // 매 fetchEvents 호출마다 CloudKit 스토어를 다시 읽지 않도록 dataRefreshTrigger 기준 캐시.
+    private var weekBlocksCache: [Event] = []
+    private var weekBlocksCacheToken: UUID? = nil
+
     // 레인별 색상 (무지개 순서)
     static let laneColors = [
         "#FF3B30",  // 1번 레인: 빨강
@@ -143,6 +152,13 @@ class ScheduleViewModel {
 
         // 지나간 이벤트 표시 로드 (기본값: false - 숨김)
         showPastEvents = UserDefaults.standard.bool(forKey: "showPastEvents")
+
+        // WeekBlocks 계획 표시 로드 (기본값: true - 켜짐). 키가 없으면 true.
+        if UserDefaults.standard.object(forKey: "showWeekBlocksPlans") == nil {
+            showWeekBlocksPlans = true
+        } else {
+            showWeekBlocksPlans = UserDefaults.standard.bool(forKey: "showWeekBlocksPlans")
+        }
 
         // 설정에 따라 날짜 범위 업데이트
         updateDateRange()
@@ -181,6 +197,21 @@ class ScheduleViewModel {
         showPastEvents = show
         UserDefaults.standard.set(showPastEvents, forKey: "showPastEvents")
         dataRefreshTrigger = UUID()
+    }
+
+    func updateShowWeekBlocksPlans(_ show: Bool) {
+        showWeekBlocksPlans = show
+        UserDefaults.standard.set(showWeekBlocksPlans, forKey: "showWeekBlocksPlans")
+        dataRefreshTrigger = UUID()
+    }
+
+    /// Mac WeekBlocks 계획 → 시각화용 Event(메모리 전용). dataRefreshTrigger 기준 캐시.
+    private func weekBlocksEvents() -> [Event] {
+        guard showWeekBlocksPlans else { return [] }
+        if weekBlocksCacheToken == dataRefreshTrigger { return weekBlocksCache }
+        weekBlocksCache = weekBlocksStore.loadVisualEvents()
+        weekBlocksCacheToken = dataRefreshTrigger
+        return weekBlocksCache
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -365,7 +396,9 @@ class ScheduleViewModel {
         )
 
         do {
-            let allEvents = try context.fetch(descriptor)
+            let ownEvents = try context.fetch(descriptor)
+            // Mac WeekBlocks 계획(읽기 전용·메모리)을 합쳐 같은 밀도 파이프라인에 투입.
+            let allEvents = ownEvents + weekBlocksEvents()
 
             // 지나간 이벤트 필터링
             if !showPastEvents {
@@ -381,10 +414,10 @@ class ScheduleViewModel {
                     return event.effectiveEndDate() >= today
                 }
 
-                print("📊 [ViewModel] 이벤트 조회됨: 전체 \(allEvents.count)개, 활성 \(activeEvents.count)개")
+                print("📊 [ViewModel] 이벤트 조회됨: 전체 \(allEvents.count)개(WB 포함), 활성 \(activeEvents.count)개")
                 return activeEvents
             } else {
-                print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트 포함)")
+                print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
                 return allEvents
             }
         } catch {

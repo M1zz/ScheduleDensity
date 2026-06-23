@@ -15,7 +15,6 @@
 import Foundation
 import SwiftData
 
-@MainActor
 final class WeekBlocksStore {
     /// Mac WeekBlocks가 쓰는 CloudKit private 컨테이너 ID (양쪽 정확히 일치해야 함).
     static let containerID = "iCloud.com.devkoan.ScheduleDensity"
