@@ -81,6 +81,17 @@ WeekBlocks `Routine`/`PlanBlock`을 메모리상 `Event`로 변환해 기존 밀
 - [ ] 5. 동기화 상태: iCloud 미로그인/첫 다운로드 지연/오프라인 빈 상태 처리, 원격 변경 시 갱신
 - [ ] 6. (보류) successCriteria·deliverable·reviewStatus 노출 여부 결정
 
+## macOS(WeekBlocks) 피드백 반영 (2026-06-23) — macOS 빌드 성공
+- [x] 1. 타임라인 격자 6h → 3h 세분화 (DayTimelineRow 격자 major 3h, HourAxis 0·3·6…24)
+- [x] 2. 짧은 블록 텍스트 — 임계값 30→18 + minimumScaleFactor + 툴팁에 계획 이름 노출
+- [x] 3. 유연 쿼터 대비 강화 — 고정 위에 겹칠 때 흰 테두리 링 + 채움 0.20→0.32
+- [x] 4. '구체성 체크' 버튼 제거 — 편집기 진입 시 항상 실시간 피드백
+- [x] 5. 계획 블록을 다른 요일로 드래그 이동 (BlockChip draggable + 드롭에서 day 변경)
+- [x] 6. '이번 주 계획' 순서 = '요일별 하루' 타임라인 순서 일치
+      - DayPlanItem을 occurrence 기반으로(고정/끼니세션/블록) 재정의, TimelineLayout.segments의 seg.start로 정렬
+      - 자정 넘긴 고정 루틴(수면)은 조각마다 따로 → 위·아래 두 번 표시
+      - 유연 쿼터(끼니)는 다른 일정과 안 겹치는 세션만 자기 시각에 표시(겹치면 접음), 부제에 세션 시각
+
 ## WeekBlocks 기능 백로그 (흡수)
 - [ ] ConcretenessChecker Level 2 — 측정 가능 패턴 정규식
 - [ ] ConcretenessChecker Level 3 — Claude API 판정

@@ -1,12 +1,29 @@
 import SwiftUI
 
+/// '이번 주 계획' 컬럼에 시각 순으로 섞어 표시하는 한 항목.
+/// '요일별 하루' 타임라인의 보이는 조각을 그대로 따른다:
+/// - 고정 루틴이 자정을 넘겨 두 조각이면 각 조각이 따로(occurrenceID로 구분) → 위·아래 두 번 표시.
+/// - 유연 쿼터(끼니)는 다른 일정과 겹치지 않는 세션만 자기 시각 위치에 표시.
+enum DayPlanItem: Identifiable {
+    case fixedRoutine(Routine, occurrenceID: String, atHour: Double, hours: Double)
+    case quotaSession(Routine, sessionIndex: Int, atHour: Double)
+    case block(PlanBlock)
+
+    var id: String {
+        switch self {
+        case .fixedRoutine(_, let oid, _, _): "fixed:\(oid)"
+        case .quotaSession(let r, let idx, _): "quota:\(r.name):\(idx)"
+        case .block(let b): "block:\(String(describing: b.persistentModelID))"
+        }
+    }
+}
+
 struct DayColumn: View {
     let day: DayOfWeek
     let date: Date
     var canPlan: Bool = true
-    let routines: [Routine]
-    var quotaRoutines: [Routine] = []   // 유연 주간 쿼터(식사 등) — 점선 칩으로 표시
-    let blocks: [PlanBlock]
+    /// 시각 순으로 정렬된 통합 항목(고정 루틴·쿼터·블록).
+    let items: [DayPlanItem]
     let onAdd: () -> Void
     let onEdit: (PlanBlock) -> Void
     let onEditRoutine: (Routine) -> Void
@@ -41,20 +58,20 @@ struct DayColumn: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.bottom, 2)
 
-            ForEach(routines) { routine in
-                RoutineChip(routine: routine) { onEditRoutine(routine) }
-            }
-
-            ForEach(quotaRoutines) { routine in
-                RoutineChip(routine: routine) { onEditRoutine(routine) }
-            }
-
-            if !(routines.isEmpty && quotaRoutines.isEmpty) && !blocks.isEmpty {
-                Divider().opacity(0.4)
-            }
-
-            ForEach(blocks) { block in
-                BlockChip(block: block) { onEdit(block) }
+            // 고정 루틴·유연 쿼터·계획 블록을 시각 순으로 섞어, '요일별 하루' 타임라인과 같은 흐름으로 표시.
+            ForEach(items) { item in
+                switch item {
+                case .fixedRoutine(let routine, _, let atHour, let hours):
+                    // 자정을 넘겨 쪼개진 조각은 각자 자기 길이를 보여, 합이 루틴 전체 길이가 되도록.
+                    RoutineChip(routine: routine,
+                                subtitleOverride: "\(formatHour(atHour))  \(String(format: "%.1fh", hours))") {
+                        onEditRoutine(routine)
+                    }
+                case .quotaSession(let routine, _, let atHour):
+                    RoutineChip(routine: routine, subtitleOverride: formatHour(atHour)) { onEditRoutine(routine) }
+                case .block(let block):
+                    BlockChip(block: block) { onEdit(block) }
+                }
             }
 
             Button(action: onAdd) {
@@ -97,6 +114,8 @@ struct DayColumn: View {
 
 struct RoutineChip: View {
     let routine: Routine
+    /// 컬럼에서 끼니 세션처럼 '이 occurrence의 시각'을 보여주고 싶을 때 부제를 대체.
+    var subtitleOverride: String? = nil
     let onTap: () -> Void
 
     @State private var hovering = false
@@ -105,6 +124,7 @@ struct RoutineChip: View {
 
     // 쿼터(유연)는 점선 테두리 + 더 옅은 배경으로 '시간 유연'임을 드러낸다(타임라인 점선과 일관).
     private var subtitle: String {
+        if let subtitleOverride { return subtitleOverride }
         if isQuota {
             var s = String(format: "주 %.1fh", routine.weeklyHours)
             if routine.sessionsPerDay > 0 { s += " · \(routine.sessionsPerDay)회" }
@@ -203,7 +223,11 @@ struct BlockChip: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
-        .help(block.successCriteria.isEmpty ? "구체성 미검증 — 클릭해서 다듬기" : block.successCriteria)
+        // 다른 요일로 끌어 옮기기 — 드롭 대상(DayColumn)에서 요일을 바꾼다.
+        .draggable("block:" + String(describing: block.persistentModelID))
+        .help(block.successCriteria.isEmpty
+              ? "구체성 미검증 — 클릭해서 다듬기 · 드래그해서 다른 요일로 옮기기"
+              : block.successCriteria + "\n드래그해서 다른 요일로 옮길 수 있습니다.")
     }
 
     private func reviewTint(_ status: ReviewStatus) -> Color {

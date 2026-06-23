@@ -63,6 +63,18 @@ final class PlanBlock {
         set { timeBandRaw = newValue.rawValue }
     }
 
+    /// 하루 일정 흐름대로 정렬하기 위한 대표 시작 시각.
+    /// 정확한 시각이 있으면 그 값을, 없으면 시간대(아침/오후/저녁/심야)의 시작 시각을 쓴다.
+    var sortHour: Double {
+        if startHour >= 0 { return startHour }
+        switch timeBand {
+        case .morning: return 6
+        case .afternoon: return 12
+        case .evening: return 18
+        case .night: return 23
+        }
+    }
+
     var reviewStatus: ReviewStatus? {
         get { reviewStatusRaw.flatMap(ReviewStatus.init(rawValue:)) }
         set {

@@ -310,6 +310,73 @@ struct ContentView: View {
             .sorted { $0.startHour < $1.startHour }
     }
 
+    /// '요일별 하루' 타임라인이 실제로 배치한 시작 시각 순서대로,
+    /// 고정 루틴·유연 쿼터·계획 블록을 한 줄로 섞어 정렬한 '이번 주 계획' 컬럼 항목.
+    /// (타임라인의 왼→오른쪽 = 컬럼의 위→아래가 일치하도록.)
+    private func dayPlanItems(on day: DayOfWeek) -> [DayPlanItem] {
+        let cal = Calendar(identifier: .iso8601)
+        let dayBlocks = weekBlocks.filter { $0.day == day }
+        let fixed = fixedRoutines(on: day)
+        let quota = routines.filter { $0.kind == .quota }.sorted { $0.weeklyHours > $1.weeklyHours }
+        let occs = allOccurrences.filter { $0.day == day && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek) }
+        let placements = allQuotaPlacements.filter { $0.day == day && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek) }
+
+        var startOverride: [String: Double] = [:]
+        for o in occs where o.startHourOverride >= 0 { startOverride[o.routineName] = o.startHourOverride }
+        var quotaPlace: [String: [Int: Double]] = [:]
+        for p in placements { quotaPlace[p.routineName, default: [:]][p.sessionIndex] = p.startHour }
+        var quotaHiddenMap: [String: Set<Int>] = [:]
+        for p in placements where p.hidden { quotaHiddenMap[p.routineName, default: []].insert(p.sessionIndex) }
+
+        let segs = TimelineLayout.segments(
+            routines: fixed,
+            blocks: dayBlocks,
+            quota: quota,
+            routineStartOverride: startOverride,
+            quotaPlacement: quotaPlace,
+            quotaHidden: quotaHiddenMap,
+            hiddenRoutines: hiddenFixedRoutines(on: day)
+        )
+
+        // 끼니 겹침 판정용: 쿼터를 제외한, 실제로 차지된 구간(고정 루틴·블록 등).
+        let occupiers = segs.filter { !$0.isGhost && !$0.source.isQuota }.map { ($0.start, $0.end) }
+        func overlapsOccupier(_ s: Double, _ e: Double) -> Bool {
+            occupiers.contains { s < $0.1 - 1e-6 && $0.0 < e - 1e-6 }
+        }
+
+        // 타임라인에 '보이는' 조각을 그대로 컬럼 항목으로. 정렬 키 = 그려진 시작 시각(seg.start).
+        // 자정을 넘긴 고정 루틴은 조각마다 따로 → 위·아래 두 번. 겹치는 끼니는 접는다.
+        // 블록은 자정 분할로 중복되지 않게 가장 이른 조각만.
+        var entries: [(start: Double, rank: Int, item: DayPlanItem)] = []
+        var blockStart: [String: Double] = [:]
+        for seg in segs where !seg.isGhost {
+            switch seg.source {
+            case .fixedRoutine(let name):
+                guard let r = fixed.first(where: { $0.name == name }) else { break }
+                entries.append((seg.start, 0, .fixedRoutine(r, occurrenceID: seg.id,
+                                                             atHour: seg.start, hours: seg.end - seg.start)))
+            case .quotaSession(let name, let index):
+                guard let r = quota.first(where: { $0.name == name }) else { break }
+                if overlapsOccupier(seg.start, seg.end) { break }   // 다른 일정 안의 끼니는 접음
+                entries.append((seg.start, 2, .quotaSession(r, sessionIndex: index, atHour: seg.start)))
+            case .planBlock(let blk):
+                let id = String(describing: blk.persistentModelID)
+                blockStart[id] = min(blockStart[id] ?? .greatestFiniteMagnitude, seg.start)
+            case .none:
+                break
+            }
+        }
+        for b in dayBlocks {
+            let id = String(describing: b.persistentModelID)
+            entries.append((blockStart[id] ?? b.sortHour, 1, .block(b)))
+        }
+
+        // 시각 같으면 고정 → 블록 → 쿼터 순으로 안정 정렬.
+        return entries
+            .sorted { $0.start != $1.start ? $0.start < $1.start : $0.rank < $1.rank }
+            .map(\.item)
+    }
+
     private var dayTimelineSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -360,19 +427,7 @@ struct ContentView: View {
                         day: day,
                         date: dayDate(day),
                         canPlan: hasFixedRoutines,
-                        routines: {
-                            let names = Set(allOccurrences
-                                .filter { occ in
-                                    occ.day == day && !occ.hidden &&
-                                    Calendar(identifier: .iso8601).isDate(occ.weekStartDate, inSameDayAs: selectedWeek)
-                                }
-                                .map(\.routineName))
-                            return routines
-                                .filter { $0.kind == .fixed && names.contains($0.name) }
-                                .sorted { $0.durationHours > $1.durationHours }
-                        }(),
-                        quotaRoutines: routines.filter { $0.kind == .quota }.sorted { $0.weeklyHours > $1.weeklyHours },
-                        blocks: weekBlocks.filter { $0.day == day }.sorted { $0.durationHours > $1.durationHours },
+                        items: dayPlanItems(on: day),
                         onAdd: {
                             blockSheet = BlockSheetContext(day: day, block: nil)
                         },
@@ -430,6 +485,16 @@ struct ContentView: View {
     }
 
     private func dropBacklogItem(token: String, day: DayOfWeek) {
+        if token.hasPrefix("block:") {
+            // 이미 계획에 올린 블록을 다른 요일로 이동 (같은 주 안에서 요일만 변경).
+            let idStr = String(token.dropFirst("block:".count))
+            guard let blk = allBlocks.first(where: { String(describing: $0.persistentModelID) == idStr }) else { return }
+            if blk.day != day {
+                blk.day = day
+                try? context.save()
+            }
+            return
+        }
         if token.hasPrefix("routine:") {
             let name = String(token.dropFirst("routine:".count))
             guard let routine = routines.first(where: { $0.name == name }) else { return }

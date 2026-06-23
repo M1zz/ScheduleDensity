@@ -12,6 +12,11 @@ enum SegmentSource {
     case fixedRoutine(name: String)            // 위치는 RoutineOccurrence.startHourOverride 에 저장
     case planBlock(PlanBlock)                  // 위치는 PlanBlock.startHour 에 저장(자유·루틴 안 공용)
     case quotaSession(name: String, index: Int) // 위치는 QuotaPlacement 에 저장
+
+    var isQuota: Bool {
+        if case .quotaSession = self { return true }
+        return false
+    }
 }
 
 struct TimeSegment: Identifiable {
@@ -304,9 +309,9 @@ struct DayTimelineRow: View {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.primary.opacity(0.05))
 
-                    // 시간 격자 (24칸)
+                    // 시간 격자 (24칸) — 3시간마다 굵은 선으로 시간대를 더 잘게 구분.
                     ForEach(1..<24) { h in
-                        let isMajor = (h % 6 == 0)
+                        let isMajor = (h % 3 == 0)
                         Rectangle()
                             .fill(Color.secondary.opacity(isMajor ? 0.18 : 0.07))
                             .frame(width: isMajor ? 1 : 0.5)
@@ -346,8 +351,11 @@ struct DayTimelineRow: View {
                 shape.fill(seg.color.opacity(0.06))
                 shape.strokeBorder(seg.color.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
             } else if seg.isFlexible {
-                shape.fill(seg.color.opacity(0.20))
-                shape.strokeBorder(seg.color.opacity(0.75), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
+                // 유연 쿼터(식사 등)는 고정 루틴 위에 겹쳐 그려질 수 있으므로,
+                // 흰 테두리 링 + 진한 채움으로 아래 블록과 또렷이 구분되게 한다.
+                shape.fill(seg.color.opacity(0.32))
+                shape.strokeBorder(Color.white.opacity(0.9), lineWidth: 2)
+                shape.strokeBorder(seg.color, style: StrokeStyle(lineWidth: 1.5, dash: [3, 2]))
             } else if seg.isNested {
                 shape.fill(seg.color.opacity(0.95))
                 shape.strokeBorder(Color.white.opacity(0.85), lineWidth: 1)
@@ -359,13 +367,14 @@ struct DayTimelineRow: View {
         .padding(.vertical, seg.isNested ? 5 : 0)
         .frame(width: width)
         .overlay(alignment: .leading) {
-            if width > 30 {
+            if width > 18 {
                 Text(seg.title)
                     .font(.system(size: 9, weight: seg.isNested ? .semibold : .medium))
                     .foregroundStyle(ghost ? seg.color.opacity(0.55) : (seg.isFlexible ? seg.color : Color.white))
                     .strikethrough(ghost, color: seg.color.opacity(0.5))
                     .lineLimit(1)
-                    .padding(.leading, 4)
+                    .minimumScaleFactor(0.7)
+                    .padding(.horizontal, 3)
                     .frame(width: width, alignment: .leading)
             }
         }
@@ -399,7 +408,9 @@ struct DayTimelineRow: View {
                 }
             }
         }
-        .help(ghost ? "삭제됨 — 우클릭으로 되살리기" : "드래그해서 시각 이동 (15분 단위) · 우클릭으로 삭제")
+        .help(ghost
+              ? "\(seg.title) — 삭제됨 · 우클릭으로 되살리기"
+              : "\(seg.title) — 드래그해서 시각 이동 (15분 단위) · 우클릭으로 삭제")
     }
 
     private func deleteLabel(_ seg: TimeSegment) -> String {
@@ -511,7 +522,7 @@ struct HourAxis: View {
             GeometryReader { geo in
                 let w = geo.size.width
                 ZStack(alignment: .leading) {
-                    ForEach([0, 6, 12, 18, 24], id: \.self) { h in
+                    ForEach([0, 3, 6, 9, 12, 15, 18, 21, 24], id: \.self) { h in
                         Text("\(h)")
                             .font(.system(size: 9))
                             .foregroundStyle(.tertiary)

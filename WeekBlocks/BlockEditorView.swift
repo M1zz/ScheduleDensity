@@ -129,6 +129,11 @@ struct BlockEditorView: View {
         .onAppear {
             if existing == nil { timeBand = suggestedBand }
             loadExisting()
+            // 일반 블록은 처음부터 구체성 피드백을 실시간 표시 (별도 '구체성 체크' 버튼 없이).
+            if !withinRoutine {
+                hasCheckedOnce = true
+                revalidate()
+            }
         }
     }
 
@@ -193,11 +198,6 @@ struct BlockEditorView: View {
             Button("취소") { dismiss() }
                 .keyboardShortcut(.cancelAction)
 
-            if !withinRoutine {
-                Button("구체성 체크") { runCheck() }
-                    .keyboardShortcut("k", modifiers: .command)
-            }
-
             Button("저장") { save() }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.borderedProminent)
@@ -214,11 +214,6 @@ struct BlockEditorView: View {
             return !title.trimmingCharacters(in: .whitespaces).isEmpty
         }
         return hasCheckedOnce && issues.isEmpty
-    }
-
-    private func runCheck() {
-        hasCheckedOnce = true
-        revalidate()
     }
 
     private func revalidate() {
