@@ -44,6 +44,36 @@ enum Rainbow {
     ]
 }
 
+// MARK: - 모델 색상 헬퍼 (SwiftUI 의존 — macOS 전용, iOS 타깃엔 공유하지 않음)
+
+extension Routine {
+    var displayColor: Color { paletteColor(colorName) }
+}
+
+/// 팔레트 색상 이름 → SwiftUI Color (Routine·BacklogCategory 공용)
+/// iOS '욕망의 무지개' 팔레트(Apple 시스템 색)와 hex까지 통일.
+func paletteColor(_ name: String) -> Color {
+    let hex: String
+    switch name {
+    case "red":    hex = Rainbow.red
+    case "orange": hex = Rainbow.orange
+    case "yellow": hex = Rainbow.yellow
+    case "green":  hex = Rainbow.green
+    case "blue":   hex = Rainbow.blue
+    case "indigo": hex = Rainbow.indigo
+    case "purple": hex = Rainbow.purple
+    case "pink":   hex = "#FF2D55"   // systemPink (레거시 데이터 호환)
+    case "teal":   hex = "#30B0C7"   // systemTeal
+    case "cyan":   hex = "#32ADE6"   // systemCyan
+    default:       return .accentColor
+    }
+    return Color(hex: hex) ?? .accentColor
+}
+
+// 컬러 피커 옵션 — iOS와 동일한 7색 무지개를 스펙트럼 순서로 노출.
+let routineColorOptions: [(name: String, color: Color)] =
+    Rainbow.spectrum.map { (name: $0.name, color: Color(hex: $0.hex) ?? .accentColor) }
+
 /// 밀도 색 스케일 — iOS `densityColor(for:)`와 동일 (0 회색 → 초록 → 파랑 → 주황 → 빨강).
 /// macOS에서 향후 밀도 시각화를 붙일 때 iOS와 같은 의미 체계를 쓰기 위한 헬퍼.
 func densityColor(_ level: Int) -> Color {
