@@ -70,15 +70,14 @@ WeekBlocks `Routine`/`PlanBlock`을 메모리상 `Event`로 변환해 기존 밀
       - Routine.fixed → 주간 반복(selectedWeekdays, hoursPerDay=durationHours)
       - Routine.quota → 7일 평균 부하 밴드(hoursPerDay=weeklyHours/7)
       - 요일 변환 mon0→iOS weekday, 날짜·색·필터 모두 swiftc로 단위 검증 통과 ✅
-- [ ] 3b. 배선 경계 2곳 (모델 공유·store 준비 후 연결):
-      - 입력: `Routine`/`PlanBlock` fetch → `WBRoutineInput`/`WBBlockInput`
-        (routine.kind, routine.selectedDays.map(\.rawValue), block.weekStartDate, block.day.rawValue …)
-      - 출력: `WBVisualEvent` → `Event`
-        `Event(title:v.title, startDate:v.startDate, endDate:v.endDate, color:v.colorHex,`
-        `      hoursPerDay:v.hoursPerDay, selectedWeekdays:v.selectedWeekdays, importance:.init(rawValue:v.importance) ?? .medium)`
-        ❗️insert 금지 — 시각화 입력용 임시 객체
-- [ ] 4. 표시: 변환된 Event를 기존 `DensityCalculator`/`TimelineDensityView`에 투입, "WeekBlocks 계획" 소스 토글 추가
-- [ ] 5. 동기화 상태: iCloud 미로그인/첫 다운로드 지연/오프라인 빈 상태 처리, 원격 변경 시 갱신
+- [x] 1·2. 모델 공유·store: Models/Routine/PlanBlock을 iOS 타깃에 포함, Routine 색상헬퍼는 Theme(macOS)로 분리.
+      `WeekBlocksStore`(Services) = 별도 읽기전용 CloudKit 컨테이너(`iCloud.com.devkoan.ScheduleDensity`), Event 스토어와 분리.
+      entitlements 컨테이너 추가 + Background Modes(Remote notifications). pbxproj에 어댑터/스토어 정식 포함.
+- [x] 3b. 배선: WeekBlocksStore.loadVisualEvents()가 Routine/PlanBlock→어댑터→[Event](insert 금지).
+- [x] 4. 표시: ScheduleViewModel.fetchEvents()에 합쳐 투입(전 화면 반영) + SettingsView "무지개 공방 계획 표시" 토글(기본 ON).
+- [ ] ⚠️ 런타임 검증 미완: 같은 iCloud 계정 실기기/시뮬레이터에서 Mac↔iOS 실제 동기화 확인 필요.
+- [ ] 5. 동기화 상태: iCloud 미로그인/첫 다운로드 지연/오프라인 빈 상태 UI 처리, 원격 변경 시 갱신(현재는 캐시가 dataRefreshTrigger에만 반응).
+- [ ] (개선) 어댑터가 쿼터를 7일 평균으로 뭉갬 → '하루 흐름'까지 보이려면 TimelineLayout 공유 코어화.
 - [ ] 6. (보류) successCriteria·deliverable·reviewStatus 노출 여부 결정
 
 ## macOS(WeekBlocks) 피드백 반영 (2026-06-23) — macOS 빌드 성공
