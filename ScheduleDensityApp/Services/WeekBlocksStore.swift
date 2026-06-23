@@ -26,7 +26,10 @@ final class WeekBlocksStore {
         do {
             // 관계 없는 독립 모델이라 필요한 둘만 스키마로 선언해도 읽을 수 있다.
             let schema = Schema([Routine.self, PlanBlock.self])
+            // ⚠️ 반드시 별도 store 파일을 지정한다. 이름을 비우면 Event 스토어와 같은
+            //    default.store 로 떨어져 한 파일에서 충돌한다(ZEVENT 손상·CloudKit 미러링 오염).
             let config = ModelConfiguration(
+                "WeekBlocksMirror",
                 schema: schema,
                 cloudKitDatabase: .private(Self.containerID)
             )
