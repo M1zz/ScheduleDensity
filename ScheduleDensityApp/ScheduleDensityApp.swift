@@ -12,9 +12,13 @@ import SwiftData
 struct ScheduleDensityApp: App {
     var sharedModelContainer: ModelContainer = {
         // 1단계: 기존 데이터베이스 로드 시도 (하위 호환성)
+        // ⚠️ cloudKitDatabase: .none 을 명시한다. 앱에 CloudKit 컨테이너(WeekBlocks 연동용)가
+        //    추가되면 기본값 .automatic 이 Event 스토어까지 CloudKit을 켜려다 실패한다
+        //    (Event는 기본값 없는 비옵셔널 속성 보유 → CloudKit 비호환). Event는 로컬 전용 유지.
         do {
-            let container = try ModelContainer(for: Event.self)
-            print("✅ [Migration] Using existing database successfully")
+            let config = ModelConfiguration(schema: Schema([Event.self]), cloudKitDatabase: .none)
+            let container = try ModelContainer(for: Event.self, configurations: config)
+            print("✅ [Migration] Using existing database successfully (local-only)")
             return container
         } catch {
             print("⚠️ [Migration] Failed to load existing database: \(error)")
