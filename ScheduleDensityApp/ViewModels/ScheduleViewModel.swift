@@ -230,7 +230,8 @@ class ScheduleViewModel {
     private func weekBlocksEvents() -> [Event] {
         guard showWeekBlocksPlans else { return [] }
         if weekBlocksCacheToken == dataRefreshTrigger { return weekBlocksCache }
-        weekBlocksCache = weekBlocksStore.loadVisualEvents()
+        // 고정 루틴이 오늘 이전(가시 범위의 과거)에도 보이도록 표시 범위 전체를 넘긴다.
+        weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache
     }

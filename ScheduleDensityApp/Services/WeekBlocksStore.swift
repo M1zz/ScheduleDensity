@@ -44,11 +44,18 @@ final class WeekBlocksStore {
     var isAvailable: Bool { container != nil }
 
     /// WeekBlocks 계획 → 밀도 시각화용 Event 배열(메모리 전용).
+    /// 고정 루틴은 가시 범위(rangeStart~rangeEnd) **전체**에 펼친다 — 오늘 이전 날짜도 포함.
     /// 컨테이너가 없거나 데이터가 비어 있으면 빈 배열.
-    func loadVisualEvents(referenceDate: Date = Date(),
-                          weeks: Int = WeekBlocksAdapter.defaultWeeks) -> [Event] {
+    func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
         guard let container else { return [] }
         let context = ModelContext(container)
+
+        // 루틴은 referenceDate(=rangeStart)부터 weeks 만큼 앞으로 펼쳐지므로,
+        // 가시 범위를 모두 덮도록 시작을 rangeStart(과거)로 두고 주 수를 범위에 맞춘다.
+        let cal = Calendar.current
+        let spanDays = (cal.dateComponents([.day], from: rangeStart, to: rangeEnd).day ?? 56)
+        let weeks = max(1, Int(ceil(Double(spanDays) / 7.0)) + 1)
+        let referenceDate = rangeStart
 
         let routines = (try? context.fetch(FetchDescriptor<Routine>())) ?? []
         let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
