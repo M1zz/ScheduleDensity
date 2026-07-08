@@ -7,9 +7,41 @@
 
 import SwiftUI
 import SwiftData
+import CloudKit
+
+// MARK: - CloudKit 공유 초대 수락 연결
+// SwiftUI 라이프사이클에서는 씬 델리게이트의 userDidAcceptCloudKitShareWith로
+// 초대 수락 콜백이 들어오므로, 델리게이트 클래스를 직접 지정해 연결한다.
+
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let config = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        config.delegateClass = SceneDelegate.self
+        return config
+    }
+}
+
+final class SceneDelegate: NSObject, UIWindowSceneDelegate {
+    func windowScene(_ windowScene: UIWindowScene,
+                     userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        Task { await FamilyShareStore.shared.accept(cloudKitShareMetadata) }
+    }
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        // 앱이 꺼진 상태에서 초대 링크로 실행된 경우.
+        if let metadata = connectionOptions.cloudKitShareMetadata {
+            Task { await FamilyShareStore.shared.accept(metadata) }
+        }
+    }
+}
 
 @main
 struct ScheduleDensityApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     var sharedModelContainer: ModelContainer = {
         // 1단계: 기존 데이터베이스 로드 시도 (하위 호환성)
         // ⚠️ cloudKitDatabase: .none 을 명시한다. 앱에 CloudKit 컨테이너(WeekBlocks 연동용)가
@@ -99,7 +131,7 @@ struct ScheduleDensityApp: App {
                     for event in recoveredEvents {
                         context.insert(event)
                     }
-                    try context.save()
+                    try? context.save()
                     print("💾 [Migration] Successfully migrated \(recoveredEvents.count) events to new database")
                 } else {
                     print("ℹ️ [Migration] No events to migrate - starting fresh")
@@ -165,9 +197,44 @@ struct ScheduleDensityApp: App {
         }
     }()
 
+    /// 할 일(백로그) 전용 컨테이너 — 맥 '무지개 공방'과 같은 CloudKit 컨테이너를 써서
+    /// BacklogItem/BacklogCategory가 기기 간 동기화된다.
+    /// Event 스토어(sharedModelContainer)·WeekBlocksStore 미러와는 완전히 분리된 별도 store.
+    var todoContainer: ModelContainer = {
+        // iOS 샌드박스에는 Application Support 디렉터리가 없을 수 있어 먼저 만들어 둔다.
+        try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
+
+        let schema = Schema([BacklogItem.self, BacklogCategory.self])
+        let cloudConfig = ModelConfiguration(
+            "WeekBlocksTodos",
+            schema: schema,
+            cloudKitDatabase: .private("iCloud.com.devkoan.ScheduleDensity")
+        )
+        do {
+            return try ModelContainer(for: schema, configurations: [cloudConfig])
+        } catch {
+            // iCloud 미로그인 등으로 실패하면 로컬 전용으로라도 동작하게 한다.
+            print("⚠️ [Todo] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(error)")
+            let localConfig = ModelConfiguration("WeekBlocksTodos", schema: schema, cloudKitDatabase: .none)
+            do {
+                return try ModelContainer(for: schema, configurations: [localConfig])
+            } catch {
+                let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                return try! ModelContainer(for: schema, configurations: [memoryConfig])
+            }
+        }
+    }()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/가족)은 추가 탭.
+                ContentView()
+                    .tabItem { Label("무지개", systemImage: "rainbow") }
+                TodoView()
+                    .modelContainer(todoContainer)
+                    .tabItem { Label("할 일", systemImage: "checklist") }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

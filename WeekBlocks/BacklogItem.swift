@@ -13,6 +13,9 @@ final class BacklogItem {
     var categoryID: String? = nil
     /// 이 할 일이 속한 주 (월요일 00:00). 지난 주에 못 한 항목 구분에 사용.
     var weekStartDate: Date = Date.currentWeekStart
+    /// iOS Todo에서 체크한 완료 상태. 완료되면 맥 백로그 그리드에서는 숨긴다.
+    var isCompleted: Bool = false
+    var completedAt: Date? = nil
 
     init(title: String,
          durationHours: Double = 1,

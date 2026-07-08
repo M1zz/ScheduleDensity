@@ -55,6 +55,7 @@ struct ContentView: View {
                 dayTimelineSection
                 weekGridSection
                 BacklogSection(allItems: backlogItems, weekStart: selectedWeek, canPlan: hasFixedRoutines)
+                FamilyTodoSection()
                 routinesSection
             }
             .padding(28)

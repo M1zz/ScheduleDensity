@@ -48,13 +48,21 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
       - Pages 소스 = main `/docs`, URL https://m1zz.github.io/ScheduleDensity/
       - README(main·dev)에 지원 페이지 링크 추가
 
+## 완료 (2026-07-08)
+- [x] iOS 앱(ScheduleDensityApp)도 같은 공유 컨테이너로 iCloud 연동
+      - entitlements `iCloud.com.devkoan.ScheduleDensity` + Background Modes(Remote notifications)
+      - WeekBlocks 모델 6종을 iOS 타깃에 공유 컴파일, `cloudKitDatabase: .private(...)`
+      - Event는 별도 로컬 전용 ModelConfiguration으로 유지 (CloudKit 미적용 — 기존 데이터 그대로)
+- [x] iOS에 '할 일' 탭 추가 — 간단 Todo(내 할 일: 맥 백로그와 동기화, isCompleted 체크)
+      - Event 스토어·WeekBlocksStore 미러와 분리된 별도 컨테이너("WeekBlocksTodos", BacklogItem·BacklogCategory만 CloudKit private)
+- [x] 가족 공유 — CloudKit 커스텀 존("FamilyTodos") + 존 전체 CKShare
+      - `FamilyShareStore.swift`(공용): 소유자=개인 DB, 참가자=공유 DB, 초대 링크(publicPermission .readWrite)
+      - iOS: 할 일 탭 안 '가족' 세그먼트 / macOS: '가족 할 일' 섹션
+      - 초대 수락: iOS SceneDelegate·macOS NSApplicationDelegate + `CKSharingSupported`
+      - ⚠️ 프로덕션 배포 전 CloudKit Console에서 스키마 deploy 필요 (BacklogItem 새 필드 + FamilyTodo 레코드 타입)
+
 ## 정리 필요
 - [ ] 기존 독립 프로젝트 `/Users/leeo/Documents/workspace/code/WeekBlocks` 제거 (이 저장소로 흡수 완료 후)
-- [ ] iOS 앱(ScheduleDensityApp)도 같은 공유 컨테이너로 iCloud 연동
-      - entitlements에 `iCloud.com.devkoan.ScheduleDensity` + Background Modes(Remote notifications)
-      - `ScheduleDensityApp.swift` ModelConfiguration → `cloudKitDatabase: .private(...)`
-      - ⚠️ Event/RecurrencePattern 모델의 CloudKit 호환성(전 속성 기본값·옵셔널, .unique 금지, 관계 옵셔널) 점검 필요
-      - ⚠️ 이미 출시된 앱 — 기존 로컬 데이터의 CloudKit 마이그레이션 영향 검토
 - [ ] (선택) WeekBlocks 내부 타깃/스킴명도 ScheduleDensity 계열로 변경 — Xcode에서 rename 권장(수기 pbxproj 위험)
 
 ## iOS 시각화 연동 (WeekBlocks 데이터 → 욕망의 무지개 밀도 뷰)

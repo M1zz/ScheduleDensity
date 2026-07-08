@@ -20,9 +20,9 @@ struct BacklogSection: View {
 
     private let cal = Calendar(identifier: .iso8601)
 
-    /// 이번 주 백로그.
+    /// 이번 주 백로그. (iOS Todo에서 완료 처리한 항목은 제외)
     private var weekItems: [BacklogItem] {
-        allItems.filter { cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+        allItems.filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
     }
 
     private var filteredItems: [BacklogItem] {
@@ -32,7 +32,7 @@ struct BacklogSection: View {
 
     /// 이번 주보다 과거 주에 남아 있는(못 한) 백로그 수.
     private var carryoverCount: Int {
-        allItems.filter { $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }.count
+        allItems.filter { !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }.count
     }
 
     /// 항목별 색상: 카테고리가 있으면 카테고리 색(같은 카테고리=같은 색),
@@ -324,7 +324,7 @@ struct BacklogComposerView: View {
 
     private let cal = Calendar(identifier: .iso8601)
     private var weekItems: [BacklogItem] {
-        allItems.filter { cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+        allItems.filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
     }
 
     var body: some View {
@@ -604,14 +604,21 @@ struct AllBacklogRow: View {
             if let c = category {
                 Circle().fill(c.displayColor).frame(width: 7, height: 7)
             }
+            if item.isCompleted {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.green)
+            }
             Text(item.title)
                 .font(.system(size: 13))
+                .strikethrough(item.isCompleted)
+                .foregroundStyle(item.isCompleted ? .secondary : .primary)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text(String(format: "%.1fh", item.durationHours))
                 .font(.system(size: 11)).foregroundStyle(.secondary).monospacedDigit()
 
-            if !isCurrentWeek {
+            if !isCurrentWeek && !item.isCompleted {
                 Button(action: onCarry) {
                     Label("이번 주로", systemImage: "arrow.uturn.left")
                 }

@@ -1,8 +1,19 @@
 import SwiftUI
 import SwiftData
+import CloudKit
+
+/// CloudKit 가족 공유 초대 링크를 눌렀을 때 수락 콜백을 받는다.
+final class MacAppDelegate: NSObject, NSApplicationDelegate {
+    func application(_ application: NSApplication,
+                     userDidAcceptCloudKitShareWith metadata: CKShare.Metadata) {
+        Task { await FamilyShareStore.shared.accept(metadata) }
+    }
+}
 
 @main
 struct WeekBlocksApp: App {
+    @NSApplicationDelegateAdaptor(MacAppDelegate.self) private var appDelegate
+
     let container: ModelContainer = {
         let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self, RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self])
         let config = ModelConfiguration(
