@@ -29,6 +29,7 @@ struct TodoView: View {
     @State private var family = FamilyShareStore.shared
     @State private var newTitle = ""
     @State private var newCategoryID: String? = nil
+    @State private var showingFamilyShareNotice = false
     @FocusState private var inputFocused: Bool
 
     private let cal = Calendar(identifier: .iso8601)
@@ -75,6 +76,14 @@ struct TodoView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) { inputBar }
+        }
+        .alert("가족 공유 시작", isPresented: $showingFamilyShareNotice) {
+            Button("공유 시작") {
+                Task { await family.startSharing() }
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("초대 링크를 받은 사람은 누구나 이 목록에 참여해 함께 읽고 쓸 수 있습니다.\n링크는 가족에게만 보내주세요.")
         }
         .task { await family.refresh() }
         .onChange(of: scenePhase) { _, phase in
@@ -167,6 +176,10 @@ struct TodoView: View {
                 }
             } header: {
                 if !open.isEmpty { Text("할 일 · \(open.count)개") }
+            } footer: {
+                if family.mode == .owner && family.shareURL != nil {
+                    Text("초대 링크를 받은 사람은 누구나 참여할 수 있어요. 링크는 가족에게만 보내주세요.")
+                }
             }
 
             if !done.isEmpty {
@@ -230,7 +243,7 @@ struct TodoView: View {
                     }
                 } else {
                     Button {
-                        Task { await family.startSharing() }
+                        showingFamilyShareNotice = true
                     } label: {
                         Label("가족 공유 시작", systemImage: "person.2.badge.plus")
                     }

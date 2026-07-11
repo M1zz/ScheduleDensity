@@ -6,6 +6,7 @@ import CloudKit
 struct FamilyTodoSection: View {
     @State private var store = FamilyShareStore.shared
     @State private var newTitle = ""
+    @State private var showingShareNotice = false
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -33,6 +34,12 @@ struct FamilyTodoSection: View {
 
             if let message = store.errorMessage {
                 Label(message, systemImage: "exclamationmark.triangle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if store.mode == .owner && store.shareURL != nil {
+                Text("초대 링크를 받은 사람은 누구나 참여할 수 있습니다. 링크는 가족에게만 보내주세요.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -95,12 +102,20 @@ struct FamilyTodoSection: View {
                 .buttonStyle(.borderless)
             } else {
                 Button {
-                    Task { await store.startSharing() }
+                    showingShareNotice = true
                 } label: {
                     Label("가족 공유 시작", systemImage: "person.2.badge.plus")
                 }
                 .buttonStyle(.borderless)
                 .disabled(!store.iCloudAvailable || store.isBusy)
+                .alert("가족 공유 시작", isPresented: $showingShareNotice) {
+                    Button("공유 시작") {
+                        Task { await store.startSharing() }
+                    }
+                    Button("취소", role: .cancel) { }
+                } message: {
+                    Text("초대 링크를 받은 사람은 누구나 이 목록에 참여해 함께 읽고 쓸 수 있습니다.\n링크는 가족에게만 보내주세요.")
+                }
             }
         }
     }
