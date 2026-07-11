@@ -117,6 +117,13 @@ final class Event {
         }
     }
 
+    /// 레인 배정 딕셔너리 키.
+    /// 색상만 키로 쓰면 같은 색을 고른 일정끼리 배정이 서로 덮어써지므로
+    /// 제목·시작일·색을 섞어 사실상 유일한 키를 만든다.
+    var laneKey: String {
+        "\(title)|\(startDate.timeIntervalSinceReferenceDate)|\(color)"
+    }
+
     // 이 일정의 실제 종료일 계산 (무한 반복 고려)
     func effectiveEndDate() -> Date {
         if isInfinite {

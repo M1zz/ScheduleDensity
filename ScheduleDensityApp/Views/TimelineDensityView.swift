@@ -687,7 +687,7 @@ struct DateRow: View {
         // 이 날짜에 활성화된 이벤트들 중에서
         // 해당 레인에 할당된 이벤트 찾기
         for event in dayData.events {
-            if let assignedLane = viewModel.eventLaneAssignments[event.color],
+            if let assignedLane = viewModel.eventLaneAssignments[event.laneKey],
                assignedLane == laneIndex {
                 return event
             }
@@ -751,7 +751,7 @@ struct GridCell: View {
                 let baseLaneColor = Color(hex: ScheduleViewModel.laneColors[laneNumber - 1]) ?? .blue
 
                 // 같은 레인 내 이벤트 인덱스와 총 개수 가져오기
-                let eventIndex = viewModel.eventIndexInLane[event.color] ?? 0
+                let eventIndex = viewModel.eventIndexInLane[event.laneKey] ?? 0
                 let totalEventsInLane = viewModel.laneEventCounts[laneNumber - 1] ?? 1
 
                 // 색상 변형 적용
@@ -847,7 +847,7 @@ struct GridCell: View {
         // 같은 레인의 모든 일정 가져오기
         let allEvents = viewModel.fetchEvents()
         let eventsInSameLane = allEvents.filter { otherEvent in
-            guard let assignedLane = viewModel.eventLaneAssignments[otherEvent.color] else { return false }
+            guard let assignedLane = viewModel.eventLaneAssignments[otherEvent.laneKey] else { return false }
             return assignedLane == lane
         }
 
@@ -1198,7 +1198,7 @@ struct EventQuickLookView: View {
     @Environment(\.dismiss) private var dismiss
 
     private var laneColor: Color {
-        if let lane = viewModel.eventLaneAssignments[event.color],
+        if let lane = viewModel.eventLaneAssignments[event.laneKey],
            lane >= 0 && lane < ScheduleViewModel.laneColors.count {
             return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
         }
@@ -1486,15 +1486,15 @@ struct DayTimeAnalysisView: View {
 
         // 레인 번호로 정렬 (레인 번호가 낮을수록 먼저)
         return filtered.sorted { event1, event2 in
-            let lane1 = viewModel.eventLaneAssignments[event1.color] ?? 999
-            let lane2 = viewModel.eventLaneAssignments[event2.color] ?? 999
+            let lane1 = viewModel.eventLaneAssignments[event1.laneKey] ?? 999
+            let lane2 = viewModel.eventLaneAssignments[event2.laneKey] ?? 999
             return lane1 < lane2
         }
     }
 
     // 이벤트의 레인 색상 가져오기
     private func getLaneColor(for event: Event) -> Color {
-        if let lane = viewModel.eventLaneAssignments[event.color],
+        if let lane = viewModel.eventLaneAssignments[event.laneKey],
            lane >= 0 && lane < ScheduleViewModel.laneColors.count {
             return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
         }

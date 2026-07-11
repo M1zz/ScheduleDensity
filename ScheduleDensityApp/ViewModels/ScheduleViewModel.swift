@@ -93,10 +93,10 @@ class ScheduleViewModel {
     var dataRefreshTrigger = UUID()
 
     // 이벤트별 레인 할당 정보 저장
-    var eventLaneAssignments: [String: Int] = [:]  // color를 key로 사용
+    var eventLaneAssignments: [String: Int] = [:]  // Event.laneKey를 key로 사용
 
     // 레인 내 이벤트 인덱스 정보 (색상 변형용)
-    var eventIndexInLane: [String: Int] = [:]  // event.color -> 레인 내 인덱스 (0부터 시작)
+    var eventIndexInLane: [String: Int] = [:]  // Event.laneKey -> 레인 내 인덱스 (0부터 시작)
     var laneEventCounts: [Int: Int] = [:]      // lane -> 총 이벤트 수
 
     // 현재 로드된 날짜 범위 추적
@@ -122,6 +122,9 @@ class ScheduleViewModel {
     private var weekBlocksCacheToken: UUID? = nil
     // CloudKit 원격 변경(첫 동기화·다른 기기 변경) 시 화면을 갱신하기 위한 옵저버.
     private var remoteChangeObserver: NSObjectProtocol?
+    // 원격 변경 알림 디바운스 — 앱 내 4개 스토어의 저장·동기화 이벤트마다 알림이 오므로
+    // 몰아서 한 번만 갱신한다 (없으면 124일치 밀도 재계산이 초 단위로 반복됨).
+    private var remoteChangeDebounce: DispatchWorkItem?
 
     // 레인별 색상 (무지개 순서)
     static let laneColors = [
@@ -178,9 +181,16 @@ class ScheduleViewModel {
             queue: .main
         ) { [weak self] _ in
             guard let self else { return }
-            self.weekBlocksCacheToken = nil
-            self.dataRefreshTrigger = UUID()
-            print("🔄 [WeekBlocks] 원격 변경 감지 → 데이터 갱신")
+            // 연속으로 쏟아지는 알림을 1.5초로 묶어 한 번만 갱신
+            self.remoteChangeDebounce?.cancel()
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                self.weekBlocksCacheToken = nil
+                self.dataRefreshTrigger = UUID()
+                print("🔄 [WeekBlocks] 원격 변경 감지 → 데이터 갱신")
+            }
+            self.remoteChangeDebounce = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
         }
     }
 
@@ -1036,7 +1046,7 @@ class ScheduleViewModel {
         // 레인별로 이벤트를 그룹화하고 인덱스 부여
         var laneGroups: [Int: [Event]] = [:]
         for (event, lane) in compactedLanes {
-            assignments[event.color] = lane
+            assignments[event.laneKey] = lane
             if laneGroups[lane] == nil {
                 laneGroups[lane] = []
             }
@@ -1049,7 +1059,7 @@ class ScheduleViewModel {
             eventCounts[lane] = sortedEvents.count
 
             for (index, event) in sortedEvents.enumerated() {
-                indexInLane[event.color] = index
+                indexInLane[event.laneKey] = index
             }
         }
 
@@ -1512,7 +1522,7 @@ class ScheduleViewModel {
         let laneAssignedEvents = assignLanesToEvents()
         var laneDist: [Int: Int] = [:]
         for event in laneAssignedEvents {
-            if let lane = eventLaneAssignments[event.color] {
+            if let lane = eventLaneAssignments[event.laneKey] {
                 laneDist[lane, default: 0] += 1
             }
         }
