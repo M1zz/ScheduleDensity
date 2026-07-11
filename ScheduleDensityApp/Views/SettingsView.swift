@@ -523,6 +523,8 @@ struct SettingsView: View {
                     Text("수면 시간")
                 }
                 }
+
+                DeveloperContactSection()
             }
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
@@ -955,6 +957,24 @@ struct SettingsView: View {
         formatter.dateFormat = "M/d"
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: date)
+    }
+}
+
+// MARK: - 개발자 문의
+struct DeveloperContactSection: View {
+    var body: some View {
+        Section {
+            Link(destination: URL(string: "mailto:leeo@kakao.com")!) {
+                Label("이메일로 문의하기", systemImage: "envelope")
+            }
+            Link(destination: URL(string: "https://instagram.com/lee25_ios")!) {
+                Label("인스타그램 DM (@lee25_ios)", systemImage: "paperplane")
+            }
+        } header: {
+            Text("개발자에게 문의")
+        } footer: {
+            Text("버그 제보와 기능 제안을 환영합니다.")
+        }
     }
 }
 
