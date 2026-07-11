@@ -314,6 +314,9 @@ struct TimelineDensityView: View {
             }
             .onAppear {
                 scrollProxy = proxy
+                // 이 ScrollView는 로딩이 끝난 뒤에야 마운트되므로 (isLoading 분기),
+                // onChange(isLoading)로는 첫 진입을 못 잡는다. 여기서 직접 오늘로 스크롤.
+                scrollToTodayIfNeeded(proxy: proxy, data: densityData)
             }
             .onChange(of: isLoading) { _, newIsLoading in
                 // 로딩이 완료되면 오늘로 스크롤
@@ -325,15 +328,17 @@ struct TimelineDensityView: View {
     }
 
     private func scrollToTodayIfNeeded(proxy: ScrollViewProxy, data: [DayDensity]) {
-        if !data.isEmpty && !hasScrolledToToday {
-            if let todayData = data.first(where: { isToday($0.date) }) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    withAnimation(.easeInOut(duration: 0.5)) {
-                        proxy.scrollTo(todayData.id, anchor: .center)
-                    }
-                    hasScrolledToToday = true
-                }
-            }
+        guard !data.isEmpty, !hasScrolledToToday,
+              let todayData = data.first(where: { isToday($0.date) }) else { return }
+
+        // 첫 진입: 애니메이션 없이 즉시 오늘을 화면 가운데로 (열리자마자 가운데에 보이도록)
+        DispatchQueue.main.async {
+            proxy.scrollTo(todayData.id, anchor: .center)
+            hasScrolledToToday = true
+        }
+        // LazyVStack 레이아웃이 아직 잡히기 전이면 첫 scrollTo가 어긋날 수 있어 한 번 더 보정
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            proxy.scrollTo(todayData.id, anchor: .center)
         }
     }
 
@@ -527,14 +532,18 @@ struct TimelineDensityView: View {
     }
 
     private func refreshData() {
-        print("🔄 [TimelineView] refreshData() 시작 - isLoading = true")
-        isLoading = true
+        // 첫 로드에만 로딩 화면을 쓴다. 데이터가 이미 있는데 isLoading을 켜면
+        // ScrollView가 언마운트됐다 다시 붙으면서 스크롤 위치가 맨 위로 리셋된다
+        // (CloudKit 원격 변경 갱신이 반복될 때마다 오늘 위치를 잃는 원인).
+        print("🔄 [TimelineView] refreshData() 시작")
+        if densityData.isEmpty {
+            isLoading = true
+        }
 
         // 비동기로 데이터 로드
         DispatchQueue.main.async {
-            print("🔄 [TimelineView] 데이터 로드 중...")
             densityData = viewModel.getAllDensityData()
-            print("🔄 [TimelineView] 데이터 로드 완료 - isLoading = false")
+            print("🔄 [TimelineView] 데이터 로드 완료")
             isLoading = false
         }
     }

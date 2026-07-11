@@ -137,6 +137,8 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
+        .simultaneousGesture(TapGesture().onEnded { inputFocused = false })
         .overlay {
             if openItems.isEmpty && doneItems.isEmpty && carryoverItems.isEmpty {
                 ContentUnavailableView(
@@ -197,6 +199,8 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollDismissesKeyboard(.immediately)
+        .simultaneousGesture(TapGesture().onEnded { inputFocused = false })
         .refreshable { await family.refresh() }
         .overlay {
             if family.items.isEmpty {

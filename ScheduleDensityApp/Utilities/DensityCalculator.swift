@@ -9,13 +9,17 @@ import Foundation
 
 // 일 단위 밀도 정보
 struct DayDensity: Identifiable, Equatable {
-    let id = UUID()
     let date: Date
     let density: Int // 해당 날짜에 동시에 진행되는 이벤트 개수
     let events: [Event] // 해당 날짜에 진행되는 이벤트들
 
+    /// 날짜(자정 정규화) 기반 고정 id.
+    /// UUID를 쓰면 새로고침 때마다 행 identity가 바뀌어 스크롤 위치가 리셋되고
+    /// scrollTo 대상도 무효가 되므로, 반드시 날짜로 유지한다.
+    var id: Date { date }
+
     static func == (lhs: DayDensity, rhs: DayDensity) -> Bool {
-        lhs.id == rhs.id && lhs.date == rhs.date && lhs.density == rhs.density
+        lhs.date == rhs.date && lhs.density == rhs.density
     }
 }
 
