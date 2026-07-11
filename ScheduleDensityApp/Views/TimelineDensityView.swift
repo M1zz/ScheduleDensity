@@ -1243,13 +1243,13 @@ struct DayTimeAnalysisView: View {
                         }
 
                         // 시간 사용 바 (깨어있는 시간 기준)
-                        // 고정 비율: 1시간당 30픽셀
-                        let pixelsPerHour: CGFloat = 30.0
+                        // 비율만 읽히면 되므로 스케일을 낮춰 전체 스택을 짧게 유지한다 (1시간당 10픽셀)
+                        let pixelsPerHour: CGFloat = 10.0
 
                         VStack(spacing: 8) {
                             // 자유시간 (양수일 때만 표시)
                             if freeHours > 0 {
-                                let height = freeHours * pixelsPerHour
+                                let height = max(freeHours * pixelsPerHour, 16)
 
                                 HStack(spacing: 8) {
                                     Rectangle()
@@ -1272,7 +1272,7 @@ struct DayTimeAnalysisView: View {
                             // 이벤트들 (레인 번호 역순으로 표시: 7번→1번)
                             ForEach(events.indices.reversed(), id: \.self) { index in
                                 let event = events[index]
-                                let height = max(event.hoursPerDay * pixelsPerHour, 20)  // 최소 높이 20
+                                let height = max(event.hoursPerDay * pixelsPerHour, 16)  // 최소 높이 16 (텍스트 가독용)
                                 let laneColor = getLaneColor(for: event)
 
                                 HStack(spacing: 8) {
