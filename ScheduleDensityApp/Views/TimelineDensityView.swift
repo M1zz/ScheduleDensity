@@ -32,6 +32,10 @@ struct TimelineDensityView: View {
     // 날짜별 시간 분석 상태
     @State private var selectedDateForTimeAnalysis: DateWrapper?
 
+    // 일정 빠른 보기(탭) 상태 — 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼으로
+    @State private var eventToView: Event?
+    @State private var pendingEditEvent: Event?
+
     // 인사이트 설정 (UserDefaults에 저장)
     @AppStorage("showInsightCards") private var showInsightCards = false
     // 인사이트 카드 펼침 상태
@@ -90,6 +94,19 @@ struct TimelineDensityView: View {
                     AddEventView(viewModel: viewModel, initialStartDate: startDate, initialEndDate: endDate)
                 } else if let selectedDate = selectedDateForNewEvent {
                     AddEventView(viewModel: viewModel, initialDate: selectedDate)
+                }
+            }
+            .sheet(item: $eventToView, onDismiss: {
+                // 보기 시트가 완전히 닫힌 뒤에 수정 시트를 열어야 겹침 없이 전환된다.
+                if let event = pendingEditEvent {
+                    pendingEditEvent = nil
+                    viewModel.eventToEdit = event
+                    viewModel.showingAddEvent = true
+                }
+            }) { event in
+                EventQuickLookView(event: event, viewModel: viewModel) {
+                    pendingEditEvent = event
+                    eventToView = nil
                 }
             }
             .onChange(of: showingAddEventSheet) { _, isShowing in
@@ -366,9 +383,8 @@ struct TimelineDensityView: View {
     }
 
     private func handleEventTap(_ event: Event) {
-        // 이벤트를 수정하기 위해 eventToEdit 설정 후 수정 화면 열기
-        viewModel.eventToEdit = event
-        viewModel.showingAddEvent = true
+        // 탭 = 일정 보기. 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼.
+        eventToView = event
     }
 
     private func handleDateLabelTap(_ date: Date) {
@@ -1162,6 +1178,109 @@ struct DiagonalStripesPattern: View {
             }
             .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
         }
+    }
+}
+
+// 일정 빠른 보기 (칸 탭) — 수정 없이 내용만 확인, 수정은 버튼으로
+struct EventQuickLookView: View {
+    let event: Event
+    @Bindable var viewModel: ScheduleViewModel
+    let onEdit: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    private var laneColor: Color {
+        if let lane = viewModel.eventLaneAssignments[event.color],
+           lane >= 0 && lane < ScheduleViewModel.laneColors.count {
+            return Color(hex: ScheduleViewModel.laneColors[lane]) ?? .blue
+        }
+        return .blue
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack(alignment: .leading, spacing: 20) {
+                // 제목
+                HStack(spacing: 10) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(laneColor)
+                        .frame(width: 6, height: 34)
+                    Text(event.title)
+                        .font(.title3.weight(.semibold))
+                    Spacer()
+                }
+
+                // 정보 행들
+                VStack(spacing: 12) {
+                    infoRow(icon: "calendar", label: "기간",
+                            value: event.isInfinite
+                            ? "\(formatDate(event.startDate)) ~ 무기한"
+                            : "\(formatDate(event.startDate)) ~ \(formatDate(event.endDate))")
+                    infoRow(icon: "clock", label: "하루 시간",
+                            value: String(format: "%.1f시간", event.hoursPerDay))
+                    infoRow(icon: "repeat", label: "요일", value: weekdaysText)
+                    infoRow(icon: "exclamationmark.circle", label: "중요도",
+                            value: event.importance.displayName)
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+
+                Spacer()
+
+                Text("칸을 길게 누르면 수정·삭제 메뉴가 바로 열립니다.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                Button(action: onEdit) {
+                    Label("일정 수정", systemImage: "pencil")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(laneColor)
+            }
+            .padding()
+            .navigationTitle("일정 보기")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("닫기") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var weekdaysText: String {
+        if event.weeklyPattern != nil { return "맞춤 패턴" }
+        guard let days = event.selectedWeekdays, !days.isEmpty, days.count < 7 else { return "매일" }
+        let labels = ["", "일", "월", "화", "수", "목", "금", "토"]
+        return days.sorted().compactMap { $0 >= 1 && $0 <= 7 ? labels[$0] : nil }.joined(separator: "·")
+    }
+
+    private func infoRow(icon: String, label: String, value: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+                .frame(width: 20)
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+            Text(value)
+                .font(.subheadline.weight(.medium))
+                .multilineTextAlignment(.trailing)
+        }
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.M.d"
+        return formatter.string(from: date)
     }
 }
 
