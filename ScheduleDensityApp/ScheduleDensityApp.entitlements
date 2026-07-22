@@ -8,6 +8,7 @@
 	<array>
 		<string>iCloud.com.example.ScheduleDensityApp</string>
 		<string>iCloud.com.devkoan.ScheduleDensity</string>
+		<string>iCloud.com.Ysoup.FeedbackHub</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>
