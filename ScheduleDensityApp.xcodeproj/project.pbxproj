@@ -25,13 +25,6 @@
 		A1000008 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100008 /* ScheduleViewModel.swift */; };
 		A1000009 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100009 /* DateExtensions.swift */; };
 		A1000010 /* DensityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100010 /* DensityCalculator.swift */; };
-		B200000000000000000000A2 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000A1 /* Theme.swift */; };
-		B200000000000000000000A6 /* BacklogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* BacklogItem.swift */; };
-		B200000000000000000000A7 /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC00000000000000000000A2 /* BacklogCategory.swift */; };
-		B200000000000000000000A8 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F1 /* TodoView.swift */; };
-		B200000000000000000000A9 /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F2 /* FamilyShareStore.swift */; };
-		B200000000000000000000B1 /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F2 /* FamilyShareStore.swift */; };
-		B200000000000000000000B2 /* FamilyTodoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F3 /* FamilyTodoSection.swift */; };
 		A1000011 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100011 /* Assets.xcassets */; };
 		A1000012 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100012 /* Preview Assets.xcassets */; };
 		A1000015 /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100015 /* TimelineDensityView.swift */; };
@@ -51,8 +44,17 @@
 		AC00000000000000000000B1 /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00000000000000000000A1 /* DayTimelineView.swift */; };
 		AD6082FF3A2F107F2AFC471B /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E901F9FAE61F67D241E4AFA /* Routine.swift */; };
 		AFBD1179019EF50C36499034 /* ReflectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBEF298764AA2B46E56D158 /* ReflectionView.swift */; };
+		B200000000000000000000A2 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000A1 /* Theme.swift */; };
+		B200000000000000000000A6 /* BacklogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* BacklogItem.swift */; };
+		B200000000000000000000A7 /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC00000000000000000000A2 /* BacklogCategory.swift */; };
+		B200000000000000000000A8 /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F1 /* TodoView.swift */; };
+		B200000000000000000000A9 /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F2 /* FamilyShareStore.swift */; };
+		B200000000000000000000B1 /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F2 /* FamilyShareStore.swift */; };
+		B200000000000000000000B2 /* FamilyTodoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B200000000000000000000F3 /* FamilyTodoSection.swift */; };
 		BC00000000000000000000A1 /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC00000000000000000000A2 /* BacklogCategory.swift */; };
 		C1D2E3F4A5B6C7D8E9F0A1B2 /* BacklogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6D7E8F9A0B1C2 /* BacklogView.swift */; };
+		CB97F5DF74F5D74EB07FF3AD /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2656520D3169561935374E56 /* LeeoKit */; };
+		D30F1A605A3F1EF18127D457 /* ScheduleDensityAppSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFC407EC0A742A278FEE0A55 /* ScheduleDensityAppSpec.swift */; };
 		D780005DFC91027166F8FFD4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275013AA0724C0CE2E9F7B87 /* ContentView.swift */; };
 		E1F2A3B4C5D6E7F8A9B0C1D2 /* RoutineOccurrence.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* RoutineOccurrence.swift */; };
 		E7C9EA2031690901C661D5FF /* WeekBlocksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBB5DA69862E9E73B5A1753 /* WeekBlocksApp.swift */; };
@@ -72,10 +74,6 @@
 		9CAB49432EC6DD5600EB00E1 /* ScheduleDensityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScheduleDensityApp.entitlements; sourceTree = "<group>"; };
 		A1100001 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
 		A1100002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B200000000000000000000F1 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
-		B200000000000000000000F2 /* FamilyShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareStore.swift; sourceTree = "<group>"; };
-		B200000000000000000000F3 /* FamilyTodoSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyTodoSection.swift; sourceTree = "<group>"; };
-		B200000000000000000000F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1100003 /* WeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekView.swift; sourceTree = "<group>"; };
 		A1100004 /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
 		A1100005 /* RecommendationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationView.swift; sourceTree = "<group>"; };
@@ -104,8 +102,13 @@
 		AB00000000000000000000A1 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AC00000000000000000000A1 /* DayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTimelineView.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
+		B200000000000000000000F1 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
+		B200000000000000000000F2 /* FamilyShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareStore.swift; sourceTree = "<group>"; };
+		B200000000000000000000F3 /* FamilyTodoSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyTodoSection.swift; sourceTree = "<group>"; };
+		B200000000000000000000F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* RoutineDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineDetailView.swift; sourceTree = "<group>"; };
 		BC00000000000000000000A2 /* BacklogCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogCategory.swift; sourceTree = "<group>"; };
+		BFC407EC0A742A278FEE0A55 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		C8D53DC3B74207F912499649 /* BlockEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditorView.swift; sourceTree = "<group>"; };
 		D1E2F3A4B5C6D7E8F9A0B1C2 /* BacklogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogView.swift; sourceTree = "<group>"; };
 		EC82B6A8BA68E0E1150FA49A /* WeekBlocks.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WeekBlocks.entitlements; sourceTree = "<group>"; };
@@ -125,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB97F5DF74F5D74EB07FF3AD /* LeeoKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,6 +188,7 @@
 				A140000A /* Adapters */,
 				A1100011 /* Assets.xcassets */,
 				A1400008 /* Preview Content */,
+				BFC407EC0A742A278FEE0A55 /* ScheduleDensityAppSpec.swift */,
 			);
 			path = ScheduleDensityApp;
 			sourceTree = "<group>";
@@ -302,6 +307,9 @@
 			dependencies = (
 			);
 			name = ScheduleDensityApp;
+			packageProductDependencies = (
+				2656520D3169561935374E56 /* LeeoKit */,
+			);
 			productName = ScheduleDensityApp;
 			productReference = A1200001 /* ScheduleDensityApp.app */;
 			productType = "com.apple.product-type.application";
@@ -334,6 +342,9 @@
 				Base,
 			);
 			mainGroup = A1400001;
+			packageReferences = (
+				BFBB9FBC4F5D3C4A25E77366 /* XCLocalSwiftPackageReference "LeeoKit" */,
+			);
 			productRefGroup = A1400003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -395,6 +406,7 @@
 				B200000000000000000000A7 /* BacklogCategory.swift in Sources */,
 				B200000000000000000000A8 /* TodoView.swift in Sources */,
 				B200000000000000000000A9 /* FamilyShareStore.swift in Sources */,
+				D30F1A605A3F1EF18127D457 /* ScheduleDensityAppSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -718,6 +730,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		BFBB9FBC4F5D3C4A25E77366 /* XCLocalSwiftPackageReference "LeeoKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../LeeoKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2656520D3169561935374E56 /* LeeoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BFBB9FBC4F5D3C4A25E77366 /* XCLocalSwiftPackageReference "LeeoKit" */;
+			productName = LeeoKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A1900001 /* Project object */;
 }

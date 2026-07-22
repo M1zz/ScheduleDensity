@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import CloudKit
+import LeeoKit
 
 // MARK: - CloudKit 공유 초대 수락 연결
 // SwiftUI 라이프사이클에서는 씬 델리게이트의 userDidAcceptCloudKitShareWith로
@@ -41,6 +42,10 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
 @main
 struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    init() {
+        LeeoEngagement.shared.registerLaunch()
+    }
 
     var sharedModelContainer: ModelContainer = {
         // 1단계: 기존 데이터베이스 로드 시도 (하위 호환성)
@@ -235,6 +240,7 @@ struct ScheduleDensityApp: App {
                     .modelContainer(todoContainer)
                     .tabItem { Label("할 일", systemImage: "checklist") }
             }
+            .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
         }
         .modelContainer(sharedModelContainer)
     }

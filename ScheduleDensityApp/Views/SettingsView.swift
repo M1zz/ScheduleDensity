@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import LeeoKit
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
@@ -522,6 +523,12 @@ struct SettingsView: View {
                 } header: {
                     Text("수면 시간")
                 }
+                }
+
+                Section {
+                    LeeoSupportSection<ScheduleDensityAppSpec>()
+                } header: {
+                    Text("지원")
                 }
 
                 DeveloperContactSection()
