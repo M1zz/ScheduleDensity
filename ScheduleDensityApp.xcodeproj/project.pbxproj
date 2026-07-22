@@ -1,0 +1,558 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		070178DC5D08AD7F1A28C2FB /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910FBBD73ECA9E9527512FE8 /* TodoView.swift */; };
+		07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */; };
+		15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */; };
+		18554C8EA4088D5836DAC51C /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61808975C3F29C0A9061722C /* DateExtensions.swift */; };
+		1A9DF801882FB2C7865CD0F6 /* DensityCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63283233385421AD018AB5E7 /* DensityCalculator.swift */; };
+		1B996BF59FB33CBFD7560DCC /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C8AF31ACA72741BF8046B /* StatisticsView.swift */; };
+		1FFCE7DA79C38C4AA79B8738 /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */; };
+		2200136119E353E928C1888D /* BacklogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */; };
+		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
+		434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3513E47DA1D5F509870816E5 /* Assets.xcassets */; };
+		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
+		6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */; };
+		6BF0C551702B1A5F00487205 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16A56CFD7BFD1A4F77443B7 /* Theme.swift */; };
+		71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4164272EB750B716814E94EB /* SyncSettingsManager.swift */; };
+		74E045A5DC1AF66E082EA7EC /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A142C0D69AD26EDCB2B3CC /* Event.swift */; };
+		90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */; };
+		98BCB99BABFB85C47A516837 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DD3A4029A1F8FABD057A7D /* ContentView.swift */; };
+		9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */; };
+		A203371159D07E31334CC1B2 /* ScheduleDensityApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */; };
+		AAF010948F1402F65848DC40 /* ScheduleDensityAppSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */; };
+		B9B4C3CA0B7BB3CD5FF27454 /* RecurrencePattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */; };
+		C3570B640BED636DC7372662 /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0B7D594FCCABF21917463C /* LeeoKit */; };
+		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
+		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
+		DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */; };
+		DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF674923A141F19CD56EF10 /* CloudKitManager.swift */; };
+		DC68D95E7F7AF87686764F32 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6D619C882389B3029929E6F /* Preview Assets.xcassets */; };
+		EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80DA86C80CF5921D0AB83F47 /* PlanBlock.swift */; };
+		F4F25E886B69178DEA982727 /* WeekBlocksAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5087710777780307770756 /* WeekBlocksAdapter.swift */; };
+		FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F27359D56BF2678D1330BE /* AddEventView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
+		1D091610C98F44F176284060 /* LeeoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LeeoKit; path = ../LeeoKit; sourceTree = SOURCE_ROOT; };
+		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
+		3513E47DA1D5F509870816E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarImportView.swift; sourceTree = "<group>"; };
+		3F5087710777780307770756 /* WeekBlocksAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksAdapter.swift; sourceTree = "<group>"; };
+		4164272EB750B716814E94EB /* SyncSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsManager.swift; sourceTree = "<group>"; };
+		4CD675833C6A34143CC8C6F5 /* Routine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routine.swift; sourceTree = "<group>"; };
+		61808975C3F29C0A9061722C /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
+		63283233385421AD018AB5E7 /* DensityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityCalculator.swift; sourceTree = "<group>"; };
+		80DA86C80CF5921D0AB83F47 /* PlanBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanBlock.swift; sourceTree = "<group>"; };
+		83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
+		8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		910FBBD73ECA9E9527512FE8 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
+		A16A56CFD7BFD1A4F77443B7 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineDensityView.swift; sourceTree = "<group>"; };
+		AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareStore.swift; sourceTree = "<group>"; };
+		B1CED998C36D51AC3B0D0859 /* ScheduleDensityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScheduleDensityApp.entitlements; sourceTree = "<group>"; };
+		B5F27359D56BF2678D1330BE /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
+		B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogCategory.swift; sourceTree = "<group>"; };
+		CD1FA07D33E72BA4A2A63C80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksStore.swift; sourceTree = "<group>"; };
+		D5A142C0D69AD26EDCB2B3CC /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		E0A2F8F7F90B5C18D0D0905E /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		E2DD3A4029A1F8FABD057A7D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E38C8AF31ACA72741BF8046B /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		E6D619C882389B3029929E6F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventManagementView.swift; sourceTree = "<group>"; };
+		EA829919C711830D349E106C /* EventKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitManager.swift; sourceTree = "<group>"; };
+		EDF674923A141F19CD56EF10 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
+		FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrencePattern.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A266D816A65897B030985EDF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3570B640BED636DC7372662 /* LeeoKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		05829789FF9764DBDD2FB5A1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		06CE81829A5BC61F5081208E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B5F27359D56BF2678D1330BE /* AddEventView.swift */,
+				3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */,
+				E2DD3A4029A1F8FABD057A7D /* ContentView.swift */,
+				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
+				B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */,
+				E38C8AF31ACA72741BF8046B /* StatisticsView.swift */,
+				AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */,
+				910FBBD73ECA9E9527512FE8 /* TodoView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		07CE1BC99974DCBAC37DB2CE /* Adapters */ = {
+			isa = PBXGroup;
+			children = (
+				3F5087710777780307770756 /* WeekBlocksAdapter.swift */,
+			);
+			path = Adapters;
+			sourceTree = "<group>";
+		};
+		08831CD398B43F6A1F5D30C2 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				61808975C3F29C0A9061722C /* DateExtensions.swift */,
+				63283233385421AD018AB5E7 /* DensityCalculator.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		0B560E5E408CB2EDE6C36B82 = {
+			isa = PBXGroup;
+			children = (
+				9800043553F0F1E44E0B9F33 /* Packages */,
+				35DBDFBD378031DF075E6A8B /* ScheduleDensityApp */,
+				D5B782157B051A800F5C01D0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1B23D06883CEC5B158276599 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				EDF674923A141F19CD56EF10 /* CloudKitManager.swift */,
+				EA829919C711830D349E106C /* EventKitManager.swift */,
+				4164272EB750B716814E94EB /* SyncSettingsManager.swift */,
+				CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		35DBDFBD378031DF075E6A8B /* ScheduleDensityApp */ = {
+			isa = PBXGroup;
+			children = (
+				3513E47DA1D5F509870816E5 /* Assets.xcassets */,
+				CD1FA07D33E72BA4A2A63C80 /* Info.plist */,
+				B1CED998C36D51AC3B0D0859 /* ScheduleDensityApp.entitlements */,
+				83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */,
+				13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */,
+				07CE1BC99974DCBAC37DB2CE /* Adapters */,
+				A470A9D09715721C28BEFEC5 /* Models */,
+				40774C920FA04997EFA0DA66 /* Preview Content */,
+				1B23D06883CEC5B158276599 /* Services */,
+				A57EB3B717A7BBC5D1E9F658 /* Shared */,
+				08831CD398B43F6A1F5D30C2 /* Utilities */,
+				05829789FF9764DBDD2FB5A1 /* ViewModels */,
+				06CE81829A5BC61F5081208E /* Views */,
+			);
+			path = ScheduleDensityApp;
+			sourceTree = "<group>";
+		};
+		40774C920FA04997EFA0DA66 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				E6D619C882389B3029929E6F /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		9800043553F0F1E44E0B9F33 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				1D091610C98F44F176284060 /* LeeoKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		A470A9D09715721C28BEFEC5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D5A142C0D69AD26EDCB2B3CC /* Event.swift */,
+				FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A57EB3B717A7BBC5D1E9F658 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */,
+				2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */,
+				AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */,
+				E0A2F8F7F90B5C18D0D0905E /* Models.swift */,
+				80DA86C80CF5921D0AB83F47 /* PlanBlock.swift */,
+				4CD675833C6A34143CC8C6F5 /* Routine.swift */,
+				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		D5B782157B051A800F5C01D0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B3E14044F7FF975F8D6DFB0F /* ScheduleDensityApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7EDE50BC57E32AB976D6AABE /* Build configuration list for PBXNativeTarget "ScheduleDensityApp" */;
+			buildPhases = (
+				7BB28EC55192CE012F134E23 /* Sources */,
+				D9DCE6AC40453E40D4B96A0D /* Resources */,
+				A266D816A65897B030985EDF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScheduleDensityApp;
+			packageProductDependencies = (
+				3B0B7D594FCCABF21917463C /* LeeoKit */,
+			);
+			productName = ScheduleDensityApp;
+			productReference = 2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FB0FF38CD640C2D56628928D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B3E14044F7FF975F8D6DFB0F = {
+						DevelopmentTeam = QGAQ3AY3R3;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = CEAB56F31E5BACBB2164E6A4 /* Build configuration list for PBXProject "ScheduleDensityApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = ko;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				ko,
+			);
+			mainGroup = 0B560E5E408CB2EDE6C36B82;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				DC7257A474724A2A8D74EC15 /* XCLocalSwiftPackageReference "../LeeoKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B3E14044F7FF975F8D6DFB0F /* ScheduleDensityApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D9DCE6AC40453E40D4B96A0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */,
+				DC68D95E7F7AF87686764F32 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7BB28EC55192CE012F134E23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */,
+				1FFCE7DA79C38C4AA79B8738 /* BacklogCategory.swift in Sources */,
+				2200136119E353E928C1888D /* BacklogItem.swift in Sources */,
+				15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */,
+				DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */,
+				98BCB99BABFB85C47A516837 /* ContentView.swift in Sources */,
+				18554C8EA4088D5836DAC51C /* DateExtensions.swift in Sources */,
+				1A9DF801882FB2C7865CD0F6 /* DensityCalculator.swift in Sources */,
+				74E045A5DC1AF66E082EA7EC /* Event.swift in Sources */,
+				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
+				9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */,
+				07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */,
+				4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */,
+				EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */,
+				B9B4C3CA0B7BB3CD5FF27454 /* RecurrencePattern.swift in Sources */,
+				D47C20672572FF11F707EA78 /* Routine.swift in Sources */,
+				A203371159D07E31334CC1B2 /* ScheduleDensityApp.swift in Sources */,
+				AAF010948F1402F65848DC40 /* ScheduleDensityAppSpec.swift in Sources */,
+				6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */,
+				DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */,
+				1B996BF59FB33CBFD7560DCC /* StatisticsView.swift in Sources */,
+				71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */,
+				6BF0C551702B1A5F00487205 /* Theme.swift in Sources */,
+				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
+				070178DC5D08AD7F1A28C2FB /* TodoView.swift in Sources */,
+				F4F25E886B69178DEA982727 /* WeekBlocksAdapter.swift in Sources */,
+				90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3736E8120EED038999E7C775 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScheduleDensityApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		54147216BD39840710C18D1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = QGAQ3AY3R3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9593051BEBEFF77DF6CE6524 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 5;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = QGAQ3AY3R3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B0F78908F2900468A1511CE7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "\"ScheduleDensityApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScheduleDensityApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "욕망의 무지개";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7EDE50BC57E32AB976D6AABE /* Build configuration list for PBXNativeTarget "ScheduleDensityApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3736E8120EED038999E7C775 /* Debug */,
+				B0F78908F2900468A1511CE7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		CEAB56F31E5BACBB2164E6A4 /* Build configuration list for PBXProject "ScheduleDensityApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				54147216BD39840710C18D1E /* Debug */,
+				9593051BEBEFF77DF6CE6524 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		DC7257A474724A2A8D74EC15 /* XCLocalSwiftPackageReference "../LeeoKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../LeeoKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3B0B7D594FCCABF21917463C /* LeeoKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LeeoKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FB0FF38CD640C2D56628928D /* Project object */;
+}
