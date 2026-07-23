@@ -99,6 +99,29 @@ WeekBlocks `Routine`/`PlanBlock`을 메모리상 `Event`로 변환해 기존 밀
       - 자정 넘긴 고정 루틴(수면)은 조각마다 따로 → 위·아래 두 번 표시
       - 유연 쿼터(끼니)는 다른 일정과 안 겹치는 세션만 자기 시각에 표시(겹치면 접음), 부제에 세션 시각
 
+## 완료 (2026-07-22)
+- [x] 고정 루틴 클릭 → 수정·삭제 (macOS, 타임라인/그리드) — 빌드 성공
+      - 타임라인(요일별 24시간): 고정 루틴 블록 단일 클릭 → 편집 열림
+        (드래그=시각 이동, 우클릭="이번 주에서 빼기"=숨김은 그대로 유지)
+      - 그리드(이번 주 계획): 루틴 칩 클릭 → 편집으로 변경, 기존 상세(실행전략·프리모템)는
+        우클릭 컨텍스트 메뉴 "상세 정보"로 보존
+      - `DayTimelineRow.onEditRoutine`, `DayColumn/RoutineChip.onShowRoutineDetail` 콜백 추가
+- [x] 고정 루틴 '이 요일만 수정' (macOS) — 위 클릭이 전체 요일을 바꾸던 문제 수정, 빌드 성공(iOS·macOS)
+      - 클릭 기본 동작 = 해당 주·요일의 `RoutineOccurrence`에만 override 저장(루틴 원본 불변)
+      - `RoutineOccurrenceEditorView`(RoutinesView.swift): "이 일정만 수정하기" 토글(기본 ON) —
+        ON=이 주·이 요일만(occurrence override), OFF=루틴 전체 기본값 변경(+이 요일 override 비움).
+        시작 시각·길이 조정 + "이 날 변경 되돌리기"(ON일 때) + "이름·요일·색·삭제 편집…"(마스터 편집기로 전환)
+      - 모델: `RoutineOccurrence.durationOverride`(-1=미설정) 추가 → 길이도 per-day 가능
+      - `TimelineLayout.segments`에 `routineDurationOverride` 파라미터 추가(타임라인·그리드·남은시간 반영)
+      - `ContentView.occurrence(for:day:)`/`editRoutineTap`/`occurrenceSheet` 배선. 쿼터(유연)는 전체 편집로
+      - ⚠️ 프로덕션: CloudKit Console에 `RoutineOccurrence.durationOverride` 필드 스키마 deploy 필요
+- [x] 타임라인 미배치 계획 경고 (macOS) — 빌드 성공
+      - '이번 주 계획'엔 들어갔으나 하루 24시간이 꽉 차 '요일별 하루' 타임라인에서 빠진
+        (시각 미지정 자유) 블록 감지 → 블록 칩에 ⚠️ 심볼 + 주황 점선 테두리 + 툴팁 안내,
+        '이번 주 계획' 섹션 헤더에 "N개 계획이 …배치되지 못했어요" 경고 배너
+      - `ContentView.daySegments/unplacedBlockIDs/totalUnplacedCount`, `DayColumn.unplacedBlockIDs`,
+        `BlockChip.isUnplaced` 추가. 감지는 실제 `TimelineLayout.segments` 결과(planBlock 미포함)로 판정
+
 ## WeekBlocks 기능 백로그 (흡수)
 - [ ] ConcretenessChecker Level 2 — 측정 가능 패턴 정규식
 - [ ] ConcretenessChecker Level 3 — Claude API 판정

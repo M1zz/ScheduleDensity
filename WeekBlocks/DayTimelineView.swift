@@ -40,6 +40,7 @@ enum TimelineLayout {
     /// - quotaPlacement: 이 요일에서 옮긴 식사 등 유연 블록 위치(이름 → [회차: 시각]).
     static func segments(routines: [Routine], blocks: [PlanBlock], quota: [Routine] = [],
                          routineStartOverride: [String: Double] = [:],
+                         routineDurationOverride: [String: Double] = [:],
                          quotaPlacement: [String: [Int: Double]] = [:],
                          quotaHidden: [String: Set<Int>] = [:],
                          hiddenRoutines: [Routine] = []) -> [TimeSegment] {
@@ -47,17 +48,22 @@ enum TimelineLayout {
         var occupied: [(Double, Double)] = []
 
         func resolvedStart(_ r: Routine) -> Double { routineStartOverride[r.name] ?? r.startHour }
+        // 이 주·요일만 바꾼 길이가 있으면 그걸, 없으면 루틴 기본값을. (0.25~24h로 안전 클램프)
+        func resolvedDuration(_ r: Routine) -> Double {
+            min(max(routineDurationOverride[r.name] ?? r.durationHours, 0.25), 24)
+        }
 
         // 1) 고정 루틴 — 정해진 시각(요일별 override 우선) 그대로. 자정을 넘기면 [s,24] / [0,e-24] 로 나눠 그린다.
         //    (예: 수면 22:00+8h → 22~24 와 0~6)
         for r in routines.sorted(by: { resolvedStart($0) < resolvedStart($1) }) {
             let start = resolvedStart(r)
+            let dur = resolvedDuration(r)
             var piece = 0
-            for (a, b) in splitAtMidnight(start, start + r.durationHours) {
+            for (a, b) in splitAtMidnight(start, start + dur) {
                 segs.append(TimeSegment(id: "routine:\(r.name):\(piece)", start: a, end: b,
                                         color: r.displayColor, title: r.name, isRoutine: true,
                                         source: .fixedRoutine(name: r.name),
-                                        logicalStart: start, logicalDuration: r.durationHours))
+                                        logicalStart: start, logicalDuration: dur))
                 occupied.append((a, b)); piece += 1
             }
         }
@@ -65,11 +71,12 @@ enum TimelineLayout {
         // 1.5) 숨긴 고정 루틴 — 유령 블록으로 그 자리에 흐릿하게(시간엔 영향 없음, 되살리기용).
         for r in hiddenRoutines {
             let start = resolvedStart(r)
-            for (a, b) in splitAtMidnight(start, start + r.durationHours) {
+            let dur = resolvedDuration(r)
+            for (a, b) in splitAtMidnight(start, start + dur) {
                 segs.append(TimeSegment(id: "ghostroutine:\(r.name):\(a)", start: a, end: b,
                                         color: r.displayColor, title: r.name, isRoutine: true,
                                         source: .fixedRoutine(name: r.name),
-                                        logicalStart: start, logicalDuration: r.durationHours, isGhost: true))
+                                        logicalStart: start, logicalDuration: dur, isGhost: true))
             }
         }
 
@@ -246,6 +253,7 @@ struct DayTimelineRow: View {
     var occurrences: [RoutineOccurrence] = []      // 이 요일·주의 고정 루틴 배치(위치 override 저장처)
     var quotaPlacements: [QuotaPlacement] = []      // 이 요일·주의 식사 등 위치 저장처
     var weekStart: Date = .currentWeekStart
+    var onEditRoutine: (Routine) -> Void = { _ in } // 고정 루틴 블록 클릭 → 편집·삭제 시트 열기
 
     // 드래그 중인 세그먼트와 이동량(px). 같은 행 안에서만 유효.
     @State private var dragId: String? = nil
@@ -254,6 +262,11 @@ struct DayTimelineRow: View {
     private var routineStartOverride: [String: Double] {
         var d: [String: Double] = [:]
         for o in occurrences where o.startHourOverride >= 0 { d[o.routineName] = o.startHourOverride }
+        return d
+    }
+    private var routineDurationOverride: [String: Double] {
+        var d: [String: Double] = [:]
+        for o in occurrences where o.durationOverride >= 0 { d[o.routineName] = o.durationOverride }
         return d
     }
     private var quotaPlacementMap: [String: [Int: Double]] {
@@ -271,6 +284,7 @@ struct DayTimelineRow: View {
     private var segments: [TimeSegment] {
         TimelineLayout.segments(routines: routines, blocks: blocks, quota: quotaRoutines,
                                 routineStartOverride: routineStartOverride,
+                                routineDurationOverride: routineDurationOverride,
                                 quotaPlacement: quotaPlacementMap,
                                 quotaHidden: quotaHiddenMap,
                                 hiddenRoutines: hiddenRoutines)
@@ -283,7 +297,7 @@ struct DayTimelineRow: View {
     }
     // 고정으로 반드시 잡아야 하는 시간(루틴 + 자유 계획)의 단순 합. 24h를 넘으면 초과 배정.
     private var hardOccupied: Double {
-        routines.reduce(0) { $0 + $1.durationHours }
+        routines.reduce(0) { $0 + (routineDurationOverride[$1.name] ?? $1.durationHours) }
             + blocks.filter { !$0.withinRoutine }.reduce(0) { $0 + $1.durationHours }
     }
     private var freeHours: Double { max(0, 24 - occupied) }
@@ -397,6 +411,12 @@ struct DayTimelineRow: View {
                     dragPx = 0
                 }
         )
+        // 단일 클릭 — 고정 루틴이면 편집·삭제 시트를 연다(드래그로 옮기지 않은 순수 클릭만 인식).
+        .onTapGesture {
+            guard !seg.isGhost, case .fixedRoutine(let name) = seg.source,
+                  let routine = routines.first(where: { $0.name == name }) else { return }
+            onEditRoutine(routine)
+        }
         .contextMenu {
             if ghost {
                 Button { restoreSegment(seg) } label: {
@@ -410,7 +430,14 @@ struct DayTimelineRow: View {
         }
         .help(ghost
               ? "\(seg.title) — 삭제됨 · 우클릭으로 되살리기"
-              : "\(seg.title) — 드래그해서 시각 이동 (15분 단위) · 우클릭으로 삭제")
+              : isFixedRoutine(seg)
+                ? "\(seg.title) — 클릭: 이 요일만 수정 · 드래그: 시각 이동(15분) · 우클릭: 이번 주에서 빼기"
+                : "\(seg.title) — 드래그해서 시각 이동 (15분 단위) · 우클릭으로 삭제")
+    }
+
+    private func isFixedRoutine(_ seg: TimeSegment) -> Bool {
+        if case .fixedRoutine = seg.source { return true }
+        return false
     }
 
     private func deleteLabel(_ seg: TimeSegment) -> String {

@@ -14,6 +14,8 @@ struct ContentView: View {
     @State private var blockSheet: BlockSheetContext?
     @State private var routineSheet: RoutineSheetContext?
     @State private var routineDetailSheet: Routine?
+    @State private var occurrenceSheet: OccurrenceEditContext?      // 고정 루틴 '이 요일만' 수정
+    @State private var pendingWholeEditRoutine: Routine?            // 이 요일 시트 → '전체 편집'으로 전환
     @State private var showingReflection = false
     @State private var showingSettings = false
     @State private var showingSampleAlert = false
@@ -114,6 +116,21 @@ struct ContentView: View {
         .sheet(item: $routineSheet) { ctx in
             RoutineEditorView(existing: ctx.routine)
                 .frame(minWidth: 520, minHeight: 480)
+        }
+        .sheet(item: $occurrenceSheet, onDismiss: {
+            // '이 요일만' 시트가 닫힌 뒤 전체 편집 요청이 있으면 이어서 마스터 편집기를 연다(시트 겹침 방지).
+            if let r = pendingWholeEditRoutine {
+                pendingWholeEditRoutine = nil
+                routineSheet = RoutineSheetContext(routine: r)
+            }
+        }) { ctx in
+            RoutineOccurrenceEditorView(
+                routine: ctx.routine,
+                occurrence: occurrence(for: ctx.routine, day: ctx.day),
+                date: dayDate(ctx.day),
+                onEditWholeRoutine: { pendingWholeEditRoutine = ctx.routine }
+            )
+            .frame(minWidth: 460, minHeight: 420)
         }
         .sheet(isPresented: $showingReflection) {
             ReflectionView(weekStart: selectedWeek)
@@ -289,6 +306,30 @@ struct ContentView: View {
         }
     }
 
+    /// 선택된 주·요일의 RoutineOccurrence(없으면 생성). '이 요일만' 수정의 override 저장처.
+    private func occurrence(for routine: Routine, day: DayOfWeek) -> RoutineOccurrence {
+        let cal = Calendar(identifier: .iso8601)
+        if let existing = allOccurrences.first(where: {
+            $0.routineName == routine.name && $0.day == day
+                && cal.isDate($0.weekStartDate, inSameDayAs: selectedWeek)
+        }) {
+            return existing
+        }
+        let occ = RoutineOccurrence(routineName: routine.name, day: day, weekStartDate: selectedWeek)
+        context.insert(occ)
+        try? context.save()
+        return occ
+    }
+
+    /// 고정 루틴 블록 클릭 → 기본은 '이 요일만' 수정. 쿼터(유연)는 per-day 개념이 없어 전체 편집으로.
+    private func editRoutineTap(_ routine: Routine, day: DayOfWeek) {
+        if routine.kind == .fixed {
+            occurrenceSheet = OccurrenceEditContext(routine: routine, day: day)
+        } else {
+            routineSheet = RoutineSheetContext(routine: routine)
+        }
+    }
+
     /// 해당 요일에 이번 주 배치된 고정 루틴들.
     private func fixedRoutines(on day: DayOfWeek) -> [Routine] {
         let cal = Calendar(identifier: .iso8601)
@@ -311,10 +352,8 @@ struct ContentView: View {
             .sorted { $0.startHour < $1.startHour }
     }
 
-    /// '요일별 하루' 타임라인이 실제로 배치한 시작 시각 순서대로,
-    /// 고정 루틴·유연 쿼터·계획 블록을 한 줄로 섞어 정렬한 '이번 주 계획' 컬럼 항목.
-    /// (타임라인의 왼→오른쪽 = 컬럼의 위→아래가 일치하도록.)
-    private func dayPlanItems(on day: DayOfWeek) -> [DayPlanItem] {
+    /// '요일별 하루' 타임라인이 실제로 그리는 세그먼트. 컬럼 정렬·미배치 감지 등에서 공유.
+    private func daySegments(on day: DayOfWeek) -> [TimeSegment] {
         let cal = Calendar(identifier: .iso8601)
         let dayBlocks = weekBlocks.filter { $0.day == day }
         let fixed = fixedRoutines(on: day)
@@ -324,20 +363,46 @@ struct ContentView: View {
 
         var startOverride: [String: Double] = [:]
         for o in occs where o.startHourOverride >= 0 { startOverride[o.routineName] = o.startHourOverride }
+        var durOverride: [String: Double] = [:]
+        for o in occs where o.durationOverride >= 0 { durOverride[o.routineName] = o.durationOverride }
         var quotaPlace: [String: [Int: Double]] = [:]
         for p in placements { quotaPlace[p.routineName, default: [:]][p.sessionIndex] = p.startHour }
         var quotaHiddenMap: [String: Set<Int>] = [:]
         for p in placements where p.hidden { quotaHiddenMap[p.routineName, default: []].insert(p.sessionIndex) }
 
-        let segs = TimelineLayout.segments(
+        return TimelineLayout.segments(
             routines: fixed,
             blocks: dayBlocks,
             quota: quota,
             routineStartOverride: startOverride,
+            routineDurationOverride: durOverride,
             quotaPlacement: quotaPlace,
             quotaHidden: quotaHiddenMap,
             hiddenRoutines: hiddenFixedRoutines(on: day)
         )
+    }
+
+    /// '이번 주 계획'엔 들어갔지만 '요일별 하루 24시간' 타임라인엔 자리를 못 잡은 자유 계획 블록들.
+    /// (시각 미지정 블록인데 하루가 꽉 차 빈 구간이 부족 → 타임라인에서 조용히 빠진 경우. 경고 심볼용.)
+    private func unplacedBlockIDs(on day: DayOfWeek) -> Set<String> {
+        let placed = Set(daySegments(on: day).compactMap { seg -> String? in
+            if case .planBlock(let blk) = seg.source { return String(describing: blk.persistentModelID) }
+            return nil
+        })
+        return Set(weekBlocks
+            .filter { $0.day == day && !$0.withinRoutine && $0.startHour < 0
+                      && !placed.contains(String(describing: $0.persistentModelID)) }
+            .map { String(describing: $0.persistentModelID) })
+    }
+
+    /// '요일별 하루' 타임라인이 실제로 배치한 시작 시각 순서대로,
+    /// 고정 루틴·유연 쿼터·계획 블록을 한 줄로 섞어 정렬한 '이번 주 계획' 컬럼 항목.
+    /// (타임라인의 왼→오른쪽 = 컬럼의 위→아래가 일치하도록.)
+    private func dayPlanItems(on day: DayOfWeek) -> [DayPlanItem] {
+        let dayBlocks = weekBlocks.filter { $0.day == day }
+        let fixed = fixedRoutines(on: day)
+        let quota = routines.filter { $0.kind == .quota }.sorted { $0.weeklyHours > $1.weeklyHours }
+        let segs = daySegments(on: day)
 
         // 끼니 겹침 판정용: 쿼터를 제외한, 실제로 차지된 구간(고정 루틴·블록 등).
         let occupiers = segs.filter { !$0.isGhost && !$0.source.isQuota }.map { ($0.start, $0.end) }
@@ -406,11 +471,19 @@ struct ContentView: View {
                         quotaPlacements: allQuotaPlacements.filter {
                             $0.day == day && Calendar(identifier: .iso8601).isDate($0.weekStartDate, inSameDayAs: selectedWeek)
                         },
-                        weekStart: selectedWeek
+                        weekStart: selectedWeek,
+                        onEditRoutine: { routine in
+                            editRoutineTap(routine, day: day)
+                        }
                     )
                 }
             }
         }
+    }
+
+    /// 이번 주 전체에서 타임라인에 자리를 못 잡은 계획 블록 수(경고 배너용).
+    private var totalUnplacedCount: Int {
+        DayOfWeek.allCases.reduce(0) { $0 + unplacedBlockIDs(on: $1).count }
     }
 
     private var weekGridSection: some View {
@@ -422,6 +495,22 @@ struct ContentView: View {
                 Legend()
             }
 
+            if totalUnplacedCount > 0 {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                    Text("\(totalUnplacedCount)개 계획이 하루 24시간을 넘겨 '요일별 하루' 타임라인에 배치되지 못했어요. 시간을 줄이거나 다른 요일로 옮겨 보세요.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.orange.opacity(0.10), in: RoundedRectangle(cornerRadius: 8))
+                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.orange.opacity(0.35), lineWidth: 1))
+            }
+
             HStack(alignment: .top, spacing: 8) {
                 ForEach(DayOfWeek.allCases) { day in
                     DayColumn(
@@ -429,6 +518,7 @@ struct ContentView: View {
                         date: dayDate(day),
                         canPlan: hasFixedRoutines,
                         items: dayPlanItems(on: day),
+                        unplacedBlockIDs: unplacedBlockIDs(on: day),
                         onAdd: {
                             blockSheet = BlockSheetContext(day: day, block: nil)
                         },
@@ -436,6 +526,9 @@ struct ContentView: View {
                             blockSheet = BlockSheetContext(day: day, block: block)
                         },
                         onEditRoutine: { routine in
+                            editRoutineTap(routine, day: day)
+                        },
+                        onShowRoutineDetail: { routine in
                             routineDetailSheet = routine
                         },
                         onDropBacklog: { token in
@@ -606,6 +699,12 @@ struct BlockSheetContext: Identifiable {
 struct RoutineSheetContext: Identifiable {
     let id = UUID()
     let routine: Routine?
+}
+
+struct OccurrenceEditContext: Identifiable {
+    let id = UUID()
+    let routine: Routine
+    let day: DayOfWeek
 }
 
 // MARK: Components

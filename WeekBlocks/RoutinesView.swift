@@ -405,6 +405,165 @@ struct RoutineEditorView: View {
     }
 }
 
+/// 고정 루틴을 '이 주·이 요일 하루만' 옮기거나 길이를 바꾸는 편집기.
+/// 루틴 원본(모든 요일·주)은 건드리지 않고 해당 RoutineOccurrence의 override만 저장한다.
+struct RoutineOccurrenceEditorView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    let routine: Routine
+    @Bindable var occurrence: RoutineOccurrence
+    let date: Date
+    /// '루틴 전체 편집…'을 누르면(이 시트가 닫힌 뒤 상위에서 마스터 편집기를 연다).
+    var onEditWholeRoutine: () -> Void = {}
+
+    @State private var startHour: Double = 0
+    @State private var durationHours: Double = 1
+    /// 켜짐(기본) = 이 주·이 요일만 / 꺼짐 = 루틴 전체(모든 요일·주)에 적용.
+    @State private var thisDayOnly = true
+    @State private var didLoad = false
+
+    private var isOverridden: Bool {
+        occurrence.startHourOverride >= 0 || occurrence.durationOverride >= 0
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                Image(systemName: routine.iconName)
+                    .font(.system(size: 18))
+                    .foregroundStyle(routine.displayColor)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(routine.name).font(.title3.weight(.semibold))
+                    Text(dateLabel).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+            .padding(20)
+
+            Divider()
+
+            Form {
+                Section {
+                    Toggle(isOn: $thisDayOnly) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("이 일정만 수정하기")
+                            Text(thisDayOnly
+                                 ? "이 주·이 요일에만 적용돼요. 다른 요일·주는 그대로."
+                                 : "루틴 전체(모든 요일·주)의 기본값이 바뀌어요.")
+                                .font(.caption)
+                                .foregroundStyle(thisDayOnly ? Color.secondary : Color.orange)
+                        }
+                    }
+                }
+
+                Section(thisDayOnly ? "이 날 하루만" : "루틴 기본값 (전체)") {
+                    HStack {
+                        Text("시작")
+                        Spacer()
+                        DatePicker("", selection: startTimeBinding, displayedComponents: .hourAndMinute)
+                            .labelsHidden()
+                        Text("→ " + formatHour(startHour + durationHours))
+                            .font(.callout).foregroundStyle(.secondary).monospacedDigit()
+                    }
+                    HStack {
+                        Text("길이")
+                        Spacer()
+                        TextField("", value: $durationHours, format: .number.precision(.fractionLength(0...2)))
+                            .frame(width: 56).multilineTextAlignment(.trailing)
+                        Text("h").foregroundStyle(.secondary)
+                        Stepper("", value: $durationHours, in: 0.25...24, step: 0.5).labelsHidden()
+                    }
+                }
+
+                Section {
+                    if thisDayOnly {
+                        Button("이 날 변경 되돌리기") { resetOverride() }
+                            .disabled(!isOverridden)
+                    }
+                    Button("이름·요일·색·삭제 편집…") { requestWholeEdit() }
+                }
+            }
+            .formStyle(.grouped)
+
+            Divider()
+
+            HStack {
+                Spacer()
+                Button("취소") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("저장") { save() }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(durationHours <= 0)
+            }
+            .padding(20)
+        }
+        .onAppear(perform: load)
+    }
+
+    private var dateLabel: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ko_KR")
+        f.dateFormat = "M월 d일 (E)"
+        return f.string(from: date)
+    }
+
+    /// startHour(Double) ↔ Date 브리지 — 시:분 DatePicker용.
+    private var startTimeBinding: Binding<Date> {
+        Binding(
+            get: {
+                let total = Int((startHour * 60).rounded())
+                var comps = DateComponents()
+                comps.hour = (total / 60) % 24
+                comps.minute = total % 60
+                return Calendar.current.date(from: comps) ?? Date()
+            },
+            set: { newDate in
+                let c = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                startHour = Double(c.hour ?? 0) + Double(c.minute ?? 0) / 60
+            }
+        )
+    }
+
+    private func load() {
+        guard !didLoad else { return }
+        didLoad = true
+        startHour = occurrence.startHourOverride >= 0 ? occurrence.startHourOverride : routine.startHour
+        durationHours = occurrence.durationOverride >= 0 ? occurrence.durationOverride : routine.durationHours
+    }
+
+    private func save() {
+        if thisDayOnly {
+            // 이 주·이 요일만: override 저장. 루틴 기본값과 같으면 비워 데이터를 깔끔하게 유지.
+            occurrence.startHourOverride = abs(startHour - routine.startHour) < 0.001 ? -1 : startHour
+            occurrence.durationOverride = abs(durationHours - routine.durationHours) < 0.001 ? -1 : durationHours
+            occurrence.hidden = false
+        } else {
+            // 루틴 전체: 기본값을 바꾸고, 이 요일의 override는 비워 새 기본값을 따르게 한다.
+            routine.startHour = startHour
+            routine.durationHours = durationHours
+            occurrence.startHourOverride = -1
+            occurrence.durationOverride = -1
+            occurrence.hidden = false
+        }
+        try? context.save()
+        dismiss()
+    }
+
+    private func resetOverride() {
+        occurrence.startHourOverride = -1
+        occurrence.durationOverride = -1
+        try? context.save()
+        dismiss()
+    }
+
+    private func requestWholeEdit() {
+        onEditWholeRoutine()
+        dismiss()
+    }
+}
+
 private struct DayToggle: View {
     let label: String
     let isOn: Bool

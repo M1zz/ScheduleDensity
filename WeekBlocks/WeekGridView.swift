@@ -24,9 +24,12 @@ struct DayColumn: View {
     var canPlan: Bool = true
     /// 시각 순으로 정렬된 통합 항목(고정 루틴·쿼터·블록).
     let items: [DayPlanItem]
+    /// '이번 주 계획'엔 있으나 '요일별 하루 24시간' 타임라인엔 자리를 못 잡은 블록 id — 경고 심볼용.
+    var unplacedBlockIDs: Set<String> = []
     let onAdd: () -> Void
     let onEdit: (PlanBlock) -> Void
-    let onEditRoutine: (Routine) -> Void
+    let onEditRoutine: (Routine) -> Void          // 클릭 → 루틴 편집·삭제 시트
+    var onShowRoutineDetail: (Routine) -> Void = { _ in }  // 우클릭 → 상세(실행 전략·프리모템)
     let onDropBacklog: (String) -> Void
 
     @State private var isDropTargeted = false
@@ -64,13 +67,18 @@ struct DayColumn: View {
                 case .fixedRoutine(let routine, _, let atHour, let hours):
                     // 자정을 넘겨 쪼개진 조각은 각자 자기 길이를 보여, 합이 루틴 전체 길이가 되도록.
                     RoutineChip(routine: routine,
-                                subtitleOverride: "\(formatHour(atHour))  \(String(format: "%.1fh", hours))") {
+                                subtitleOverride: "\(formatHour(atHour))  \(String(format: "%.1fh", hours))",
+                                onShowDetail: { onShowRoutineDetail(routine) }) {
                         onEditRoutine(routine)
                     }
                 case .quotaSession(let routine, _, let atHour):
-                    RoutineChip(routine: routine, subtitleOverride: formatHour(atHour)) { onEditRoutine(routine) }
+                    RoutineChip(routine: routine, subtitleOverride: formatHour(atHour),
+                                onShowDetail: { onShowRoutineDetail(routine) }) { onEditRoutine(routine) }
                 case .block(let block):
-                    BlockChip(block: block) { onEdit(block) }
+                    BlockChip(block: block,
+                              isUnplaced: unplacedBlockIDs.contains(String(describing: block.persistentModelID))) {
+                        onEdit(block)
+                    }
                 }
             }
 
@@ -116,6 +124,8 @@ struct RoutineChip: View {
     let routine: Routine
     /// 컬럼에서 끼니 세션처럼 '이 occurrence의 시각'을 보여주고 싶을 때 부제를 대체.
     var subtitleOverride: String? = nil
+    /// 우클릭 '상세 정보' — 실행 전략·프리모템 등(편집·삭제와 분리).
+    var onShowDetail: () -> Void = {}
     let onTap: () -> Void
 
     @State private var hovering = false
@@ -171,12 +181,21 @@ struct RoutineChip: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
-        .help("\(routine.scheduleDescription)")
+        .contextMenu {
+            Button { onTap() } label: {
+                Label(isQuota ? "수정·삭제" : "이 요일만 수정", systemImage: "pencil")
+            }
+            Button { onShowDetail() } label: { Label("상세 정보 · 실행 전략", systemImage: "info.circle") }
+        }
+        .help("\(routine.scheduleDescription)\n"
+              + (isQuota ? "클릭: 수정·삭제 · 우클릭: 상세" : "클릭: 이 요일만 수정 · 우클릭: 상세"))
     }
 }
 
 struct BlockChip: View {
     let block: PlanBlock
+    /// 하루가 꽉 차 '요일별 하루 24시간' 타임라인에 배치되지 못했을 때 경고 심볼을 붙인다.
+    var isUnplaced: Bool = false
     let onTap: () -> Void
 
     @State private var hovering = false
@@ -202,6 +221,13 @@ struct BlockChip: View {
                         .font(.system(size: 13, weight: .semibold))
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
+                    if isUnplaced {
+                        Spacer(minLength: 2)
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.orange)
+                            .accessibilityLabel("타임라인 미배치 경고")
+                    }
                 }
                 HStack(spacing: 4) {
                     Text(block.timeBand.shortLabel)
@@ -217,7 +243,9 @@ struct BlockChip: View {
             .background(palette.bg, in: RoundedRectangle(cornerRadius: 7))
             .overlay(
                 RoundedRectangle(cornerRadius: 7)
-                    .stroke(palette.stroke, lineWidth: hovering ? 1.5 : 1)
+                    .stroke(isUnplaced ? Color.orange : palette.stroke,
+                            style: isUnplaced ? StrokeStyle(lineWidth: hovering ? 1.8 : 1.4, dash: [4, 2])
+                                              : StrokeStyle(lineWidth: hovering ? 1.5 : 1))
             )
             .foregroundStyle(palette.fg)
         }
@@ -225,9 +253,19 @@ struct BlockChip: View {
         .onHover { hovering = $0 }
         // 다른 요일로 끌어 옮기기 — 드롭 대상(DayColumn)에서 요일을 바꾼다.
         .draggable("block:" + String(describing: block.persistentModelID))
-        .help(block.successCriteria.isEmpty
-              ? "구체성 미검증 — 클릭해서 다듬기 · 드래그해서 다른 요일로 옮기기"
-              : block.successCriteria + "\n드래그해서 다른 요일로 옮길 수 있습니다.")
+        .help(helpText)
+    }
+
+    /// 툴팁 — 타임라인 미배치면 경고 문구를 앞에 덧붙인다.
+    private var helpText: String {
+        var lines: [String] = []
+        if isUnplaced {
+            lines.append("⚠️ 하루 24시간이 꽉 차 '요일별 하루' 타임라인에 배치되지 못했어요.\n시간을 줄이거나 다른 요일로 옮겨 보세요.")
+        }
+        lines.append(block.successCriteria.isEmpty
+                     ? "구체성 미검증 — 클릭해서 다듬기 · 드래그해서 다른 요일로 옮기기"
+                     : block.successCriteria + "\n드래그해서 다른 요일로 옮길 수 있습니다.")
+        return lines.joined(separator: "\n\n")
     }
 
     private func reviewTint(_ status: ReviewStatus) -> Color {
