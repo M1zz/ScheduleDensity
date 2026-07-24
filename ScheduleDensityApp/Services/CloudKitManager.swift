@@ -17,7 +17,9 @@ class CloudKitManager {
     var accountStatus: CKAccountStatus = .couldNotDetermine
     var statusMessage: String = "확인 중..."
 
-    private let container = CKContainer(identifier: "iCloud.com.example.ScheduleDensityApp")
+    // 앱 전체가 쓰는 메인 컨테이너로 통일 (Mac WeekBlocks·공유·할 일과 동일).
+    // 과거 기본 컨테이너(iCloud.com.example.ScheduleDensityApp)는 placeholder 도메인이라 폐기.
+    private let container = CKContainer(identifier: "iCloud.com.devkoan.ScheduleDensity")
 
     private init() {
         checkAccountStatus()

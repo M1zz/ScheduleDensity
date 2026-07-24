@@ -60,6 +60,25 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
       - iOS: 할 일 탭 안 '가족' 세그먼트 / macOS: '가족 할 일' 섹션
       - 초대 수락: iOS SceneDelegate·macOS NSApplicationDelegate + `CKSharingSupported`
       - ⚠️ 프로덕션 배포 전 CloudKit Console에서 스키마 deploy 필요 (BacklogItem 새 필드 + FamilyTodo 레코드 타입)
+- [x] 일정 공유(가족 공유와 별개, 사람 대 사람) — CloudKit 커스텀 존("SharedSchedule") + 존 전체 CKShare(읽기 전용)
+      - `ScheduleShareStore.swift`: 내보내기=내 개인 DB 존에 Event 미러(전량 교체 publish), publicPermission `.readOnly`
+      - 받기=공유 DB의 여러 존을 사람별로 묶어 읽기 전용 표시(`sharedWithMe`), 여러 명에게서 동시에 받기 가능
+      - iOS: 새 '공유' 탭(`ScheduleShareView`) — 내 일정 공유/링크 보내기/업데이트/중지 + 공유받은 일정 사람별 조회
+      - 초대 수락: SceneDelegate가 존 이름으로 라우팅(SharedSchedule→일정, FamilyTodos→할 일)
+      - ⚠️ 프로덕션 배포 전 CloudKit Console에서 SharedEvent 레코드 타입 + SharedSchedule 존 스키마 deploy 필요
+- [x] iCloud 컨테이너 통일 — Event 백업/복원(`CloudKitManager`)을 placeholder 컨테이너
+      `iCloud.com.example.ScheduleDensityApp` → 메인 `iCloud.com.devkoan.ScheduleDensity`로 이전
+      - entitlements에서 example 컨테이너 제거(더 이상 참조 없음)
+      - 구 컨테이너 Event 백업은 `LegacyBackupMigrator`(일회성)가 앱 시작 시 새 컨테이너로 복사
+- [x] 일회성 마이그레이션 — `LegacyBackupMigrator.swift`
+      - example 컨테이너의 Event 레코드를 devkoan으로 복사(제목+시작+종료 키로 중복 방지, 성공 시 플래그로 재실행 차단)
+      - 읽기 위해 entitlements에 example 컨테이너 **임시 재추가**(주석 표시)
+      - ⚠️ DEPRECATE 예정: 파일 상단 체크리스트대로 파일·앱 시작 호출·example entitlement 제거
+
+- [x] 번들 ID 실제 도메인으로 정리: `com.example.ScheduleDensityApp` → `com.devkoan.ScheduleDensityApp`
+      (project.yml `bundleIdPrefix: com.devkoan`·`PRODUCT_BUNDLE_IDENTIFIER`)
+      - FeedbackHub `appIdentifier`는 기존 피드백 데이터 연속성 위해 `com.example...` 유지(의도적)
+      - ⚠️ 번들 ID 변경 = 앱 스토어상 새 앱 취급. 프로비저닝 프로필 재발급 필요할 수 있음
 
 ## 정리 필요
 - [ ] 기존 독립 프로젝트 `/Users/leeo/Documents/workspace/code/WeekBlocks` 제거 (이 저장소로 흡수 완료 후)

@@ -6,9 +6,10 @@
 	<string>development</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
-		<string>iCloud.com.example.ScheduleDensityApp</string>
 		<string>iCloud.com.devkoan.ScheduleDensity</string>
 		<string>iCloud.com.Ysoup.FeedbackHub</string>
+		<!-- 마이그레이션 전용(구 백업 읽기용). LegacyBackupMigrator 디프리케이트 시 함께 제거. -->
+		<string>iCloud.com.example.ScheduleDensityApp</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>

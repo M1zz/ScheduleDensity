@@ -27,14 +27,30 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene,
                      userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        Task { await FamilyShareStore.shared.accept(cloudKitShareMetadata) }
+        Self.routeShareAccept(cloudKitShareMetadata)
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
                options connectionOptions: UIScene.ConnectionOptions) {
         // 앱이 꺼진 상태에서 초대 링크로 실행된 경우.
         if let metadata = connectionOptions.cloudKitShareMetadata {
-            Task { await FamilyShareStore.shared.accept(metadata) }
+            Self.routeShareAccept(metadata)
+        }
+    }
+
+    /// 초대받은 공유의 존 이름에 따라 알맞은 스토어로 수락을 보낸다.
+    /// (일정 공유와 가족 할 일 공유가 같은 CloudKit 컨테이너를 쓰기 때문.)
+    private static func routeShareAccept(_ metadata: CKShare.Metadata) {
+        let zoneName = metadata.share.recordID.zoneID.zoneName
+        Task {
+            switch zoneName {
+            case ScheduleShareStore.zoneName:
+                await ScheduleShareStore.shared.accept(metadata)
+            case FamilyShareStore.zoneName:
+                await FamilyShareStore.shared.accept(metadata)
+            default:
+                await ScheduleShareStore.shared.accept(metadata)
+            }
         }
     }
 }
@@ -236,11 +252,15 @@ struct ScheduleDensityApp: App {
                 // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/가족)은 추가 탭.
                 ContentView()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
+                ScheduleShareView()
+                    .tabItem { Label("공유", systemImage: "person.2.circle") }
                 TodoView()
                     .modelContainer(todoContainer)
                     .tabItem { Label("할 일", systemImage: "checklist") }
             }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
+            // [일회성] 구 백업 컨테이너 → 메인 컨테이너 이전. 완료 후 LegacyBackupMigrator와 함께 제거.
+            .task { await LegacyBackupMigrator.shared.runIfNeeded() }
         }
         .modelContainer(sharedModelContainer)
     }
