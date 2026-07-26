@@ -18,7 +18,6 @@
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
 		434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3513E47DA1D5F509870816E5 /* Assets.xcassets */; };
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
-		51F2A0C703E134A02652C511 /* LegacyBackupMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945BF53150EF5E5CFA02F0AF /* LegacyBackupMigrator.swift */; };
 		6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */; };
 		6BF0C551702B1A5F00487205 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16A56CFD7BFD1A4F77443B7 /* Theme.swift */; };
 		71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4164272EB750B716814E94EB /* SyncSettingsManager.swift */; };
@@ -44,7 +43,6 @@
 
 /* Begin PBXFileReference section */
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
-		1D091610C98F44F176284060 /* LeeoKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LeeoKit; path = ../LeeoKit; sourceTree = SOURCE_ROOT; };
 		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
 		3513E47DA1D5F509870816E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -59,7 +57,6 @@
 		83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
 		8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		910FBBD73ECA9E9527512FE8 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
-		945BF53150EF5E5CFA02F0AF /* LegacyBackupMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyBackupMigrator.swift; sourceTree = "<group>"; };
 		A16A56CFD7BFD1A4F77443B7 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleShareStore.swift; sourceTree = "<group>"; };
 		AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineDensityView.swift; sourceTree = "<group>"; };
@@ -137,7 +134,6 @@
 		0B560E5E408CB2EDE6C36B82 = {
 			isa = PBXGroup;
 			children = (
-				9800043553F0F1E44E0B9F33 /* Packages */,
 				35DBDFBD378031DF075E6A8B /* ScheduleDensityApp */,
 				D5B782157B051A800F5C01D0 /* Products */,
 			);
@@ -148,7 +144,6 @@
 			children = (
 				EDF674923A141F19CD56EF10 /* CloudKitManager.swift */,
 				EA829919C711830D349E106C /* EventKitManager.swift */,
-				945BF53150EF5E5CFA02F0AF /* LegacyBackupMigrator.swift */,
 				4164272EB750B716814E94EB /* SyncSettingsManager.swift */,
 				CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */,
 			);
@@ -181,14 +176,6 @@
 				E6D619C882389B3029929E6F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		9800043553F0F1E44E0B9F33 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				1D091610C98F44F176284060 /* LeeoKit */,
-			);
-			name = Packages;
 			sourceTree = "<group>";
 		};
 		A470A9D09715721C28BEFEC5 /* Models */ = {
@@ -272,7 +259,7 @@
 			mainGroup = 0B560E5E408CB2EDE6C36B82;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				DC7257A474724A2A8D74EC15 /* XCLocalSwiftPackageReference "../LeeoKit" */,
+				D5D349C3E464375FE4995E70 /* XCRemoteSwiftPackageReference "LeeoKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
@@ -312,7 +299,6 @@
 				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
 				9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */,
 				07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */,
-				51F2A0C703E134A02652C511 /* LegacyBackupMigrator.swift in Sources */,
 				4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */,
 				EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */,
 				B9B4C3CA0B7BB3CD5FF27454 /* RecurrencePattern.swift in Sources */,
@@ -552,16 +538,21 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		DC7257A474724A2A8D74EC15 /* XCLocalSwiftPackageReference "../LeeoKit" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../LeeoKit;
+/* Begin XCRemoteSwiftPackageReference section */
+		D5D349C3E464375FE4995E70 /* XCRemoteSwiftPackageReference "LeeoKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/M1zz/LeeoKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		3B0B7D594FCCABF21917463C /* LeeoKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = D5D349C3E464375FE4995E70 /* XCRemoteSwiftPackageReference "LeeoKit" */;
 			productName = LeeoKit;
 		};
 /* End XCSwiftPackageProductDependency section */

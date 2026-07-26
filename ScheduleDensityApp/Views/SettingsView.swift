@@ -35,6 +35,7 @@ struct SettingsView: View {
     @State private var showingAddSampleAlert = false
     @State private var showingDeleteAllAlert = false
     @AppStorage("showInsightCards") private var showInsightCards = false
+    @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -237,6 +238,22 @@ struct SettingsView: View {
                                 Text("인사이트 보이기")
                                     .font(.headline)
                                 Text("일정 분석 및 추천 카드 표시")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // 공유 탭 표시 토글
+                    Toggle(isOn: $showShareTab) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "person.2.circle")
+                                .foregroundColor(showShareTab ? .blue : .secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("공유 탭 표시")
+                                    .font(.headline)
+                                Text("일정을 다른 사람과 공유하는 탭을 추가")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }

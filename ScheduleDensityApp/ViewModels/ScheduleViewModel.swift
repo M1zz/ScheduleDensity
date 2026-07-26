@@ -429,15 +429,23 @@ class ScheduleViewModel {
 
         do {
             let ownEvents = try context.fetch(descriptor)
-            // Mac WeekBlocks 계획(읽기 전용·메모리)을 합쳐 같은 밀도 파이프라인에 투입.
-            let allEvents = ownEvents + weekBlocksEvents()
+            // Mac WeekBlocks 계획(읽기 전용·메모리). 같은 밀도 파이프라인에 투입하되,
+            // '지나간 이벤트' 필터는 적용하지 않는다 — 아래 주석 참조.
+            let weekBlocks = weekBlocksEvents()
 
-            // 지나간 이벤트 필터링
+            // 지나간 이벤트 필터링.
+            //
+            // ⚠️ 이 필터는 **사용자가 이 앱에서 관리하는 일정에만** 적용한다.
+            //    WeekBlocks 계획은 맥 화면을 그대로 비추는 읽기 전용 미러다. 그런데 루틴은
+            //    endDate가 미래(referenceDate+N주)라 필터를 통과하는 반면, 계획 블록은
+            //    startDate==endDate인 하루짜리라 지난 날짜면 전부 걸러진다.
+            //    그 결과 같은 과거 날짜에 루틴만 남고 계획만 사라져 맥 화면과 어긋났다.
+            //    미러 데이터는 필터에서 면제해 맥과 동일하게 보이도록 한다.
             if !showPastEvents {
                 let calendar = Calendar.current
                 let today = calendar.startOfDay(for: Date())
 
-                let activeEvents = allEvents.filter { event in
+                let activeOwnEvents = ownEvents.filter { event in
                     // 무한 반복 이벤트는 항상 표시
                     if event.isInfinite {
                         return true
@@ -446,9 +454,11 @@ class ScheduleViewModel {
                     return event.effectiveEndDate() >= today
                 }
 
-                print("📊 [ViewModel] 이벤트 조회됨: 전체 \(allEvents.count)개(WB 포함), 활성 \(activeEvents.count)개")
-                return activeEvents
+                print("📊 [ViewModel] 이벤트 조회됨: 내 일정 \(ownEvents.count)개 중 활성 \(activeOwnEvents.count)개"
+                      + " + WB 미러 \(weekBlocks.count)개(필터 면제)")
+                return activeOwnEvents + weekBlocks
             } else {
+                let allEvents = ownEvents + weekBlocks
                 print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
                 return allEvents
             }

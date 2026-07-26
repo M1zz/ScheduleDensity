@@ -4,12 +4,19 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<!-- CloudKit 환경 고정.
+	     기본값은 서명 방식을 따라가서 개발 빌드는 Development, App Store 빌드는 Production을
+	     쓰는데, 두 환경은 같은 컨테이너 ID라도 데이터가 완전히 분리된다.
+	     맥 '무지개 공방'(Mac App Store 빌드)이 Production에 쓰므로, 개발 빌드에서도 같은
+	     데이터를 보려면 Production으로 못박아야 한다. App Store 빌드는 어차피 Production이라
+	     이 값이 배포 동작을 바꾸지 않는다.
+	     ⚠️ 이 설정 때문에 디버그 빌드도 실제 사용자 데이터를 읽고 쓴다. -->
+	<key>com.apple.developer.icloud-container-environment</key>
+	<string>Production</string>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.com.devkoan.ScheduleDensity</string>
 		<string>iCloud.com.Ysoup.FeedbackHub</string>
-		<!-- 마이그레이션 전용(구 백업 읽기용). LegacyBackupMigrator 디프리케이트 시 함께 제거. -->
-		<string>iCloud.com.example.ScheduleDensityApp</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>

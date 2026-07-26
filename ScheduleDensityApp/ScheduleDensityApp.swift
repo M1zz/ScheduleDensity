@@ -55,9 +55,16 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     }
 }
 
+/// 여러 뷰에서 함께 쓰는 UserDefaults 키 모음. 문자열 오타로 설정이 어긋나는 것을 막는다.
+enum AppSettingsKey {
+    /// 공유 탭 노출 여부. 기본값은 false(숨김)이며 설정에서 켤 수 있다.
+    static let showShareTab = "showShareTab"
+}
+
 @main
 struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
 
     init() {
         LeeoEngagement.shared.registerLaunch()
@@ -252,15 +259,16 @@ struct ScheduleDensityApp: App {
                 // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/가족)은 추가 탭.
                 ContentView()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
-                ScheduleShareView()
-                    .tabItem { Label("공유", systemImage: "person.2.circle") }
+                // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
+                if showShareTab {
+                    ScheduleShareView()
+                        .tabItem { Label("공유", systemImage: "person.2.circle") }
+                }
                 TodoView()
                     .modelContainer(todoContainer)
                     .tabItem { Label("할 일", systemImage: "checklist") }
             }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
-            // [일회성] 구 백업 컨테이너 → 메인 컨테이너 이전. 완료 후 LegacyBackupMigrator와 함께 제거.
-            .task { await LegacyBackupMigrator.shared.runIfNeeded() }
         }
         .modelContainer(sharedModelContainer)
     }
