@@ -1,6 +1,9 @@
 name: ScheduleDensityApp
 options:
-  bundleIdPrefix: com.devkoan
+  # ⚠️ App Store에 이미 배포된 번들 ID다. 절대 바꾸지 말 것 —
+  #    번들 ID를 바꾸면 기존 앱의 업데이트가 아니라 별개의 새 앱이 되어
+  #    기존 사용자에게 도달하지 못한다. (placeholder 도메인처럼 보이지만 그대로 유지)
+  bundleIdPrefix: com.example
   developmentLanguage: ko
   deploymentTarget:
     iOS: "17.0"
@@ -32,7 +35,8 @@ targets:
       - package: LeeoKit
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.devkoan.ScheduleDensityApp
+        # ⚠️ 배포된 앱의 번들 ID. 변경 금지(위 bundleIdPrefix 주석 참조).
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp
         PRODUCT_NAME: "$(TARGET_NAME)"
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: ScheduleDensityApp/Info.plist
