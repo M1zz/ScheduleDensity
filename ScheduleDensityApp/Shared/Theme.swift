@@ -5,27 +5,7 @@ import SwiftUI
 // iOS 앱 '욕망의 무지개'(ScheduleDensity)와 컬러를 통일하기 위한 토큰.
 // 팔레트는 iOS `ScheduleViewModel.laneColors`(Apple 시스템 색)와 1:1로 맞춘다.
 
-extension Color {
-    /// "#RRGGBB" / "#AARRGGBB" / "#RGB" hex 문자열에서 Color 생성. (iOS와 동일 구현)
-    init?(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        guard Scanner(string: hex).scanHexInt64(&int) else { return nil }
-
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default: return nil
-        }
-        self.init(.sRGB,
-                  red: Double(r) / 255,
-                  green: Double(g) / 255,
-                  blue: Double(b) / 255,
-                  opacity: Double(a) / 255)
-    }
-}
+// `Color(hex:)`는 위젯 익스텐션과 공유하기 위해 ColorHex.swift로 분리했다.
 
 /// iOS `laneColors`와 동일한 7색 무지개 팔레트 (Apple 시스템 색).
 enum Rainbow {
@@ -50,23 +30,28 @@ extension Routine {
     var displayColor: Color { paletteColor(colorName) }
 }
 
+/// 팔레트 색상 이름 → hex 문자열. 팔레트에 없는 이름이면 nil(= 액센트 색으로 폴백).
+/// 위젯 스냅샷처럼 Color를 직렬화할 수 없는 곳에서 쓴다.
+func paletteHex(_ name: String) -> String? {
+    switch name {
+    case "red":    return Rainbow.red
+    case "orange": return Rainbow.orange
+    case "yellow": return Rainbow.yellow
+    case "green":  return Rainbow.green
+    case "blue":   return Rainbow.blue
+    case "indigo": return Rainbow.indigo
+    case "purple": return Rainbow.purple
+    case "pink":   return "#FF2D55"   // systemPink (레거시 데이터 호환)
+    case "teal":   return "#30B0C7"   // systemTeal
+    case "cyan":   return "#32ADE6"   // systemCyan
+    default:       return nil
+    }
+}
+
 /// 팔레트 색상 이름 → SwiftUI Color (Routine·BacklogCategory 공용)
 /// iOS '욕망의 무지개' 팔레트(Apple 시스템 색)와 hex까지 통일.
 func paletteColor(_ name: String) -> Color {
-    let hex: String
-    switch name {
-    case "red":    hex = Rainbow.red
-    case "orange": hex = Rainbow.orange
-    case "yellow": hex = Rainbow.yellow
-    case "green":  hex = Rainbow.green
-    case "blue":   hex = Rainbow.blue
-    case "indigo": hex = Rainbow.indigo
-    case "purple": hex = Rainbow.purple
-    case "pink":   hex = "#FF2D55"   // systemPink (레거시 데이터 호환)
-    case "teal":   hex = "#30B0C7"   // systemTeal
-    case "cyan":   hex = "#32ADE6"   // systemCyan
-    default:       return .accentColor
-    }
+    guard let hex = paletteHex(name) else { return .accentColor }
     return Color(hex: hex) ?? .accentColor
 }
 

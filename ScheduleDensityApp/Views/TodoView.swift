@@ -9,6 +9,7 @@
 
 import SwiftUI
 import SwiftData
+import CoreData  // NSPersistentStoreRemoteChange (맥에서 온 계획 변경 감지)
 
 struct TodoView: View {
     private enum Tab: String, CaseIterable, Identifiable {
@@ -27,6 +28,9 @@ struct TodoView: View {
 
     @State private var tab: Tab = .mine
     @State private var family = FamilyShareStore.shared
+    /// 오늘 계획으로 배정된 할 일 제목들. WeekBlocks store는 다른 컨테이너라
+    /// @Query로 못 보므로 직접 읽어 와 캐시한다.
+    @State private var assignedToday: Set<String> = []
     @State private var newTitle = ""
     @State private var newCategoryID: String? = nil
     @State private var showingFamilyShareNotice = false
@@ -61,20 +65,19 @@ struct TodoView: View {
                 }
             }
             .navigationTitle(tab == .mine ? "이번 주 할 일" : "가족 할 일")
+            // 세그먼트를 바 아래로 내리면서 제목도 인라인으로 바꾼다.
+            // 큰 제목을 그대로 두면 세그먼트 뒤에 깔려 위쪽에 빈 띠만 남는다.
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Picker("목록", selection: $tab) {
-                        ForEach(Tab.allCases) { t in
-                            Text(t.rawValue).tag(t)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 180)
-                }
                 if tab == .family {
                     ToolbarItem(placement: .topBarTrailing) { familyShareMenu }
                 }
             }
+            // 세그먼트를 네비게이션 바(.principal) 대신 그 아래에 둔다.
+            // .principal은 leading/trailing을 뺀 '남은 공간'의 가운데에 놓여서,
+            // 가족 탭에서만 나타나는 공유 버튼 때문에 그때만 왼쪽으로 밀렸다.
+            // 툴바 밖에 두면 두 탭 모두 항상 화면 정중앙이다.
+            .safeAreaInset(edge: .top, spacing: 0) { tabPicker }
             .safeAreaInset(edge: .bottom) { inputBar }
         }
         .alert("가족 공유 시작", isPresented: $showingFamilyShareNotice) {
@@ -85,12 +88,37 @@ struct TodoView: View {
         } message: {
             Text("초대 링크를 받은 사람은 누구나 이 목록에 참여해 함께 읽고 쓸 수 있습니다.\n링크는 가족에게만 보내주세요.")
         }
-        .task { await family.refresh() }
+        .task {
+            refreshAssignedToday()
+            syncWidget()
+            await family.refresh()
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
+                // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
+                refreshAssignedToday()
+                syncWidget()
                 Task { await family.refresh() }
             }
         }
+        // 맥에서 배정/해제한 결과가 CloudKit으로 내려오면 배지도 따라 바뀐다.
+        .onReceive(NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)) { _ in
+            refreshAssignedToday()
+        }
+    }
+
+    private var tabPicker: some View {
+        Picker("목록", selection: $tab) {
+            ForEach(Tab.allCases) { t in
+                Text(t.rawValue).tag(t)
+            }
+        }
+        .pickerStyle(.segmented)
+        .frame(maxWidth: 240)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
+        .background(.bar)
     }
 
     // MARK: - 내 할 일
@@ -100,7 +128,10 @@ struct TodoView: View {
             if !carryoverItems.isEmpty {
                 Section("지난 주에 못 한 일") {
                     ForEach(carryoverItems) { item in
-                        TodoRow(item: item, category: category(of: item), onToggle: toggle)
+                        TodoRow(item: item,
+                                category: category(of: item),
+                                isAssignedToday: assignedToday.contains(item.title),
+                                onToggle: toggle)
                             .swipeActions(edge: .leading) {
                                 Button {
                                     item.weekStartDate = weekStart
@@ -109,7 +140,9 @@ struct TodoView: View {
                                     Label("이번 주로", systemImage: "arrow.uturn.left")
                                 }
                                 .tint(.blue)
+                                todayButton(for: item)
                             }
+                            .contextMenu { itemMenu(for: item) }
                     }
                     .onDelete { delete(carryoverItems, at: $0) }
                 }
@@ -117,8 +150,12 @@ struct TodoView: View {
 
             Section {
                 ForEach(openItems) { item in
-                    TodoRow(item: item, category: category(of: item), onToggle: toggle)
-                        .contextMenu { categoryMenu(for: item) }
+                    TodoRow(item: item,
+                            category: category(of: item),
+                            isAssignedToday: assignedToday.contains(item.title),
+                            onToggle: toggle)
+                        .swipeActions(edge: .leading) { todayButton(for: item) }
+                        .contextMenu { itemMenu(for: item) }
                 }
                 .onDelete { delete(openItems, at: $0) }
             } header: {
@@ -130,7 +167,10 @@ struct TodoView: View {
             if !doneItems.isEmpty {
                 Section("완료 · \(doneItems.count)개") {
                     ForEach(doneItems) { item in
-                        TodoRow(item: item, category: category(of: item), onToggle: toggle)
+                        TodoRow(item: item,
+                                category: category(of: item),
+                                isAssignedToday: false,
+                                onToggle: toggle)
                     }
                     .onDelete { delete(doneItems, at: $0) }
                 }
@@ -318,6 +358,31 @@ struct TodoView: View {
         }
     }
 
+    /// 스와이프용 '오늘' 토글 버튼.
+    @ViewBuilder
+    private func todayButton(for item: BacklogItem) -> some View {
+        let assigned = assignedToday.contains(item.title)
+        Button {
+            setAssignedToday(!assigned, for: item)
+        } label: {
+            Label(assigned ? "오늘 취소" : "오늘",
+                  systemImage: assigned ? "calendar.badge.minus" : "calendar.badge.plus")
+        }
+        .tint(assigned ? .gray : .orange)
+    }
+
+    @ViewBuilder
+    private func itemMenu(for item: BacklogItem) -> some View {
+        let assigned = assignedToday.contains(item.title)
+        Button {
+            setAssignedToday(!assigned, for: item)
+        } label: {
+            Label(assigned ? "오늘 배정 취소" : "오늘 할 일로 배정",
+                  systemImage: assigned ? "calendar.badge.minus" : "calendar.badge.plus")
+        }
+        categoryMenu(for: item)
+    }
+
     @ViewBuilder
     private func categoryMenu(for item: BacklogItem) -> some View {
         Menu("카테고리 지정") {
@@ -387,6 +452,35 @@ struct TodoView: View {
 
     private func save() {
         try? context.save()
+        syncWidget()
+    }
+
+    /// 할 일을 오늘 계획 블록으로 올리거나 내린다.
+    /// 성공하면 맥 '무지개 공방' 타임라인과 iOS 무지개(밀도) 화면 양쪽에 반영된다.
+    private func setAssignedToday(_ assign: Bool, for item: BacklogItem) {
+        let store = WeekBlocksStore.shared
+        let ok = assign
+            ? store.assign(title: item.title, durationHours: item.durationHours)
+            : store.unassign(title: item.title)
+
+        guard ok else {
+            // iCloud 미로그인 등으로 계획 스토어를 못 열면 조용히 실패한다.
+            // 배지가 켜지지 않는 것으로 사용자에게 드러난다.
+            print("⚠️ [Todo] 오늘 배정 \(assign ? "실패" : "취소 실패"): \(item.title)")
+            return
+        }
+        withAnimation { refreshAssignedToday() }
+        syncWidget()
+    }
+
+    /// 오늘 배정된 제목 집합을 다시 읽는다.
+    private func refreshAssignedToday() {
+        assignedToday = WeekBlocksStore.shared.titlesAssigned()
+    }
+
+    /// 홈·잠금 화면 위젯이 읽는 스냅샷을 다시 굽는다.
+    private func syncWidget() {
+        TodoWidgetSync.refresh(context: context)
     }
 }
 
@@ -395,6 +489,8 @@ struct TodoView: View {
 private struct TodoRow: View {
     let item: BacklogItem
     let category: BacklogCategory?
+    /// 오늘 계획 블록으로 올라가 있는지 (맥 타임라인·무지개에 표시되는 상태).
+    let isAssignedToday: Bool
     let onToggle: (BacklogItem) -> Void
 
     var body: some View {
@@ -412,12 +508,15 @@ private struct TodoRow: View {
                 Text(item.title)
                     .strikethrough(item.isCompleted)
                     .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
-                if let category {
-                    HStack(spacing: 4) {
-                        Circle().fill(category.displayColor).frame(width: 7, height: 7)
-                        Text(category.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    if isAssignedToday { todayBadge }
+                    if let category {
+                        HStack(spacing: 4) {
+                            Circle().fill(category.displayColor).frame(width: 7, height: 7)
+                            Text(category.name)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -430,6 +529,15 @@ private struct TodoRow: View {
                 .monospacedDigit()
         }
         .contentShape(Rectangle())
+    }
+
+    private var todayBadge: some View {
+        Text("오늘")
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.orange)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Capsule().fill(Color.orange.opacity(0.15)))
     }
 }
 

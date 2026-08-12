@@ -22,5 +22,11 @@
 	<array>
 		<string>CloudKit</string>
 	</array>
+	<!-- 할 일 위젯(TodoWidget)에 스냅샷을 넘겨주는 통로.
+	     ⚠️ TodoWidget/TodoWidget.entitlements의 값과 반드시 같아야 한다. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.devkoan.ScheduleDensity</string>
+	</array>
 </dict>
 </plist>

@@ -20,6 +20,18 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<!-- 할 일 위젯을 탭하면 rainbow://todo 로 앱이 열린다. -->
+			<key>CFBundleURLName</key>
+			<string>com.example.ScheduleDensityApp.widget</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rainbow</string>
+			</array>
+		</dict>
+	</array>
 	<key>CKSharingSupported</key>
 	<true/>
 	<key>LSRequiresIPhoneOS</key>

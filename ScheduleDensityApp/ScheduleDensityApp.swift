@@ -61,10 +61,16 @@ enum AppSettingsKey {
     static let showShareTab = "showShareTab"
 }
 
+/// 루트 TabView의 탭. 위젯 딥링크가 특정 탭을 열 수 있도록 태그를 붙인다.
+enum AppTab: Hashable {
+    case rainbow, share, todo
+}
+
 @main
 struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
+    @State private var selectedTab: AppTab = .rainbow
 
     init() {
         LeeoEngagement.shared.registerLaunch()
@@ -76,7 +82,14 @@ struct ScheduleDensityApp: App {
         //    추가되면 기본값 .automatic 이 Event 스토어까지 CloudKit을 켜려다 실패한다
         //    (Event는 기본값 없는 비옵셔널 속성 보유 → CloudKit 비호환). Event는 로컬 전용 유지.
         do {
-            let config = ModelConfiguration(schema: Schema([Event.self]), cloudKitDatabase: .none)
+            // ⚠️ groupContainer: .none 을 반드시 명시한다.
+            //    App Group entitlement(할 일 위젯용)가 붙으면 SwiftData 기본 저장 위치가
+            //    앱 샌드박스 → App Group 컨테이너로 바뀐다. 그러면 이미 배포된 사용자의
+            //    default.store를 못 찾고 빈 스토어를 새로 만들어 일정이 전부 사라진 것처럼 보인다.
+            //    (Event는 로컬 전용이라 CloudKit에서 복구되지도 않는다.)
+            let config = ModelConfiguration(schema: Schema([Event.self]),
+                                            groupContainer: .none,
+                                            cloudKitDatabase: .none)
             let container = try ModelContainer(for: Event.self, configurations: config)
             print("✅ [Migration] Using existing database successfully (local-only)")
             return container
@@ -233,9 +246,12 @@ struct ScheduleDensityApp: App {
         try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
 
         let schema = Schema([BacklogItem.self, BacklogCategory.self])
+        // groupContainer: .none — 위 Event 스토어와 같은 이유. App Group entitlement 때문에
+        // 저장 위치가 옮겨가면 기존 store를 못 찾고 CloudKit에서 전부 다시 받아야 한다.
         let cloudConfig = ModelConfiguration(
             "WeekBlocksTodos",
             schema: schema,
+            groupContainer: .none,
             cloudKitDatabase: .private("iCloud.com.devkoan.ScheduleDensity")
         )
         do {
@@ -243,7 +259,8 @@ struct ScheduleDensityApp: App {
         } catch {
             // iCloud 미로그인 등으로 실패하면 로컬 전용으로라도 동작하게 한다.
             print("⚠️ [Todo] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(error)")
-            let localConfig = ModelConfiguration("WeekBlocksTodos", schema: schema, cloudKitDatabase: .none)
+            let localConfig = ModelConfiguration("WeekBlocksTodos", schema: schema,
+                                                 groupContainer: .none, cloudKitDatabase: .none)
             do {
                 return try ModelContainer(for: schema, configurations: [localConfig])
             } catch {
@@ -255,20 +272,30 @@ struct ScheduleDensityApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TabView {
+            TabView(selection: $selectedTab) {
                 // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/가족)은 추가 탭.
                 ContentView()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
+                    .tag(AppTab.rainbow)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
                 if showShareTab {
                     ScheduleShareView()
                         .tabItem { Label("공유", systemImage: "person.2.circle") }
+                        .tag(AppTab.share)
                 }
                 TodoView()
                     .modelContainer(todoContainer)
                     .tabItem { Label("할 일", systemImage: "checklist") }
+                    .tag(AppTab.todo)
             }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
+            .onOpenURL { url in
+                // 홈·잠금 화면 위젯 탭 → 할 일 탭 열기 (rainbow://todo)
+                if url.scheme == TodoWidgetBridge.deepLink.scheme,
+                   url.host == TodoWidgetBridge.deepLink.host {
+                    selectedTab = .todo
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

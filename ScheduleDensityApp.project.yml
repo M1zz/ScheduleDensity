@@ -33,6 +33,7 @@ targets:
           - "Views/InsightCardsView.swift"
     dependencies:
       - package: LeeoKit
+      - target: TodoWidgetExtension
     settings:
       base:
         # ⚠️ 배포된 앱의 번들 ID. 변경 금지(위 bundleIdPrefix 주석 참조).
@@ -60,3 +61,30 @@ targets:
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
+
+  # 홈 화면·잠금 화면 할 일 위젯.
+  # 앱이 App Group에 구워둔 스냅샷만 읽으므로 CloudKit/LeeoKit 의존성은 없다.
+  TodoWidgetExtension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: TodoWidget
+      # 앱과 함께 쓰는 파일만 골라 넣는다 (SwiftData 모델은 위젯에 필요 없다).
+      - path: ScheduleDensityApp/Shared/TodoWidgetSnapshot.swift
+      - path: ScheduleDensityApp/Shared/ColorHex.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoWidget
+        PRODUCT_NAME: "$(TARGET_NAME)"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: TodoWidget/Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: "할 일"
+        CODE_SIGN_ENTITLEMENTS: TodoWidget/TodoWidget.entitlements
+        CODE_SIGN_STYLE: Automatic
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+          - "@executable_path/../../Frameworks"

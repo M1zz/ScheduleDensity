@@ -115,13 +115,16 @@ class ScheduleViewModel {
     // 설정: Mac '무지개 공방(WeekBlocks)' 계획을 밀도에 합쳐 표시할지 (읽기 전용)
     var showWeekBlocksPlans: Bool
 
-    // WeekBlocks(macOS) 계획을 같은 iCloud에서 읽어 시각화용 Event로 변환하는 읽기 전용 스토어.
-    private let weekBlocksStore = WeekBlocksStore()
+    // WeekBlocks(macOS) 계획을 같은 iCloud에서 읽어 시각화용 Event로 변환하는 스토어.
+    // 할 일 탭에서 '오늘로 배정'할 때도 같은 인스턴스에 쓴다(컨테이너 중복 생성 금지).
+    private let weekBlocksStore = WeekBlocksStore.shared
     // 매 fetchEvents 호출마다 CloudKit 스토어를 다시 읽지 않도록 dataRefreshTrigger 기준 캐시.
     private var weekBlocksCache: [Event] = []
     private var weekBlocksCacheToken: UUID? = nil
     // CloudKit 원격 변경(첫 동기화·다른 기기 변경) 시 화면을 갱신하기 위한 옵저버.
     private var remoteChangeObserver: NSObjectProtocol?
+    // 앱 안에서 '오늘로 배정'해 계획이 바뀐 경우의 옵저버.
+    private var planChangeObserver: NSObjectProtocol?
     // 원격 변경 알림 디바운스 — 앱 내 4개 스토어의 저장·동기화 이벤트마다 알림이 오므로
     // 몰아서 한 번만 갱신한다 (없으면 124일치 밀도 재계산이 초 단위로 반복됨).
     private var remoteChangeDebounce: DispatchWorkItem?
@@ -192,11 +195,27 @@ class ScheduleViewModel {
             self.remoteChangeDebounce = work
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
         }
+
+        // 할 일 탭에서 '오늘로 배정'한 경우. 같은 프로세스의 로컬 저장이라
+        // NSPersistentStoreRemoteChange가 오지 않으므로 즉시(디바운스 없이) 갱신한다.
+        planChangeObserver = NotificationCenter.default.addObserver(
+            forName: .weekBlocksPlanDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.weekBlocksCacheToken = nil
+            self.dataRefreshTrigger = UUID()
+            print("🔄 [WeekBlocks] 계획 변경(앱 내) → 데이터 갱신")
+        }
     }
 
     deinit {
         if let remoteChangeObserver {
             NotificationCenter.default.removeObserver(remoteChangeObserver)
+        }
+        if let planChangeObserver {
+            NotificationCenter.default.removeObserver(planChangeObserver)
         }
     }
 
