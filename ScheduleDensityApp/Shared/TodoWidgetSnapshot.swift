@@ -19,21 +19,28 @@ struct TodoWidgetSnapshot: Codable {
         var isCarryover: Bool
         /// 오늘 계획으로 배정된 항목 (맥 타임라인·무지개에도 올라가 있음).
         var isToday: Bool
+        /// 단계로 쪼갠 할 일의 '지금 할 일'. 단계가 없으면 nil.
+        var stepTitle: String?
+        /// 0...1 진행률. 단계가 없으면 0.
+        var progress: Double
 
-        // isToday는 나중에 추가된 필드라, 이 키가 없는 옛 스냅샷도 읽을 수 있어야 한다.
-        // (앱 업데이트 직후 위젯이 먼저 깨어나면 옛 파일을 만난다.)
+        // isToday·stepTitle·progress는 나중에 추가된 필드라, 이 키가 없는 옛 스냅샷도
+        // 읽을 수 있어야 한다. (앱 업데이트 직후 위젯이 먼저 깨어나면 옛 파일을 만난다.)
         enum CodingKeys: String, CodingKey {
-            case id, title, colorHex, categoryName, isCarryover, isToday
+            case id, title, colorHex, categoryName, isCarryover, isToday, stepTitle, progress
         }
 
         init(id: String, title: String, colorHex: String?, categoryName: String?,
-             isCarryover: Bool, isToday: Bool = false) {
+             isCarryover: Bool, isToday: Bool = false,
+             stepTitle: String? = nil, progress: Double = 0) {
             self.id = id
             self.title = title
             self.colorHex = colorHex
             self.categoryName = categoryName
             self.isCarryover = isCarryover
             self.isToday = isToday
+            self.stepTitle = stepTitle
+            self.progress = progress
         }
 
         init(from decoder: Decoder) throws {
@@ -44,6 +51,8 @@ struct TodoWidgetSnapshot: Codable {
             categoryName = try c.decodeIfPresent(String.self, forKey: .categoryName)
             isCarryover = try c.decodeIfPresent(Bool.self, forKey: .isCarryover) ?? false
             isToday = try c.decodeIfPresent(Bool.self, forKey: .isToday) ?? false
+            stepTitle = try c.decodeIfPresent(String.self, forKey: .stepTitle)
+            progress = try c.decodeIfPresent(Double.self, forKey: .progress) ?? 0
         }
     }
 
@@ -62,7 +71,8 @@ struct TodoWidgetSnapshot: Codable {
     static let sample = TodoWidgetSnapshot(
         items: [
             Item(id: "1", title: "기획서 초안 작성", colorHex: "#007AFF", categoryName: "개발",
-                 isCarryover: false, isToday: true),
+                 isCarryover: false, isToday: true,
+                 stepTitle: "목차 잡기", progress: 0.3),
             Item(id: "2", title: "위젯 스냅샷 정리", colorHex: "#5856D6", categoryName: "개발",
                  isCarryover: true, isToday: false),
             Item(id: "3", title: "장보기 — 우유, 계란", colorHex: "#34C759", categoryName: "집안일",

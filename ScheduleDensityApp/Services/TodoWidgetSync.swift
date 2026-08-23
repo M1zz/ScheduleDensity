@@ -40,10 +40,12 @@ enum TodoWidgetSync {
         let weekStart = now.weekStart()
         let categoryByID = Dictionary(categories.map { ($0.uuid, $0) }, uniquingKeysWith: { first, _ in first })
 
-        let thisWeek = items.filter {
+        // 위젯도 최상위 할 일만 줄로 세운다. 단계는 그 줄 안에서 '지금 할 일'로 보여준다.
+        let tree = TodoTree(items)
+        let thisWeek = tree.roots.filter {
             !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart)
         }
-        let carryover = items.filter {
+        let carryover = tree.roots.filter {
             !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart)
         }
 
@@ -69,7 +71,9 @@ enum TodoWidgetSync {
                 colorHex: category.flatMap { paletteHex($0.colorName) },
                 categoryName: category?.name,
                 isCarryover: isCarryover,
-                isToday: assignedToday.contains(item.title)
+                isToday: assignedToday.contains(item.title),
+                stepTitle: tree.hasChildren(item) ? tree.currentStep(of: item)?.title : nil,
+                progress: tree.hasChildren(item) ? tree.progress(of: item) : 0
             )
         }
 

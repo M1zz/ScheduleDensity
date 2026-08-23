@@ -2,17 +2,17 @@
 //  FamilyShareStore.swift
 //  ScheduleDensity 패밀리 (iOS·macOS 공용)
 //
-//  가족 공유 할 일 — SwiftData는 CloudKit 공유 DB를 지원하지 않으므로,
+//  공유 할 일 — SwiftData는 CloudKit 공유 DB를 지원하지 않으므로,
 //  이 목록만 CloudKit을 직접 사용한다:
 //  - 소유자: 개인 DB의 커스텀 존("FamilyTodos")에 레코드 저장, 존 전체를 CKShare로 공유
-//  - 가족(참가자): 초대 링크 수락 후 공유 DB(sharedCloudDatabase)에서 같은 존을 읽고 쓴다
+//  - 참가자: 초대 링크 수락 후 공유 DB(sharedCloudDatabase)에서 같은 존을 읽고 쓴다
 //
 
 import Foundation
 import CloudKit
 import Observation
 
-/// 가족 공유 할 일 한 건 (CKRecord 미러).
+/// 공유 할 일 한 건 (CKRecord 미러).
 struct FamilyTodo: Identifiable, Equatable {
     let id: CKRecord.ID
     var title: String
@@ -32,7 +32,7 @@ final class FamilyShareStore {
     enum Mode: Equatable {
         case unknown
         case owner        // 내 개인 DB의 존을 공유하는 쪽
-        case participant  // 가족의 존에 초대받은 쪽
+        case participant  // 상대의 존에 초대받은 쪽
     }
 
     private(set) var mode: Mode = .unknown
@@ -74,7 +74,7 @@ final class FamilyShareStore {
         }
     }
 
-    /// 공유 DB에 가족 존이 있으면 참가자, 아니면 소유자로 동작한다.
+    /// 공유 DB에 공유 존이 있으면 참가자, 아니면 소유자로 동작한다.
     private func resolveMode() async throws {
         let sharedZones = try await container.sharedCloudDatabase.allRecordZones()
         if let z = sharedZones.first(where: { $0.zoneID.zoneName == Self.zoneName }) {
@@ -207,8 +207,8 @@ final class FamilyShareStore {
             }
 
             let share = CKShare(recordZoneID: zoneID)
-            share[CKShare.SystemFieldKey.title] = "가족 할 일" as CKRecordValue
-            // 링크만 있으면 가족 누구나 참여해 읽고 쓸 수 있게 한다.
+            share[CKShare.SystemFieldKey.title] = "공유 할 일" as CKRecordValue
+            // 링크만 있으면 누구나 참여해 읽고 쓸 수 있게 한다.
             share.publicPermission = .readWrite
             let saved = try await container.privateCloudDatabase.save(share)
             isSharing = true
@@ -221,7 +221,7 @@ final class FamilyShareStore {
         }
     }
 
-    /// (소유자) 공유 중지 — 가족 전원의 접근이 해제된다. 데이터는 내 존에 남는다.
+    /// (소유자) 공유 중지 — 참가자 전원의 접근이 해제된다. 데이터는 내 존에 남는다.
     func stopSharing() async {
         guard mode == .owner else { return }
         do {
@@ -274,7 +274,7 @@ final class FamilyShareStore {
             switch ck.code {
             case .notAuthenticated:
                 iCloudAvailable = false
-                errorMessage = "iCloud에 로그인하면 가족 공유를 쓸 수 있습니다."
+                errorMessage = "iCloud에 로그인하면 할 일 공유를 쓸 수 있습니다."
                 return
             case .networkUnavailable, .networkFailure:
                 errorMessage = "네트워크 연결을 확인해주세요."

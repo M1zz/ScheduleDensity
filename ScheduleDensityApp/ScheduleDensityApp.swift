@@ -39,7 +39,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
     }
 
     /// 초대받은 공유의 존 이름에 따라 알맞은 스토어로 수락을 보낸다.
-    /// (일정 공유와 가족 할 일 공유가 같은 CloudKit 컨테이너를 쓰기 때문.)
+    /// (일정 공유와 할 일 공유가 같은 CloudKit 컨테이너를 쓰기 때문.)
     private static func routeShareAccept(_ metadata: CKShare.Metadata) {
         let zoneName = metadata.share.recordID.zoneID.zoneName
         Task {
@@ -74,6 +74,8 @@ struct ScheduleDensityApp: App {
 
     init() {
         LeeoEngagement.shared.registerLaunch()
+        // 할 일 화면의 조언은 전부 TipKit으로 낸다 (→ TodoTips.swift).
+        TodoTips.configure()
     }
 
     var sharedModelContainer: ModelContainer = {
@@ -273,7 +275,7 @@ struct ScheduleDensityApp: App {
     var body: some Scene {
         WindowGroup {
             TabView(selection: $selectedTab) {
-                // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/가족)은 추가 탭.
+                // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/공유)은 추가 탭.
                 ContentView()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)

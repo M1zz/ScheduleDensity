@@ -92,7 +92,8 @@ private struct InlineView: View {
 
     var body: some View {
         if let first = snapshot.items.first {
-            Text(first.title)
+            // 단계로 쪼갠 할 일은 '지금 할 단계'가 곧 지금 해야 하는 일이다.
+            Text([first.title, first.stepTitle].compactMap { $0 }.joined(separator: " · "))
         } else {
             Text("할 일 없음")
         }
@@ -170,10 +171,26 @@ private struct TodoLine: View {
             }
             .frame(width: 7, height: 7)
 
-            Text(item.title)
-                .font(font)
-                .fontWeight(item.isToday ? .semibold : .regular)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(item.title)
+                    .font(font)
+                    .fontWeight(item.isToday ? .semibold : .regular)
+                    .lineLimit(1)
+
+                if let step = item.stepTitle {
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrowtriangle.right.fill")
+                            .font(.system(size: 6))
+                        Text(step)
+                            .lineLimit(1)
+                        Text("\(Int((item.progress * 100).rounded()))%")
+                            .monospacedDigit()
+                            .foregroundStyle(.tertiary)
+                    }
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                }
+            }
 
             if item.isCarryover {
                 Image(systemName: "arrow.uturn.left")
@@ -194,7 +211,9 @@ private struct TodoLine: View {
 private func listAccessibilityLabel(_ snapshot: TodoWidgetSnapshot, limit: Int) -> String {
     guard !snapshot.isEmpty else { return "남은 할 일 없음" }
     let titles = snapshot.items.prefix(limit).map { item in
-        item.isToday ? "\(item.title), 오늘" : item.title
+        var text = item.title
+        if let step = item.stepTitle { text += ", 지금 \(step), \(Int((item.progress * 100).rounded()))퍼센트" }
+        return item.isToday ? "\(text), 오늘" : text
     }
     return "할 일. " + titles.joined(separator: ", ")
 }

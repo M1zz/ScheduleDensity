@@ -25,6 +25,8 @@ struct SettingsView: View {
     @State private var isSyncing = false
     @State private var syncProgress: Double = 0.0
     @State private var syncProgressText = ""
+    /// 할 일 조언(TipKit) 다시 보기를 눌렀는지 — 한 화면 안에서 두 번 누를 일은 없다.
+    @State private var tipsResetDone = false
     @State private var showingEventManagement = false
     @State private var showingStatistics = false
     @State private var showingDeleteiCloudAlert = false
@@ -540,6 +542,23 @@ struct SettingsView: View {
                 } header: {
                     Text("수면 시간")
                 }
+                }
+
+                Section {
+                    Button {
+                        TodoTips.resetAll()
+                        tipsResetDone = true
+                    } label: {
+                        Label(tipsResetDone ? "다시 보기로 바꿨습니다" : "할 일 조언 다시 보기",
+                              systemImage: tipsResetDone ? "checkmark.circle.fill" : "lightbulb")
+                    }
+                    .disabled(tipsResetDone)
+
+                    Text("할 일 화면에서 닫았던 조언(라벨·비중·쪼개기 팁)을 처음부터 다시 봅니다.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("조언")
                 }
 
                 Section {
