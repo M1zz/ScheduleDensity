@@ -34,11 +34,9 @@ struct TodoView: View {
     @State private var assignedToday: Set<String> = []
     @State private var newTitle = ""
     @State private var newCategoryID: String? = nil
-    /// 빈 줄에 지금 적히면 붙을 라벨(=예상 시간). 고르지 않아도 지난번 값이 그대로 따라와서,
-    /// 적고 엔터만 쳐도 한 줄이 확정된다. 예상 시간은 여전히 모든 할 일이 갖는다.
-    @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.sit.rawValue
-    /// 목록에서 한 종류만 보고 싶을 때. nil이면 전체.
-    @State private var filterLabel: TodoLabel? = nil
+    /// 빈 줄에 지금 적히면 붙을 속성(= 착수 조건). 고르지 않아도 지난번 값이 그대로 따라와서,
+    /// 적고 엔터만 쳐도 한 줄이 확정된다. 시간은 속성이 데려온다.
+    @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.ready.rawValue
     @State private var showingFamilyShareNotice = false
     @FocusState private var inputFocused: Bool
 
@@ -53,16 +51,7 @@ struct TodoView: View {
 
     /// 이번 주, 아직 안 한 일.
     private func openItems(_ tree: TodoTree) -> [BacklogItem] {
-        tree.roots
-            .filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
-            .filter { matchesFilter($0, tree) }
-    }
-
-    /// 라벨 필터. 단계가 있으면 '지금 할 단계'의 라벨로 본다 —
-    /// 지금 5분이 났을 때 집을 수 있는지는 그 단계가 결정하기 때문이다.
-    private func matchesFilter(_ item: BacklogItem, _ tree: TodoTree) -> Bool {
-        guard let filterLabel else { return true }
-        return (tree.currentStep(of: item) ?? item).label == filterLabel
+        tree.roots.filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
     }
 
     /// 이번 주에 완료한 일 (최근 완료가 위).
@@ -72,11 +61,12 @@ struct TodoView: View {
             .sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
     }
 
-    /// 지난 주에 못 하고 남은 일.
+    /// 지난 주에 못 하고 남은 일. 목록에서는 이번 주 것과 한 줄기로 섞이고,
+    /// '이번 주로 옮기기' 스와이프가 붙는지만 달라진다.
     private func carryoverItems(_ tree: TodoTree) -> [BacklogItem] {
-        tree.roots
-            .filter { !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
-            .filter { matchesFilter($0, tree) }
+        tree.roots.filter {
+            !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart)
+        }
     }
 
     /// 공유가 실제로 있을 때만 '공유'를 보여준다.
@@ -143,10 +133,6 @@ struct TodoView: View {
         .onChange(of: showsFamilyTab) { _, shows in
             if !shows { tab = .mine }
         }
-        // '지금 바로'만 보다가 하나 더 적으면 그것도 '지금 바로'인 게 자연스럽다.
-        .onChange(of: filterLabel) { _, label in
-            if let label { newLabelRaw = label.rawValue }
-        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
@@ -184,33 +170,24 @@ struct TodoView: View {
         let tree = TodoTree(allItems)
         let carryover = carryoverItems(tree)
         let open = openItems(tree)
+        // 지난 주에 밀린 일과 이번 주 일을 한 줄기로 세운다. 밀린 것이 위로 온다.
+        // 섹션을 갈라 놓으면 '지난 주에 못 한 일'이라는 이름표를 매번 읽어야 했다 —
+        // 밀렸다는 사실은 옮길 때만 필요하고, 그건 스와이프에 남겨 뒀다.
+        let items = carryover + open
+        let carried = Set(carryover.map(\.dragToken))
         let done = doneItems(tree)
 
         return ScrollViewReader { proxy in
         List {
-            if hasAnyItem {
-                if FragmentFilterTip().shouldDisplay {
-                    TipView(FragmentFilterTip())
-                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 0, trailing: 12))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                }
-
-                labelFilterBar
-                    .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-            }
-
-            if !carryover.isEmpty {
-                Section("지난 주에 못 한 일") {
-                    ForEach(carryover) { item in
-                        TodoRow(item: item,
-                                tree: tree,
-                                category: category(of: item),
-                                isAssignedToday: assignedToday.contains(item.title),
-                                onAdvance: advance)
-                            .swipeActions(edge: .leading) {
+            Section {
+                ForEach(items) { item in
+                    TodoRow(item: item,
+                            tree: tree,
+                            category: category(of: item),
+                            isAssignedToday: assignedToday.contains(item.title),
+                            onAdvance: advance)
+                        .swipeActions(edge: .leading) {
+                            if carried.contains(item.dragToken) {
                                 Button {
                                     // 단계도 부모와 한 덩어리로 같이 옮긴다.
                                     for node in tree.subtree(of: item) { node.weekStartDate = weekStart }
@@ -219,34 +196,21 @@ struct TodoView: View {
                                     Label("이번 주로", systemImage: "arrow.uturn.left")
                                 }
                                 .tint(.blue)
-                                todayButton(for: item, tree: tree)
                             }
-                            .contextMenu { itemMenu(for: item, tree: tree) }
-                    }
-                    .onDelete { delete(carryover, at: $0, tree: tree) }
-                }
-            }
-
-            Section {
-                ForEach(open) { item in
-                    TodoRow(item: item,
-                            tree: tree,
-                            category: category(of: item),
-                            isAssignedToday: assignedToday.contains(item.title),
-                            onAdvance: advance)
-                        .swipeActions(edge: .leading) { todayButton(for: item, tree: tree) }
+                            todayButton(for: item, tree: tree)
+                        }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
-                .onDelete { delete(open, at: $0, tree: tree) }
+                .onDelete { delete(items, at: $0, tree: tree) }
 
                 // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
                 newTodoRow
             } header: {
-                if !open.isEmpty {
-                    Text("이번 주 · \(open.count)개 · \(formatDuration(open.reduce(0) { $0 + tree.totalHours(of: $1) }))")
+                if !items.isEmpty {
+                    Text("\(items.count)개 · \(formatDuration(items.reduce(0) { $0 + tree.totalHours(of: $1) }))")
                 }
             } footer: {
-                if !hasAnyItem {
+                if items.isEmpty {
                     Text("위 빈 줄에 바로 적으면 이번 주 할 일이 됩니다. 엔터를 치면 한 줄이 확정되고 빈 줄이 다시 옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
                 }
             }
@@ -274,18 +238,6 @@ struct TodoView: View {
         }
         .onChange(of: allItems.count) { _, _ in
             if inputFocused { scrollToNewRow(proxy) }
-        }
-        .overlay {
-            // '할 일이 없습니다'는 더 이상 띄우지 않는다 — 빈 줄 자체가 적으라는 자리다.
-            // 걸러서 아무것도 없을 때만, 필터를 풀라고 알려준다.
-            if let filterLabel, open.isEmpty && done.isEmpty && carryover.isEmpty {
-                ContentUnavailableView(
-                    "‘\(filterLabel.name)’인 일이 없습니다",
-                    systemImage: filterLabel.symbol,
-                    description: Text("위 라벨에서 ‘전체’를 누르면 다시 다 보입니다.")
-                )
-                .allowsHitTesting(false)
-            }
         }
         }
     }
@@ -446,8 +398,8 @@ struct TodoView: View {
         .id(Self.newRowID)
     }
 
-    /// 이 줄이 얼마짜리 일인지. 라벨이 곧 예상 시간이고, 그게 이 할 일의 100%가 된다.
-    /// 손대지 않으면 지난번에 고른 값이 그대로 따라오므로, 적고 엔터만 쳐도 추가된다.
+    /// 이 줄을 지금 시작할 수 있는지. 손대지 않으면 지난번에 고른 값이 따라오므로,
+    /// 적고 엔터만 쳐도 추가된다. 시간은 고른 속성이 데려온다.
     @ViewBuilder
     private var newLabelMenu: some View {
         // 처음 쓰는 사람에게만 한 번, 적기 시작한 뒤에 이 칩이 무엇인지 알려준다.
@@ -461,9 +413,11 @@ struct TodoView: View {
 
     private var labelMenu: some View {
         Menu {
-            Picker("얼마나 걸릴 일인가요?", selection: $newLabelRaw) {
+            Picker("지금 시작할 수 있나요?", selection: $newLabelRaw) {
                 ForEach(TodoLabel.allCases) { label in
-                    Label("\(label.name) · \(formatDuration(label.defaultHours))",
+                    Label(label.costsMyTime
+                          ? "\(label.name) · \(formatDuration(label.defaultHours))"
+                          : label.name,
                           systemImage: label.symbol)
                         .tag(label.rawValue)
                 }
@@ -475,35 +429,7 @@ struct TodoView: View {
 
     /// 지금 빈 줄에 적히면 붙을 라벨.
     private var draftLabel: TodoLabel {
-        TodoLabel(rawValue: newLabelRaw) ?? .sit
-    }
-
-    /// 라벨로 목록을 걸러 보는 줄 — "지금 10분 났는데 뭐 하지"에 답하는 자리.
-    private var labelFilterBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                Button {
-                    filterLabel = nil
-                } label: {
-                    Text("전체")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(filterLabel == nil ? Color.white : Color.secondary)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Capsule().fill(filterLabel == nil ? Color.accentColor : Color.secondary.opacity(0.12)))
-                }
-                .buttonStyle(.plain)
-
-                ForEach(TodoLabel.allCases) { label in
-                    Button {
-                        filterLabel = (filterLabel == label) ? nil : label
-                    } label: {
-                        TodoLabelChip(label: label, isSelected: filterLabel == label)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.horizontal, 16)
-        }
+        TodoLabel.resolve(newLabelRaw) ?? .ready
     }
 
     private var newCategoryMenu: some View {
@@ -523,9 +449,9 @@ struct TodoView: View {
             }
         } label: {
             Image(systemName: current?.iconName ?? "tag")
-                .font(.system(size: 13))
+                .font(.system(size: 16))
                 .foregroundStyle(current?.displayColor ?? Color.secondary)
-                .frame(width: 26, height: 26)
+                .frame(width: 34, height: 34)
                 .background(Circle().fill((current?.displayColor ?? Color.secondary).opacity(0.15)))
         }
     }
@@ -598,11 +524,6 @@ struct TodoView: View {
         return categories.first { $0.uuid == id }
     }
 
-    /// 필터를 걸기 전 기준으로 이번 주·지난 주에 뭔가 있는지.
-    private var hasAnyItem: Bool {
-        TodoTree(allItems).roots.contains { !$0.isCompleted && $0.weekStartDate <= weekStart }
-    }
-
     /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
     /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
     private func add() {
@@ -615,8 +536,8 @@ struct TodoView: View {
         if tab == .family {
             Task { await family.add(title: title) }
         } else {
-            // 라벨 = 예상 시간. 이 시간이 이 할 일의 100%가 되고,
-            // 안에서 단계를 나누면 단계들이 이 시간을 나눠 갖는다.
+            // 속성 = 착수 조건. 시간은 속성이 데려오고, 안에서 단계를 나누면
+            // 상위 시간은 단계들의 합으로 다시 계산된다 (아래에서 위로).
             let label = draftLabel
             let maxIndex = allItems.map(\.sortIndex).max() ?? -1
             withAnimation {
@@ -691,10 +612,8 @@ struct TodoView: View {
     /// 팁이 언제 뜰지 정하는 값들을 최신으로 맞춘다 (→ TodoTips.swift).
     private func refreshTipRules() {
         let tree = TodoTree(allItems)
-        FragmentFilterTip.itemCount = tree.roots.filter { !$0.isCompleted }.count
         if allItems.contains(where: { $0.labelRaw != nil }) { LabelPickTip.hasPicked = true }
         if tree.roots.contains(where: { tree.children(of: $0).count >= 2 }) { ShareSplitTip.hasSplit = true }
-        if allItems.contains(where: { $0.isManualWeight }) { LockedShareTip.hasLocked = true }
     }
 
     /// 오늘 배정된 제목 집합을 다시 읽는다.
@@ -735,23 +654,13 @@ private struct TodoRow: View {
                 TodoDetailView(root: item)
             } label: {
                 content
+                    // 글자에만 탭이 먹으면 제목이 짧을수록 누를 자리가 좁아진다.
+                    // 줄 폭을 다 차지하게 한 뒤 그 사각형 전체를 탭 영역으로 삼는다
+                    // (frame 없이 contentShape만 걸면 글자만 한 영역이 그대로 남는다).
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
             }
         }
-    }
-
-    /// 이 줄을 눌러 들어가면 무엇이 있는지 알려주는 표시.
-    /// 단계가 없으면 '단계 나누기'라고 말해줘야 들어가 볼 생각이 든다.
-    private var stepsAffordance: some View {
-        HStack(spacing: 3) {
-            Image(systemName: hasSteps ? "list.bullet.indent" : "plus.circle")
-                .font(.system(size: 10))
-            Text(hasSteps ? "\(tree.leafCount(of: item))단계" : "단계 나누기")
-                .font(.caption2)
-        }
-        .foregroundStyle(hasSteps ? Color.accentColor : Color.secondary)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 2)
-        .background(Capsule().fill((hasSteps ? Color.accentColor : Color.secondary).opacity(0.12)))
     }
 
     /// 단계가 있으면 '체크'가 아니라 '다음으로 넘긴다'는 뜻이라 모양을 달리한다.
@@ -781,76 +690,39 @@ private struct TodoRow: View {
         }
     }
 
+    /// 한 줄은 '지금 할 일' 하나만 말한다.
+    ///
+    /// 단계로 쪼갠 할 일은 지금 할 단계가 곧 지금 할 일이라, 줄에는 그 단계 이름만 선다.
+    /// 그게 무슨 일의 일부인지는 눌러 들어가면 네비게이션 타이틀이 말해준다.
+    /// 시간은 왼쪽 링이 진행을, 헤더가 총량을 이미 말하므로 줄에서는 뺐다.
     private var content: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text(item.title)
+        HStack(spacing: 8) {
+            Text(displayTitle)
                 .strikethrough(item.isCompleted)
                 .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
+                .lineLimit(2)
 
-            if hasSteps {
-                if let step = currentStep {
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrowtriangle.right.fill")
-                            .font(.system(size: 8))
-                            .foregroundStyle(.orange)
-                        Text(step.title)
-                            .font(.callout)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                        // 지금 할 단계가 어떤 타입인지 — "10분 났는데 뭐 하지"에 답한다.
-                        TodoLabelChip(label: step.label, hours: step.durationHours)
-                    }
-                }
-
-                HStack(spacing: 8) {
-                    ProgressView(value: tree.progress(of: item))
-                        .tint(item.isCompleted ? .green : .accentColor)
-                        .frame(maxWidth: 120)
-                    Text("\(Int((tree.progress(of: item) * 100).rounded()))%")
-                        .font(.caption2.weight(.medium))
-                        .monospacedDigit()
-                        .foregroundStyle(.secondary)
-                    if let number = tree.currentStepNumber(of: item) {
-                        Text("\(tree.leafCount(of: item))단계 중 \(number)번째")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                            .monospacedDigit()
-                    }
-                }
+            if isAssignedToday { todayBadge }
+            if let category {
+                Circle()
+                    .fill(category.displayColor)
+                    .frame(width: 10, height: 10)
+                    .accessibilityLabel(category.name)
             }
-
-            HStack(spacing: 6) {
-                // 단계가 없는 할 일은 자기 라벨이 곧 '이건 어떤 일인가'다.
-                if !hasSteps {
-                    TodoLabelChip(label: item.label, hours: tree.totalHours(of: item))
-                }
-                stepsAffordance
-                if isAssignedToday { todayBadge }
-                if let category {
-                    HStack(spacing: 4) {
-                        Circle().fill(category.displayColor).frame(width: 7, height: 7)
-                        Text(category.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                Spacer()
-                if hasSteps {
-                    Text("전체 \(formatDuration(tree.totalHours(of: item)))")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                        .monospacedDigit()
-                }
-            }
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 2)
     }
+
+    /// 줄에 설 이름. 남은 단계가 있으면 그 단계, 아니면 할 일 자신.
+    private var displayTitle: String { (currentStep ?? item).title }
 
     private var todayBadge: some View {
         Text("오늘")
-            .font(.caption2.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(.orange)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
+            .padding(.horizontal, 11)
+            .padding(.vertical, 6)
             .background(Capsule().fill(Color.orange.opacity(0.15)))
     }
 }

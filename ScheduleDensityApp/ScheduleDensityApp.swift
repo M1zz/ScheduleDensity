@@ -69,6 +69,7 @@ enum AppTab: Hashable {
 @main
 struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
     @State private var selectedTab: AppTab = .rainbow
 
@@ -291,6 +292,12 @@ struct ScheduleDensityApp: App {
                     .tag(AppTab.todo)
             }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
+            // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
+            // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
+            .task { intakeSharedTodos() }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { intakeSharedTodos() }
+            }
             .onOpenURL { url in
                 // 홈·잠금 화면 위젯 탭 → 할 일 탭 열기 (rainbow://todo)
                 if url.scheme == TodoWidgetBridge.deepLink.scheme,
@@ -300,5 +307,12 @@ struct ScheduleDensityApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    /// 공유로 받아둔 할 일을 실제 줄로 만들고, 생겼으면 '할 일' 탭을 열어 보여준다.
+    /// 공유할 때 앱이 뜨지는 않으므로, 다음에 앱을 열었을 때 그 결과가 바로 보이는 게 맞다.
+    private func intakeSharedTodos() {
+        let added = TodoShareIntake.drain(into: todoContainer.mainContext)
+        if added > 0 { selectedTab = .todo }
     }
 }

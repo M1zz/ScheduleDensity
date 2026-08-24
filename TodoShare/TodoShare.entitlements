@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- 공유로 받은 할 일을 앱에 건네주는 '받은 상자'의 통로 (→ TodoShareInbox.swift).
+	     ⚠️ 앱 타깃(ScheduleDensityApp.entitlements)·위젯 타깃과 값이 반드시 같아야 한다. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.devkoan.ScheduleDensity</string>
+	</array>
+</dict>
+</plist>
