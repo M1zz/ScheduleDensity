@@ -38,6 +38,9 @@ struct TodoDetailView: View {
 
     private var tree: TodoTree { TodoTree(allItems) }
 
+    /// 단계 목록 맨 아래 빈 줄의 id — 키보드가 올라올 때 그 줄로 스크롤하기 위해.
+    private static let newRowID = "step.newRow"
+
     private var rows: [(item: BacklogItem, depth: Int)] {
         // 최상위 할 일 자체는 헤더가 보여주므로 목록에는 그 아래만 그린다.
         Array(tree.flattened(from: root).dropFirst())
@@ -52,15 +55,25 @@ struct TodoDetailView: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         List {
             Section { headerCard }
 
-            if rows.isEmpty {
-                emptyGuide
-            } else {
+            if !rows.isEmpty {
                 splitHintTip
-                stepsSection
+                shareSplitTip
             }
+            // 단계가 아직 없어도 이 섹션은 그린다 — 그 안의 빈 줄이 '첫 단계를 적는 자리'다.
+            stepsSection
+            // 뭘 적어야 할지 막막할 때만 뼈대를 권한다. 빈 줄 아래에 둔다.
+            if rows.isEmpty { templateSection }
+        }
+        .onChange(of: inputFocused) { _, focused in
+            if focused { scrollToNewRow(proxy) }
+        }
+        .onChange(of: rows.count) { _, _ in
+            if inputFocused { scrollToNewRow(proxy) }
+        }
         }
         .navigationTitle(root.title)
         .navigationBarTitleDisplayMode(.inline)
@@ -75,10 +88,16 @@ struct TodoDetailView: View {
                 .accessibilityLabel("단계 추가")
             }
         }
-        .scrollDismissesKeyboard(.immediately)
-        .safeAreaInset(edge: .bottom) { inputBar }
+        // 입력이 목록 안에 있으므로 스크롤로 키보드를 바로 내리면 적다가 끊긴다.
+        .scrollDismissesKeyboard(.interactively)
         .sheet(item: $editing) { item in
             StepEditSheet(item: item) { save() }
+        }
+    }
+
+    private func scrollToNewRow(_ proxy: ScrollViewProxy) {
+        withAnimation(.easeOut(duration: 0.2)) {
+            proxy.scrollTo(Self.newRowID, anchor: .bottom)
         }
     }
 
@@ -194,26 +213,10 @@ struct TodoDetailView: View {
         }
     }
 
-    // MARK: - 단계가 아직 없을 때
+    // MARK: - 단계가 아직 없을 때 (쪼개기 도우미)
 
     @ViewBuilder
-    private var emptyGuide: some View {
-        Section {
-            Button {
-                inputFocused = true
-            } label: {
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("첫 단계 추가하기", systemImage: "plus.circle.fill")
-                        .font(.body.weight(.medium))
-                    Text("이 일을 이루는 단계를 순서대로 적어보세요.\n단계들은 전체 \(formatDuration(tree.totalHours(of: root)))를 N분의 1로 나눠 갖습니다.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.vertical, 4)
-            }
-            .buttonStyle(.plain)
-        }
-
+    private var templateSection: some View {
         Section {
             ForEach(Array(TodoSplitAdvisor.template(for: root.title).enumerated()), id: \.offset) { _, step in
                 HStack(alignment: .top, spacing: 10) {
@@ -241,25 +244,35 @@ struct TodoDetailView: View {
 
     // MARK: - 단계 목록
 
-    private var stepsSection: some View {
-        let tree = self.tree
-        return Section {
-            // 비중이 어떻게 굴러가는지는 여기서 한 번만 설명한다.
-            if ShareSplitTip().shouldDisplay {
+    /// 비중이 어떻게 굴러가는지는 한 번만 설명한다.
+    /// 단계 섹션 밖에 둔다 — 적는 도중에 입력 줄 위로 행이 끼어들면 포커스가 풀린다.
+    @ViewBuilder
+    private var shareSplitTip: some View {
+        if ShareSplitTip().shouldDisplay {
+            Section {
                 TipView(ShareSplitTip())
-                    .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 8, trailing: 12))
+                    .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
+        }
+    }
 
+    private var stepsSection: some View {
+        let tree = self.tree
+        return Section {
             ForEach(rows, id: \.item.id) { row in
                 StepRow(item: row.item,
                         depth: row.depth,
                         percent: tree.weightInRoot(of: row.item),
+                        shareInParent: tree.weight(of: row.item),
                         isCurrent: row.item.dragToken == currentStepToken,
                         hasChildren: tree.hasChildren(row.item),
                         progress: tree.progress(of: row.item),
-                        onToggle: { toggle(row.item) })
+                        canAdjustShare: siblingCount(of: row.item) > 1,
+                        onToggle: { toggle(row.item) },
+                        onShareChange: { setShare(row.item, to: $0) },
+                        onReleaseManual: { releaseManual(row.item) })
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             remove(row.item)
@@ -284,24 +297,33 @@ struct TodoDetailView: View {
                     }
                     .contextMenu { rowMenu(row.item) }
             }
+
+            // 단계들 바로 아래 빈 줄. 여기에 적고 엔터를 치면 다음 줄로 이어진다.
+            newStepRow
         } header: {
             HStack {
-                Text("단계 · 합쳐서 100%")
+                Text(rows.isEmpty ? "단계" : "단계 · 합쳐서 100%")
                 Spacer()
-                Button {
-                    withAnimation {
-                        tree.splitEvenly(under: root)
-                        save()
+                if rows.count >= 2 {
+                    Button {
+                        withAnimation {
+                            tree.splitEvenly(under: root)
+                            save()
+                        }
+                    } label: {
+                        Label("N분의 1로", systemImage: "equal.square")
+                            .font(.caption)
                     }
-                } label: {
-                    Label("N분의 1로", systemImage: "equal.square")
-                        .font(.caption)
                 }
             }
         } footer: {
-            // 자물쇠 설명도 팁으로 — 실제로 하나 잠근 뒤에만 뜬다.
-            TipView(LockedShareTip())
-                .padding(.top, 6)
+            if rows.isEmpty {
+                Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요. 단계들은 전체 \(formatDuration(tree.totalHours(of: root)))를 N분의 1로 나눠 갖습니다.")
+            } else {
+                // 자물쇠 설명도 팁으로 — 실제로 하나 잠근 뒤에만 뜬다.
+                TipView(LockedShareTip())
+                    .padding(.top, 6)
+            }
         }
     }
 
@@ -326,94 +348,93 @@ struct TodoDetailView: View {
         return all.first { $0.tone == .caution } ?? all.first
     }
 
-    // MARK: - 단계 추가 입력 바
+    // MARK: - 단계 목록 맨 아래 빈 줄
+    //
+    // 하단 입력 바를 목록 안으로 들여왔다. 바에 적으면 '폼을 채워 제출하는' 느낌이고,
+    // 줄에 적으면 '단계를 한 줄씩 적어 내려가는' 느낌이 된다. 엔터를 치면 그 줄이
+    // 확정되고 빈 줄이 다시 와서 계속 이어 적을 수 있다.
 
-    private var inputBar: some View {
-        VStack(spacing: 0) {
-            if let target = addTarget, target.dragToken != root.dragToken {
-                HStack(spacing: 6) {
-                    Image(systemName: "arrow.turn.down.right").font(.caption2)
-                    Text("‘\(target.title)’ 아래에 추가")
-                        .font(.caption)
-                        .lineLimit(1)
-                    Spacer()
-                    Button {
-                        addTarget = nil
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .buttonStyle(.plain)
-                }
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-            }
-
-            if !newTitle.trimmingCharacters(in: .whitespaces).isEmpty {
-                labelPicker
-            }
-
-            HStack(spacing: 10) {
-                TextField("다음에 할 단계", text: $newTitle)
-                    .focused($inputFocused)
-                    .submitLabel(.done)
-                    .onSubmit(addStep)
-
-                Button(action: addStep) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 28))
-                }
-                .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-        }
-        .background(.bar)
+    /// 빈 줄이 놓일 깊이. 하위 단계를 적는 중이면 그 부모보다 한 칸 안쪽에 놓여,
+    /// 어디에 붙는 줄인지 들여쓰기만 보고도 안다.
+    private var newStepDepth: Int {
+        guard let addTarget else { return 1 }
+        return (rows.first { $0.item.dragToken == addTarget.dragToken }?.depth ?? 1) + 1
     }
 
-    /// 새 단계의 몫을 고르는 줄. 기본은 '자동' = 형제들과 N분의 1.
-    private var labelPicker: some View {
+    private var newStepRow: some View {
+        HStack(spacing: 10) {
+            if newStepDepth > 1 {
+                Rectangle()
+                    .fill(Color.secondary.opacity(0.25))
+                    .frame(width: 1)
+                    .padding(.leading, CGFloat(newStepDepth - 2) * 14)
+                    .padding(.vertical, 2)
+            }
+
+            Image(systemName: "circle.dashed")
+                .font(.system(size: 22))
+                .foregroundStyle(.tertiary)
+
+            TextField(addTarget == nil ? "세부 단계" : "‘\(addTarget!.title)’의 하위 단계",
+                      text: $newTitle)
+                .focused($inputFocused)
+                .submitLabel(.return)
+                .onSubmit(addStep)
+
+            newShareMenu
+
+            if addTarget != nil {
+                // 하위로 파고들었다가 다시 맨 바깥 단계로 돌아오는 길.
+                Button {
+                    addTarget = nil
+                } label: {
+                    Image(systemName: "arrow.turn.left.up")
+                        .font(.system(size: 13, weight: .semibold))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("맨 바깥 단계로")
+            }
+        }
+        .padding(.vertical, 2)
+        .id(Self.newRowID)
+    }
+
+    /// 이 단계가 부모의 몫에서 얼마를 떼어 갈지. 기본은 '자동' = 형제들과 N분의 1.
+    private var newShareMenu: some View {
         let parent = addTarget ?? root
         let evenShare = tree.totalHours(of: parent) / Double(tree.children(of: parent).count + 1)
 
-        return VStack(alignment: .leading, spacing: 6) {
-            Text(newLabel.map { "이 단계에 \(formatDuration($0.defaultHours))를 떼어 줍니다. 나머지 단계가 남은 몫을 나눠 가집니다." }
-                 ?? "자동으로 N분의 1 — 이 단계는 \(formatDuration(evenShare))쯤이 됩니다.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 16)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    Button {
-                        newLabel = nil
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "equal.square").font(.caption2)
-                            Text("자동 N분의 1").font(.caption.weight(.medium))
-                        }
-                        .foregroundStyle(newLabel == nil ? Color.white : Color.secondary)
-                        .padding(.horizontal, 10).padding(.vertical, 6)
-                        .background(Capsule().fill(newLabel == nil ? Color.accentColor : Color.secondary.opacity(0.12)))
-                    }
-                    .buttonStyle(.plain)
-
-                    ForEach(TodoLabel.allCases) { label in
-                        Button {
-                            newLabel = label
-                        } label: {
-                            TodoLabelChip(label: label,
-                                          hours: label.defaultHours,
-                                          isSelected: newLabel == label)
-                        }
-                        .buttonStyle(.plain)
-                    }
+        return Menu {
+            Button {
+                newLabel = nil
+            } label: {
+                Label("자동 N분의 1 · 약 \(formatDuration(evenShare))", systemImage: "equal.square")
+            }
+            Divider()
+            ForEach(TodoLabel.allCases) { label in
+                Button {
+                    newLabel = label
+                } label: {
+                    Label("\(label.name) · \(formatDuration(label.defaultHours))",
+                          systemImage: label.symbol)
                 }
-                .padding(.horizontal, 14)
-                .padding(.bottom, 2)
+            }
+        } label: {
+            if let newLabel {
+                TodoLabelChip(label: newLabel, hours: newLabel.defaultHours)
+            } else {
+                HStack(spacing: 4) {
+                    Image(systemName: "equal.square").font(.system(size: 10, weight: .semibold))
+                    Text(formatDuration(evenShare))
+                        .font(.caption.weight(.medium))
+                        .monospacedDigit()
+                }
+                .foregroundStyle(Color.secondary)
+                .padding(.horizontal, 9).padding(.vertical, 5)
+                .background(Capsule().fill(Color.secondary.opacity(0.13)))
             }
         }
-        .padding(.top, 8)
     }
 
     /// 쪼개기 도우미의 기본 뼈대를 그대로 단계로 만든다.
@@ -455,10 +476,7 @@ struct TodoDetailView: View {
         }
         if item.isManualWeight {
             Button {
-                withAnimation {
-                    tree.releaseManual(item)
-                    save()
-                }
+                releaseManual(item)
             } label: {
                 Label("자동 분배로 되돌리기", systemImage: "lock.open")
             }
@@ -497,9 +515,14 @@ struct TodoDetailView: View {
         }
     }
 
+    /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
+    /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
     private func addStep() {
         let title = newTitle.trimmingCharacters(in: .whitespaces)
-        guard !title.isEmpty else { return }
+        guard !title.isEmpty else {
+            inputFocused = false
+            return
+        }
         let parent = addTarget ?? root
 
         let step = TodoTree.makeStep(under: parent,
@@ -515,11 +538,37 @@ struct TodoDetailView: View {
         if updated.children(of: parent).count >= 2 { ShareSplitTip.hasSplit = true }
         // 새 단계는 아직 안 한 일이므로 부모가 완료 상태였다면 풀린다.
         updated.rollUp(from: step)
-        save()
+        withAnimation { save() }
 
         newTitle = ""
         newLabel = nil
+        // 팁이 뜨거나 섹션이 바뀌면서 포커스가 풀릴 수 있다. 다음 런루프에 다시 잡는다.
         inputFocused = true
+        DispatchQueue.main.async { inputFocused = true }
+    }
+
+    /// 이 단계가 형제 몇 명과 몫을 나누고 있는지 (자기 자신 포함).
+    private func siblingCount(of item: BacklogItem) -> Int {
+        let tree = self.tree
+        guard let parent = tree.parent(of: item) else { return 1 }
+        return tree.children(of: parent).count
+    }
+
+    /// 슬라이더로 정한 몫을 반영한다. 나머지 단계가 남은 몫을 다시 나눠 합계는 100%.
+    private func setShare(_ item: BacklogItem, to fraction: Double) {
+        withAnimation {
+            tree.setWeight(item, to: fraction)
+            LockedShareTip.hasLocked = true
+            save()
+        }
+    }
+
+    /// 직접 정해 둔 몫을 풀고 자동 N분의 1로 되돌린다.
+    private func releaseManual(_ item: BacklogItem) {
+        withAnimation {
+            tree.releaseManual(item)
+            save()
+        }
     }
 
     private func toggle(_ item: BacklogItem) {
@@ -569,12 +618,27 @@ struct TodoDetailView: View {
 private struct StepRow: View {
     let item: BacklogItem
     let depth: Int
-    /// 최상위 할 일 전체에서 이 단계가 차지하는 비중 (0...1).
+    /// 최상위 할 일 전체에서 이 단계가 차지하는 비중 (0...1). 오른쪽 큰 숫자.
     let percent: Double
+    /// 바로 위 단계(부모) 안에서 차지하는 몫 (0...1). 슬라이더가 만지는 값.
+    let shareInParent: Double
     let isCurrent: Bool
     let hasChildren: Bool
     let progress: Double
+    /// 형제가 있어야 몫을 주고받을 수 있다. 혼자면 언제나 100%라 만질 게 없다.
+    let canAdjustShare: Bool
     let onToggle: () -> Void
+    /// 슬라이더에서 손을 뗐을 때, 부모 안에서 차지할 몫(0...1).
+    let onShareChange: (Double) -> Void
+    /// 자물쇠를 눌러 자동 N분의 1로 되돌린다.
+    let onReleaseManual: () -> Void
+
+    /// 끄는 동안의 값(%). 손을 떼는 순간에만 반영한다 —
+    /// 매 틱마다 저장하면 형제들이 계속 다시 계산돼 손잡이가 튄다.
+    @State private var draft: Double?
+    /// 지금 손이 슬라이더에 닿아 있는지. 손을 뗀 뒤에도 마지막 값이 한 번 더
+    /// 흘러들어와 잔상이 남기 때문에, 끄는 동안이 아니면 값을 받지 않는다.
+    @State private var isDragging = false
 
     var body: some View {
         HStack(spacing: 10) {
@@ -603,9 +667,13 @@ private struct StepRow: View {
                 HStack(spacing: 6) {
                     TodoLabelChip(label: item.label, hours: item.durationHours)
                     if item.isManualWeight {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.tertiary)
+                        Button(action: onReleaseManual) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("자동 N분의 1로 되돌리기")
                     }
                 }
 
@@ -615,32 +683,61 @@ private struct StepRow: View {
                         .frame(maxWidth: 160)
                 }
 
+                if canAdjustShare { shareSlider }
             }
 
-            Spacer()
+            Spacer(minLength: 8)
 
             // 비중 — 이 화면에서 가장 크게 읽혀야 하는 숫자.
-            VStack(alignment: .trailing, spacing: 3) {
-                Text("\(percentText)%")
-                    .font(.callout.weight(.semibold))
-                    .monospacedDigit()
-                    .foregroundStyle(item.isCompleted ? .green : item.label.tint)
-                shareBar
-            }
+            Text("\(percentText)%")
+                .font(.callout.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(item.isCompleted ? .green : item.label.tint)
         }
         .padding(.vertical, 4)
         .listRowBackground(isCurrent ? Color.orange.opacity(0.08) : nil)
     }
 
-    /// 비중을 눈으로 보는 막대 — 숫자보다 이게 먼저 읽힌다.
-    private var shareBar: some View {
-        ZStack(alignment: .leading) {
-            Capsule()
-                .fill(Color.secondary.opacity(0.15))
-                .frame(width: 52, height: 5)
-            Capsule()
-                .fill(item.isCompleted ? Color.green : item.label.tint)
-                .frame(width: max(4, 52 * min(1, percent)), height: 5)
+    /// 몫을 손으로 줄이고 늘리는 자리. 여기서 뗀 만큼을 나머지 단계가 나눠 가져,
+    /// 부모 안의 합계는 언제나 100%로 남는다.
+    private var shareSlider: some View {
+        let live = draft ?? (shareInParent * 100).rounded()
+
+        return HStack(spacing: 8) {
+            Slider(
+                value: Binding(
+                    get: { live },
+                    set: { value in
+                        // 끄는 동안에만 받는다 (손 뗀 뒤 들어오는 마지막 값은 버린다).
+                        if isDragging { draft = value }
+                    }
+                ),
+                in: 5...100,
+                step: 5
+            ) { editing in
+                isDragging = editing
+                if editing {
+                    draft = (shareInParent * 100).rounded()
+                } else if let value = draft {
+                    // 손을 뗀 순간에만 실제 값이 된다.
+                    draft = nil
+                    onShareChange(value / 100)
+                }
+            }
+            .tint(item.isCompleted ? .green : item.label.tint)
+
+            // 끄는 동안만 숫자가 뜬다. 자리는 늘 비워 둬서 줄 길이가 흔들리지 않는다.
+            Text(draft.map { "\(Int($0))%" } ?? "")
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(item.label.tint)
+                .frame(width: 36, alignment: .trailing)
+        }
+        // 값이 실제로 바뀌면(내 조정이 반영됐거나 형제·N분의 1로 바뀌었거나)
+        // 끌던 값은 버리고 진짜 값을 따른다. 끄는 동안에는 이 값이 바뀌지 않는다 —
+        // 반영은 손을 뗀 뒤 한 번뿐이므로, 여기서 지우는 게 항상 맞다.
+        .onChange(of: shareInParent) { _, _ in
+            draft = nil
         }
     }
 

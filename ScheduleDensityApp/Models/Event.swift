@@ -134,6 +134,22 @@ final class Event {
         return endDate
     }
 
+    /// 이 날짜가 이 일정의 '기간 안'인지 — 시작일부터 종료일(=마감·공연일)까지.
+    ///
+    /// `occursOn`과 다르다. 바이올린 연습이 주 1회라도 공연이 두 달 뒤라면,
+    /// 그 두 달은 통째로 이 일정에 매여 있는 시간이다. 연습하는 날만 칠하면
+    /// 무지개에서 그 두 달이 비어 보여서, 실제로 짊어지고 있는 무게가 안 보인다.
+    /// 그래서 기간은 옅게 이어 칠하고, 실제로 하는 날(`occursOn`)만 진하게 칠한다.
+    ///
+    /// 요일·35일 패턴은 보지 않는다. 다만 '이 날짜만 제외'로 직접 뺀 날은 빼준다 —
+    /// 사용자가 손으로 지운 날까지 이어 칠하면 지운 뜻이 사라진다.
+    func spansOn(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let checkDate = calendar.startOfDay(for: date)
+        guard checkDate >= startDate && checkDate <= effectiveEndDate() else { return false }
+        return !excludedDates.contains(checkDate)
+    }
+
     // 특정 날짜에 이 이벤트가 진행 중인지 확인
     func occursOn(date: Date) -> Bool {
         let calendar = Calendar.current

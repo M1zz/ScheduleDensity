@@ -115,6 +115,11 @@ class ScheduleViewModel {
     // 설정: Mac '무지개 공방(WeekBlocks)' 계획을 밀도에 합쳐 표시할지 (읽기 전용)
     var showWeekBlocksPlans: Bool
 
+    // 설정: 종료일까지 이어서 칠할지.
+    // 주 1회 연습이라도 두 달 뒤 공연이면 그 두 달은 이 일에 매여 있는 시간이다.
+    // 켜면 기간 전체를 옅게 깔고, 실제로 하는 날만 진하게 남긴다. (기본 켜짐)
+    var fillSpanToEndDate: Bool
+
     // WeekBlocks(macOS) 계획을 같은 iCloud에서 읽어 시각화용 Event로 변환하는 스토어.
     // 할 일 탭에서 '오늘로 배정'할 때도 같은 인스턴스에 쓴다(컨테이너 중복 생성 금지).
     private let weekBlocksStore = WeekBlocksStore.shared
@@ -167,6 +172,13 @@ class ScheduleViewModel {
             showWeekBlocksPlans = true
         } else {
             showWeekBlocksPlans = UserDefaults.standard.bool(forKey: "showWeekBlocksPlans")
+        }
+
+        // 종료일까지 이어 칠하기 로드 (기본값: true - 켜짐). 키가 없으면 true.
+        if UserDefaults.standard.object(forKey: "fillSpanToEndDate") == nil {
+            fillSpanToEndDate = true
+        } else {
+            fillSpanToEndDate = UserDefaults.standard.bool(forKey: "fillSpanToEndDate")
         }
 
         // 설정에 따라 날짜 범위 업데이트
@@ -255,11 +267,16 @@ class ScheduleViewModel {
         dataRefreshTrigger = UUID()
     }
 
+    func updateFillSpanToEndDate(_ fill: Bool) {
+        fillSpanToEndDate = fill
+        UserDefaults.standard.set(fillSpanToEndDate, forKey: "fillSpanToEndDate")
+        dataRefreshTrigger = UUID()
+    }
+
     /// Mac WeekBlocks 계획 → 시각화용 Event(메모리 전용). dataRefreshTrigger 기준 캐시.
     private func weekBlocksEvents() -> [Event] {
         guard showWeekBlocksPlans else { return [] }
         if weekBlocksCacheToken == dataRefreshTrigger { return weekBlocksCache }
-        // 고정 루틴이 오늘 이전(가시 범위의 과거)에도 보이도록 표시 범위 전체를 넘긴다.
         weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache

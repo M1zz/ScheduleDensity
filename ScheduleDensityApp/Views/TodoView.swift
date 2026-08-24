@@ -34,8 +34,9 @@ struct TodoView: View {
     @State private var assignedToday: Set<String> = []
     @State private var newTitle = ""
     @State private var newCategoryID: String? = nil
-    /// 적으면서 고르는 라벨. 고르기 전에는 추가할 수 없다 — 예상 시간을 반드시 받기 위해서.
-    @State private var newLabel: TodoLabel? = nil
+    /// 빈 줄에 지금 적히면 붙을 라벨(=예상 시간). 고르지 않아도 지난번 값이 그대로 따라와서,
+    /// 적고 엔터만 쳐도 한 줄이 확정된다. 예상 시간은 여전히 모든 할 일이 갖는다.
+    @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.sit.rawValue
     /// 목록에서 한 종류만 보고 싶을 때. nil이면 전체.
     @State private var filterLabel: TodoLabel? = nil
     @State private var showingFamilyShareNotice = false
@@ -43,6 +44,9 @@ struct TodoView: View {
 
     private let cal = Calendar(identifier: .iso8601)
     private var weekStart: Date { .currentWeekStart }
+
+    /// 목록 맨 아래 빈 줄의 id — 키보드가 올라올 때 그 줄로 스크롤하기 위해.
+    private static let newRowID = "todo.newRow"
 
     // 목록에는 최상위 할 일만 줄로 세운다. 그 안의 단계는 줄 하나 안에서
     // '지금 할 일'로 접혀 보이고, 전체 흐름은 TodoDetailView에서 본다.
@@ -75,21 +79,43 @@ struct TodoView: View {
             .filter { matchesFilter($0, tree) }
     }
 
+    /// 공유가 실제로 있을 때만 '공유'를 보여준다.
+    /// 공유를 시작하지도, 받은 항목도 없으면 빈 목록 한 칸만 남으므로
+    /// 세그먼트째로 감추고 '내 할 일'만 쓴다. 초대 링크로 참여하거나
+    /// 공유를 시작하면 그 즉시 다시 나타난다.
+    private var showsFamilyTab: Bool {
+        family.isSharing || !family.items.isEmpty
+    }
+
+    /// 공유가 감춰진 동안에는 어떤 상태가 남아 있어도 '내 할 일'로 본다.
+    private var visibleTab: Tab {
+        showsFamilyTab ? tab : .mine
+    }
+
     var body: some View {
         NavigationStack {
             Group {
-                switch tab {
+                switch visibleTab {
                 case .mine: myList
                 case .family: familyList
                 }
             }
-            .navigationTitle(tab == .mine ? "이번 주 할 일" : "공유 할 일")
+            .navigationTitle(visibleTab == .mine ? "이번 주 할 일" : "공유 할 일")
             // 세그먼트를 바 아래로 내리면서 제목도 인라인으로 바꾼다.
             // 큰 제목을 그대로 두면 세그먼트 뒤에 깔려 위쪽에 빈 띠만 남는다.
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if tab == .family {
+                if visibleTab == .family {
                     ToolbarItem(placement: .topBarTrailing) { familyShareMenu }
+                }
+                // 목록이 길 때 맨 아래 빈 줄까지 스크롤하지 않아도 되도록.
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        inputFocused = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                    .accessibilityLabel("할 일 추가")
                 }
             }
             // 세그먼트를 네비게이션 바(.principal) 대신 그 아래에 둔다.
@@ -97,7 +123,6 @@ struct TodoView: View {
             // 공유 탭에서만 나타나는 공유 버튼 때문에 그때만 왼쪽으로 밀렸다.
             // 툴바 밖에 두면 두 탭 모두 항상 화면 정중앙이다.
             .safeAreaInset(edge: .top, spacing: 0) { tabPicker }
-            .safeAreaInset(edge: .bottom) { inputBar }
         }
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
@@ -114,6 +139,14 @@ struct TodoView: View {
             await family.refresh()
         }
         .onChange(of: allItems.count) { _, _ in refreshTipRules() }
+        // 공유를 중지하거나 나가면 세그먼트가 사라지므로 선택도 '내 할 일'로 되돌린다.
+        .onChange(of: showsFamilyTab) { _, shows in
+            if !shows { tab = .mine }
+        }
+        // '지금 바로'만 보다가 하나 더 적으면 그것도 '지금 바로'인 게 자연스럽다.
+        .onChange(of: filterLabel) { _, label in
+            if let label { newLabelRaw = label.rawValue }
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
@@ -128,18 +161,21 @@ struct TodoView: View {
         }
     }
 
+    @ViewBuilder
     private var tabPicker: some View {
-        Picker("목록", selection: $tab) {
-            ForEach(Tab.allCases) { t in
-                Text(t.rawValue).tag(t)
+        if showsFamilyTab {
+            Picker("목록", selection: $tab) {
+                ForEach(Tab.allCases) { t in
+                    Text(t.rawValue).tag(t)
+                }
             }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: 240)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
+            .background(.bar)
         }
-        .pickerStyle(.segmented)
-        .frame(maxWidth: 240)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity)
-        .background(.bar)
     }
 
     // MARK: - 내 할 일
@@ -150,7 +186,8 @@ struct TodoView: View {
         let open = openItems(tree)
         let done = doneItems(tree)
 
-        return List {
+        return ScrollViewReader { proxy in
+        List {
             if hasAnyItem {
                 if FragmentFilterTip().shouldDisplay {
                     TipView(FragmentFilterTip())
@@ -201,9 +238,16 @@ struct TodoView: View {
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
                 .onDelete { delete(open, at: $0, tree: tree) }
+
+                // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
+                newTodoRow
             } header: {
                 if !open.isEmpty {
                     Text("이번 주 · \(open.count)개 · \(formatDuration(open.reduce(0) { $0 + tree.totalHours(of: $1) }))")
+                }
+            } footer: {
+                if !hasAnyItem {
+                    Text("위 빈 줄에 바로 적으면 이번 주 할 일이 됩니다. 엔터를 치면 한 줄이 확정되고 빈 줄이 다시 옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
                 }
             }
 
@@ -221,33 +265,41 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
-        // 키보드는 스크롤로 내린다. 여기에 TapGesture를 걸면 행의 NavigationLink가
-        // 그 제스처에 먹혀 상세(단계) 화면으로 들어가지 못한다.
-        .scrollDismissesKeyboard(.immediately)
+        // 입력이 목록 안에 있으므로 스크롤로 키보드를 바로 내리면 적다가 끊긴다.
+        // 손가락을 따라 내려가게 두고, 다 적었으면 빈 줄에서 엔터로 닫는다.
+        .scrollDismissesKeyboard(.interactively)
+        // 키보드가 올라오거나 한 줄이 확정되면 빈 줄이 계속 보이게 따라간다.
+        .onChange(of: inputFocused) { _, focused in
+            if focused { scrollToNewRow(proxy) }
+        }
+        .onChange(of: allItems.count) { _, _ in
+            if inputFocused { scrollToNewRow(proxy) }
+        }
         .overlay {
-            if open.isEmpty && done.isEmpty && carryover.isEmpty {
-                if let filterLabel {
-                    ContentUnavailableView(
-                        "‘\(filterLabel.name)’인 일이 없습니다",
-                        systemImage: filterLabel.symbol,
-                        description: Text("위 라벨에서 ‘전체’를 누르면 다시 다 보입니다.")
-                    )
-                    .allowsHitTesting(false)
-                } else {
-                    ContentUnavailableView(
-                        "할 일이 없습니다",
-                        systemImage: "checklist",
-                        description: Text("아래 입력창에 할 일을 추가하세요.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
-                    )
-                    .allowsHitTesting(false)
-                }
+            // '할 일이 없습니다'는 더 이상 띄우지 않는다 — 빈 줄 자체가 적으라는 자리다.
+            // 걸러서 아무것도 없을 때만, 필터를 풀라고 알려준다.
+            if let filterLabel, open.isEmpty && done.isEmpty && carryover.isEmpty {
+                ContentUnavailableView(
+                    "‘\(filterLabel.name)’인 일이 없습니다",
+                    systemImage: filterLabel.symbol,
+                    description: Text("위 라벨에서 ‘전체’를 누르면 다시 다 보입니다.")
+                )
+                .allowsHitTesting(false)
             }
+        }
+        }
+    }
+
+    private func scrollToNewRow(_ proxy: ScrollViewProxy) {
+        withAnimation(.easeOut(duration: 0.2)) {
+            proxy.scrollTo(Self.newRowID, anchor: .bottom)
         }
     }
 
     // MARK: - 공유 할 일
 
     private var familyList: some View {
+        ScrollViewReader { proxy in
         List {
             if let message = family.errorMessage {
                 Section {
@@ -269,6 +321,10 @@ struct TodoView: View {
                 .onDelete { offsets in
                     let victims = offsets.map { open[$0] }
                     Task { for v in victims { await family.delete(v) } }
+                }
+
+                if family.isSharing || !family.items.isEmpty {
+                    newTodoRow
                 }
             } header: {
                 if !open.isEmpty { Text("할 일 · \(open.count)개") }
@@ -293,11 +349,16 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .scrollDismissesKeyboard(.immediately)
-        .simultaneousGesture(TapGesture().onEnded { inputFocused = false })
+        .scrollDismissesKeyboard(.interactively)
+        .onChange(of: inputFocused) { _, focused in
+            if focused { scrollToNewRow(proxy) }
+        }
+        .onChange(of: family.items.count) { _, _ in
+            if inputFocused { scrollToNewRow(proxy) }
+        }
         .refreshable { await family.refresh() }
         .overlay {
-            if family.items.isEmpty {
+            if family.items.isEmpty && !family.isSharing {
                 if !family.iCloudAvailable {
                     ContentUnavailableView(
                         "iCloud 로그인이 필요합니다",
@@ -308,15 +369,14 @@ struct TodoView: View {
                     ProgressView()
                 } else {
                     ContentUnavailableView(
-                        "공유 할 일이 없습니다",
+                        "아직 함께 보는 목록이 없습니다",
                         systemImage: "person.2",
-                        description: Text(family.isSharing
-                                          ? "아래 입력창에 할 일을 추가하세요."
-                                          : "오른쪽 위 공유 버튼으로 함께할 사람을 초대하거나,\n상대가 보낸 초대 링크를 눌러 참여하세요.")
+                        description: Text("오른쪽 위 공유 버튼으로 함께할 사람을 초대하거나,\n상대가 보낸 초대 링크를 눌러 참여하세요.")
                     )
                     .allowsHitTesting(false)
                 }
             }
+        }
         }
     }
 
@@ -358,81 +418,64 @@ struct TodoView: View {
         .disabled(!family.iCloudAvailable)
     }
 
-    // MARK: - 입력 바
+    // MARK: - 목록 맨 아래 빈 줄
+    //
+    // 입력을 하단 바에서 목록 안으로 들여왔다. 바에 적으면 '폼을 채워 제출하는' 느낌이고,
+    // 줄에 적으면 '목록에 한 줄 더 얹는' 느낌이 된다. 엔터를 치면 그 줄이 확정되고
+    // 빈 줄이 다시 와서 계속 이어 적을 수 있다. 빈 줄에서 엔터를 치면 다 적었다고 보고
+    // 키보드를 내린다.
 
-    private var inputBar: some View {
-        VStack(spacing: 0) {
-            // 라벨을 고르는 순간 예상 시간도 함께 정해진다.
-            // 시간을 따로 묻지 않고도 모든 할 일이 시간을 갖게 하는 자리다.
-            if tab == .mine && !newTitle.trimmingCharacters(in: .whitespaces).isEmpty {
-                labelPicker
-            }
+    private var newTodoRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "circle.dashed")
+                .font(.system(size: 22))
+                .foregroundStyle(.tertiary)
 
-            HStack(spacing: 10) {
-                if tab == .mine {
-                    newCategoryMenu
-                } else {
-                    Image(systemName: "person.2")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.secondary)
-                        .frame(width: 30, height: 30)
-                        .background(Circle().fill(Color.secondary.opacity(0.15)))
-                }
+            TextField(tab == .mine ? "할 일 추가" : "공유 할 일 추가", text: $newTitle)
+                .focused($inputFocused)
+                .submitLabel(.return)
+                .onSubmit(add)
 
-                TextField(tab == .mine ? "할 일 추가" : "공유 할 일 추가", text: $newTitle)
-                    .focused($inputFocused)
-                    .submitLabel(.done)
-                    .onSubmit(add)
-
-                Button(action: add) {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.system(size: 28))
-                }
-                .disabled(!canAdd)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-        }
-        .background(.bar)
-    }
-
-    /// 제목만으로는 추가할 수 없다 — 얼마나 걸릴 일인지(라벨)를 반드시 고르게 한다.
-    private var canAdd: Bool {
-        guard !newTitle.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
-        return tab == .family || newLabel != nil
-    }
-
-    /// 라벨 고르기 줄. 고르기 전에는 왜 골라야 하는지 한 줄로 말해준다.
-    private var labelPicker: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // 처음 쓰는 사람에게만 한 번. 닫으면 다시 안 뜬다.
-            TipView(LabelPickTip())
-                .padding(.horizontal, 14)
-
-            Text(newLabel.map(\.hint) ?? "얼마나 걸릴 일인가요?")
-                .font(.caption)
-                .foregroundStyle(newLabel == nil ? Color.orange : Color.secondary)
-                .padding(.horizontal, 16)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(TodoLabel.allCases) { label in
-                        Button {
-                            newLabel = label
-                            LabelPickTip.hasPicked = true
-                        } label: {
-                            TodoLabelChip(label: label,
-                                          hours: label.defaultHours,
-                                          isSelected: newLabel == label)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 14)
-                .padding(.bottom, 2)
+            if tab == .mine {
+                // 분류를 만들어 둔 사람에게만 보여준다 — 안 쓰는 사람의 줄까지 복잡해지지 않게.
+                if !categories.isEmpty { newCategoryMenu }
+                newLabelMenu
             }
         }
-        .padding(.top, 8)
+        .padding(.vertical, 2)
+        .id(Self.newRowID)
+    }
+
+    /// 이 줄이 얼마짜리 일인지. 라벨이 곧 예상 시간이고, 그게 이 할 일의 100%가 된다.
+    /// 손대지 않으면 지난번에 고른 값이 그대로 따라오므로, 적고 엔터만 쳐도 추가된다.
+    @ViewBuilder
+    private var newLabelMenu: some View {
+        // 처음 쓰는 사람에게만 한 번, 적기 시작한 뒤에 이 칩이 무엇인지 알려준다.
+        // 빈 줄에 그냥 두면 앱을 켜자마자 아무것도 안 했는데 설명부터 받는 꼴이 된다.
+        if newTitle.isEmpty {
+            labelMenu
+        } else {
+            labelMenu.popoverTip(LabelPickTip())
+        }
+    }
+
+    private var labelMenu: some View {
+        Menu {
+            Picker("얼마나 걸릴 일인가요?", selection: $newLabelRaw) {
+                ForEach(TodoLabel.allCases) { label in
+                    Label("\(label.name) · \(formatDuration(label.defaultHours))",
+                          systemImage: label.symbol)
+                        .tag(label.rawValue)
+                }
+            }
+        } label: {
+            TodoLabelChip(label: draftLabel, hours: draftLabel.defaultHours)
+        }
+    }
+
+    /// 지금 빈 줄에 적히면 붙을 라벨.
+    private var draftLabel: TodoLabel {
+        TodoLabel(rawValue: newLabelRaw) ?? .sit
     }
 
     /// 라벨로 목록을 걸러 보는 줄 — "지금 10분 났는데 뭐 하지"에 답하는 자리.
@@ -480,9 +523,9 @@ struct TodoView: View {
             }
         } label: {
             Image(systemName: current?.iconName ?? "tag")
-                .font(.system(size: 16))
+                .font(.system(size: 13))
                 .foregroundStyle(current?.displayColor ?? Color.secondary)
-                .frame(width: 30, height: 30)
+                .frame(width: 26, height: 26)
                 .background(Circle().fill((current?.displayColor ?? Color.secondary).opacity(0.15)))
         }
     }
@@ -560,27 +603,38 @@ struct TodoView: View {
         TodoTree(allItems).roots.contains { !$0.isCompleted && $0.weekStartDate <= weekStart }
     }
 
+    /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
+    /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
     private func add() {
         let title = newTitle.trimmingCharacters(in: .whitespaces)
-        guard !title.isEmpty else { return }
+        guard !title.isEmpty else {
+            inputFocused = false
+            return
+        }
 
         if tab == .family {
             Task { await family.add(title: title) }
         } else {
             // 라벨 = 예상 시간. 이 시간이 이 할 일의 100%가 되고,
             // 안에서 단계를 나누면 단계들이 이 시간을 나눠 갖는다.
-            guard let label = newLabel else { return }
+            let label = draftLabel
             let maxIndex = allItems.map(\.sortIndex).max() ?? -1
-            context.insert(BacklogItem(title: title,
-                                       durationHours: label.defaultHours,
-                                       sortIndex: maxIndex + 1,
-                                       categoryID: newCategoryID,
-                                       weekStartDate: weekStart,
-                                       label: label))
-            save()
+            withAnimation {
+                context.insert(BacklogItem(title: title,
+                                           durationHours: label.defaultHours,
+                                           sortIndex: maxIndex + 1,
+                                           categoryID: newCategoryID,
+                                           weekStartDate: weekStart,
+                                           label: label))
+                save()
+            }
+            LabelPickTip.hasPicked = true
         }
         newTitle = ""
+        // 팁·필터 줄이 나타나며 목록이 다시 그려지면 포커스가 풀릴 수 있다.
+        // 다음 런루프에 다시 잡아, 이어서 계속 적을 수 있게 한다.
         inputFocused = true
+        DispatchQueue.main.async { inputFocused = true }
     }
 
     /// 탭 = 지금 할 일 하나를 끝낸다. 단계가 있으면 다음 단계로 넘어가고,

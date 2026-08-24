@@ -643,7 +643,8 @@ struct DateRow: View {
 
             // 오른쪽: 레인 1~7 셀들
             ForEach(1...maxLanes, id: \.self) { laneNumber in
-                let event = getEventForLane(laneNumber: laneNumber)
+                let slot = getEventForLane(laneNumber: laneNumber)
+                let event = slot?.event
                 let isActive = event != nil
                 // 이 셀이 드래그 선택되었는지: 날짜가 선택되었고 && 레인이 일치해야 함
                 let isDraggedCell = draggedDates.contains(Calendar.current.startOfDay(for: dayData.date)) &&
@@ -653,6 +654,8 @@ struct DateRow: View {
                     dayData: dayData,
                     event: event,
                     isActive: isActive,
+                    // 오늘 실제로 하는 날인지. 아니면 종료일까지 이어지는 구간이라 옅게 칠한다.
+                    isOccurring: slot?.isOccurring ?? false,
                     isToday: isToday,
                     laneNumber: laneNumber,
                     viewModel: viewModel,
@@ -680,16 +683,26 @@ struct DateRow: View {
         Divider()
     }
 
-    // 이 레인에 해당하는 일정 찾기
-    private func getEventForLane(laneNumber: Int) -> Event? {
+    // 이 레인에 해당하는 일정 찾기.
+    // 실제로 하는 날이 먼저다 — 한 레인을 여러 일정이 번갈아 쓰는(gap filling) 경우,
+    // 진한 칸이 옅은 칸에 밀리면 안 되기 때문.
+    private func getEventForLane(laneNumber: Int) -> (event: Event, isOccurring: Bool)? {
         let laneIndex = laneNumber - 1
 
-        // 이 날짜에 활성화된 이벤트들 중에서
-        // 해당 레인에 할당된 이벤트 찾기
+        // ① 이 날짜에 실제로 하는 일정 (진하게)
         for event in dayData.events {
             if let assignedLane = viewModel.eventLaneAssignments[event.laneKey],
                assignedLane == laneIndex {
-                return event
+                return (event, true)
+            }
+        }
+
+        // ② 하는 날은 아니지만 종료일까지 기간 안인 일정 (옅게)
+        guard viewModel.fillSpanToEndDate else { return nil }
+        for event in dayData.spanEvents {
+            if let assignedLane = viewModel.eventLaneAssignments[event.laneKey],
+               assignedLane == laneIndex {
+                return (event, false)
             }
         }
 
@@ -715,6 +728,8 @@ struct GridCell: View {
     let dayData: DayDensity
     let event: Event?
     let isActive: Bool
+    /// 이 날짜에 실제로 하는 일인지. false면 종료일까지 이어지는 기간 칸(옅게).
+    let isOccurring: Bool
     let isToday: Bool
     let laneNumber: Int
     @Bindable var viewModel: ScheduleViewModel
@@ -757,17 +772,26 @@ struct GridCell: View {
                 // 색상 변형 적용
                 let variantColor = baseLaneColor.variant(index: eventIndex, totalVariants: totalEventsInLane)
 
-                // 구멍에 들어간 일정인지 확인
-                let isInGap = checkIfInGap(event: event, date: checkDate, lane: laneNumber - 1)
+                if isOccurring {
+                    // 구멍에 들어간 일정인지 확인
+                    let isInGap = checkIfInGap(event: event, date: checkDate, lane: laneNumber - 1)
 
-                EventLaneBlock(
-                    isActive: true,
-                    isStart: isStart,
-                    isEnd: isEnd,
-                    variantColor: variantColor,
-                    isInGap: isInGap
-                )
-                .padding(2)
+                    EventLaneBlock(
+                        isActive: true,
+                        isStart: isStart,
+                        isEnd: isEnd,
+                        variantColor: variantColor,
+                        isInGap: isInGap
+                    )
+                    .padding(2)
+                } else {
+                    SpanFillBlock(
+                        color: variantColor,
+                        isStart: isStart,
+                        isEnd: isEnd
+                    )
+                    .padding(2)
+                }
             }
         }
         .overlay(
@@ -1151,6 +1175,28 @@ struct EventLaneBlock: View {
                 }
             }
         }
+    }
+}
+
+/// 종료일까지 이어지는 기간을 옅게 채우는 칸.
+///
+/// 주 1회 연습이라도 두 달 뒤 공연이면 그 두 달은 이 일에 매여 있다.
+/// 그 사실이 무지개에서 통째로 비어 보이지 않도록 깔아 두되,
+/// 실제로 하는 날(`EventLaneBlock`)보다 훨씬 옅게 해서 진한 칸이 먼저 읽히게 한다.
+struct SpanFillBlock: View {
+    let color: Color
+    /// 기간의 첫 날 / 마지막 날이면 그 쪽만 둥글게 — 위아래로 한 덩어리처럼 이어 보이게.
+    let isStart: Bool
+    let isEnd: Bool
+
+    var body: some View {
+        UnevenRoundedRectangle(
+            topLeadingRadius: isStart ? 4 : 0,
+            bottomLeadingRadius: isEnd ? 4 : 0,
+            bottomTrailingRadius: isEnd ? 4 : 0,
+            topTrailingRadius: isStart ? 4 : 0
+        )
+        .fill(color.opacity(0.20))
     }
 }
 

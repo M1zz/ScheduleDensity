@@ -231,7 +231,7 @@ final class WeekBlocksStore {
     }
 
     /// WeekBlocks 계획 → 밀도 시각화용 Event 배열(메모리 전용).
-    /// 고정 루틴은 가시 범위(rangeStart~rangeEnd) **전체**에 펼친다 — 오늘 이전 날짜도 포함.
+    /// **루틴은 종류를 가리지 않고 전부 제외**하고, 계획 블록만 넘긴다.
     /// 컨테이너가 없거나 데이터가 비어 있으면 빈 배열.
     func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
         guard let container else {
@@ -240,32 +240,22 @@ final class WeekBlocksStore {
         }
         let context = ModelContext(container)
 
-        // 루틴은 referenceDate(=rangeStart)부터 weeks 만큼 앞으로 펼쳐지므로,
-        // 가시 범위를 모두 덮도록 시작을 rangeStart(과거)로 두고 주 수를 범위에 맞춘다.
-        let cal = Calendar.current
-        let spanDays = (cal.dateComponents([.day], from: rangeStart, to: rangeEnd).day ?? 56)
-        let weeks = max(1, Int(ceil(Double(spanDays) / 7.0)) + 1)
-        let referenceDate = rangeStart
-
         let routines = (try? context.fetch(FetchDescriptor<Routine>())) ?? []
         let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
 
         // 어디서 비는지 한 줄로 판별하기 위한 계측:
         //  - 0/0 이면 미러가 아직 안 내려왔거나(첫 동기화 대기) CloudKit 환경/계정이 다른 것.
         //  - 값이 있는데 화면이 비면 아래 withinRoutine 필터나 날짜 범위 문제.
-        print("📥 [WeekBlocks] 미러 조회: routines=\(routines.count), blocks=\(blocks.count), "
-              + "범위=\(rangeStart)~\(rangeEnd)")
+        print("📥 [WeekBlocks] 미러 조회: routines=\(routines.count)(전부 무지개에서 제외), "
+              + "blocks=\(blocks.count), 범위=\(rangeStart)~\(rangeEnd)")
 
-        let routineInputs: [WBRoutineInput] = routines.map { r in
-            WBRoutineInput(
-                name: r.name,
-                kind: r.kind == .fixed ? .fixed : .quota,
-                colorName: r.colorName,
-                weekdaysMonZero: r.selectedDays.map(\.rawValue).sorted(),
-                durationHours: r.durationHours,
-                weeklyHours: r.weeklyHours
-            )
-        }
+        // 루틴은 종류를 가리지 않고 전부 무지개에서 뺀다.
+        //  - 고정(수면·운동 등): 매주 같은 자리에 똑같이 깔린다.
+        //  - 쿼터(식사 등): 시각이 유연해서 7일 평균 부하 밴드로 온 요일에 깔린다.
+        // 어느 쪽이든 매일 똑같이 바닥에 깔려, 정작 봐야 할 '이번 주에 정한 일'의 밀도를 덮는다.
+        // 맥 '무지개 공방' 타임라인에는 그대로 남는다 — iOS 무지개에서만 걸러낸다.
+        // (어댑터의 루틴 변환은 그대로 두고 여기서 안 넘기기만 한다 — 되살리기 쉽게.)
+        let routineInputs: [WBRoutineInput] = []
 
         let blockInputs: [WBBlockInput] = blocks.compactMap { b in
             // '루틴 안' 일정은 자유시간을 추가 소비하지 않으므로 밀도에서 제외.
@@ -281,13 +271,14 @@ final class WeekBlocksStore {
         let visual = WeekBlocksAdapter.makeVisualEvents(
             routines: routineInputs,
             blocks: blockInputs,
-            referenceDate: referenceDate,
-            weeks: weeks
+            // 루틴을 안 넘기므로 반복을 펼칠 기준일·주 수는 결과에 영향이 없다.
+            referenceDate: rangeStart,
+            weeks: 1
         )
 
         let skippedWithinRoutine = blocks.count - blockInputs.count
         print("🧮 [WeekBlocks] 변환 결과: 시각화 이벤트=\(visual.count) "
-              + "(루틴 밖 일정=\(blockInputs.count), '루틴 안'이라 제외=\(skippedWithinRoutine), weeks=\(weeks))")
+              + "(루틴 밖 일정=\(blockInputs.count), '루틴 안'이라 제외=\(skippedWithinRoutine))")
 
         // WBVisualEvent → Event (insert 금지, 시각화 입력용 임시 객체)
         return visual.map { v in

@@ -18,6 +18,7 @@ struct SettingsView: View {
     @State private var sleepHours: Double
     @State private var showPastEvents: Bool
     @State private var showWeekBlocksPlans: Bool
+    @State private var fillSpanToEndDate: Bool
     @State private var isSyncEnabled: Bool
     @State private var showingSyncAlert = false
     @State private var syncAlertTitle = ""
@@ -48,6 +49,7 @@ struct SettingsView: View {
         _sleepHours = State(initialValue: viewModel.sleepHoursPerDay)
         _showPastEvents = State(initialValue: viewModel.showPastEvents)
         _showWeekBlocksPlans = State(initialValue: viewModel.showWeekBlocksPlans)
+        _fillSpanToEndDate = State(initialValue: viewModel.fillSpanToEndDate)
         _isSyncEnabled = State(initialValue: SyncSettingsManager.shared.isSyncEnabled)
     }
 
@@ -223,7 +225,23 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("무지개 공방 계획 표시")
                                     .font(.headline)
-                                Text("Mac에서 짠 주간 계획을 밀도에 함께 표시 (읽기 전용)")
+                                Text("Mac에서 짠 주간 계획 블록을 밀도에 함께 표시 (읽기 전용).\n루틴(고정·쿼터)은 매일 그대로 깔리므로 그리지 않습니다.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    // 종료일까지 이어 칠하기 토글
+                    Toggle(isOn: $fillSpanToEndDate) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "arrow.down.to.line")
+                                .foregroundColor(fillSpanToEndDate ? .blue : .secondary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("종료일까지 이어서 표시")
+                                    .font(.headline)
+                                Text("주 1회 연습이라도 두 달 뒤 공연이면 그 두 달이 매여 있는 시간입니다.\n기간 전체를 옅게 깔고, 실제로 하는 날만 진하게 표시합니다.")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -638,6 +656,7 @@ struct SettingsView: View {
         viewModel.updateSleepHours(sleepHours)
         viewModel.updateShowPastEvents(showPastEvents)
         viewModel.updateShowWeekBlocksPlans(showWeekBlocksPlans)
+        viewModel.updateFillSpanToEndDate(fillSpanToEndDate)
         dismiss()
     }
 

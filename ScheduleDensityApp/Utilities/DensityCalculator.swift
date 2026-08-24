@@ -12,6 +12,10 @@ struct DayDensity: Identifiable, Equatable {
     let date: Date
     let density: Int // 해당 날짜에 동시에 진행되는 이벤트 개수
     let events: [Event] // 해당 날짜에 진행되는 이벤트들
+    /// 오늘 하는 날은 아니지만 **기간 안**인 이벤트들 (시작일~종료일 사이).
+    /// 무지개에서 종료일까지 옅게 이어 칠하는 데 쓴다. 밀도(density)에는 넣지 않는다 —
+    /// 그날 실제로 손을 쓰는 양이 아니기 때문에 통계·추천이 부풀면 안 된다.
+    let spanEvents: [Event]
 
     /// 날짜(자정 정규화) 기반 고정 id.
     /// UUID를 쓰면 새로고침 때마다 행 identity가 바뀌어 스크롤 위치가 리셋되고
@@ -19,7 +23,9 @@ struct DayDensity: Identifiable, Equatable {
     var id: Date { date }
 
     static func == (lhs: DayDensity, rhs: DayDensity) -> Bool {
-        lhs.date == rhs.date && lhs.density == rhs.density
+        lhs.date == rhs.date
+            && lhs.density == rhs.density
+            && lhs.spanEvents.count == rhs.spanEvents.count
     }
 }
 
@@ -33,6 +39,11 @@ class DensityCalculator {
         // 해당 날짜에 진행 중인 이벤트들 찾기
         let activeEvents = events.filter { $0.occursOn(date: checkDate) }
 
+        // 하는 날은 아니지만 기간 안인 것들 (시작일 순으로 고정 — 레인 칠이 흔들리지 않게).
+        let spanningEvents = events
+            .filter { $0.spansOn(date: checkDate) && !$0.occursOn(date: checkDate) }
+            .sorted { $0.startDate < $1.startDate }
+
         // 디버그: 중복 확인
         let uniqueColors = Set(activeEvents.map { $0.color })
         if activeEvents.count != uniqueColors.count {
@@ -45,7 +56,8 @@ class DensityCalculator {
         return DayDensity(
             date: checkDate,
             density: activeEvents.count,
-            events: activeEvents
+            events: activeEvents,
+            spanEvents: spanningEvents
         )
     }
 
