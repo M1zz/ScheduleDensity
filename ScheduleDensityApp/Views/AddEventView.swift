@@ -365,7 +365,16 @@ struct AddEventView: View {
                                         }
 
                                         HStack(spacing: 12) {
-                                            Label(String(format: "%.1fh", slot.availableHours), systemImage: "clock")
+                                            // 고를 때 봐야 하는 숫자는 '지금 얼마나 비었나'가 아니라
+                                            // '넣고 나면 얼마나 차나'다. 80%를 넘기면 예상 못한 일
+                                            // 하나에 그 날이 무너진다 (→ LoadLevel).
+                                            Label("넣으면 \(Int((slot.projectedUtilization * 100).rounded()))%",
+                                                  systemImage: "speedometer")
+                                                .font(.caption)
+                                                .foregroundColor(utilizationColor(slot.projectedUtilization))
+
+                                            Label(String(format: "%.1fh 여유", max(0, slot.availableHours - hoursPerDay)),
+                                                  systemImage: "leaf")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
 
@@ -388,7 +397,7 @@ struct AddEventView: View {
                         Text("🤖 AI 추천")
                     } footer: {
                         if showRecommendations && !recommendations.isEmpty {
-                            Text("자유시간, 중요도, 일정 밀집도를 고려한 추천입니다. 탭하여 선택하세요.")
+                            Text("가장 한가한 날이 아니라, 넣고 나서도 여유가 남는 날을 먼저 올립니다.\n하루가 80% 넘게 차면 예상 못한 일 하나에 그 날 전체가 밀립니다. 그 위로는 감점된 추천이니, 굳이 넣어야 할 때만 고르세요.")
                         }
                     }
                 }
@@ -693,6 +702,16 @@ struct AddEventView: View {
             return "보통 - 균형잡힌 날짜에 배치됩니다"
         case .low:
             return "낮음 - 여유로운 날짜에 배치됩니다"
+        }
+    }
+
+    // 넣고 난 뒤의 가동률에 따른 색상. 80% 선이 기준이다 (→ LoadLevel).
+    private func utilizationColor(_ rate: Double) -> Color {
+        switch LoadLevel(rate: rate) {
+        case .easy:   return .green
+        case .normal: return .blue
+        case .tight:  return .orange
+        case .over:   return .red
         }
     }
 

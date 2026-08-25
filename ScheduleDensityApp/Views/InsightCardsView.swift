@@ -76,7 +76,7 @@ struct TodayInsightCard: View {
 
                     RoundedRectangle(cornerRadius: 3)
                         .fill(densityColor)
-                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                        .frame(width: geometry.size.width * CGFloat(min(1.0, insight.occupancyRate)))
                 }
             }
             .frame(height: 6)
@@ -88,13 +88,13 @@ struct TodayInsightCard: View {
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 
+    /// 색의 기준은 '얼마나 찼나'가 아니라 '80% 선을 넘었나'다 (→ LoadLevel).
     private var densityColor: Color {
-        if insight.occupancyRate < 0.3 {
-            return .green
-        } else if insight.occupancyRate < 0.6 {
-            return .orange
-        } else {
-            return .red
+        switch insight.level {
+        case .easy:   return .green
+        case .normal: return .blue
+        case .tight:  return .orange
+        case .over:   return .red
         }
     }
 }
@@ -136,7 +136,7 @@ struct TomorrowInsightCard: View {
 
                     RoundedRectangle(cornerRadius: 3)
                         .fill(densityColor)
-                        .frame(width: geometry.size.width * CGFloat(insight.occupancyRate))
+                        .frame(width: geometry.size.width * CGFloat(min(1.0, insight.occupancyRate)))
                 }
             }
             .frame(height: 6)
@@ -148,13 +148,13 @@ struct TomorrowInsightCard: View {
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 
+    /// 색의 기준은 '얼마나 찼나'가 아니라 '80% 선을 넘었나'다 (→ LoadLevel).
     private var densityColor: Color {
-        if insight.occupancyRate < 0.3 {
-            return .green
-        } else if insight.occupancyRate < 0.6 {
-            return .orange
-        } else {
-            return .red
+        switch insight.level {
+        case .easy:   return .green
+        case .normal: return .blue
+        case .tight:  return .orange
+        case .over:   return .red
         }
     }
 }
@@ -174,7 +174,7 @@ struct FreestDayCard: View {
                     .font(.title2)
             }
 
-            Text("가장 한가한 날")
+            Text("여유가 가장 많은 날")
                 .font(.caption)
                 .foregroundColor(.secondary)
 
@@ -187,7 +187,10 @@ struct FreestDayCard: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                Label(String(format: "%.1fh", insight.totalHours), systemImage: "clock")
+                // 잡힌 시간이 아니라 **남은 여유**를 적는다.
+                // '가장 한가한 날'이라고만 적어 두면 다음에 할 일이 그리로 간다.
+                // 여유는 메울 구멍이 아니라 지킬 자산이다 (→ LoadLevel).
+                Label(String(format: "%.1fh 여유", insight.slackHours), systemImage: "leaf")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

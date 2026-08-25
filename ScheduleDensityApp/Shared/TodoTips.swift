@@ -59,7 +59,7 @@ struct FragmentFilterTip: Tip {
 
     var title: Text { Text("지금 10분 났을 때") }
     var message: Text? {
-        Text("라벨을 누르면 그 타입만 남습니다. ‘지금 바로’를 누르면 짬에 집어서 끝낼 것들만 보입니다.")
+        Text("칩은 조건별로 갈라 센 것입니다. 일부러 합계를 내지 않습니다 — ‘바로 15분’ 넷은 1시간이 아니라 다른 단위이기 때문입니다.\n누르면 그 조건만 남습니다. ‘바로’를 누르면 짬에 집어서 끝낼 것들만 보입니다.")
     }
     var image: Image? { Image(systemName: "line.3.horizontal.decrease.circle") }
     var rules: [Rule] {

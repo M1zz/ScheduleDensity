@@ -42,6 +42,10 @@ struct TodoLabelChip: View {
 
     let label: TodoLabel
     var hours: Double? = nil
+    /// 이 조건에 해당하는 단계가 몇 개인지. 목록 위 '갈라 센 칩'에서만 쓴다.
+    /// 개수와 시간을 한 칩에 같이 두는 이유는, 그 둘이 **이 조건 안에서만** 짝이 맞기
+    /// 때문이다. 칩 밖으로 나가는 순간 다른 조건의 숫자와 더해질 자리가 생긴다.
+    var count: Int? = nil
     var isSelected: Bool = false
     var style: Style = .time
 
@@ -50,12 +54,24 @@ struct TodoLabelChip: View {
     /// '기다림'은 내 시간을 안 쓰므로 시간을 적지 않는다.
     private var showsHours: Bool { label.costsMyTime && shownHours > 0 }
 
+    private var accessibilityText: String {
+        var parts = [label.name]
+        if let count { parts.append("\(count)개") }
+        if showsHours { parts.append(formatDuration(shownHours)) }
+        return parts.joined(separator: ", ")
+    }
+
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: label.symbol)
                 .font(.system(size: 12, weight: .semibold))
             Text(label.name)
                 .font(.subheadline.weight(.semibold))
+            if let count {
+                Text("\(count)")
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+            }
             if showsHours {
                 Text(formatDuration(shownHours))
                     .font(.subheadline)
@@ -74,7 +90,7 @@ struct TodoLabelChip: View {
         .padding(.vertical, style == .full ? 7 : 5)
         .background(Capsule().fill(isSelected ? label.tint : label.tint.opacity(0.14)))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(showsHours ? "\(label.name), \(formatDuration(shownHours))" : label.name)
+        .accessibilityLabel(accessibilityText)
     }
 }
 

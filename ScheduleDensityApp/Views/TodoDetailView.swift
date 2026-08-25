@@ -51,7 +51,7 @@ struct TodoDetailView: View {
         let tree = self.tree
         let leaves = tree.hasChildren(root) ? tree.leaves(of: root) : []
         return TodoSplitAdvisor.hints(rootTitle: root.title,
-                                      steps: leaves.map { ($0.title, $0.durationHours) })
+                                      steps: leaves.map { ($0.title, $0.durationHours, $0.label) })
     }
 
     var body: some View {
@@ -117,7 +117,7 @@ struct TodoDetailView: View {
     private var headerCard: some View {
         let stepCount = tree.leafCount(of: root)
         let doneCount = tree.doneLeafCount(of: root)
-        let total = tree.totalHours(of: root)
+        let remaining = tree.tally(of: [root])
 
         return VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .firstTextBaseline) {
@@ -175,11 +175,24 @@ struct TodoDetailView: View {
                 TipView(StepWarningTip(warning: warning))
             }
 
-            if total > 0 {
-                Text("다 하면 \(formatDuration(total))")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+            // 남은 몫은 **착수 조건별로 갈라서** 적는다.
+            // 예전에는 "다 하면 2시간"처럼 하나로 접었는데, 그 2시간 안에는 조각 넷과
+            // 덩어리 하나가 섞여 있었다. 서로 환산되지 않는 것을 더해 놓으면
+            // "2시간 벌었는데 왜 아무것도 못 했지"가 된다 (→ TodoTree.tally).
+            if !remaining.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("남은 몫")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(remaining) { t in
+                                TodoLabelChip(label: t.label, hours: t.hours, count: t.count)
+                            }
+                        }
+                    }
+                    .scrollClipDisabled()
+                }
             }
         }
         .padding(.vertical, 4)

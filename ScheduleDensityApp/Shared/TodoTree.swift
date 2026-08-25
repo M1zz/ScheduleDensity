@@ -147,6 +147,56 @@ struct TodoTree {
         return Double(all.filter(\.isCompleted).count) / Double(all.count)
     }
 
+    // MARK: - 갈라 세기 (합치지 않는 집계)
+
+    /// 남아 있는 잎 단계들을 착수 조건별로 갈라 센다.
+    ///
+    /// **합계를 내지 않는 것이 이 함수의 존재 이유다.**
+    /// '바로 15분' 넷과 '몰입해서 1시간' 하나를 더해 "2시간"이라고 적으면 조각과 덩어리가
+    /// 같은 단위인 것처럼 보인다. 실제로는 환산되지 않는다 — 조각 시간은 총량으로 돌아오지
+    /// 않고(Schulte 2014 · Whillans 2020), 전환 비용에 먹힌다(Leroy 2009).
+    /// 하나로 접힌 숫자는 "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감을 만든다.
+    ///
+    /// 그래서 [조건: 개수·시간]을 그대로 돌려주고, 하나로 접는 일은 아무 데서도 하지 않는다.
+    func tally(of items: [BacklogItem], includeCompleted: Bool = false) -> [LabelTally] {
+        var pool: [BacklogItem] = []
+        for item in items {
+            pool.append(contentsOf: leaves(of: item).filter { includeCompleted || !$0.isCompleted })
+        }
+        return Self.tally(pool)
+    }
+
+    /// 각 할 일의 '지금 할 단계' 하나씩만 갈라 센다.
+    ///
+    /// 목록 위 칩이 쓰는 셈이다. 칩의 개수가 곧 그 조건으로 걸렀을 때 남는 줄 수여야
+    /// 하므로, 잎 전체가 아니라 줄 하나당 하나만 센다.
+    func currentTally(of items: [BacklogItem]) -> [LabelTally] {
+        Self.tally(items.map { currentStep(of: $0) ?? $0 })
+    }
+
+    /// 이 줄을 지금 대표하는 단계. 필터가 무엇을 기준으로 거를지도 이 값이 정한다.
+    func facingStep(of item: BacklogItem) -> BacklogItem {
+        currentStep(of: item) ?? item
+    }
+
+    private static func tally(_ steps: [BacklogItem]) -> [LabelTally] {
+        var counts: [TodoLabel: (count: Int, hours: Double)] = [:]
+        var seen = Set<String>()
+        for step in steps {
+            guard seen.insert(step.dragToken).inserted else { continue }
+            var entry = counts[step.label] ?? (count: 0, hours: 0)
+            entry.count += 1
+            entry.hours += max(0, step.durationHours)
+            counts[step.label] = entry
+        }
+        // 순서는 언제나 TodoLabel의 선언 순서(바로 → 펼치고 → 몰입해서 → 정하고 → 기다림).
+        // 개수 순으로 정렬하면 할 일을 하나 지울 때마다 칩이 자리를 바꿔 눈이 매번 다시 찾는다.
+        return TodoLabel.allCases.compactMap { label in
+            guard let entry = counts[label], entry.count > 0 else { return nil }
+            return LabelTally(label: label, count: entry.count, hours: entry.hours)
+        }
+    }
+
     // MARK: - 지금 할 일
 
     /// 지금 해야 할 단계 = 순서상 첫 번째 미완료 잎. 전부 끝났으면 nil.
@@ -257,4 +307,19 @@ extension TodoTree {
         step.parentToken = parent.dragToken
         return step
     }
+}
+
+// MARK: - 갈라 센 결과
+
+/// 착수 조건 하나에 대한 셈. **다른 조건의 셈과 더하지 않는다.**
+///
+/// 이 타입이 따로 있는 이유가 그것이다 — Double 하나로 돌려주면 어디선가 반드시 더해진다.
+struct LabelTally: Identifiable, Equatable {
+    let label: TodoLabel
+    /// 이 조건에 해당하는 단계 수.
+    let count: Int
+    /// 이 조건 **안에서만** 유효한 시간 합. 다른 조건의 시간과 더하지 말 것.
+    let hours: Double
+
+    var id: String { label.rawValue }
 }

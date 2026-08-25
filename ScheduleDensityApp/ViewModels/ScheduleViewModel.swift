@@ -57,31 +57,66 @@ struct WeekInsights {
 }
 
 // 일별 인사이트
+/// 하루가 얼마나 찼는지 읽는 눈금.
+///
+/// 기준은 '꽉 찼는가'가 아니라 **'80% 선을 넘었는가'**다.
+/// 큐잉 이론에서 가동률이 80%에서 90%로 오르면 대기 시간은 두 배가 되고, 100%에 닿으면
+/// 사실상 무한대가 된다 (DeMarco, *Slack*). 아낀 시간을 매번 일로 채우면 가동률이
+/// 100%로 수렴하고, 예상 못한 일 하나에 하루가 통째로 무너진다.
+///
+/// 그래서 이 눈금은 여유를 '아직 안 쓴 자리'가 아니라 '지켜야 하는 자리'로 읽는다.
+enum LoadLevel {
+    case easy, normal, tight, over
+
+    /// 이 위로는 여유가 사라진다. 추천기도 같은 선을 쓴다 (→ recommendScheduleSlots).
+    static let tightThreshold = 0.8
+
+    init(rate: Double) {
+        if rate >= 1.0 { self = .over }
+        else if rate >= Self.tightThreshold { self = .tight }
+        else if rate >= 0.5 { self = .normal }
+        else { self = .easy }
+    }
+
+    var emoji: String {
+        switch self {
+        case .easy:   return "😌"
+        case .normal: return "📅"
+        case .tight:  return "🔥"
+        case .over:   return "🚨"
+        }
+    }
+
+    var text: String {
+        switch self {
+        case .easy:   return "여유 있어요"
+        case .normal: return "보통이에요"
+        case .tight:  return "빠듯해요"
+        case .over:   return "넘쳤어요"
+        }
+    }
+}
+
 struct DayInsight {
     var date: Date
     var totalHours: Double
     var eventCount: Int
-    var occupancyRate: Double // 0.0 ~ 1.0
+    /// 점유율의 분모 — 잘 시간을 뺀 하루. 24시간이 아니다.
+    ///
+    /// 예전에는 24로 나눴다. 그러면 6시간이 잡힌 하루가 25%가 되어 "한가해요"로 읽혔는데,
+    /// 실제로 쓸 수 있는 17시간 기준으로는 35%다. 같은 파일의 `analyzeFreeTime`은
+    /// 이미 잘 시간을 빼고 있었으므로, 두 군데가 서로 다른 분모를 쓰고 있었다.
+    var capacityHours: Double
+    /// 0.0 ~ (1.0을 넘을 수 있다). 넘친 상태를 눌러 숨기지 않는다 —
+    /// 화면에서 막대를 그릴 때만 1.0으로 자른다.
+    var occupancyRate: Double
 
-    var statusEmoji: String {
-        if occupancyRate < 0.3 {
-            return "😌" // 한가함
-        } else if occupancyRate < 0.6 {
-            return "📅" // 보통
-        } else {
-            return "🔥" // 바쁨
-        }
-    }
+    var level: LoadLevel { LoadLevel(rate: occupancyRate) }
+    var statusEmoji: String { level.emoji }
+    var statusText: String { level.text }
 
-    var statusText: String {
-        if occupancyRate < 0.3 {
-            return "한가해요"
-        } else if occupancyRate < 0.6 {
-            return "보통이에요"
-        } else {
-            return "바빠요"
-        }
-    }
+    /// 아직 아무것도 안 잡힌 시간. 메울 구멍이 아니라 지킬 자산이다.
+    var slackHours: Double { max(0, capacityHours - totalHours) }
 }
 
 @Observable
@@ -627,14 +662,15 @@ class ScheduleViewModel {
         let dayInsights: [DayInsight] = densities.map { density in
             // 해당 날짜의 총 시간 계산
             let totalHours = density.events.reduce(0.0) { $0 + $1.hoursPerDay }
-            // 점유율 계산 (하루 24시간 기준)
-            let occupancyRate = min(totalHours / 24.0, 1.0)
+            // 점유율의 분모는 잘 시간을 뺀 하루다 (→ DayInsight.capacityHours).
+            let capacity = max(1.0, 24.0 - sleepHoursPerDay)
 
             return DayInsight(
                 date: density.date,
                 totalHours: totalHours,
                 eventCount: density.events.count,
-                occupancyRate: occupancyRate
+                capacityHours: capacity,
+                occupancyRate: totalHours / capacity
             )
         }
 
@@ -1178,6 +1214,9 @@ class ScheduleViewModel {
         var endDate: Date
         var availableHours: Double  // 하루 평균 자유시간
         var score: Double           // 추천 점수 (높을수록 좋음)
+        /// **이 일정을 넣고 나면** 하루가 평균 몇 %나 차는가 (1.0 = 잘 시간 뺀 하루가 꽉 참).
+        /// 추천을 고를 때 봐야 하는 숫자는 '지금 얼마나 비었나'가 아니라 이것이다.
+        var projectedUtilization: Double
     }
 
     // 날짜별 자유시간 분석
@@ -1204,6 +1243,13 @@ class ScheduleViewModel {
 
     // 일정 추천 알고리즘
     // 새 일정을 언제 배치하면 좋을지 추천 (자유시간 + 중요도 + 균형 고려)
+    //
+    // ⚠️ 이 함수는 한때 "가장 한가한 날에 넣으세요"라고 말했다 —
+    //    `slotScore += avgAvailableHours * 5.0`, 자유시간이 많을수록 고득점이고 상한이 없었다.
+    //    그건 아낀 시간을 다시 일로 채우는 쪽으로 미는 점수다(시간 사용 리바운드 효과:
+    //    Binswanger 2001, Jalas — 시간 절약 기술은 자유 시간을 만들지 않고 다른 활동에 흡수된다).
+    //    지금은 목표선(가동률 80%)을 넘기지 않는가를 먼저 보고, 넘어가면 감점한다.
+    //    여유는 메울 구멍이 아니라 지킬 자산이다 (→ LoadLevel).
     func recommendScheduleSlots(
         duration: Int,  // 일정 기간 (일 단위)
         hoursPerDay: Double,
@@ -1237,7 +1283,9 @@ class ScheduleViewModel {
             // 이 슬롯의 점수 계산
             var slotScore = 0.0
             var totalAvailableHours = 0.0
+            var totalProjected = 0.0
             var validDays = 0
+            let capacity = max(1.0, 24.0 - sleepHoursPerDay)
 
             var checkDate = currentDate
             while checkDate <= slotEnd {
@@ -1255,11 +1303,18 @@ class ScheduleViewModel {
                 totalAvailableHours += availableHours
                 validDays += 1
 
-                // 충분한 자유시간이 있는지 확인
-                if availableHours >= hoursPerDay {
-                    slotScore += 10.0  // 기본 점수
+                // 이 일정을 넣고 나면 이 날은 얼마나 차는가.
+                let used = max(0, capacity - availableHours)
+                let projected = (used + hoursPerDay) / capacity
+                totalProjected += projected
+
+                if projected > 1.0 {
+                    slotScore -= 120.0  // 물리적으로 안 들어간다
+                } else if projected > LoadLevel.tightThreshold {
+                    // 80%를 넘는 만큼 가파르게 깎는다. 90%면 대기 시간이 이미 두 배다.
+                    slotScore -= (projected - LoadLevel.tightThreshold) * 300.0
                 } else {
-                    slotScore -= 50.0  // 시간 부족 패널티
+                    slotScore += 10.0  // 목표선 아래면 그것으로 충분하다
                 }
 
                 guard let nextDate = calendar.date(byAdding: .day, value: 1, to: checkDate) else { break }
@@ -1273,9 +1328,18 @@ class ScheduleViewModel {
             }
 
             let avgAvailableHours = totalAvailableHours / Double(validDays)
+            let avgProjected = totalProjected / Double(validDays)
 
-            // 자유시간 점수 (더 많을수록 좋음)
-            slotScore += avgAvailableHours * 5.0
+            // 여유 점수. **많을수록 좋은 게 아니라, 목표선 아래에 있는가만 본다.**
+            // 예전의 `avgAvailableHours * 5.0`은 빈 날일수록 높은 점수를 줘서
+            // 아낀 시간을 곧바로 다시 채우게 만들었다. 상한이 없는 점수는 결국
+            // 가동률을 100%로 밀어붙인다.
+            // 날짜를 고르게 퍼뜨리는 일은 아래 밀집도 패널티가 이미 맡고 있다.
+            if avgProjected <= LoadLevel.tightThreshold {
+                slotScore += 40.0
+            } else {
+                slotScore -= (avgProjected - LoadLevel.tightThreshold) * 200.0
+            }
 
             // 중요도 점수 (중요한 일정은 빠른 날짜 선호)
             let daysFromNow = calendar.dateComponents([.day], from: today, to: currentDate).day ?? 0
@@ -1315,7 +1379,8 @@ class ScheduleViewModel {
                 startDate: currentDate,
                 endDate: slotEnd,
                 availableHours: avgAvailableHours,
-                score: slotScore
+                score: slotScore,
+                projectedUtilization: avgProjected
             ))
 
             guard let nextDate = calendar.date(byAdding: .day, value: 1, to: currentDate) else { break }

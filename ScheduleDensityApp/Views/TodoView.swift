@@ -38,6 +38,12 @@ struct TodoView: View {
     /// 적고 엔터만 쳐도 한 줄이 확정된다. 시간은 속성이 데려온다.
     @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.ready.rawValue
     @State private var showingFamilyShareNotice = false
+    /// 목록 위 칩으로 걸어 둔 착수 조건. nil이면 전부 보인다.
+    /// "지금 10분 났는데 뭘 하지"에 답하는 장치다 — 조각이 흘러가는 이유는 그 순간에
+    /// 무엇을 집을지 정해져 있지 않아서고, 미리 정해 두면 실행률이 오른다
+    /// (Gollwitzer & Sheeran 2006, 94개 연구 d = .65).
+    @State private var filter: TodoLabel? = nil
+    @State private var showingLedger = false
     @FocusState private var inputFocused: Bool
 
     private let cal = Calendar(identifier: .iso8601)
@@ -48,6 +54,24 @@ struct TodoView: View {
 
     // 목록에는 최상위 할 일만 줄로 세운다. 그 안의 단계는 줄 하나 안에서
     // '지금 할 일'로 접혀 보이고, 전체 흐름은 TodoDetailView에서 본다.
+
+    /// 부모-자식 색인. 한 번 만들어 목록·칩·결산이 함께 쓴다.
+    private var tree: TodoTree { TodoTree(allItems) }
+
+    /// 필터를 걸기 전의 이번 주 줄들 (밀린 것 + 이번 주).
+    /// 칩의 셈은 **언제나 이 집합**으로 낸다 — 걸러진 결과로 세면 필터를 켜는 순간
+    /// 다른 칩이 0이 되어 사라지고, 되돌아올 길이 없어진다.
+    private var unfilteredItems: [BacklogItem] {
+        let tree = self.tree
+        return carryoverItems(tree) + openItems(tree)
+    }
+
+    /// 필터가 걸려 있으면 '지금 할 단계'의 조건으로 거른다.
+    /// 줄에 서 있는 이름이 곧 지금 할 단계이므로, 거르는 기준도 그 단계여야 눈과 맞는다.
+    private func matches(_ item: BacklogItem, tree: TodoTree) -> Bool {
+        guard let filter else { return true }
+        return tree.facingStep(of: item).label == filter
+    }
 
     /// 이번 주, 아직 안 한 일.
     private func openItems(_ tree: TodoTree) -> [BacklogItem] {
@@ -95,6 +119,16 @@ struct TodoView: View {
             // 큰 제목을 그대로 두면 세그먼트 뒤에 깔려 위쪽에 빈 띠만 남는다.
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                if visibleTab == .mine {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            showingLedger = true
+                        } label: {
+                            Image(systemName: "list.clipboard")
+                        }
+                        .accessibilityLabel("이번 주 결산")
+                    }
+                }
                 if visibleTab == .family {
                     ToolbarItem(placement: .topBarTrailing) { familyShareMenu }
                 }
@@ -112,7 +146,15 @@ struct TodoView: View {
             // .principal은 leading/trailing을 뺀 '남은 공간'의 가운데에 놓여서,
             // 공유 탭에서만 나타나는 공유 버튼 때문에 그때만 왼쪽으로 밀렸다.
             // 툴바 밖에 두면 두 탭 모두 항상 화면 정중앙이다.
-            .safeAreaInset(edge: .top, spacing: 0) { tabPicker }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                VStack(spacing: 0) {
+                    tabPicker
+                    if visibleTab == .mine { filterBar }
+                }
+            }
+        }
+        .sheet(isPresented: $showingLedger) {
+            WeekLedgerView(weekStart: weekStart, work: tree.tally(of: unfilteredItems))
         }
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
@@ -164,16 +206,96 @@ struct TodoView: View {
         }
     }
 
+    // MARK: - 갈라 센 칩 (= 필터)
+
+    /// 목록 위 칩 줄. 조건별 셈이자 곧 필터다.
+    ///
+    /// 이 줄이 예전 헤더의 **합계를 대신한다.** 합계는 조각과 덩어리를 한 숫자로 접어
+    /// 서로 환산되는 것처럼 보이게 했다 — '바로 15분' 넷과 '몰입해서 1시간' 하나를 더해
+    /// "2시간"이라고 적으면, 그 2시간은 어느 쪽으로도 쓸 수 없는 숫자다.
+    /// 조각 시간은 총량으로 돌아오지 않는다 (Schulte 2014 · Whillans 2020).
+    ///
+    /// 그래서 접지 않고 나란히 세운다. 그리고 누르면 그 조건만 남는다 —
+    /// 셈과 필터가 같은 칩인 것이 요점이다. "바로 4"를 보고 누르면 정확히 그 4줄이 남는다.
+    @ViewBuilder
+    private var filterBar: some View {
+        let all = unfilteredItems
+        let tallies = tree.currentTally(of: all)
+        // 조건이 한 종류뿐이면 거를 것도 갈라 볼 것도 없다.
+        // 단, 이미 필터가 걸려 있으면 반드시 남긴다 — 마지막 '바로' 하나를 끝낸 순간
+        // 줄이 통째로 사라지면 걸어 둔 필터를 풀 길이 없어져 목록이 빈 채로 잠긴다.
+        if tallies.count > 1 || filter != nil {
+            VStack(spacing: 0) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        allChip(total: all.count)
+                        ForEach(tallies) { tally in
+                            Button {
+                                toggleFilter(tally.label)
+                            } label: {
+                                TodoLabelChip(label: tally.label,
+                                              hours: tally.hours,
+                                              count: tally.count,
+                                              isSelected: filter == tally.label)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                }
+                if FragmentFilterTip().shouldDisplay {
+                    TipView(FragmentFilterTip())
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
+                }
+            }
+            .background(.bar)
+        }
+    }
+
+    private func allChip(total: Int) -> some View {
+        let on = filter == nil
+        return Button {
+            withAnimation { filter = nil }
+        } label: {
+            HStack(spacing: 5) {
+                Image(systemName: "tray.full")
+                    .font(.system(size: 12, weight: .semibold))
+                Text("전체")
+                    .font(.subheadline.weight(.semibold))
+                Text("\(total)")
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+            }
+            .fixedSize(horizontal: true, vertical: false)
+            .foregroundStyle(on ? Color.white : Color.secondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(on ? Color.secondary : Color.secondary.opacity(0.14)))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("전체, \(total)개")
+    }
+
+    private func toggleFilter(_ label: TodoLabel) {
+        withAnimation { filter = (filter == label) ? nil : label }
+        // 걸러 놓은 채로 적으면 방금 적은 줄이 필터에 걸려 곧바로 사라져 보인다.
+        // 빈 줄의 조건도 필터를 따라가게 해서, 적은 것이 그 자리에 남게 한다.
+        if let filter { newLabelRaw = filter.rawValue }
+        FragmentFilterTip().invalidate(reason: .actionPerformed)
+    }
+
     // MARK: - 내 할 일
 
     private var myList: some View {
-        let tree = TodoTree(allItems)
+        let tree = self.tree
         let carryover = carryoverItems(tree)
         let open = openItems(tree)
         // 지난 주에 밀린 일과 이번 주 일을 한 줄기로 세운다. 밀린 것이 위로 온다.
         // 섹션을 갈라 놓으면 '지난 주에 못 한 일'이라는 이름표를 매번 읽어야 했다 —
         // 밀렸다는 사실은 옮길 때만 필요하고, 그건 스와이프에 남겨 뒀다.
-        let items = carryover + open
+        let items = (carryover + open).filter { matches($0, tree: tree) }
         let carried = Set(carryover.map(\.dragToken))
         let done = doneItems(tree)
 
@@ -206,11 +328,22 @@ struct TodoView: View {
                 // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
                 newTodoRow
             } header: {
+                // ⚠️ 여기서 시간을 합치지 말 것.
+                //    예전에는 "\(개수)개 · \(전체 시간 합)"이었는데, 그 합계는 조각과
+                //    덩어리를 더한 숫자였다. 단위가 다른 것을 더하면 "2시간 벌었는데
+                //    왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
+                //    조건별로 갈라 센 값은 위 칩 줄이 말한다 (→ filterBar).
                 if !items.isEmpty {
-                    Text("\(items.count)개 · \(formatDuration(items.reduce(0) { $0 + tree.totalHours(of: $1) }))")
+                    if let filter {
+                        Text("\(filter.name) \(items.count)개 · \(filter.whenToDo)")
+                    } else {
+                        Text("\(items.count)개")
+                    }
                 }
             } footer: {
-                if items.isEmpty {
+                if items.isEmpty, let filter {
+                    Text("‘\(filter.name)’로 집을 것이 지금은 없습니다. 위 ‘전체’를 누르면 다시 다 보입니다.")
+                } else if items.isEmpty {
                     Text("위 빈 줄에 바로 적으면 이번 주 할 일이 됩니다. 엔터를 치면 한 줄이 확정되고 빈 줄이 다시 옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
                 }
             }
@@ -550,6 +683,11 @@ struct TodoView: View {
                 save()
             }
             LabelPickTip.hasPicked = true
+            // 필터가 걸린 채로 다른 조건을 골라 적으면 그 줄이 곧바로 걸러져 사라진다.
+            // 방금 적은 것은 언제나 눈에 남아야 하므로 필터를 푼다.
+            if let current = filter, current != label {
+                withAnimation { filter = nil }
+            }
         }
         newTitle = ""
         // 팁·필터 줄이 나타나며 목록이 다시 그려지면 포커스가 풀릴 수 있다.
@@ -614,6 +752,8 @@ struct TodoView: View {
         let tree = TodoTree(allItems)
         if allItems.contains(where: { $0.labelRaw != nil }) { LabelPickTip.hasPicked = true }
         if tree.roots.contains(where: { tree.children(of: $0).count >= 2 }) { ShareSplitTip.hasSplit = true }
+        // 칩으로 거르는 법은 줄이 좀 쌓인 뒤에 한 번만 알려준다.
+        FragmentFilterTip.itemCount = tree.roots.filter { !$0.isCompleted }.count
     }
 
     /// 오늘 배정된 제목 집합을 다시 읽는다.
