@@ -170,15 +170,8 @@ class ScheduleViewModel {
     private var remoteChangeDebounce: DispatchWorkItem?
 
     // 레인별 색상 (무지개 순서)
-    static let laneColors = [
-        "#FF3B30",  // 1번 레인: 빨강
-        "#FF9500",  // 2번 레인: 주황
-        "#FFCC00",  // 3번 레인: 노랑
-        "#34C759",  // 4번 레인: 초록
-        "#007AFF",  // 5번 레인: 파랑
-        "#5856D6",  // 6번 레인: 남색
-        "#AF52DE"   // 7번 레인: 보라
-    ]
+    /// 위젯도 같은 색을 써야 해서 팔레트는 공유 파일에 둔다 (→ ColorHex.swift).
+    static let laneColors = RainbowPalette.laneColors
 
     var modelContext: ModelContext?
 

@@ -81,7 +81,7 @@ targets:
           - "$(inherited)"
           - "@executable_path/Frameworks"
 
-  # 홈 화면·잠금 화면 할 일 위젯.
+  # 홈 화면·잠금 화면 위젯 (할 일 + 무지개).
   # 앱이 App Group에 구워둔 스냅샷만 읽으므로 CloudKit/LeeoKit 의존성은 없다.
   TodoWidgetExtension:
     type: app-extension
@@ -90,6 +90,7 @@ targets:
       - path: TodoWidget
       # 앱과 함께 쓰는 파일만 골라 넣는다 (SwiftData 모델은 위젯에 필요 없다).
       - path: ScheduleDensityApp/Shared/TodoWidgetSnapshot.swift
+      - path: ScheduleDensityApp/Shared/RainbowWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/ColorHex.swift
     settings:
       base:

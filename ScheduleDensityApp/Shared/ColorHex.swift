@@ -25,3 +25,17 @@ extension Color {
                   opacity: Double(a) / 255)
     }
 }
+
+/// 무지개 레인 색. 앱과 위젯이 같은 색을 쓰도록 여기 한 곳에만 둔다.
+/// (앱은 `ScheduleViewModel.laneColors`로, 위젯은 `RainbowWidgetSnapshot.laneColors`로 본다.)
+enum RainbowPalette {
+    static let laneColors = [
+        "#FF3B30",  // 1번 레인: 빨강
+        "#FF9500",  // 2번 레인: 주황
+        "#FFCC00",  // 3번 레인: 노랑
+        "#34C759",  // 4번 레인: 초록
+        "#007AFF",  // 5번 레인: 파랑
+        "#5856D6",  // 6번 레인: 남색
+        "#AF52DE"   // 7번 레인: 보라
+    ]
+}

@@ -307,18 +307,26 @@ struct ScheduleDensityApp: App {
                 TodoEventBridge.shared.attach(schedule: schedule)
                 TodoEventBridge.shared.attach(todoContainer: todoContainer)
                 TodoEventBridge.shared.attach(eventContainer: sharedModelContainer)
+                // 무지개 탭을 한 번도 안 열어도 위젯은 채워져 있어야 한다.
+                RainbowWidgetSync.refresh(from: schedule)
             }
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { intakeSharedTodos() }
+                if phase == .active {
+                    intakeSharedTodos()
+                    // 맥에서 넘어온 변경도 위젯에 반영한다.
+                    RainbowWidgetSync.refresh(from: schedule)
+                }
             }
             .onOpenURL { url in
-                // 홈·잠금 화면 위젯 탭 → 할 일 탭 열기 (rainbow://todo)
-                if url.scheme == TodoWidgetBridge.deepLink.scheme,
-                   url.host == TodoWidgetBridge.deepLink.host {
-                    selectedTab = .todo
+                // 홈·잠금 화면 위젯 탭 → 그 위젯이 보여주던 탭 열기.
+                guard url.scheme == TodoWidgetBridge.deepLink.scheme else { return }
+                switch url.host {
+                case TodoWidgetBridge.deepLink.host:    selectedTab = .todo
+                case RainbowWidgetBridge.deepLink.host: selectedTab = .rainbow
+                default: break
                 }
             }
         }

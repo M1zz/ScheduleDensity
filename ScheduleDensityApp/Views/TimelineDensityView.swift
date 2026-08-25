@@ -639,6 +639,8 @@ struct TimelineDensityView: View {
             densityData = viewModel.getAllDensityData()
             print("🔄 [TimelineView] 데이터 로드 완료")
             isLoading = false
+            // 홈·잠금 화면 위젯이 읽는 스냅샷도 같이 다시 굽는다.
+            RainbowWidgetSync.refresh(from: viewModel)
         }
     }
 

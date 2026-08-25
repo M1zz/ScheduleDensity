@@ -62,6 +62,7 @@ struct TodoWidget: Widget {
 struct RainbowWidgetBundle: WidgetBundle {
     var body: some Widget {
         TodoWidget()
+        RainbowWidget()
     }
 }
 
