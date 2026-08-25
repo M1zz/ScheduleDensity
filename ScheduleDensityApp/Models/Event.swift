@@ -44,6 +44,10 @@ final class Event {
     var importanceRaw: String = EventImportance.medium.rawValue // 중요도 (EventImportance enum의 rawValue), 기본값: medium
     var isInfinite: Bool = false // 무한 반복 일정 여부 (true면 종료일 없이 최대 365일까지 표시)
     var excludedDatesData: Data? = nil  // CloudKit 호환성을 위해 Data로 저장
+    /// 이어져 있는 할 일(BacklogItem)의 dragToken.
+    /// 할 일에 데드라인을 정하면 이 줄이 그어지고, 무지개에 줄을 그으면 할 일로 가져갈 수 있다.
+    /// (할 일 쪽 스키마는 맥앱과 공유하는 CloudKit 스키마라 건드리지 않고, 연결은 이쪽에만 둔다.)
+    var todoToken: String? = nil
 
     // Computed property for importance
     var importance: EventImportance {

@@ -44,6 +44,18 @@ struct TodoView: View {
     /// (Gollwitzer & Sheeran 2006, 94개 연구 d = .65).
     @State private var filter: TodoLabel? = nil
     @State private var showingLedger = false
+    /// 방금 적은 줄. 이 줄에 대해서만 "언제까지?"를 아래에서 묻는다.
+    @State private var deadlinePromptItem: BacklogItem?
+    /// 날짜를 직접 고르는 시트를 띄울 대상.
+    @State private var deadlinePickerItem: BacklogItem?
+    @State private var pickedDeadline = Date()
+    /// 무지개에는 걸려 있는데 아직 할 일로 안 가져온 일들 (이번 주에 걸친 것만).
+    @State private var rainbowPending: [Event] = []
+    /// 무지개에서 가져와 단계를 적으러 갈 할 일.
+    @State private var pushedTodo: BacklogItem?
+    /// 지금 무지개에 그어져 있는 데드라인 (할 일 dragToken → 종료일).
+    /// 일정 스토어는 다른 컨테이너라 @Query로 못 보므로 읽어 와 캐시한다.
+    @State private var deadlines: [String: Date] = [:]
     @FocusState private var inputFocused: Bool
 
     private let cal = Calendar(identifier: .iso8601)
@@ -118,6 +130,16 @@ struct TodoView: View {
             // 세그먼트를 바 아래로 내리면서 제목도 인라인으로 바꾼다.
             // 큰 제목을 그대로 두면 세그먼트 뒤에 깔려 위쪽에 빈 띠만 남는다.
             .navigationBarTitleDisplayMode(.inline)
+            // 적고 나면 키보드 바로 위에서 "언제까지?"를 묻는다.
+            // 목록을 밀어내지 않고, 답하지 않아도 계속 적어 내려갈 수 있게.
+            .safeAreaInset(edge: .bottom) {
+                if let item = deadlinePromptItem, visibleTab == .mine {
+                    deadlineBar(for: item)
+                }
+            }
+            .sheet(item: $deadlinePickerItem) { item in
+                deadlinePickerSheet(for: item)
+            }
             .toolbar {
                 if visibleTab == .mine {
                     ToolbarItem(placement: .topBarLeading) {
@@ -131,15 +153,6 @@ struct TodoView: View {
                 }
                 if visibleTab == .family {
                     ToolbarItem(placement: .topBarTrailing) { familyShareMenu }
-                }
-                // 목록이 길 때 맨 아래 빈 줄까지 스크롤하지 않아도 되도록.
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        inputFocused = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                    .accessibilityLabel("할 일 추가")
                 }
             }
             // 세그먼트를 네비게이션 바(.principal) 대신 그 아래에 둔다.
@@ -164,8 +177,13 @@ struct TodoView: View {
         } message: {
             Text("초대 링크를 받은 사람은 누구나 이 목록에 참여해 함께 읽고 쓸 수 있습니다.\n링크는 함께할 사람에게만 보내주세요.")
         }
+        .navigationDestination(item: $pushedTodo) { item in
+            TodoDetailView(root: item)
+        }
         .task {
             refreshAssignedToday()
+            refreshDeadlines()
+            refreshRainbowPending()
             syncWidget()
             refreshTipRules()
             await family.refresh()
@@ -179,6 +197,8 @@ struct TodoView: View {
             if phase == .active {
                 // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
                 refreshAssignedToday()
+                refreshDeadlines()
+                refreshRainbowPending()
                 syncWidget()
                 Task { await family.refresh() }
             }
@@ -301,12 +321,15 @@ struct TodoView: View {
 
         return ScrollViewReader { proxy in
         List {
+            rainbowPendingSection
+
             Section {
                 ForEach(items) { item in
                     TodoRow(item: item,
                             tree: tree,
                             category: category(of: item),
                             isAssignedToday: assignedToday.contains(item.title),
+                            deadline: deadlines[item.dragToken],
                             onAdvance: advance)
                         .swipeActions(edge: .leading) {
                             if carried.contains(item.dragToken) {
@@ -355,6 +378,7 @@ struct TodoView: View {
                                 tree: tree,
                                 category: category(of: item),
                                 isAssignedToday: false,
+                                deadline: deadlines[item.dragToken],
                                 onAdvance: advance)
                     }
                     .onDelete { delete(done, at: $0, tree: tree) }
@@ -589,6 +613,196 @@ struct TodoView: View {
         }
     }
 
+    // MARK: - 무지개에서 넘어온 일
+
+    /// 무지개에 줄은 그어져 있는데 아직 할 일로 안 가져온 일들.
+    ///
+    /// 무지개에 있는데 할 일에는 아무것도 없으면, 이번 주에 뭘 해야 하는지가 안 보인다.
+    /// 여기 세워 두고, 누르면 단계로 쪼개어 이번 주 할 일로 데려온다.
+    @ViewBuilder
+    private var rainbowPendingSection: some View {
+        if !rainbowPending.isEmpty {
+            // 이번 주에 걸친 일정이 스무 개라면 그건 목록이 아니라 벽이다.
+            // 급한 몇 개만 세우고, 나머지는 마감이 다가오면 저절로 올라온다.
+            let shown = Array(rainbowPending.prefix(Self.rainbowPendingLimit))
+            let hidden = rainbowPending.count - shown.count
+            Section {
+                ForEach(shown) { event in
+                    Button {
+                        guard let item = TodoEventBridge.shared.makeTodo(for: event) else { return }
+                        refreshRainbowPending()
+                        refreshDeadlines()
+                        pushedTodo = item
+                    } label: {
+                        rainbowPendingRow(event)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                Label("무지개에 걸려 있는 일", systemImage: "rainbow")
+            } footer: {
+                if hidden > 0 {
+                    Text("이번 주에 걸쳐 있는 일정입니다. 누르면 단계로 쪼개어 이번 주 할 일로 가져옵니다.\n마감이 더 먼 일정 \(hidden)개는 때가 되면 여기 올라옵니다.")
+                } else {
+                    Text("이번 주에 걸쳐 있는 일정입니다. 누르면 단계로 쪼개어 이번 주 할 일로 가져옵니다.")
+                }
+            }
+        }
+    }
+
+    /// 한 번에 세우는 최대 개수.
+    private static let rainbowPendingLimit = 4
+
+    private func rainbowPendingRow(_ event: Event) -> some View {
+        let calendar = Calendar.current
+        let end = calendar.startOfDay(for: event.effectiveEndDate())
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: end).day ?? 0
+
+        return HStack(spacing: 12) {
+            Image(systemName: "arrow.triangle.branch")
+                .font(.system(size: 18))
+                .foregroundStyle(.tint)
+                .frame(width: 22)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(event.title)
+                    .lineLimit(2)
+                Text("\(shortDate(event.startDate)) ~ \(shortDate(end)) · 하루 \(hourText(event.hoursPerDay))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(days <= 0 ? "오늘까지" : "D-\(days)")
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+                .foregroundStyle(days <= 3 ? Color.orange : Color.secondary)
+        }
+        .padding(.vertical, 2)
+        .contentShape(Rectangle())
+    }
+
+    private func shortDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func hourText(_ hours: Double) -> String {
+        hours == hours.rounded() ? String(format: "%.0f시간", hours) : String(format: "%.1f시간", hours)
+    }
+
+    // MARK: - 데드라인 묻기
+
+    /// 방금 적은 줄 아래에 붙는 "언제까지?" 한 줄.
+    private func deadlineBar(for item: BacklogItem) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "flag.checkered")
+                    .font(.caption)
+                    .foregroundStyle(.tint)
+                Text("‘\(item.title)’은 언제까지예요?")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                Spacer()
+                Button {
+                    withAnimation { deadlinePromptItem = nil }
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("데드라인 묻지 않기")
+            }
+
+            // 두 줄로 나눠 다 보이게 한다. 옆으로 밀어야 나오는 칸은 없는 것과 같다.
+            VStack(spacing: 8) {
+                ForEach(Self.deadlineChoiceRows, id: \.first?.label) { row in
+                    HStack(spacing: 8) {
+                        ForEach(row, id: \.label) { choice in
+                            Button {
+                                if choice.isPicker {
+                                    beginDeadlinePick(for: item)
+                                } else {
+                                    setDeadline(choice.date(), for: item)
+                                }
+                            } label: {
+                                Text(choice.label)
+                                    .font(.subheadline)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                            .buttonBorderShape(.capsule)
+                        }
+                    }
+                }
+            }
+
+            Text("정하면 오늘부터 그 날까지 무지개에 한 줄이 그어집니다.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.bar)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
+    /// 흔한 마감들. 날짜 고르기까지 가지 않고 한 번에 끝나도록.
+    private struct DeadlineChoice {
+        let label: String
+        let date: () -> Date
+        /// true면 날짜를 직접 고르는 시트를 연다.
+        var isPicker: Bool = false
+    }
+
+    private static let deadlineChoiceRows: [[DeadlineChoice]] = [
+        [
+            DeadlineChoice(label: "오늘", date: { Calendar.current.startOfDay(for: Date()) }),
+            DeadlineChoice(label: "내일", date: { Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date() }),
+            DeadlineChoice(label: "이번 주", date: { Date.endOfThisWeek })
+        ],
+        [
+            DeadlineChoice(label: "2주 뒤", date: { Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date() }),
+            DeadlineChoice(label: "한 달 뒤", date: { Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date() }),
+            DeadlineChoice(label: "날짜 고르기", date: { Date() }, isPicker: true)
+        ]
+    ]
+
+    private func deadlinePickerSheet(for item: BacklogItem) -> some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                DatePicker("데드라인", selection: $pickedDeadline,
+                           in: Calendar.current.startOfDay(for: Date())...,
+                           displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .padding()
+                Text("오늘부터 이 날까지 무지개에 한 줄이 그어집니다.\n실제로 시간을 쓰는 날은 무지개에서 칸을 눌러 고칠 수 있어요.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                Spacer()
+            }
+            .navigationTitle("‘\(item.title)’ 데드라인")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("취소") { deadlinePickerItem = nil }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("정하기") {
+                        setDeadline(pickedDeadline, for: item)
+                        deadlinePickerItem = nil
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
     /// 스와이프용 '오늘' 토글 버튼.
     @ViewBuilder
     private func todayButton(for item: BacklogItem, tree: TodoTree) -> some View {
@@ -610,6 +824,20 @@ struct TodoView: View {
         } label: {
             Label(assigned ? "오늘 배정 취소" : "오늘 할 일로 배정",
                   systemImage: assigned ? "calendar.badge.minus" : "calendar.badge.plus")
+        }
+        Button {
+            beginDeadlinePick(for: item)
+        } label: {
+            Label(deadlines[item.dragToken] == nil ? "데드라인 정하기" : "데드라인 바꾸기",
+                  systemImage: "flag.checkered")
+        }
+        if deadlines[item.dragToken] != nil {
+            Button {
+                TodoEventBridge.shared.clearRainbow(for: item)
+                refreshDeadlines()
+            } label: {
+                Label("무지개에서 빼기", systemImage: "rainbow")
+            }
         }
         if tree.hasChildren(item), tree.lastDoneStep(of: item) != nil {
             Button {
@@ -683,6 +911,11 @@ struct TodoView: View {
                 save()
             }
             LabelPickTip.hasPicked = true
+            // 적어 둔 한 줄은 단발성 심부름처럼 보인다. "언제까지"가 붙어야
+            // 오늘부터 그 날까지 나를 붙잡고 있는 일로 보인다 → 무지개에 한 줄.
+            if let added = allItems.first(where: { $0.title == title && $0.parentToken == nil }) {
+                deadlinePromptItem = added
+            }
             // 필터가 걸린 채로 다른 조건을 골라 적으면 그 줄이 곧바로 걸러져 사라진다.
             // 방금 적은 것은 언제나 눈에 남아야 하므로 필터를 푼다.
             if let current = filter, current != label {
@@ -715,8 +948,11 @@ struct TodoView: View {
     /// 할 일을 지우면 그 안의 단계도 함께 지운다.
     private func delete(_ items: [BacklogItem], at offsets: IndexSet, tree: TodoTree) {
         for index in offsets {
+            // 할 일이 사라지면 그 일 때문에 그어 둔 무지개 줄도 남을 이유가 없다.
+            TodoEventBridge.shared.clearRainbow(for: items[index])
             for node in tree.subtree(of: items[index]) { context.delete(node) }
         }
+        refreshDeadlines()
         save()
     }
 
@@ -761,6 +997,33 @@ struct TodoView: View {
         assignedToday = WeekBlocksStore.shared.titlesAssigned()
     }
 
+    /// 무지개에 그어져 있는 데드라인들을 다시 읽는다.
+    private func refreshDeadlines() {
+        deadlines = TodoEventBridge.shared.deadlinesByToken()
+    }
+
+    /// 무지개에만 있고 할 일에는 아직 없는 일들을 다시 읽는다.
+    private func refreshRainbowPending() {
+        withAnimation { rainbowPending = TodoEventBridge.shared.pendingFromRainbow(weekStart: weekStart) }
+    }
+
+    // MARK: - 데드라인
+
+    /// 날짜를 직접 고르는 시트를 연다. 이미 정해져 있으면 그 날짜에서 시작한다.
+    private func beginDeadlinePick(for item: BacklogItem) {
+        pickedDeadline = deadlines[item.dragToken] ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+        deadlinePickerItem = item
+    }
+
+    /// 데드라인을 정하고, 오늘부터 그 날까지 무지개에 한 줄을 긋는다.
+    private func setDeadline(_ date: Date, for item: BacklogItem) {
+        let hours = TodoTree(allItems).totalHours(of: item)
+        guard TodoEventBridge.shared.drawRainbow(for: item, deadline: date, hours: hours) else { return }
+        refreshDeadlines()
+        refreshRainbowPending()
+        withAnimation { deadlinePromptItem = nil }
+    }
+
     /// 홈·잠금 화면 위젯이 읽는 스냅샷을 다시 굽는다.
     private func syncWidget() {
         TodoWidgetSync.refresh(context: context)
@@ -775,6 +1038,8 @@ private struct TodoRow: View {
     let category: BacklogCategory?
     /// 오늘 계획 블록으로 올라가 있는지 (맥 타임라인·무지개에 표시되는 상태).
     let isAssignedToday: Bool
+    /// 무지개에 그어 둔 줄의 끝나는 날. 없으면 아직 마감이 없는 일.
+    let deadline: Date?
     /// 탭 = 지금 할 일 하나 끝내기.
     let onAdvance: (BacklogItem, TodoTree) -> Void
 
@@ -843,6 +1108,7 @@ private struct TodoRow: View {
                 .lineLimit(2)
 
             if isAssignedToday { todayBadge }
+            if let deadline, !item.isCompleted { deadlineBadge(deadline) }
             if let category {
                 Circle()
                     .fill(category.displayColor)
@@ -856,6 +1122,25 @@ private struct TodoRow: View {
 
     /// 줄에 설 이름. 남은 단계가 있으면 그 단계, 아니면 할 일 자신.
     private var displayTitle: String { (currentStep ?? item).title }
+
+    /// 남은 날을 세어 보여준다. 날짜보다 "며칠 남았나"가 먼저 와닿는다.
+    private func deadlineBadge(_ deadline: Date) -> some View {
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: Date()),
+                                           to: calendar.startOfDay(for: deadline)).day ?? 0
+        let text = days <= 0 ? "오늘까지" : "D-\(days)"
+        // 사흘 안쪽이면 색으로 먼저 말한다.
+        let tint: Color = days <= 0 ? .red : (days <= 3 ? .orange : .secondary)
+        return Text(text)
+            .font(.caption.weight(.semibold))
+            .monospacedDigit()
+            .foregroundStyle(tint)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Capsule().fill(tint.opacity(0.15)))
+            .accessibilityLabel("데드라인 \(text)")
+    }
 
     private var todayBadge: some View {
         Text("오늘")

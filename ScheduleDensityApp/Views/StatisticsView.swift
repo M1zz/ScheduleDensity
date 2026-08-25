@@ -93,12 +93,15 @@ struct StatisticsView: View {
                     color: .gray
                 )
 
-                StatCard(
-                    icon: "repeat",
-                    title: "무한 반복",
-                    value: "\(statistics.infiniteEvents)",
-                    color: .purple
-                )
+                // 끝나는 날 없이 만든 예전 일정. 새로 만들 수는 없으니 남아 있을 때만 보여준다.
+                if statistics.infiniteEvents > 0 {
+                    StatCard(
+                        icon: "repeat",
+                        title: "끝 없는 예전 일정",
+                        value: "\(statistics.infiniteEvents)",
+                        color: .purple
+                    )
+                }
             }
         }
         .padding()
@@ -323,9 +326,11 @@ struct StatisticsView: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            Text("※ 무한 반복 일정은 30일 기준으로 계산됩니다")
-                .font(.caption2)
-                .foregroundColor(.secondary)
+            if statistics.infiniteEvents > 0 {
+                Text("※ 끝나는 날이 없던 예전 일정은 30일 기준으로 계산됩니다")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
 
             VStack(spacing: 12) {
                 if let longest = statistics.longestEvent {

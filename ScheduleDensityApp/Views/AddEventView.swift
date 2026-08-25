@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct AddEventView: View {
     @Environment(\.dismiss) var dismiss
@@ -14,6 +15,8 @@ struct AddEventView: View {
     var initialStartDate: Date?
     var initialEndDate: Date?
     var eventToEdit: Event?  // 수정할 일정 (nil이면 새로 추가)
+    /// 첫 일정을 만드는 중이면, 무엇을 어떤 순서로 적는지 항목별로 짚어준다.
+    var showsFieldGuide: Bool = false
 
     @State private var title = ""
     @State private var startDate = Date()
@@ -27,17 +30,23 @@ struct AddEventView: View {
     @State private var importance: EventImportance = .medium
     @State private var showRecommendations = false
     @State private var recommendations: [ScheduleViewModel.FreeTimeSlot] = []
-    @State private var isInfinite: Bool = false  // 무한 반복 일정
+    /// '추가'를 눌렀는데 아직 비어 있는 칸이 있을 때만 켜진다 — 그때부터 빨갛게 짚어준다.
+    @State private var showValidationErrors = false
+    /// 지금 짚어주고 있는 항목. nil이면 안내가 끝났거나 애초에 없는 경우.
+    @State private var guideStep: AddEventGuideStep?
     @State private var showingExceptionDatePicker = false
     @State private var newExceptionDate = Date()
     @State private var currentExceptions: Set<Date> = []
 
-    init(viewModel: ScheduleViewModel, initialDate: Date? = nil, initialStartDate: Date? = nil, initialEndDate: Date? = nil, eventToEdit: Event? = nil) {
+    init(viewModel: ScheduleViewModel, initialDate: Date? = nil, initialStartDate: Date? = nil,
+         initialEndDate: Date? = nil, eventToEdit: Event? = nil, showsFieldGuide: Bool = false) {
         self.viewModel = viewModel
         self.initialDate = initialDate
         self.initialStartDate = initialStartDate
         self.initialEndDate = initialEndDate
         self.eventToEdit = eventToEdit
+        self.showsFieldGuide = showsFieldGuide
+        _guideStep = State(initialValue: showsFieldGuide ? .title : nil)
 
         let calendar = Calendar.current
 
@@ -59,7 +68,11 @@ struct AddEventView: View {
             }
 
             _importance = State(initialValue: event.importance)
-            _isInfinite = State(initialValue: event.isInfinite)
+            // 예전 '무한 반복' 일정은 끝나는 날을 정해 둔 일정으로 바꿔 연다.
+            // 저장하면 그대로 굳는다 — 끝이 없는 일정은 더 이상 만들지 않는다.
+            if event.isInfinite {
+                _endDate = State(initialValue: event.effectiveEndDate())
+            }
             _currentExceptions = State(initialValue: event.excludedDates)
         }
         // 우선순위: initialStartDate & initialEndDate > initialDate > 기본값
@@ -74,78 +87,11 @@ struct AddEventView: View {
 
     var body: some View {
         NavigationView {
+            ScrollViewReader { proxy in
             Form {
-                Section("일정 정보") {
-                    TextField("일정 제목", text: $title)
-                }
+                titleSection
 
-                Section {
-                    // 시작일
-                    DatePicker("시작일", selection: $startDate, displayedComponents: .date)
-                        .datePickerStyle(.compact)
-                        .onChange(of: startDate) { oldValue, newValue in
-                            // 시작일이 종료일보다 뒤면 종료일을 시작일+1로 조정
-                            if newValue > endDate && !isInfinite {
-                                endDate = Calendar.current.date(byAdding: .day, value: 1, to: newValue) ?? newValue
-                            }
-                            updateAnalysis()
-                        }
-
-                    // 무한 반복 토글
-                    Toggle(isOn: $isInfinite) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "repeat")
-                                .foregroundColor(isInfinite ? .blue : .secondary)
-                            Text("무한 반복")
-                                .fontWeight(isInfinite ? .semibold : .regular)
-                        }
-                    }
-                    .onChange(of: isInfinite) { _, newValue in
-                        updateAnalysis()
-                        showRecommendations = false
-                    }
-
-                    if !isInfinite {
-                        // 종료일 (무한 반복이 아닐 때만 표시)
-                        DatePicker("종료일", selection: $endDate, displayedComponents: .date)
-                            .datePickerStyle(.compact)
-                            .onChange(of: endDate) { oldValue, newValue in
-                                // 종료일이 시작일보다 앞이면 시작일을 종료일-1로 조정
-                                if newValue < startDate {
-                                    startDate = Calendar.current.date(byAdding: .day, value: -1, to: newValue) ?? newValue
-                                }
-                                updateAnalysis()
-                            }
-                    }
-
-                    // 기간 표시
-                    HStack {
-                        Image(systemName: "calendar.badge.clock")
-                            .foregroundColor(.blue)
-                        Text("총 기간")
-                        Spacer()
-                        if isInfinite {
-                            HStack(spacing: 4) {
-                                Image(systemName: "infinity")
-                                    .font(.system(size: 14))
-                                Text("(최대 365일)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .fontWeight(.semibold)
-                        } else {
-                            let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
-                            Text("\(days + 1)일")
-                                .fontWeight(.semibold)
-                        }
-                    }
-                } header: {
-                    Text("날짜 선택")
-                } footer: {
-                    if isInfinite {
-                        Text("무한 반복 일정은 시작일부터 최대 365일까지 표시됩니다")
-                    }
-                }
+                periodSection
 
                 // 요일 선택 섹션
                 Section {
@@ -181,28 +127,18 @@ struct AddEventView: View {
                             simpleWeekdayView
                         }
                     }
+                    .id(Self.activeDaysFieldID)
+                    .spotlightAnchor(guideStep == .activeDays)
                     .padding(.vertical, 8)
                 } header: {
-                    Text("요일 패턴")
+                    Text("시간 쓰는 날")
                 } footer: {
                     Text(useAdvancedPattern
-                        ? "5주 단위로 반복되는 패턴을 설정하세요. 홀수/짝수 주 패턴 등을 설정할 수 있습니다."
-                        : "일정이 진행되는 요일을 선택하세요")
+                        ? "5주 단위로 반복되는 패턴을 설정하세요. 격주 스터디처럼 홀수/짝수 주가 다른 일도 적을 수 있습니다."
+                        : "기간 안에서 실제로 시간을 쓰는 요일만 고르세요. 고르지 않은 날도 기간 안이면 무지개에 옅게 남습니다.")
                 }
 
-                Section("소요시간") {
-                    Stepper(value: $hoursPerDay, in: 0.5...24, step: 0.5) {
-                        HStack {
-                            Text("하루 소요시간")
-                            Spacer()
-                            Text(String(format: "%.1f시간", hoursPerDay))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .onChange(of: hoursPerDay) { _, _ in
-                        showRecommendations = false
-                    }
-                }
+                hoursSection
 
                 // 중요도 선택 섹션
                 Section {
@@ -503,7 +439,7 @@ struct AddEventView: View {
                 }
 
                 Section {
-                    Text("이 일정은 시작일부터 종료일까지 매일 진행됩니다.")
+                    Text("시작일부터 종료일까지가 이 일정에 매여 있는 기간이고, 그중 고른 날에만 시간이 실제로 들어갑니다.")
                         .font(.caption)
                         .foregroundColor(.secondary)
 
@@ -541,6 +477,32 @@ struct AddEventView: View {
                     }
                 }
             }
+            .overlayPreferenceValue(SpotlightAnchorKey.self) { anchors in
+                GeometryReader { geo in
+                    if let step = guideStep {
+                        SpotlightCoachOverlay(
+                            hole: geo.spotlightRect(anchors)?.insetBy(dx: -8, dy: -6),
+                            containerSize: geo.size,
+                            icon: step.icon,
+                            title: guideTitle(step),
+                            message: step.message,
+                            // 안내를 보면서 그 자리를 바로 만질 수 있어야 한다.
+                            passesTouches: true
+                        ) {
+                            Spacer()
+                            Button("그만 볼래요") { withAnimation { guideStep = nil } }
+                                .font(.footnote)
+                            if let next = step.next {
+                                Button("다음") { advanceGuide(to: next, proxy: proxy) }
+                                    .buttonStyle(.borderedProminent)
+                            } else {
+                                Button("알겠어요") { withAnimation { guideStep = nil } }
+                                    .buttonStyle(.borderedProminent)
+                            }
+                        }
+                    }
+                }
+            }
             .navigationTitle(eventToEdit == nil ? "일정 추가" : "일정 수정")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
@@ -560,10 +522,12 @@ struct AddEventView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
+                    // 진짜로 .disabled를 걸면 눌러도 아무 일이 안 일어나서
+                    // "왜 안 눌리지"만 남는다. 눌리게 두고, 무엇이 비었는지 알려준다.
                     Button(eventToEdit == nil ? "추가" : "저장") {
-                        saveEvent()
+                        attemptSave(scrollTo: proxy)
                     }
-                    .disabled(title.isEmpty || endDate < startDate)
+                    .foregroundColor(canSave ? nil : .secondary)
                 }
             }
             .alert("일정 삭제", isPresented: $showingDeleteAlert) {
@@ -573,6 +537,7 @@ struct AddEventView: View {
                 Button("취소", role: .cancel) { }
             } message: {
                 Text("이 일정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")
+            }
             }
         }
     }
@@ -593,7 +558,8 @@ struct AddEventView: View {
             existingEvent.selectedWeekdays = weekdaysToSave
             existingEvent.weeklyPattern = patternToSave
             existingEvent.importance = importance
-            existingEvent.isInfinite = isInfinite
+            // 끝이 없던 일정은 여기서 끝나는 날이 있는 일정으로 굳는다.
+            existingEvent.isInfinite = false
             existingEvent.excludedDates = currentExceptions
             viewModel.updateEvent(existingEvent)
             viewModel.eventToEdit = nil  // 수정 완료 후 초기화
@@ -609,7 +575,6 @@ struct AddEventView: View {
                 selectedWeekdays: weekdaysToSave,
                 weeklyPattern: patternToSave,
                 importance: importance,
-                isInfinite: isInfinite,
                 excludedDates: currentExceptions
             )
             viewModel.addEvent(event)
@@ -622,6 +587,285 @@ struct AddEventView: View {
         viewModel.deleteEvent(event)
         viewModel.eventToEdit = nil  // 삭제 완료 후 초기화
         dismiss()
+    }
+
+
+    // MARK: - 화면 조각
+    // (한 덩어리로 두면 타입 체커가 감당을 못 해 빌드가 멈춘다.)
+
+    private var titleSection: some View {
+            Section {
+                TextField("일정 제목", text: $title)
+                    .id(Self.titleFieldID)
+                    .spotlightAnchor(guideStep == .title)
+                    .padding(.vertical, 2)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6)
+                            .stroke(Color.red, lineWidth: 1.5)
+                            .padding(.horizontal, -6)
+                            .opacity(isTitleMissing ? 1 : 0)
+                    )
+
+                if isTitleMissing {
+                    Label("일정 제목을 적어주세요", systemImage: "exclamationmark.circle.fill")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            } header: {
+                Text("일정 정보")
+                    .foregroundColor(isTitleMissing ? .red : nil)
+            }
+    }
+
+    @ViewBuilder
+    private var periodSection: some View {
+            Section {
+                // 시작일
+                DatePicker("시작일", selection: $startDate, displayedComponents: .date)
+                    .datePickerStyle(.compact)
+                    .id(Self.periodFieldID)
+                    .spotlightAnchor(guideStep == .period)
+                    .onChange(of: startDate) { oldValue, newValue in
+                        // 시작일이 종료일보다 뒤면 종료일을 시작일+1로 조정
+                        if newValue > endDate {
+                            endDate = Calendar.current.date(byAdding: .day, value: 1, to: newValue) ?? newValue
+                        }
+                        updateAnalysis()
+                    }
+
+                // 종료일 — 반드시 있다. 끝나는 날을 안 정하면 그 일은 영영 안 끝난다.
+                DatePicker("종료일", selection: $endDate, displayedComponents: .date)
+                    .datePickerStyle(.compact)
+                    .spotlightAnchor(guideStep == .period)
+                    .onChange(of: endDate) { oldValue, newValue in
+                        // 종료일이 시작일보다 앞이면 시작일을 종료일-1로 조정
+                        if newValue < startDate {
+                            startDate = Calendar.current.date(byAdding: .day, value: -1, to: newValue) ?? newValue
+                        }
+                        updateAnalysis()
+                    }
+
+                // 매여 있는 기간과 실제로 시간을 쓰는 날을 나란히 보여준다.
+                // 이 둘이 다르다는 걸 눈으로 봐야, 무지개에서 옅은 칸과 진한 칸이 읽힌다.
+                HStack {
+                    Image(systemName: "calendar.badge.clock")
+                        .foregroundColor(.blue)
+                    Text("매여 있는 기간")
+                    Spacer()
+                    Text("\(totalSpanDays)일")
+                        .fontWeight(.semibold)
+                }
+
+                HStack {
+                    Image(systemName: "clock.badge.checkmark")
+                        .foregroundColor(.orange)
+                    Text("실제로 시간 쓰는 날")
+                    Spacer()
+                    Text("\(activeDayCount)일")
+                        .fontWeight(.semibold)
+                        .foregroundColor(activeDayCount == 0 ? .red : .primary)
+                }
+        } header: {
+            Text("기간")
+                .foregroundColor(isDateRangeInvalid ? .red : nil)
+        } footer: {
+            if isDateRangeInvalid {
+                Label("종료일이 시작일보다 앞섭니다", systemImage: "exclamationmark.circle.fill")
+                    .foregroundColor(.red)
+            } else if activeDayCount == 0 {
+                    Text("이 기간에 실제로 하는 날이 하루도 없습니다. 아래 '시간 쓰는 날'에서 요일을 골라주세요.")
+                        .foregroundColor(.red)
+                } else {
+                    Text("끝나는 날은 반드시 정합니다. 스터디처럼 화요일에만 모이더라도, 그 스터디가 끝나는 날까지는 계속 매여 있는 시간이니까요.\n무지개에는 매여 있는 기간이 옅게, 실제로 시간을 쓰는 날이 진하게 칠해집니다.")
+                }
+            }
+    }
+
+    private var hoursSection: some View {
+            Section {
+                VStack(alignment: .leading, spacing: 14) {
+                    // 하루에 몇 시간인지가 이 화면에서 제일 중요한 숫자다. 눈에 먼저 들어와야 한다.
+                    Stepper(value: $hoursPerDay, in: 0.5...24, step: 0.5) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.blue)
+                            Text("하루 소요시간")
+                                .font(.headline)
+                            Spacer()
+                            Text(hourText(hoursPerDay))
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .monospacedDigit()
+                                .foregroundColor(.blue)
+                                .contentTransition(.numericText())
+                                .animation(.easeOut(duration: 0.15), value: hoursPerDay)
+                        }
+                    }
+                    .onChange(of: hoursPerDay) { _, _ in
+                        showRecommendations = false
+                    }
+
+                    // 자주 쓰는 값은 한 번에 — 0.5시간씩 열 번 누르지 않게.
+                    HStack(spacing: 8) {
+                        ForEach(quickHourChoices, id: \.self) { hours in
+                            Button {
+                                hoursPerDay = hours
+                                showRecommendations = false
+                            } label: {
+                                Text(hourText(hours))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 7)
+                                    .background(
+                                        Capsule().fill(hoursPerDay == hours
+                                                       ? Color.blue
+                                                       : Color(.systemGray5))
+                                    )
+                                    .foregroundColor(hoursPerDay == hours ? .white : .primary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+
+                    Divider()
+
+                    HStack {
+                        Text("이 일정에 들어가는 시간")
+                            .font(.subheadline)
+                        Spacer()
+                        Text(String(format: "%.1f시간", Double(activeDayCount) * hoursPerDay))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .monospacedDigit()
+                    }
+                    Text("\(activeDayCount)일 × \(hourText(hoursPerDay))")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .id(Self.hoursFieldID)
+                .spotlightAnchor(guideStep == .hours)
+                .padding(.vertical, 6)
+            } header: {
+                Text("소요시간")
+            } footer: {
+                Text("위에서 고른 '시간 쓰는 날' 하루에 들어가는 시간입니다. 기간 전체로 나눈 값이 아닙니다.")
+            }
+    }
+
+    // MARK: - 항목 안내
+
+    /// 카드 제목에 몇 번째 항목인지 붙인다. 남은 개수가 보여야 끝이 보인다.
+    private func guideTitle(_ step: AddEventGuideStep) -> String {
+        guard let order = step.order else { return step.title }
+        return "\(order.index)/\(order.total) · \(step.title)"
+    }
+
+    private func advanceGuide(to step: AddEventGuideStep, proxy: ScrollViewProxy) {
+        withAnimation { guideStep = step }
+        guard let id = guideFieldID(step) else { return }
+        // 짚어주는 자리가 화면 밖이면 설명만 뜨고 정작 그 자리는 안 보인다.
+        withAnimation { proxy.scrollTo(id, anchor: .center) }
+    }
+
+    private func guideFieldID(_ step: AddEventGuideStep) -> String? {
+        switch step {
+        case .title: return Self.titleFieldID
+        case .period: return Self.periodFieldID
+        case .activeDays: return Self.activeDaysFieldID
+        case .hours: return Self.hoursFieldID
+        case .save: return nil
+        }
+    }
+
+    // MARK: - 저장 전 확인
+
+    /// 비어 있는 칸(또는 지금 짚어주는 항목)으로 스크롤해 데려가기 위한 표식.
+    private static let titleFieldID = "titleField"
+    private static let periodFieldID = "periodField"
+    private static let activeDaysFieldID = "activeDaysField"
+    private static let hoursFieldID = "hoursField"
+
+    /// '추가'를 눌러 봤는데 제목이 아직 비어 있는 상태.
+    private var isTitleMissing: Bool {
+        showValidationErrors && title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// 날짜가 뒤집힌 상태. (양쪽 DatePicker가 서로 밀어주므로 보통은 나지 않는다.)
+    private var isDateRangeInvalid: Bool {
+        showValidationErrors && endDate < startDate
+    }
+
+    private var canSave: Bool {
+        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && endDate >= startDate
+    }
+
+    /// 눌렀는데 저장할 수 없으면, 어디가 비었는지 빨갛게 짚어주고 그 자리로 데려간다.
+    private func attemptSave(scrollTo proxy: ScrollViewProxy? = nil) {
+        guard canSave else {
+            // 아직 못 적은 게 있으면 안내보다 그 빨간 표시가 먼저 보여야 한다.
+            withAnimation { guideStep = nil }
+            withAnimation { showValidationErrors = true }
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            if title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, let proxy {
+                withAnimation { proxy.scrollTo(Self.titleFieldID, anchor: .center) }
+            }
+            return
+        }
+        saveEvent()
+    }
+
+
+    // MARK: - 소요시간
+
+    /// 한 번에 고를 수 있게 둔 흔한 값들.
+    private var quickHourChoices: [Double] { [0.5, 1, 2, 3, 4] }
+
+    /// 30분 단위라 소수점이 필요할 때만 붙인다. (2시간 / 1.5시간)
+    private func hourText(_ hours: Double) -> String {
+        hours == hours.rounded()
+            ? String(format: "%.0f시간", hours)
+            : String(format: "%.1f시간", hours)
+    }
+
+    // MARK: - 기간 vs 실제로 시간 쓰는 날
+
+    /// 시작일부터 종료일까지, 이 일정에 매여 있는 날 수.
+    private var totalSpanDays: Int {
+        guard startDate <= endDate else { return 0 }
+        let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: startDate),
+                                                   to: Calendar.current.startOfDay(for: endDate)).day ?? 0
+        return days + 1
+    }
+
+    /// 그중 실제로 시간이 들어가는 날 수. 요일/5주 패턴과 예외 날짜를 그대로 반영한다.
+    /// (Event.occursOn과 같은 규칙 — 저장 전 화면에서 미리 세어 보여주려고 여기서 한 번 더 센다.)
+    private var activeDayCount: Int {
+        guard startDate <= endDate else { return 0 }
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: startDate)
+        let end = calendar.startOfDay(for: endDate)
+        let exceptions = Set(currentExceptions.map { calendar.startOfDay(for: $0) })
+
+        var count = 0
+        var current = start
+        while current <= end {
+            if !exceptions.contains(current), spendsTime(on: current, from: start) { count += 1 }
+            guard let next = calendar.date(byAdding: .day, value: 1, to: current) else { break }
+            current = next
+        }
+        return count
+    }
+
+    private func spendsTime(on date: Date, from start: Date) -> Bool {
+        let calendar = Calendar.current
+        if useAdvancedPattern {
+            let daysSinceStart = calendar.dateComponents([.day], from: start, to: date).day ?? 0
+            let index = ((daysSinceStart % 35) + 35) % 35
+            return weeklyPattern.indices.contains(index) ? weeklyPattern[index] : false
+        }
+        if selectedWeekdays.isEmpty { return true }  // 아무것도 안 고르면 매일로 저장된다
+        return selectedWeekdays.contains(calendar.component(.weekday, from: date))
     }
 
     private func updateAnalysis() {

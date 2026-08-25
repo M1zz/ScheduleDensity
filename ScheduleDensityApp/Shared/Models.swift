@@ -85,6 +85,13 @@ extension Date {
         return cal.date(from: comps) ?? Date()
     }
 
+    /// 이번 주 마지막 날(일요일) 00:00. "이번 주까지"라는 마감에 쓴다.
+    static var endOfThisWeek: Date {
+        var cal = Calendar(identifier: .iso8601)
+        cal.firstWeekday = 2
+        return cal.date(byAdding: .day, value: 6, to: currentWeekStart) ?? Date()
+    }
+
     func weekStart() -> Date {
         var cal = Calendar(identifier: .iso8601)
         cal.firstWeekday = 2

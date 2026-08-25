@@ -10,7 +10,9 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var viewModel = ScheduleViewModel()
+    /// 앱이 만들어 넘겨준다. 할 일 화면에서 데드라인을 정할 때도 이 뷰모델을 거쳐
+    /// 무지개에 줄이 그어지므로, 무지개 탭을 한 번도 안 열어도 살아 있어야 한다.
+    @Bindable var viewModel: ScheduleViewModel
     @State private var showingSettings = false
 
     var body: some View {
@@ -42,6 +44,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(viewModel: ScheduleViewModel())
         .modelContainer(for: Event.self, inMemory: true)
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import UIKit
 
 struct TimelineDensityView: View {
@@ -35,11 +36,29 @@ struct TimelineDensityView: View {
     // 일정 빠른 보기(탭) 상태 — 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼으로
     @State private var eventToView: Event?
     @State private var pendingEditEvent: Event?
+    /// 보기 시트를 닫고 나서 단계를 적으러 갈 일정.
+    @State private var pendingSplitEvent: Event?
 
     // 인사이트 설정 (UserDefaults에 저장)
     @AppStorage("showInsightCards") private var showInsightCards = false
     // 인사이트 카드 펼침 상태
     @State private var isInsightExpanded = false
+
+    // 첫 진입 온보딩 — 꾹 눌러 네모를 만드는 법을 한 번만 직접 해보게 한다.
+    @AppStorage(AppSettingsKey.hasSeenRainbowOnboarding) private var hasSeenRainbowOnboarding = false
+    @State private var onboardingStep: RainbowOnboardingStep = .idle
+    @State private var onboardingSpot: RainbowSpot?
+    /// 뜻풀이 전체 화면에 보여줄, 방금 만든 줄. 취소했으면 nil이고 예시로 그린다.
+    @State private var meaningEvent: Event?
+    @State private var showingMeaning = false
+
+    // 새로 그은 줄은 아직 덩어리다. 할 일로 가져가 단계로 쪼개야 손을 댈 수 있다.
+    /// 쪼개기를 권할 일정. nil이면 권하는 중이 아니다.
+    @State private var splitOfferEvent: Event?
+    /// 온보딩이 끝난 뒤로 미뤄 둔 권유. (마무리 카드와 겹치지 않게)
+    @State private var pendingSplitDate: Date?
+    /// 단계를 적으러 열 할 일.
+    @State private var todoToSplit: BacklogItem?
 
     var body: some View {
         mainContent
@@ -77,6 +96,7 @@ struct TimelineDensityView: View {
                             print("✅ [TimelineView] 일정 추가됨 - refreshData() 호출 후 스크롤")
                             refreshData()
                             scrollToDate(addedDate)
+                            offerSplit(startingOn: addedDate)
                             viewModel.lastAddedEventDate = nil // 초기화
                         } else {
                             print("✅ [TimelineView] 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
@@ -89,28 +109,61 @@ struct TimelineDensityView: View {
                 // 데이터 삭제 등의 변경 발생 시 새로고침
                 refreshData()
             }
+            .onChange(of: hasSeenRainbowOnboarding) { _, seen in
+                // 설정에서 '다시 보기'를 누르면 화면이 떠 있는 채로 플래그만 꺼진다.
+                if !seen { startOnboardingIfNeeded() }
+            }
             .sheet(isPresented: $showingAddEventSheet) {
+                // 온보딩으로 연 시트라면, 무엇을 어떤 순서로 적는지 안내가 이어진다.
+                let guided = onboardingStep == .filling
                 if let startDate = dragStartDate, let endDate = dragEndDate {
-                    AddEventView(viewModel: viewModel, initialStartDate: startDate, initialEndDate: endDate)
+                    AddEventView(viewModel: viewModel, initialStartDate: startDate,
+                                 initialEndDate: endDate, showsFieldGuide: guided)
                 } else if let selectedDate = selectedDateForNewEvent {
                     AddEventView(viewModel: viewModel, initialDate: selectedDate)
                 }
             }
             .sheet(item: $eventToView, onDismiss: {
-                // 보기 시트가 완전히 닫힌 뒤에 수정 시트를 열어야 겹침 없이 전환된다.
+                // 보기 시트가 완전히 닫힌 뒤에 다음 시트를 열어야 겹침 없이 전환된다.
                 if let event = pendingEditEvent {
                     pendingEditEvent = nil
                     viewModel.eventToEdit = event
                     viewModel.showingAddEvent = true
+                } else if let event = pendingSplitEvent {
+                    pendingSplitEvent = nil
+                    todoToSplit = TodoEventBridge.shared.makeTodo(for: event)
                 }
             }) { event in
                 EventQuickLookView(event: event, viewModel: viewModel) {
                     pendingEditEvent = event
                     eventToView = nil
+                } onSplit: {
+                    pendingSplitEvent = event
+                    eventToView = nil
                 }
             }
             .onChange(of: showingAddEventSheet) { _, isShowing in
                 if !isShowing {
+                    // 만든 일정이 있으면 쪼개기를 권한다. 온보딩 중이면 마무리 카드 뒤로 미룬다.
+                    if let added = viewModel.lastAddedEventDate {
+                        if onboardingStep == .filling {
+                            pendingSplitDate = added
+                        } else {
+                            offerSplit(startingOn: added)
+                        }
+                    }
+                    // 온보딩으로 만든 일정이 닫혔다 → 마무리 카드
+                    if onboardingStep == .filling {
+                        // 아래 0.3초 핸들러가 지우기 전에 챙겨 둔다.
+                        let createdDate = viewModel.lastAddedEventDate
+                        onboardingSpot = nil
+                        // 새로고침이 끝난 뒤에 띄운다 — 그래야 방금 만든 줄을 찾아 그릴 수 있다.
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            meaningEvent = createdDate.flatMap { latestEvent(startingOn: $0) }
+                            onboardingStep = .done
+                            showingMeaning = true
+                        }
+                    }
                     print("🔵 [TimelineView] 드래그 일정 추가 시트 닫힘")
                     // sheet가 닫힐 때 선택 상태 초기화
                     isDraggingSelection = false
@@ -224,6 +277,44 @@ struct TimelineDensityView: View {
                     .padding(.bottom, 50)
             }
         }
+        .overlay(alignment: .bottom) {
+            if let event = splitOfferEvent {
+                splitOfferBar(for: event)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        // 뜻풀이는 격자 위가 아니라 전체 화면으로. 만드는 경험이 끝난 뒤에 온다.
+        .fullScreenCover(isPresented: $showingMeaning, onDismiss: {
+            advanceOnboarding(to: .idle)
+        }) {
+            RainbowMeaningView(event: meaningEvent,
+                               accent: meaningAccent) { showingMeaning = false }
+        }
+        .sheet(item: $todoToSplit) { item in
+            if let container = TodoEventBridge.shared.todoContainer {
+                NavigationStack {
+                    TodoDetailView(root: item)
+                }
+                .modelContainer(container)
+            }
+        }
+        // 하이라이트할 칸이 스크롤을 따라 움직이므로, 칸이 올려보낸 위치를 그대로 받아 쓴다.
+        .overlayPreferenceValue(SpotlightAnchorKey.self) { anchors in
+            GeometryReader { geo in
+                if onboardingStep.showsOverlay {
+                    RainbowOnboardingOverlay(
+                        step: onboardingStep,
+                        // 여러 칸이 올라오면 하나로 합친다 — 방금 만든 줄 전체를 뚫어 보여주려고.
+                        spotlight: geo.spotlightRect(anchors),
+                        containerSize: geo.size,
+                        onStart: { advanceOnboarding(to: .pressStart) },
+                        onSkip: { advanceOnboarding(to: .idle) }
+                    )
+                    .transition(.opacity)
+                }
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: onboardingStep)
     }
 
     private var toastView: some View {
@@ -306,7 +397,8 @@ struct TimelineDensityView: View {
                                 handleDragStart(date, lane: lane)
                             },
                             isToday: isToday(dayData.date),
-                            isWeekend: isWeekend(dayData.date)
+                            isWeekend: isWeekend(dayData.date),
+                            spotlightLane: spotlightLane(for: dayData.date)
                         )
                         .id(dayData.id)
                     }
@@ -317,12 +409,14 @@ struct TimelineDensityView: View {
                 // 이 ScrollView는 로딩이 끝난 뒤에야 마운트되므로 (isLoading 분기),
                 // onChange(isLoading)로는 첫 진입을 못 잡는다. 여기서 직접 오늘로 스크롤.
                 scrollToTodayIfNeeded(proxy: proxy, data: densityData)
+                startOnboardingIfNeeded()
             }
             .onChange(of: isLoading) { _, newIsLoading in
                 // 로딩이 완료되면 오늘로 스크롤
                 if !newIsLoading && !hasScrolledToToday && !densityData.isEmpty {
                     scrollToTodayIfNeeded(proxy: proxy, data: densityData)
                 }
+                if !newIsLoading { startOnboardingIfNeeded() }
             }
         }
     }
@@ -548,14 +642,184 @@ struct TimelineDensityView: View {
         }
     }
 
+    // MARK: - 첫 진입 온보딩
+
+    // MARK: - 새 줄을 할 일로 가져가 쪼개기
+
+    /// 이 날 시작하는 일정 중 가장 최근 것 = 방금 만든 것.
+    private func latestEvent(startingOn date: Date) -> Event? {
+        let calendar = Calendar.current
+        let day = calendar.startOfDay(for: date)
+        return viewModel.fetchEvents()
+            .last { calendar.isDate($0.startDate, inSameDayAs: day) }
+    }
+
+    /// 방금 그은 줄을 할 일로 가져가 쪼개자고 권한다.
+    /// 이미 이어진 할 일이 있으면(= 할 일에서 데드라인을 정해 그어진 줄) 권하지 않는다.
+    private func offerSplit(startingOn date: Date) {
+        guard let event = latestEvent(startingOn: date),
+              event.todoToken == nil else { return }
+        withAnimation { splitOfferEvent = event }
+        // 계속 붙어 있으면 잔소리가 된다. 답하지 않으면 조용히 사라진다.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+            if splitOfferEvent === event { withAnimation { splitOfferEvent = nil } }
+        }
+    }
+
+    private func splitOfferBar(for event: Event) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "arrow.triangle.branch")
+                .foregroundStyle(.tint)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("‘\(event.title)’, 아직 덩어리예요")
+                    .font(.subheadline.weight(.medium))
+                    .lineLimit(1)
+                Text("할 일로 가져가 단계로 쪼개면 손댈 수 있는 크기가 됩니다.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+            Button("쪼개기") {
+                let item = TodoEventBridge.shared.makeTodo(for: event)
+                withAnimation { splitOfferEvent = nil }
+                todoToSplit = item
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .font(.subheadline)
+
+            Button {
+                withAnimation { splitOfferEvent = nil }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("닫기")
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.regularMaterial)
+                .shadow(color: .black.opacity(0.15), radius: 10, y: 4)
+        )
+        .padding(.horizontal, 12)
+        .padding(.bottom, 10)
+    }
+
+    /// 뜻풀이 화면에 쓸 색 — 그 줄이 무지개에서 실제로 받은 레인 색.
+    private var meaningAccent: Color {
+        guard let event = meaningEvent,
+              let lane = viewModel.eventLaneAssignments[event.laneKey],
+              lane >= 0, lane < ScheduleViewModel.laneColors.count,
+              let color = Color(hex: ScheduleViewModel.laneColors[lane]) else { return .accentColor }
+        return color
+    }
+
+    /// 이 날짜 행에서 하이라이트할 레인. 없으면 nil.
+    private func spotlightLane(for date: Date) -> Int? {
+        guard onboardingStep.showsSpotlight, let spot = onboardingSpot else { return nil }
+        return spot.covers(date) ? spot.lane : nil
+    }
+
+    /// 데이터가 다 올라온 뒤에 온보딩을 시작한다. 한 번 시작하면 다시는 안 뜬다.
+    private func startOnboardingIfNeeded() {
+        guard !hasSeenRainbowOnboarding, onboardingStep == .idle, !densityData.isEmpty else { return }
+        // 오늘로 스크롤이 끝난 뒤에 띄워야 하이라이트가 화면 밖에서 시작하지 않는다.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+            guard !hasSeenRainbowOnboarding, onboardingStep == .idle else { return }
+            hasSeenRainbowOnboarding = true
+            onboardingSpot = findFreeSpot()
+            withAnimation { onboardingStep = .intro }
+        }
+    }
+
+    private func advanceOnboarding(to step: RainbowOnboardingStep) {
+        withAnimation { onboardingStep = step }
+        if step == .idle {
+            onboardingSpot = nil
+            // 마무리 카드를 닫고 나서야 쪼개기를 권한다. 두 개가 겹치면 둘 다 안 읽힌다.
+            if let pending = pendingSplitDate {
+                pendingSplitDate = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { offerSplit(startingOn: pending) }
+            }
+            // 중간에 그만두면 잡다 만 선택도 같이 치운다.
+            if isDraggingSelection {
+                isDraggingSelection = false
+                dragStartDate = nil
+                dragEndDate = nil
+                draggedDates = []
+                draggedLane = nil
+            }
+        }
+    }
+
+    /// 시작 칸으로 쓸 만한 빈 칸 찾기 — 오늘 행에서, 며칠 뒤까지 함께 비어 있는 레인.
+    /// 이미 일정이 있는 칸을 가리키면 꾹 눌러도 네모가 안 만들어진다.
+    private func findFreeSpot() -> RainbowSpot? {
+        guard let startDay = densityData.first(where: { isToday($0.date) }) ?? densityData.first else { return nil }
+        let endDay = dayData(daysAfter: startDay.date, days: onboardingSpanDays)
+
+        for lane in 1...7 where isLaneFree(startDay, lane: lane) {
+            if let endDay, !isLaneFree(endDay, lane: lane) { continue }
+            return RainbowSpot(date: startDay.date, lane: lane)
+        }
+        // 오늘 줄이 꽉 찼다면 가장 오른쪽 줄이라도 가리킨다.
+        return RainbowSpot(date: startDay.date, lane: 7)
+    }
+
+    /// 온보딩에서 만들어 보게 할 기간(일). 3일이면 네모가 눈에 보일 만큼은 길다.
+    private var onboardingSpanDays: Int { 3 }
+
+    /// 온보딩에서 가리킬 '끝나는 날'. 표에 없는 날짜는 가리켜도 하이라이트가 안 뜬다.
+    private func onboardingEndDate(from date: Date) -> Date {
+        dayData(daysAfter: date, days: onboardingSpanDays)?.date ?? densityData.last?.date ?? date
+    }
+
+    private func dayData(daysAfter date: Date, days: Int) -> DayDensity? {
+        let calendar = Calendar.current
+        guard let target = calendar.date(byAdding: .day, value: days, to: date) else { return nil }
+        return densityData.first { calendar.isDate($0.date, inSameDayAs: target) }
+    }
+
+    /// 이 날짜/레인 칸이 비어 있는지 (DateRow가 칸을 채우는 규칙과 같아야 한다).
+    private func isLaneFree(_ dayData: DayDensity, lane: Int) -> Bool {
+        let laneIndex = lane - 1
+        for event in dayData.events where viewModel.eventLaneAssignments[event.laneKey] == laneIndex {
+            return false
+        }
+        guard viewModel.fillSpanToEndDate else { return true }
+        for event in dayData.spanEvents where viewModel.eventLaneAssignments[event.laneKey] == laneIndex {
+            return false
+        }
+        return true
+    }
+
     // 드래그 핸들러
     private func handleDragStart(_ date: Date, lane: Int) {
         let calendar = Calendar.current
         let normalizedDate = calendar.startOfDay(for: date)
 
-        // 롱 프레스 시 햅틱
-        let generator = UIImpactFeedbackGenerator(style: .light)
+        // 다 눌러서 잡혔다는 딱 소리. (누르는 동안의 진동은 GridCell이 낸다.)
+        let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
+
+        // 온보딩 중이면, 어느 칸을 눌렀든 실제로 누른 칸을 기준으로 다음 지점을 가리킨다.
+        if onboardingStep == .pressStart {
+            onboardingSpot = RainbowSpot(date: onboardingEndDate(from: normalizedDate), lane: lane)
+            withAnimation { onboardingStep = .pressEnd }
+        } else if onboardingStep == .pressEnd {
+            if dragStartDate != nil && draggedLane == lane {
+                // 선택이 완성되어 곧 시트가 열린다. 오버레이는 비켜준다.
+                withAnimation { onboardingStep = .filling }
+            } else {
+                // 다른 줄을 눌렀다 — 선택이 그 줄에서 새로 시작되므로 끝 지점도 다시 가리킨다.
+                onboardingSpot = RainbowSpot(date: onboardingEndDate(from: normalizedDate), lane: lane)
+            }
+        }
 
         if dragStartDate == nil {
             // 첫 번째 롱프레스: 시작 지점 설정
@@ -619,6 +883,8 @@ struct DateRow: View {
     let onDragStart: (Date, Int) -> Void
     let isToday: Bool
     let isWeekend: Bool
+    /// 첫 진입 온보딩이 이 행에서 가리키는 레인. 없으면 nil.
+    var spotlightLane: Int? = nil
 
     var body: some View {
         HStack(spacing: 0) {
@@ -676,6 +942,8 @@ struct DateRow: View {
                     }
                 )
                 .frame(width: 40, height: 40)
+                // 온보딩이 가리키는 칸이면 자기 위치를 오버레이로 올려보낸다.
+                .spotlightAnchor(spotlightLane == laneNumber)
             }
         }
         .background(Color(.systemBackground))
@@ -743,7 +1011,125 @@ struct GridCell: View {
 
     @State private var showDeleteAlert = false
 
+    // 꾹 누르는 동안의 되먹임 — 테두리가 차오르고 진동이 같이 세진다.
+    /// 이만큼 누르고 있어야 잡힌다. 테두리·진동·제스처가 모두 이 값을 쓴다.
+    private static let longPressDuration: TimeInterval = 0.6
+    /// 이 시간 안에 떼면 그냥 탭이다. 탭 한 번에 진동이 울리면 시끄럽다.
+    private static let pressGrace: TimeInterval = 0.12
+    @State private var pressProgress: CGFloat = 0
+    @State private var pressTask: Task<Void, Never>?
+
     var body: some View {
+        cellBody
+        .overlay(
+            Rectangle()
+                .strokeBorder(
+                    !isActive && isDraggedDate ? Color.blue : Color(.separator),
+                    lineWidth: !isActive && isDraggedDate ? 2 : 0.5
+                )
+        )
+        // 누르고 있는 동안 테두리가 한 바퀴 차오른다. 다 차는 순간이 곧 잡히는 순간이다.
+        .overlay {
+            if pressProgress > 0 {
+                Rectangle()
+                    .inset(by: 1.5)
+                    .trim(from: 0, to: pressProgress)
+                    .stroke(Color.blue, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .allowsHitTesting(false)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture(count: 2) {
+            // 더블탭: 빈 셀만, 날짜 범위 선택
+            if !isActive {
+                onDragStart()
+            }
+        }
+        .onTapGesture {
+            if isActive {
+                onTap()
+            } else {
+                // 선택 모드가 아닐 때만 단일 날짜로 sheet 열기
+                if !isDraggingSelection {
+                    onEmptyCellTap()
+                }
+            }
+        }
+        .contextMenu {
+            if isActive, let event = event {
+                // 일정 수정
+                Button(action: {
+                    viewModel.eventToEdit = event
+                    viewModel.showingAddEvent = true
+                }) {
+                    Label("일정 수정", systemImage: "pencil")
+                }
+
+                // 이 날짜만 제외
+                Button(action: {
+                    addExceptionForDate(event: event, date: dayData.date)
+                }) {
+                    Label("이 날짜만 제외", systemImage: "calendar.badge.minus")
+                }
+
+                Divider()
+
+                // 전체 일정 삭제
+                Button(role: .destructive, action: {
+                    showDeleteAlert = true
+                }) {
+                    Label("전체 일정 삭제", systemImage: "trash")
+                }
+            }
+        }
+        .onLongPressGesture(minimumDuration: Self.longPressDuration) {
+            if !isActive {
+                // 빈 셀: 날짜 범위 선택
+                // 차오르던 진동을 끊는다. 잡혔다는 딱 소리는 handleDragStart가 낸다.
+                pressTask?.cancel()
+                pressTask = nil
+                PressHaptics.shared.stop()
+                pressProgress = 0
+                onDragStart()
+            }
+        } onPressingChanged: { isPressing in
+            // 일정이 든 칸은 컨텍스트 메뉴가 받는다. 되먹임은 빈 칸에서만.
+            guard !isActive else { return }
+            pressTask?.cancel()
+            if isPressing {
+                pressTask = Task { @MainActor in
+                    // 탭인지 꾹인지 갈릴 때까지만 기다렸다가 시작한다.
+                    try? await Task.sleep(for: .seconds(Self.pressGrace))
+                    guard !Task.isCancelled else { return }
+                    let remaining = Self.longPressDuration - Self.pressGrace
+                    pressProgress = 0
+                    withAnimation(.linear(duration: remaining)) { pressProgress = 1 }
+                    PressHaptics.shared.begin(duration: remaining)
+                }
+            } else {
+                pressTask = nil
+                withAnimation(.easeOut(duration: 0.15)) { pressProgress = 0 }
+                PressHaptics.shared.stop()
+            }
+        }
+        .alert("일정 삭제", isPresented: $showDeleteAlert) {
+            Button("취소", role: .cancel) { }
+            Button("삭제", role: .destructive) {
+                if let event = event {
+                    viewModel.deleteEvent(event)
+                    onDelete()
+                }
+            }
+        } message: {
+            if let event = event {
+                Text("'\(event.title)' 일정을 전체 삭제하시겠습니까?")
+            }
+        }
+    }
+
+    /// 칸 안쪽 — 배경, 선택 표시, 일정 블록.
+    /// (테두리·제스처와 한 덩어리로 두면 타입 체커가 감당을 못 한다.)
+    private var cellBody: some View {
         ZStack {
             // 배경
             Rectangle()
@@ -792,76 +1178,6 @@ struct GridCell: View {
                     )
                     .padding(2)
                 }
-            }
-        }
-        .overlay(
-            Rectangle()
-                .strokeBorder(
-                    !isActive && isDraggedDate ? Color.blue : Color(.separator),
-                    lineWidth: !isActive && isDraggedDate ? 2 : 0.5
-                )
-        )
-        .contentShape(Rectangle())
-        .onTapGesture(count: 2) {
-            // 더블탭: 빈 셀만, 날짜 범위 선택
-            if !isActive {
-                onDragStart()
-            }
-        }
-        .onTapGesture {
-            if isActive {
-                onTap()
-            } else {
-                // 선택 모드가 아닐 때만 단일 날짜로 sheet 열기
-                if !isDraggingSelection {
-                    onEmptyCellTap()
-                }
-            }
-        }
-        .contextMenu {
-            if isActive, let event = event {
-                // 일정 수정
-                Button(action: {
-                    viewModel.eventToEdit = event
-                    viewModel.showingAddEvent = true
-                }) {
-                    Label("일정 수정", systemImage: "pencil")
-                }
-
-                // 이 날짜만 제외
-                Button(action: {
-                    addExceptionForDate(event: event, date: dayData.date)
-                }) {
-                    Label("이 날짜만 제외", systemImage: "calendar.badge.minus")
-                }
-
-                Divider()
-
-                // 전체 일정 삭제
-                Button(role: .destructive, action: {
-                    showDeleteAlert = true
-                }) {
-                    Label("전체 일정 삭제", systemImage: "trash")
-                }
-            }
-        }
-        .onLongPressGesture(minimumDuration: 0.6) {
-            if !isActive {
-                // 빈 셀: 날짜 범위 선택
-                onDragStart()
-            }
-        }
-        .alert("일정 삭제", isPresented: $showDeleteAlert) {
-            Button("취소", role: .cancel) { }
-            Button("삭제", role: .destructive) {
-                if let event = event {
-                    viewModel.deleteEvent(event)
-                    onDelete()
-                }
-            }
-        } message: {
-            if let event = event {
-                Text("'\(event.title)' 일정을 전체 삭제하시겠습니까?")
             }
         }
     }
@@ -1241,7 +1557,13 @@ struct EventQuickLookView: View {
     let event: Event
     @Bindable var viewModel: ScheduleViewModel
     let onEdit: () -> Void
+    /// 이 줄을 할 일로 가져가 단계를 적으러 간다.
+    let onSplit: () -> Void
     @Environment(\.dismiss) private var dismiss
+
+    /// 이어져 있는 할 일. 무지개 한 줄이 실제로 어디까지 갔는지는 그쪽이 안다.
+    @State private var linkedTodo: BacklogItem?
+    @State private var todoProgress: (done: Int, total: Int)?
 
     private var laneColor: Color {
         if let lane = viewModel.eventLaneAssignments[event.laneKey],
@@ -1275,6 +1597,7 @@ struct EventQuickLookView: View {
                     infoRow(icon: "repeat", label: "요일", value: weekdaysText)
                     infoRow(icon: "exclamationmark.circle", label: "중요도",
                             value: event.importance.displayName)
+                    infoRow(icon: "checklist", label: "할 일", value: todoText)
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -1287,15 +1610,27 @@ struct EventQuickLookView: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
 
-                Button(action: onEdit) {
-                    Label("일정 수정", systemImage: "pencil")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                HStack(spacing: 10) {
+                    Button(action: onSplit) {
+                        Label(linkedTodo == nil ? "쪼개기" : "단계 보기",
+                              systemImage: "arrow.triangle.branch")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button(action: onEdit) {
+                        Label("수정", systemImage: "pencil")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(laneColor)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(laneColor)
             }
+            .task { loadLinkedTodo() }
             .padding()
             .navigationTitle("일정 보기")
             .navigationBarTitleDisplayMode(.inline)
@@ -1307,6 +1642,28 @@ struct EventQuickLookView: View {
         }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
+    }
+
+    /// 이어진 할 일이 어디까지 갔는지 한 줄로. 아직 없으면 그렇다고 말한다.
+    private var todoText: String {
+        guard linkedTodo != nil else { return "아직 안 쪼갬" }
+        guard let progress = todoProgress, progress.total > 0 else { return "단계 없음" }
+        return "\(progress.total)단계 중 \(progress.done)단계 완료"
+    }
+
+    private func loadLinkedTodo() {
+        let bridge = TodoEventBridge.shared
+        guard let item = bridge.linkedTodo(for: event),
+              let context = bridge.todoContainer?.mainContext else {
+            linkedTodo = nil
+            todoProgress = nil
+            return
+        }
+        linkedTodo = item
+        let all = (try? context.fetch(FetchDescriptor<BacklogItem>())) ?? []
+        let tree = TodoTree(all)
+        let steps = tree.children(of: item)
+        todoProgress = (done: steps.filter(\.isCompleted).count, total: steps.count)
     }
 
     private var weekdaysText: String {

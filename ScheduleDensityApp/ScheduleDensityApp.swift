@@ -59,6 +59,10 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
 enum AppSettingsKey {
     /// 공유 탭 노출 여부. 기본값은 false(숨김)이며 설정에서 켤 수 있다.
     static let showShareTab = "showShareTab"
+    /// 무지개 화면 첫 진입 온보딩을 이미 봤는지. 한 번만 뜬다(설정에서 다시 볼 수 있다).
+    static let hasSeenRainbowOnboarding = "hasSeenRainbowOnboarding"
+    /// 할 일 쪼개는 법 안내를 이미 봤는지. 단계가 없는 할 일에 처음 들어갈 때 한 번 뜬다.
+    static let hasSeenSplitOnboarding = "hasSeenSplitOnboarding"
 }
 
 /// 루트 TabView의 탭. 위젯 딥링크가 특정 탭을 열 수 있도록 태그를 붙인다.
@@ -71,7 +75,10 @@ struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
-    @State private var selectedTab: AppTab = .rainbow
+    @State private var selectedTab: AppTab = .todo
+    /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
+    /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
+    @State private var schedule = ScheduleViewModel()
 
     init() {
         LeeoEngagement.shared.registerLaunch()
@@ -276,8 +283,12 @@ struct ScheduleDensityApp: App {
     var body: some Scene {
         WindowGroup {
             TabView(selection: $selectedTab) {
-                // 원래 앱(일정 밀도)이 기본 화면, 할 일(내/공유)은 추가 탭.
-                ContentView()
+                // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
+                TodoView()
+                    .modelContainer(todoContainer)
+                    .tabItem { Label("할 일", systemImage: "checklist") }
+                    .tag(AppTab.todo)
+                ContentView(viewModel: schedule)
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
@@ -286,12 +297,17 @@ struct ScheduleDensityApp: App {
                         .tabItem { Label("공유", systemImage: "person.2.circle") }
                         .tag(AppTab.share)
                 }
-                TodoView()
-                    .modelContainer(todoContainer)
-                    .tabItem { Label("할 일", systemImage: "checklist") }
-                    .tag(AppTab.todo)
             }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
+            // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
+            .task { KeyboardDismissOnTap.install() }
+            // 할 일 ↔ 무지개를 잇는 다리에 양쪽 스토어를 넘긴다 (→ TodoEventBridge.swift).
+            .task {
+                schedule.setModelContext(sharedModelContainer.mainContext)
+                TodoEventBridge.shared.attach(schedule: schedule)
+                TodoEventBridge.shared.attach(todoContainer: todoContainer)
+                TodoEventBridge.shared.attach(eventContainer: sharedModelContainer)
+            }
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }

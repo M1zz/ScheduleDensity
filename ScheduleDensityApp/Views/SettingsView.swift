@@ -39,6 +39,7 @@ struct SettingsView: View {
     @State private var showingDeleteAllAlert = false
     @AppStorage("showInsightCards") private var showInsightCards = false
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
+    @AppStorage(AppSettingsKey.hasSeenRainbowOnboarding) private var hasSeenRainbowOnboarding = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -279,6 +280,26 @@ struct SettingsView: View {
                             }
                         }
                     }
+                    .padding(.vertical, 4)
+
+                    // 무지개 사용법 다시 보기 — 첫 진입 온보딩을 처음부터 다시 띄운다.
+                    Button {
+                        hasSeenRainbowOnboarding = false
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.tap")
+                                .foregroundColor(.blue)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("무지개 사용법 다시 보기")
+                                    .font(.headline)
+                                Text("꾹 눌러 일정 만드는 법을 처음부터 안내")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
                     .padding(.vertical, 4)
                 } header: {
                     Text("일정")

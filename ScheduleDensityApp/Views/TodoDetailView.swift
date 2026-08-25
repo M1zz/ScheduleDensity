@@ -34,12 +34,20 @@ struct TodoDetailView: View {
     /// 새 단계의 속성. 목록 화면의 빈 줄과 같은 키를 써서, 어디서 적든 지난번 값이 따라온다.
     @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.ready.rawValue
     @State private var editing: BacklogItem?
+    /// 무지개에 걸린 데드라인. 일정 스토어는 다른 컨테이너라 읽어 와 캐시한다.
+    @State private var deadline: Date?
+
+    // 처음 한 번만 — 쪼개는 법을 직접 해보게 한다 (→ TodoSplitOnboarding.swift).
+    @AppStorage(AppSettingsKey.hasSeenSplitOnboarding) private var hasSeenSplitOnboarding = false
+    @State private var guide: SplitGuideStep?
+    @State private var showingSplitMeaning = false
     @FocusState private var inputFocused: Bool
 
     private var tree: TodoTree { TodoTree(allItems) }
 
     /// 단계 목록 맨 아래 빈 줄의 id — 키보드가 올라올 때 그 줄로 스크롤하기 위해.
     private static let newRowID = "step.newRow"
+    private static let headerRowID = "step.header"
 
     private var rows: [(item: BacklogItem, depth: Int)] {
         // 최상위 할 일 자체는 헤더가 보여주므로 목록에는 그 아래만 그린다.
@@ -57,7 +65,7 @@ struct TodoDetailView: View {
     var body: some View {
         ScrollViewReader { proxy in
         List {
-            Section { headerCard }
+            Section { headerCard.id(Self.headerRowID) }
 
             // 팁은 한 번에 하나만. 둘 다 뜨면 단계를 보러 들어온 화면이
             // 설명 카드 두 장으로 덮인다. 이 할 일에 대한 조언을 먼저 내고,
@@ -67,15 +75,55 @@ struct TodoDetailView: View {
             }
             // 단계가 아직 없어도 이 섹션은 그린다 — 그 안의 빈 줄이 '첫 단계를 적는 자리'다.
             stepsSection
-            // 뭘 적어야 할지 막막할 때만 뼈대를 권한다. 빈 줄 아래에 둔다.
-            if rows.isEmpty { templateSection }
+            // 뼈대는 계속 둔다. 적다 말고 "다음에 뭐가 오지?" 할 때 되짚을 자리가 있어야 한다.
+            templateSection
         }
         .onChange(of: inputFocused) { _, focused in
             if focused { scrollToNewRow(proxy) }
         }
-        .onChange(of: rows.count) { _, _ in
+        .onChange(of: rows.count) { _, count in
             if inputFocused { scrollToNewRow(proxy) }
+            // 한 줄이라도 적었으면 그 다음을 짚어준다. 다 적을 때까지 카드가 붙어 있으면 잔소리가 된다.
+            if guide == .writeStep, count > 0 { advanceGuide(to: .pickLabel) }
         }
+        .overlayPreferenceValue(SpotlightAnchorKey.self) { anchors in
+            GeometryReader { geo in
+                if let step = guide {
+                    SpotlightCoachOverlay(
+                        hole: geo.spotlightRect(anchors)?.insetBy(dx: -8, dy: -6),
+                        containerSize: geo.size,
+                        icon: step.icon,
+                        title: guideTitle(step),
+                        message: step.message,
+                        // 짚어주는 자리를 보면서 바로 만질 수 있어야 한다.
+                        passesTouches: step != .intro
+                    ) {
+                        switch step {
+                        case .intro:
+                            Button("나중에") { endGuide(showMeaning: false) }
+                                .buttonStyle(.bordered)
+                            Button("해볼게요") { advanceGuide(to: .writeStep, proxy: proxy) }
+                                .buttonStyle(.borderedProminent)
+                        default:
+                            Spacer()
+                            Button("그만 볼래요") { endGuide(showMeaning: false) }
+                                .font(.footnote)
+                            if let next = step.next {
+                                Button("다음") { advanceGuide(to: next, proxy: proxy) }
+                                    .buttonStyle(.borderedProminent)
+                            } else {
+                                Button("다 됐어요") { endGuide(showMeaning: true) }
+                                    .buttonStyle(.borderedProminent)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showingSplitMeaning) {
+            SplitMeaningView { showingSplitMeaning = false }
+        }
+        .task { startGuideIfNeeded() }
         }
         .navigationTitle(root.title)
         .navigationBarTitleDisplayMode(.inline)
@@ -95,6 +143,37 @@ struct TodoDetailView: View {
         .sheet(item: $editing) { item in
             StepEditSheet(item: item) { save() }
         }
+    }
+
+    // MARK: - 쪼개는 법 안내
+
+    /// 아직 단계가 하나도 없는 할 일에 처음 들어왔을 때만 뜬다. 그때가 배울 순간이라서.
+    private func startGuideIfNeeded() {
+        guard !hasSeenSplitOnboarding, guide == nil, rows.isEmpty else { return }
+        hasSeenSplitOnboarding = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation { guide = .intro }
+        }
+    }
+
+    private func guideTitle(_ step: SplitGuideStep) -> String {
+        guard let order = step.order else { return step.title }
+        return "\(order.index)/\(order.total) · \(step.title)"
+    }
+
+    private func advanceGuide(to step: SplitGuideStep, proxy: ScrollViewProxy? = nil) {
+        withAnimation { guide = step }
+        guard let proxy else { return }
+        // 짚어주는 자리가 화면 밖이면 설명만 뜨고 정작 그 자리는 안 보인다.
+        withAnimation {
+            proxy.scrollTo(step == .header ? Self.headerRowID : Self.newRowID,
+                           anchor: step == .header ? .top : .center)
+        }
+    }
+
+    private func endGuide(showMeaning: Bool) {
+        withAnimation { guide = nil }
+        if showMeaning { showingSplitMeaning = true }
     }
 
     private func scrollToNewRow(_ proxy: ScrollViewProxy) {
@@ -119,47 +198,55 @@ struct TodoDetailView: View {
         let doneCount = tree.doneLeafCount(of: root)
         let remaining = tree.tally(of: [root])
 
-        return VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline) {
-                if stepCount > 0 {
+        return VStack(alignment: .leading, spacing: 12) {
+            // 언제까지인지가 제일 먼저다. 그게 이 일의 크기를 정한다.
+            if let deadline { deadlineLine(deadline) }
+
+            // 단계가 하나뿐이면 "0/1 단계"와 진행 막대는 아무것도 안 알려준다.
+            if stepCount > 1 {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text("\(doneCount)/\(stepCount)")
-                        .font(.system(size: 34, weight: .semibold, design: .rounded))
+                        .font(.system(size: 30, weight: .semibold, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(doneCount == stepCount ? Color.green : Color.accentColor)
                     Text("단계")
-                        .font(.body)
+                        .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    Spacer()
+                    if let category = category(of: root) {
+                        Circle()
+                            .fill(category.displayColor)
+                            .frame(width: 12, height: 12)
+                            .accessibilityLabel(category.name)
+                    }
                 }
-                Spacer()
-                if let category = category(of: root) {
-                    Circle()
-                        .fill(category.displayColor)
-                        .frame(width: 12, height: 12)
-                        .accessibilityLabel(category.name)
-                }
-            }
-
-            if stepCount > 0 {
                 ProgressView(value: tree.progress(of: root))
                     .tint(doneCount == stepCount ? .green : .accentColor)
             }
 
             if let step = tree.currentStep(of: root) {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 8) {
+                // 지금 할 단계. 시간은 오른쪽에 한 번, 언제 하면 되는지는 아래에 한 번.
+                // (예전에는 칩·설명·남은 몫이 같은 말을 세 번 했다.)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Image(systemName: "arrowtriangle.right.fill")
-                            .font(.system(size: 13))
+                            .font(.system(size: 12))
                             .foregroundStyle(.orange)
                         Text(step.title)
                             .font(.body.weight(.semibold))
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        TodoLabelChip(label: step.label, hours: step.durationHours)
+                        if step.label.costsMyTime {
+                            Text(formatDuration(step.durationHours))
+                                .font(.subheadline.weight(.medium))
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                    // 속성이 말해야 하는 건 '무슨 종류냐'가 아니라 '언제 하면 되냐'다.
-                    Label(step.label.whenToDo, systemImage: "clock")
+                    Label(step.label.whenToDo, systemImage: step.label.symbol)
                         .font(.subheadline)
                         .foregroundStyle(step.label.tint)
+                        .padding(.leading, 20)
                 }
             } else if stepCount > 0 {
                 Label("모든 단계를 마쳤습니다", systemImage: "checkmark.circle.fill")
@@ -179,7 +266,9 @@ struct TodoDetailView: View {
             // 예전에는 "다 하면 2시간"처럼 하나로 접었는데, 그 2시간 안에는 조각 넷과
             // 덩어리 하나가 섞여 있었다. 서로 환산되지 않는 것을 더해 놓으면
             // "2시간 벌었는데 왜 아무것도 못 했지"가 된다 (→ TodoTree.tally).
-            if !remaining.isEmpty {
+            //
+            // 남은 게 지금 할 단계 하나뿐이면 바로 위에 이미 다 적혀 있다. 두 번 적지 않는다.
+            if remaining.count > 1 || (remaining.first?.count ?? 0) > 1 {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("남은 몫")
                         .font(.caption)
@@ -196,37 +285,67 @@ struct TodoDetailView: View {
             }
         }
         .padding(.vertical, 4)
+        .spotlightAnchor(guide == .header)
+        .task { deadline = TodoEventBridge.shared.deadline(for: root) }
     }
 
-    // MARK: - 단계가 아직 없을 때 (쪼개기 도우미)
+    /// 무지개에 그어 둔 줄의 끝나는 날. 이 일이 언제까지인지를 맨 위에서 말한다.
+    private func deadlineLine(_ deadline: Date) -> some View {
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: Date()),
+                                           to: calendar.startOfDay(for: deadline)).day ?? 0
+        let tint: Color = days <= 0 ? .red : (days <= 3 ? .orange : .secondary)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일"
+        formatter.locale = Locale(identifier: "ko_KR")
 
+        return HStack(spacing: 6) {
+            Image(systemName: "flag.checkered")
+                .font(.caption)
+            Text("\(formatter.string(from: deadline))까지")
+                .font(.subheadline.weight(.medium))
+            Text(days <= 0 ? "오늘" : "D-\(days)")
+                .font(.caption.weight(.semibold))
+                .monospacedDigit()
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Capsule().fill(tint.opacity(0.15)))
+            Spacer()
+        }
+        .foregroundStyle(tint)
+    }
+
+    // MARK: - 쪼개기 도우미 (보기용 뼈대)
+
+    /// 내 단계가 아니라 '참고할 순서'다. 실제 단계 목록과 헷갈리지 않게
+    /// 글자를 한 단 낮추고 흐리게 둔다.
     @ViewBuilder
     private var templateSection: some View {
         Section {
             ForEach(Array(TodoSplitAdvisor.template(for: root.title).enumerated()), id: \.offset) { _, step in
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 10) {
                         Text(step.title)
-                            .font(.body)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         TodoLabelChip(label: step.label)
+                            .opacity(0.7)
                     }
                     Text(step.note)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
-                .padding(.vertical, 4)
-            }
-
-            Button {
-                applyTemplate()
-            } label: {
-                Label("이 뼈대로 4단계 만들기", systemImage: "wand.and.stars")
+                .padding(.vertical, 3)
             }
         } header: {
             Text("쪼개기 도우미")
         } footer: {
-            Text("일이 굴러가는 순서입니다 — 정하고 → 펼치고 → 몰입해서 → 바로.\n그대로 만든 뒤 이름과 속성은 얼마든지 고칠 수 있습니다.")
+            // 이 뼈대는 '보기'다. 한 번에 네 줄을 밀어 넣는 버튼이 있었는데,
+            // 남의 일에 맞춘 이름 넷이 통째로 들어오면 그걸 지우고 고치는 게
+            // 처음부터 적는 것보다 오래 걸렸다. 순서만 보여주고 적는 건 사람이 한다.
+            Text("일이 굴러가는 순서입니다 — 정하고 → 펼치고 → 몰입해서 → 바로.\n그대로 따를 필요는 없어요. 위 빈 줄에 내 말로 적으면 됩니다.")
         }
     }
 
@@ -353,6 +472,7 @@ struct TodoDetailView: View {
                 .onSubmit(addStep)
 
             newShareMenu
+                .spotlightAnchor(guide == .pickLabel)
 
             if addTarget != nil {
                 // 하위로 파고들었다가 다시 맨 바깥 단계로 돌아오는 길.
@@ -368,6 +488,7 @@ struct TodoDetailView: View {
             }
         }
         .padding(.vertical, 2)
+        .spotlightAnchor(guide == .writeStep)
         .id(Self.newRowID)
     }
 
@@ -391,26 +512,6 @@ struct TodoDetailView: View {
 
     /// 지금 빈 줄에 적히면 붙을 속성.
     private var draftLabel: TodoLabel { TodoLabel.resolve(newLabelRaw) ?? .ready }
-
-    /// 쪼개기 도우미의 기본 뼈대를 그대로 단계로 만든다.
-    /// 뼈대의 시간은 '비율의 씨앗'이다 — 전체 예상 시간을 그 비율대로 나눠 갖는다.
-    private func applyTemplate() {
-        let tree = self.tree
-        var index = tree.nextSortIndex(under: root)
-        var made: [BacklogItem] = []
-        for step in TodoSplitAdvisor.template(for: root.title) {
-            let node = TodoTree.makeStep(under: root,
-                                         title: step.title,
-                                         sortIndex: index,
-                                         label: step.label)
-            context.insert(node)
-            made.append(node)
-            index += 1
-        }
-        let updated = TodoTree(allItems + made)
-        updated.rollUp(from: root)
-        save()
-    }
 
     @ViewBuilder
     private func rowMenu(_ item: BacklogItem) -> some View {
