@@ -366,14 +366,29 @@ enum TodoLabel: String, CaseIterable, Identifiable, Sendable {
 
     var id: String { rawValue }
 
-    /// 칩에 쓰는 짧은 이름.
+    /// 칩에 쓰는 이름.
+    ///
+    /// **조건을 그대로 말한다.** 예전에는 "바로 / 펼치고 / 몰입해서"처럼 동사 토막이었는데,
+    /// 옆에 시간이 붙으면 "바로 15분"이 되어 무슨 말인지 알 수 없었다. 쪼개는 사람이
+    /// 골라야 하는 건 '지금 시작할 수 있느냐'이므로, 그 답을 문장으로 적는다.
     var name: String {
         switch self {
-        case .ready:   return "바로"
-        case .setup:   return "펼치고"
-        case .deep:    return "몰입해서"
-        case .decide:  return "정하고"
-        case .waiting: return "기다림"
+        case .ready:   return "바로 가능"
+        case .setup:   return "준비가 필요"
+        case .deep:    return "몰입이 필요"
+        case .decide:  return "결정이 필요"
+        case .waiting: return "답을 기다림"
+        }
+    }
+
+    /// 이름만으로 부족할 때 한 줄 더. 고르는 자리(메뉴·공유 시트)에서 쓴다.
+    var pickHint: String {
+        switch self {
+        case .ready:   return "지금 손에 잡히는 것만으로 끝나요"
+        case .setup:   return "자료·도구를 펼쳐야 시작돼요"
+        case .deep:    return "끊기면 처음부터 다시 올라와야 해요"
+        case .decide:  return "아직 안 정한 게 있어 손이 안 나가요"
+        case .waiting: return "내 손을 떠나 있어요"
         }
     }
 

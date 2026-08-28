@@ -62,21 +62,32 @@ struct TodoLabelChip: View {
     }
 
     var body: some View {
+        // ⚠️ 시간은 **칩 밖**에 둔다. 알약 안에 같이 넣으면 "바로 15분"처럼 한 덩어리로
+        //    읽혀서, 조건인지 길이인지 구분이 안 된다. 조건은 알약, 시간은 그 옆의 글자다.
+        HStack(spacing: 6) {
+            capsuleBody
+            if showsHours {
+                Text(formatDuration(shownHours))
+                    .font(.subheadline)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .fixedSize(horizontal: true, vertical: false)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var capsuleBody: some View {
         HStack(spacing: 5) {
             Image(systemName: label.symbol)
                 .font(.system(size: 12, weight: .semibold))
             Text(label.name)
                 .font(.subheadline.weight(.semibold))
             if let count {
-                Text("\(count)")
+                Text("\(count)개")
                     .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
-            }
-            if showsHours {
-                Text(formatDuration(shownHours))
-                    .font(.subheadline)
-                    .monospacedDigit()
-                    .opacity(0.75)
             }
         }
         .lineLimit(1)
@@ -89,8 +100,6 @@ struct TodoLabelChip: View {
         .padding(.horizontal, style == .full ? 12 : 10)
         .padding(.vertical, style == .full ? 7 : 5)
         .background(Capsule().fill(isSelected ? label.tint : label.tint.opacity(0.14)))
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityText)
     }
 }
 

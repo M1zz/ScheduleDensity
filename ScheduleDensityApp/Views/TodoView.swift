@@ -572,11 +572,17 @@ struct TodoView: View {
         Menu {
             Picker("지금 시작할 수 있나요?", selection: $newLabelRaw) {
                 ForEach(TodoLabel.allCases) { label in
-                    Label(label.costsMyTime
-                          ? "\(label.name) · \(formatDuration(label.defaultHours))"
-                          : label.name,
-                          systemImage: label.symbol)
-                        .tag(label.rawValue)
+                    // 이름 아래에 왜 그 조건인지 한 줄. 이름만으로는 처음 보는 사람이 못 고른다.
+                    // 시간은 뒤에 붙이되 가운뎃점으로 갈라, 조건과 한 덩어리로 안 읽히게 한다.
+                    Label {
+                        Text(label.name)
+                        Text(label.costsMyTime
+                             ? "\(label.pickHint) · \(formatDuration(label.defaultHours))"
+                             : label.pickHint)
+                    } icon: {
+                        Image(systemName: label.symbol)
+                    }
+                    .tag(label.rawValue)
                 }
             }
         } label: {

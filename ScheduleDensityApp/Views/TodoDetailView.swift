@@ -498,11 +498,16 @@ struct TodoDetailView: View {
         Menu {
             Picker("지금 시작할 수 있나요?", selection: $newLabelRaw) {
                 ForEach(TodoLabel.allCases) { label in
-                    Label(label.costsMyTime
-                          ? "\(label.name) · \(formatDuration(label.defaultHours))"
-                          : label.name,
-                          systemImage: label.symbol)
-                        .tag(label.rawValue)
+                    // 이름 아래에 왜 그 조건인지 한 줄. 이름만으로는 처음 보는 사람이 못 고른다.
+                    Label {
+                        Text(label.name)
+                        Text(label.costsMyTime
+                             ? "\(label.pickHint) · \(formatDuration(label.defaultHours))"
+                             : label.pickHint)
+                    } icon: {
+                        Image(systemName: label.symbol)
+                    }
+                    .tag(label.rawValue)
                 }
             }
         } label: {
@@ -713,7 +718,9 @@ private struct StepEditSheet: View {
                 } header: {
                     Text("지금 시작할 수 있나요?")
                 } footer: {
-                    Text(label.hint)
+                    Text(label.costsMyTime
+                         ? "\(label.hint)\n고르면 예상 시간 \(formatDuration(label.defaultHours))이 따라옵니다 — 언제든 바꿀 수 있어요."
+                         : label.hint)
                 }
             }
             .navigationTitle("단계")
