@@ -36,6 +36,9 @@ struct TodoDetailView: View {
     @State private var editing: BacklogItem?
     /// 무지개에 걸린 데드라인. 일정 스토어는 다른 컨테이너라 읽어 와 캐시한다.
     @State private var deadline: Date?
+    @State private var editingTitle = ""
+    @State private var pickingDeadline = false
+    @State private var pickedDeadline = Date()
 
     // 처음 한 번만 — 쪼개는 법을 직접 해보게 한다 (→ TodoSplitOnboarding.swift).
     @AppStorage(AppSettingsKey.hasSeenSplitOnboarding) private var hasSeenSplitOnboarding = false
@@ -77,6 +80,8 @@ struct TodoDetailView: View {
             stepsSection
             // 뼈대는 계속 둔다. 적다 말고 "다음에 뭐가 오지?" 할 때 되짚을 자리가 있어야 한다.
             templateSection
+            // 목록에서는 이름만 받는다. 정하는 건 전부 여기다.
+            settingsSection
         }
         .onChange(of: inputFocused) { _, focused in
             if focused { scrollToNewRow(proxy) }
@@ -286,7 +291,10 @@ struct TodoDetailView: View {
         }
         .padding(.vertical, 4)
         .spotlightAnchor(guide == .header)
-        .task { deadline = TodoEventBridge.shared.deadline(for: root) }
+        .task {
+            deadline = TodoEventBridge.shared.deadline(for: root)
+            editingTitle = root.title
+        }
     }
 
     /// 무지개에 그어 둔 줄의 끝나는 날. 이 일이 언제까지인지를 맨 위에서 말한다.
@@ -314,6 +322,185 @@ struct TodoDetailView: View {
             Spacer()
         }
         .foregroundStyle(tint)
+    }
+
+    // MARK: - 이 할 일 (목록에서 못 정한 것들을 여기서 정한다)
+
+    /// 목록의 빈 줄은 이름만 받는다. 착수 조건·분류·데드라인은 적을 때가 아니라
+    /// **들여다볼 때** 정하는 게 맞다 — 한 줄 적으려다 매번 세 가지를 고르게 되면
+    /// 적는 속도가 죽고, 정작 정해야 할 때는 지난 값을 아무 생각 없이 흘려보낸다.
+    @ViewBuilder
+    private var settingsSection: some View {
+        Section {
+            TextField("할 일 이름", text: $editingTitle)
+                .onSubmit(commitTitle)
+                // 글자마다 저장하면 위젯 갱신까지 매 타건마다 돈다. 손이 멈추면 저장한다.
+                .task(id: editingTitle) {
+                    try? await Task.sleep(for: .milliseconds(500))
+                    guard !Task.isCancelled else { return }
+                    commitTitle()
+                }
+
+            // 단계로 쪼갠 뒤에는 이 할 일의 시간이 단계들의 합이라, 여기 조건은 뜻이 없다.
+            if !tree.hasChildren(root) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("지금 시작할 수 있나요?")
+                        .font(.subheadline.weight(.medium))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(TodoLabel.allCases) { option in
+                                Button {
+                                    TodoTree(allItems).setLabel(root, to: option)
+                                    save()
+                                } label: {
+                                    TodoLabelChip(label: option,
+                                                  isSelected: root.label == option,
+                                                  style: .full)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+                    .scrollClipDisabled()
+                    Text(root.label.hint)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.vertical, 4)
+            }
+
+            categoryPicker
+
+            deadlineRow
+        } header: {
+            Text("이 할 일")
+        }
+        .sheet(isPresented: $pickingDeadline) { deadlinePickerSheet }
+    }
+
+    private var categoryPicker: some View {
+        Menu {
+            Button {
+                root.categoryID = nil
+                save()
+            } label: {
+                Label("미분류", systemImage: root.categoryID == nil ? "checkmark" : "circle")
+            }
+            ForEach(categories) { c in
+                Button {
+                    root.categoryID = c.uuid
+                    save()
+                } label: {
+                    Label(c.name, systemImage: root.categoryID == c.uuid ? "checkmark" : c.iconName)
+                }
+            }
+        } label: {
+            HStack {
+                Text("분류")
+                    .foregroundStyle(.primary)
+                Spacer()
+                if let category = category(of: root) {
+                    Circle()
+                        .fill(category.displayColor)
+                        .frame(width: 10, height: 10)
+                    Text(category.name)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("미분류")
+                        .foregroundStyle(.secondary)
+                }
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    private var deadlineRow: some View {
+        HStack {
+            Button {
+                pickedDeadline = deadline ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+                pickingDeadline = true
+            } label: {
+                HStack {
+                    Text("데드라인")
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text(deadline.map(formatDeadline) ?? "없음")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+
+            if deadline != nil {
+                Button {
+                    TodoEventBridge.shared.clearRainbow(for: root)
+                    deadline = nil
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.tertiary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("데드라인 지우기")
+            }
+        }
+    }
+
+    private var deadlinePickerSheet: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                DatePicker("데드라인", selection: $pickedDeadline,
+                           in: Calendar.current.startOfDay(for: Date())...,
+                           displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .padding()
+                Text("오늘부터 이 날까지 무지개에 한 줄이 그어집니다.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                Spacer()
+            }
+            .navigationTitle("데드라인")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("취소") { pickingDeadline = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("정하기") {
+                        let hours = tree.totalHours(of: root)
+                        TodoEventBridge.shared.drawRainbow(for: root, deadline: pickedDeadline, hours: hours)
+                        deadline = TodoEventBridge.shared.deadline(for: root)
+                        pickingDeadline = false
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    /// 이름을 고치면 무지개에 그어 둔 줄의 이름도 따라간다.
+    private func commitTitle() {
+        let trimmed = editingTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed != root.title else { return }
+        root.title = trimmed
+        TodoEventBridge.shared.renameRainbow(for: root)
+        save()
+    }
+
+    private func formatDeadline(_ date: Date) -> String {
+        let calendar = Calendar.current
+        let days = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: Date()),
+                                           to: calendar.startOfDay(for: date)).day ?? 0
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M월 d일"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return days <= 0 ? "\(formatter.string(from: date)) · 오늘까지"
+                         : "\(formatter.string(from: date)) · D-\(days)"
     }
 
     // MARK: - 쪼개기 도우미 (보기용 뼈대)

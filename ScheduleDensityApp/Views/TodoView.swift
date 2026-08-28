@@ -33,10 +33,6 @@ struct TodoView: View {
     /// @Query로 못 보므로 직접 읽어 와 캐시한다.
     @State private var assignedToday: Set<String> = []
     @State private var newTitle = ""
-    @State private var newCategoryID: String? = nil
-    /// 빈 줄에 지금 적히면 붙을 속성(= 착수 조건). 고르지 않아도 지난번 값이 그대로 따라와서,
-    /// 적고 엔터만 쳐도 한 줄이 확정된다. 시간은 속성이 데려온다.
-    @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.ready.rawValue
     @State private var showingFamilyShareNotice = false
     /// 목록 위 칩으로 걸어 둔 착수 조건. nil이면 전부 보인다.
     /// "지금 10분 났는데 뭘 하지"에 답하는 장치다 — 조각이 흘러가는 이유는 그 순간에
@@ -300,9 +296,6 @@ struct TodoView: View {
 
     private func toggleFilter(_ label: TodoLabel) {
         withAnimation { filter = (filter == label) ? nil : label }
-        // 걸러 놓은 채로 적으면 방금 적은 줄이 필터에 걸려 곧바로 사라져 보인다.
-        // 빈 줄의 조건도 필터를 따라가게 해서, 적은 것이 그 자리에 남게 한다.
-        if let filter { newLabelRaw = filter.rawValue }
         FragmentFilterTip().invalidate(reason: .actionPerformed)
     }
 
@@ -540,83 +533,17 @@ struct TodoView: View {
                 .font(.system(size: 22))
                 .foregroundStyle(.tertiary)
 
+            // 여기서는 **할 일 이름만** 받는다.
+            // 착수 조건·분류·데드라인을 적는 줄에 같이 붙여 두면, 한 줄 적으려다
+            // 매번 세 가지를 정하게 된다. 그건 적는 속도를 죽이고, 정작 정해야 할 때는
+            // 아무 생각 없이 지난 값을 그냥 흘려보낸다. 정하는 자리는 상세 화면이다.
             TextField(tab == .mine ? "할 일 추가" : "공유 할 일 추가", text: $newTitle)
                 .focused($inputFocused)
                 .submitLabel(.return)
                 .onSubmit(add)
-
-            if tab == .mine {
-                // 분류를 만들어 둔 사람에게만 보여준다 — 안 쓰는 사람의 줄까지 복잡해지지 않게.
-                if !categories.isEmpty { newCategoryMenu }
-                newLabelMenu
-            }
         }
         .padding(.vertical, 2)
         .id(Self.newRowID)
-    }
-
-    /// 이 줄을 지금 시작할 수 있는지. 손대지 않으면 지난번에 고른 값이 따라오므로,
-    /// 적고 엔터만 쳐도 추가된다. 시간은 고른 속성이 데려온다.
-    @ViewBuilder
-    private var newLabelMenu: some View {
-        // 처음 쓰는 사람에게만 한 번, 적기 시작한 뒤에 이 칩이 무엇인지 알려준다.
-        // 빈 줄에 그냥 두면 앱을 켜자마자 아무것도 안 했는데 설명부터 받는 꼴이 된다.
-        if newTitle.isEmpty {
-            labelMenu
-        } else {
-            labelMenu.popoverTip(LabelPickTip())
-        }
-    }
-
-    private var labelMenu: some View {
-        Menu {
-            Picker("지금 시작할 수 있나요?", selection: $newLabelRaw) {
-                ForEach(TodoLabel.allCases) { label in
-                    // 이름 아래에 왜 그 조건인지 한 줄. 이름만으로는 처음 보는 사람이 못 고른다.
-                    // 시간은 뒤에 붙이되 가운뎃점으로 갈라, 조건과 한 덩어리로 안 읽히게 한다.
-                    Label {
-                        Text(label.name)
-                        Text(label.costsMyTime
-                             ? "\(label.pickHint) · \(formatDuration(label.defaultHours))"
-                             : label.pickHint)
-                    } icon: {
-                        Image(systemName: label.symbol)
-                    }
-                    .tag(label.rawValue)
-                }
-            }
-        } label: {
-            TodoLabelChip(label: draftLabel, hours: draftLabel.defaultHours)
-        }
-    }
-
-    /// 지금 빈 줄에 적히면 붙을 라벨.
-    private var draftLabel: TodoLabel {
-        TodoLabel.resolve(newLabelRaw) ?? .ready
-    }
-
-    private var newCategoryMenu: some View {
-        let current = categories.first { $0.uuid == newCategoryID }
-        return Menu {
-            Button {
-                newCategoryID = nil
-            } label: {
-                Label("미분류", systemImage: newCategoryID == nil ? "checkmark" : "circle")
-            }
-            ForEach(categories) { c in
-                Button {
-                    newCategoryID = c.uuid
-                } label: {
-                    Label(c.name, systemImage: newCategoryID == c.uuid ? "checkmark" : c.iconName)
-                }
-            }
-        } label: {
-            Image(systemName: current?.iconName ?? "tag")
-                .font(.system(size: 16))
-                .foregroundStyle(current?.displayColor ?? Color.secondary)
-                .frame(width: 34, height: 34)
-                .background(Circle().fill((current?.displayColor ?? Color.secondary).opacity(0.15)))
-        }
     }
 
     // MARK: - 무지개에서 넘어온 일
@@ -903,26 +830,24 @@ struct TodoView: View {
         if tab == .family {
             Task { await family.add(title: title) }
         } else {
-            // 속성 = 착수 조건. 시간은 속성이 데려오고, 안에서 단계를 나누면
-            // 상위 시간은 단계들의 합으로 다시 계산된다 (아래에서 위로).
-            let label = draftLabel
+            // 적을 때는 조건을 안 고른다(입력 줄에 그 자리가 없다).
+            // 가장 가벼운 '바로 가능'으로 시작해 두고, 상세 화면에서 고치게 한다.
+            let label = TodoLabel.ready
             let maxIndex = allItems.map(\.sortIndex).max() ?? -1
             withAnimation {
                 context.insert(BacklogItem(title: title,
                                            durationHours: label.defaultHours,
                                            sortIndex: maxIndex + 1,
-                                           categoryID: newCategoryID,
                                            weekStartDate: weekStart,
                                            label: label))
                 save()
             }
-            LabelPickTip.hasPicked = true
             // 적어 둔 한 줄은 단발성 심부름처럼 보인다. "언제까지"가 붙어야
             // 오늘부터 그 날까지 나를 붙잡고 있는 일로 보인다 → 무지개에 한 줄.
             if let added = allItems.first(where: { $0.title == title && $0.parentToken == nil }) {
                 deadlinePromptItem = added
             }
-            // 필터가 걸린 채로 다른 조건을 골라 적으면 그 줄이 곧바로 걸러져 사라진다.
+            // 필터가 걸린 채로 적으면 방금 적은 줄이 곧바로 걸러져 사라진다.
             // 방금 적은 것은 언제나 눈에 남아야 하므로 필터를 푼다.
             if let current = filter, current != label {
                 withAnimation { filter = nil }
