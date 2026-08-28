@@ -69,6 +69,10 @@ struct TodoDetailView: View {
     var body: some View {
         ScrollViewReader { proxy in
         List {
+            // 이름·시간·기간·분류가 맨 위다. 이 화면에 들어오는 이유가 그걸 정하려는 것이고,
+            // 목록에서는 이름만 받으므로 여기가 유일하게 정할 수 있는 자리다.
+            settingsSection
+
             Section { headerCard.id(Self.headerRowID) }
 
             // 팁은 한 번에 하나만. 둘 다 뜨면 단계를 보러 들어온 화면이
@@ -81,8 +85,6 @@ struct TodoDetailView: View {
             stepsSection
             // 뼈대는 계속 둔다. 적다 말고 "다음에 뭐가 오지?" 할 때 되짚을 자리가 있어야 한다.
             templateSection
-            // 목록에서는 이름만 받는다. 정하는 건 전부 여기다.
-            settingsSection
         }
         .onChange(of: inputFocused) { _, focused in
             if focused { scrollToNewRow(proxy) }
@@ -214,9 +216,6 @@ struct TodoDetailView: View {
         let doneCount = tree.doneLeafCount(of: root)
 
         return VStack(alignment: .leading, spacing: 12) {
-            // 언제까지인지가 제일 먼저다. 그게 이 일의 크기를 정한다.
-            if hasPeriod { deadlineLine(periodEnd) }
-
             // 단계가 하나뿐이면 "0/1 단계"와 진행 막대는 아무것도 안 알려준다.
             if stepCount > 1 {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -283,33 +282,6 @@ struct TodoDetailView: View {
                 hasPeriod = true
             }
         }
-    }
-
-    /// 무지개에 그어 둔 줄의 끝나는 날. 이 일이 언제까지인지를 맨 위에서 말한다.
-    private func deadlineLine(_ deadline: Date) -> some View {
-        let calendar = Calendar.current
-        let days = calendar.dateComponents([.day],
-                                           from: calendar.startOfDay(for: Date()),
-                                           to: calendar.startOfDay(for: deadline)).day ?? 0
-        let tint: Color = days <= 0 ? .red : (days <= 3 ? .orange : .secondary)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        formatter.locale = Locale(identifier: "ko_KR")
-
-        return HStack(spacing: 6) {
-            Image(systemName: "flag.checkered")
-                .font(.caption)
-            Text("\(formatter.string(from: deadline))까지")
-                .font(.subheadline.weight(.medium))
-            Text(days <= 0 ? "오늘" : "D-\(days)")
-                .font(.caption.weight(.semibold))
-                .monospacedDigit()
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Capsule().fill(tint.opacity(0.15)))
-            Spacer()
-        }
-        .foregroundStyle(tint)
     }
 
     // MARK: - 이 할 일 (목록에서 못 정한 것들을 여기서 정한다)
