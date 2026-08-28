@@ -1101,27 +1101,58 @@ private struct TodoRow: View {
     /// 그게 무슨 일의 일부인지는 눌러 들어가면 네비게이션 타이틀이 말해준다.
     /// 시간은 왼쪽 링이 진행을, 헤더가 총량을 이미 말하므로 줄에서는 뺐다.
     private var content: some View {
-        HStack(spacing: 8) {
-            Text(displayTitle)
-                .strikethrough(item.isCompleted)
-                .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
-                .lineLimit(2)
-
-            if isAssignedToday { todayBadge }
-            if let deadline, !item.isCompleted { deadlineBadge(deadline) }
-            if let category {
-                Circle()
-                    .fill(category.displayColor)
-                    .frame(width: 10, height: 10)
-                    .accessibilityLabel(category.name)
+        VStack(alignment: .leading, spacing: 2) {
+            // 쪼갠 할 일은 단계 이름만 서 있으면 이게 무슨 일의 일부인지 알 수 없다.
+            // 그렇다고 할 일 이름을 크게 세우면 '지금 할 것'이 뒤로 밀린다.
+            // 그래서 할 일 이름을 위에 작게 얹어 길 안내로만 쓴다.
+            if let parentTitle {
+                HStack(spacing: 4) {
+                    Text(parentTitle)
+                        .lineLimit(1)
+                    if let stepNumber {
+                        Text("\(stepNumber.now)/\(stepNumber.total)")
+                            .monospacedDigit()
+                    }
+                }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
             }
-            Spacer(minLength: 0)
+
+            HStack(spacing: 8) {
+                Text(displayTitle)
+                    .strikethrough(item.isCompleted)
+                    .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
+                    .lineLimit(2)
+
+                if isAssignedToday { todayBadge }
+                if let deadline, !item.isCompleted { deadlineBadge(deadline) }
+                if let category {
+                    Circle()
+                        .fill(category.displayColor)
+                        .frame(width: 10, height: 10)
+                        .accessibilityLabel(category.name)
+                }
+                Spacer(minLength: 0)
+            }
         }
         .padding(.vertical, 2)
     }
 
     /// 줄에 설 이름. 남은 단계가 있으면 그 단계, 아니면 할 일 자신.
     private var displayTitle: String { (currentStep ?? item).title }
+
+    /// 단계를 하고 있을 때만, 그게 무슨 일의 일부인지.
+    private var parentTitle: String? {
+        guard currentStep != nil else { return nil }
+        return item.title
+    }
+
+    /// 몇 번째 단계인지. 끝이 보여야 남은 길이 가늠된다.
+    private var stepNumber: (now: Int, total: Int)? {
+        guard currentStep != nil,
+              let number = tree.currentStepNumber(of: item) else { return nil }
+        return (number, tree.leafCount(of: item))
+    }
 
     /// 남은 날을 세어 보여준다. 날짜보다 "며칠 남았나"가 먼저 와닿는다.
     private func deadlineBadge(_ deadline: Date) -> some View {

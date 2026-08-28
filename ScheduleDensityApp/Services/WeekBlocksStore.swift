@@ -59,27 +59,42 @@ final class WeekBlocksStore {
     init() {
         Self.resetMirrorIfTokenChanged()
         do {
-            // 관계 없는 독립 모델이라 필요한 둘만 스키마로 선언해도 읽을 수 있다.
-            let schema = Schema([Routine.self, PlanBlock.self])
-            // ⚠️ 반드시 별도 store 파일을 지정한다. 이름을 비우면 Event 스토어와 같은
-            //    default.store 로 떨어져 한 파일에서 충돌한다(ZEVENT 손상·CloudKit 미러링 오염).
-            // ⚠️ groupContainer: .none — App Group entitlement(위젯용)가 붙으면 SwiftData
-            //    기본 저장 위치가 App Group 컨테이너로 바뀐다. resetMirrorIfTokenChanged가
-            //    지우는 경로(FileManager 기준 앱 샌드박스)와 어긋나 미러 리셋이 무력화되고,
-            //    기존 미러도 못 찾아 CloudKit에서 통째로 다시 받게 된다.
-            let config = ModelConfiguration(
-                Self.storeName,
-                schema: schema,
-                groupContainer: .none,
-                cloudKitDatabase: .private(Self.containerID)
-            )
-            self.container = try ModelContainer(for: schema, configurations: [config])
+            // 관계 없는 독립 모델이라 필요한 것만 스키마로 선언해도 읽을 수 있다.
+            // RoutineOccurrence·QuotaPlacement는 맥에서 요일별로 옮긴 위치다 —
+            // 이게 없으면 맥에서 드래그해 옮긴 루틴이 iOS에서는 제자리에 안 보인다.
+            let schema = Schema([Routine.self, PlanBlock.self,
+                                 RoutineOccurrence.self, QuotaPlacement.self])
+            self.container = try Self.makeContainer(schema)
             print("✅ [WeekBlocks] 읽기 컨테이너 준비됨 (container=\(Self.containerID))")
         } catch {
-            print("⚠️ [WeekBlocks] 읽기 컨테이너 생성 실패: \(error)")
-            self.container = nil
-            self.lastErrorDescription = String(describing: error)
+            // 요일별 배치 모델을 못 붙였다 — 맥이 아직 그 레코드 타입을 안 올렸을 수 있다.
+            // 그것 때문에 연동 전체가 끊기면 안 되므로, 원래 두 모델만으로 다시 연다.
+            // (그러면 하루 타임라인의 '요일별로 옮긴 위치'만 기본값으로 보인다.)
+            print("⚠️ [WeekBlocks] 확장 스키마 실패, 기본 스키마로 재시도: \(error)")
+            do {
+                self.container = try Self.makeContainer(Schema([Routine.self, PlanBlock.self]))
+                print("✅ [WeekBlocks] 읽기 컨테이너 준비됨 (기본 스키마)")
+            } catch {
+                print("⚠️ [WeekBlocks] 읽기 컨테이너 생성 실패: \(error)")
+                self.container = nil
+                self.lastErrorDescription = String(describing: error)
+            }
         }
+    }
+
+    private static func makeContainer(_ schema: Schema) throws -> ModelContainer {
+        // ⚠️ 반드시 별도 store 파일을 지정한다. 이름을 비우면 Event 스토어와 같은
+        //    default.store 로 떨어져 한 파일에서 충돌한다(ZEVENT 손상·CloudKit 미러링 오염).
+        // ⚠️ groupContainer: .none — App Group entitlement(위젯용)가 붙으면 SwiftData
+        //    기본 저장 위치가 App Group 컨테이너로 바뀐다. resetMirrorIfTokenChanged가
+        //    지우는 경로(FileManager 기준 앱 샌드박스)와 어긋나 미러 리셋이 무력화된다.
+        let config = ModelConfiguration(
+            storeName,
+            schema: schema,
+            groupContainer: .none,
+            cloudKitDatabase: .private(containerID)
+        )
+        return try ModelContainer(for: schema, configurations: [config])
     }
 
     /// 리셋 토큰이 바뀌었으면 로컬 미러 파일을 지운다. 컨테이너를 만들기 **전에** 호출해야 한다.
@@ -228,6 +243,78 @@ final class WeekBlocksStore {
         case 18..<23: return .evening
         default:      return .night
         }
+    }
+
+    // MARK: - 하루 읽기 (타임라인용)
+
+    /// 그 날 하루를 그리는 데 필요한 모든 것. 맥 타임라인과 같은 입력이다.
+    struct DayInput {
+        var fixedRoutines: [Routine] = []
+        var quotaRoutines: [Routine] = []
+        var blocks: [PlanBlock] = []
+        var routineStartOverride: [String: Double] = [:]
+        var quotaPlacement: [String: [Int: Double]] = [:]
+        var quotaHidden: [String: Set<Int>] = [:]
+        /// 맥 데이터를 아예 못 읽는 상태(iCloud 미로그인 등).
+        var isAvailable = false
+    }
+
+    /// 그 날짜의 루틴·계획·요일별 배치를 한 번에 읽는다.
+    /// 맥에서 숨긴 루틴/끼니는 처음부터 빼고 준다 — iOS에는 '되살리기'가 없어서
+    /// 유령 블록을 보여줄 이유가 없다.
+    func dayInput(for date: Date) -> DayInput {
+        guard let container else { return DayInput() }
+        let key = Self.dayKey(for: date)
+        let context = ModelContext(container)
+
+        let allRoutines = (try? context.fetch(FetchDescriptor<Routine>())) ?? []
+        let allBlocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
+        let occurrences = (try? context.fetch(FetchDescriptor<RoutineOccurrence>())) ?? []
+        let placements = (try? context.fetch(FetchDescriptor<QuotaPlacement>())) ?? []
+
+        let dayOccurrences = occurrences.filter {
+            $0.dayRaw == key.day && Calendar.current.isDate($0.weekStartDate, inSameDayAs: key.weekStart)
+        }
+        let dayPlacements = placements.filter {
+            $0.dayRaw == key.day && Calendar.current.isDate($0.weekStartDate, inSameDayAs: key.weekStart)
+        }
+
+        var input = DayInput()
+        input.isAvailable = true
+
+        // 고정 루틴은 그 주·요일에 배치(occurrence)가 있는 것만 선다.
+        // 배치 기록이 아예 없는 주라면 루틴의 요일 마스크로 판단한다(맥이 아직 만들지 않은 주).
+        let hasOccurrences = !dayOccurrences.isEmpty
+        let hiddenNames = Set(dayOccurrences.filter(\.hidden).map(\.routineName))
+        let placedNames = Set(dayOccurrences.filter { !$0.hidden }.map(\.routineName))
+        let weekday = DayOfWeek(rawValue: key.day) ?? .mon
+
+        for routine in allRoutines {
+            switch routine.kind {
+            case .fixed:
+                guard !hiddenNames.contains(routine.name) else { continue }
+                let onThisDay = hasOccurrences
+                    ? placedNames.contains(routine.name)
+                    : routine.selectedDays.contains(weekday)
+                if onThisDay { input.fixedRoutines.append(routine) }
+            case .quota:
+                input.quotaRoutines.append(routine)
+            }
+        }
+
+        for occurrence in dayOccurrences where occurrence.startHourOverride >= 0 {
+            input.routineStartOverride[occurrence.routineName] = occurrence.startHourOverride
+        }
+        for placement in dayPlacements {
+            if placement.hidden {
+                input.quotaHidden[placement.routineName, default: []].insert(placement.sessionIndex)
+            } else {
+                input.quotaPlacement[placement.routineName, default: [:]][placement.sessionIndex] = placement.startHour
+            }
+        }
+
+        input.blocks = allBlocks.filter { Self.matches($0, key: key) }
+        return input
     }
 
     /// WeekBlocks 계획 → 밀도 시각화용 Event 배열(메모리 전용).

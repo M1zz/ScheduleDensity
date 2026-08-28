@@ -58,6 +58,15 @@ final class Routine {
         set { kindRaw = newValue.rawValue }
     }
 
+    /// 이름으로 알아보는 수면 루틴. 맥앱과 같은 판별이다 —
+    /// 수면은 따로 표시하는 플래그가 없고, 타임라인에서 양끝을 접을 때만 쓴다.
+    /// ⚠️ 맥앱 `Routine.isSleepRoutine`과 같은 목록이어야 한다.
+    var isSleepRoutine: Bool {
+        guard kind == .fixed else { return false }
+        let n = name.lowercased().replacingOccurrences(of: " ", with: "")
+        return ["수면", "잠", "취침", "sleep"].contains { n.contains($0) }
+    }
+
     var selectedDays: Set<DayOfWeek> {
         get { Set(DayOfWeek.allCases.filter { dayMask & (1 << $0.rawValue) != 0 }) }
         set { dayMask = newValue.reduce(0) { $0 | (1 << $1.rawValue) } }

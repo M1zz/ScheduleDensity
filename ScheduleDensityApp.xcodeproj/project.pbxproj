@@ -30,6 +30,7 @@
 		434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3513E47DA1D5F509870816E5 /* Assets.xcassets */; };
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
+		57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */; };
 		5CA7AF639085A47D9F389D75 /* TodoShareIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF8BA6154DE9430653A8F56 /* TodoShareIntake.swift */; };
 		6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */; };
 		61C8EBC20259E7FF658CDC03 /* PressHaptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C853BE37B3248C998610275 /* PressHaptics.swift */; };
@@ -38,6 +39,7 @@
 		71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4164272EB750B716814E94EB /* SyncSettingsManager.swift */; };
 		72FAB23FF49C0E818FAFEA09 /* RainbowWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */; };
 		74E045A5DC1AF66E082EA7EC /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A142C0D69AD26EDCB2B3CC /* Event.swift */; };
+		7CCC8BE01D6F3D0D92456B31 /* RoutineOccurrence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */; };
 		86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */; };
 		87F5BBFA2EFADD1D3BB509F7 /* TodoShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */; };
 		8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */; };
@@ -111,12 +113,14 @@
 
 /* Begin PBXFileReference section */
 		094038A30FE0C5205D38B208 /* TodoEventBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoEventBridge.swift; sourceTree = "<group>"; };
+		09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineOccurrence.swift; sourceTree = "<group>"; };
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitAdvisor.swift; sourceTree = "<group>"; };
 		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C853BE37B3248C998610275 /* PressHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressHaptics.swift; sourceTree = "<group>"; };
 		2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
 		2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeaningPage.swift; sourceTree = "<group>"; };
+		30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTimelineLayout.swift; sourceTree = "<group>"; };
 		3513E47DA1D5F509870816E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3AD81D8C77A69F2BCC62A5CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarImportView.swift; sourceTree = "<group>"; };
@@ -330,6 +334,7 @@
 				2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */,
 				A71A0378042B2C0F4B98152A /* BacklogItem+Label.swift */,
 				5CCA231C8EF9417E46288EC6 /* ColorHex.swift */,
+				30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */,
 				AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */,
 				AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */,
 				E0A2F8F7F90B5C18D0D0905E /* Models.swift */,
@@ -337,6 +342,7 @@
 				2C853BE37B3248C998610275 /* PressHaptics.swift */,
 				D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */,
 				4CD675833C6A34143CC8C6F5 /* Routine.swift */,
+				09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */,
 				A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */,
 				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
 				B11354B1F56A465A677B2B87 /* TodoLabelChip.swift */,
@@ -518,6 +524,7 @@
 				DC4C3509F9BE51C95311F272 /* ColorHex.swift in Sources */,
 				98BCB99BABFB85C47A516837 /* ContentView.swift in Sources */,
 				18554C8EA4088D5836DAC51C /* DateExtensions.swift in Sources */,
+				57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */,
 				8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */,
 				1A9DF801882FB2C7865CD0F6 /* DensityCalculator.swift in Sources */,
 				74E045A5DC1AF66E082EA7EC /* Event.swift in Sources */,
@@ -535,6 +542,7 @@
 				A60D7621A847FCB9F9713390 /* RainbowWidgetSync.swift in Sources */,
 				B9B4C3CA0B7BB3CD5FF27454 /* RecurrencePattern.swift in Sources */,
 				D47C20672572FF11F707EA78 /* Routine.swift in Sources */,
+				7CCC8BE01D6F3D0D92456B31 /* RoutineOccurrence.swift in Sources */,
 				A203371159D07E31334CC1B2 /* ScheduleDensityApp.swift in Sources */,
 				AAF010948F1402F65848DC40 /* ScheduleDensityAppSpec.swift in Sources */,
 				F87263CC4CC579F6FB9B845A /* ScheduleShareStore.swift in Sources */,
