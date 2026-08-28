@@ -18,9 +18,9 @@ enum SplitGuideStep: Int, CaseIterable {
     case intro
     /// 빈 줄에 첫 단계를 적는다.
     case writeStep
-    /// 그 단계의 착수 조건을 고른다.
-    case pickLabel
-    /// 쌓인 시간과 '지금 할 단계'가 어디에 서는지.
+    /// 언제부터 언제까지인지 정한다 — 그게 무지개에 한 줄로 그어진다.
+    case period
+    /// '지금 할 단계'가 어디에 서는지.
     case header
 
     var next: SplitGuideStep? { SplitGuideStep(rawValue: rawValue + 1) }
@@ -35,7 +35,7 @@ enum SplitGuideStep: Int, CaseIterable {
         switch self {
         case .intro:     return "arrow.triangle.branch"
         case .writeStep: return "text.line.first.and.arrowtriangle.forward"
-        case .pickLabel: return "bolt.badge.clock"
+        case .period:    return "rainbow"
         case .header:    return "chart.bar.fill"
         }
     }
@@ -44,8 +44,8 @@ enum SplitGuideStep: Int, CaseIterable {
         switch self {
         case .intro:     return "덩어리를 쪼개 볼까요"
         case .writeStep: return "첫 단계를 한 줄"
-        case .pickLabel: return "지금 시작할 수 있나요?"
-        case .header:    return "시간은 저절로 쌓여요"
+        case .period:    return "언제부터 언제까지"
+        case .header:    return "지금 할 단계가 맨 위에"
         }
     }
 
@@ -55,10 +55,10 @@ enum SplitGuideStep: Int, CaseIterable {
             return "‘보고서 쓰기’ 같은 덩어리는 손이 안 나갑니다. 어디서 시작할지가 안 정해져 있어서예요.\n일이 굴러가는 순서대로 몇 줄 쪼개 두면, 짬이 났을 때 집을 게 생깁니다."
         case .writeStep:
             return "하얗게 표시된 빈 줄에 첫 단계를 적고 엔터를 쳐 보세요. 엔터를 치면 그 줄이 확정되고 빈 줄이 다시 옵니다.\n막막하면 아래 ‘쪼개기 도우미’에 일이 굴러가는 순서가 있어요. 보고 내 말로 옮겨 적으면 됩니다."
-        case .pickLabel:
-            return "단계마다 고를 것은 이것 하나뿐입니다 — 지금 바로 시작할 수 있나, 자료를 펼쳐야 하나, 방해 없는 시간이 필요한가.\n예상 시간은 여기서 따라옵니다. 몇 %인지는 안 물어봅니다."
+        case .period:
+            return "이 일이 언제부터 언제까지인지 정해 주세요.\n정하면 그 기간이 무지개에 한 줄로 그어집니다 — 끝나는 날까지 계속 나를 붙잡고 있는 시간이니까요."
         case .header:
-            return "맨 위에는 지금 할 단계 하나만 섭니다. 남은 몫은 착수 조건별로 갈라서 쌓이고요.\n조각과 덩어리는 서로 환산되지 않으니 더하지 않습니다."
+            return "맨 위에는 지금 할 단계 하나만 섭니다. 그게 지금 손대야 하는 일이에요.\n나머지는 아래 목록에서 순서대로 기다립니다."
         }
     }
 }
@@ -98,13 +98,16 @@ struct SplitMeaningView: View {
                 .foregroundStyle(.tertiary)
 
             VStack(spacing: 6) {
-                ForEach(sampleSteps, id: \.title) { step in
+                ForEach(Array(sampleSteps.enumerated()), id: \.element.title) { index, step in
                     HStack(spacing: 10) {
                         Text(step.title)
                             .font(.system(size: 15))
                             .tracking(-0.3)
                         Spacer(minLength: 8)
-                        TodoLabelChip(label: step.label)
+                        Text("\(index + 1)")
+                            .font(.system(size: 13, weight: .semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(.tertiary)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 9)
@@ -127,6 +130,7 @@ struct SplitMeaningView: View {
         ]
     }
 
+
     private var paragraphs: [MeaningParagraph] {
         [
             MeaningParagraph(
@@ -135,9 +139,9 @@ struct SplitMeaningView: View {
                 body: "조각 시간은 총량으로 환산되지 않습니다. 그래서 ‘짬이 나면 바로 집을 수 있는 단계’가 따로 있어야 해요. 그게 없으면 하루에 생긴 조각은 전부 흘러갑니다."
             ),
             MeaningParagraph(
-                icon: "bolt.fill",
-                heading: "고르는 건 착수 조건 하나뿐",
-                body: "‘이건 전체의 몇 %지?’는 사람이 답할 수 없는 물음입니다. 대신 지금 시작할 수 있는지만 고르면, 예상 시간은 따라오고 위쪽 총량은 단계들의 합으로 저절로 쌓입니다."
+                icon: "rainbow",
+                heading: "기간은 무지개에 남는다",
+                body: "언제부터 언제까지인지 정해 두면 그 기간이 무지개에 한 줄로 그어집니다. 오늘 손을 안 대는 날도, 끝나지 않았다면 여전히 나를 붙잡고 있으니까요."
             ),
             MeaningParagraph(
                 icon: "checkmark.circle",

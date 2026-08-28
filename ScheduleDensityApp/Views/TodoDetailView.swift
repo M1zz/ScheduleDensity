@@ -34,11 +34,12 @@ struct TodoDetailView: View {
     /// 새 단계의 속성. 목록 화면의 빈 줄과 같은 키를 써서, 어디서 적든 지난번 값이 따라온다.
     @AppStorage("todo.newLabel") private var newLabelRaw: String = TodoLabel.ready.rawValue
     @State private var editing: BacklogItem?
-    /// 무지개에 걸린 데드라인. 일정 스토어는 다른 컨테이너라 읽어 와 캐시한다.
-    @State private var deadline: Date?
     @State private var editingTitle = ""
-    @State private var pickingDeadline = false
-    @State private var pickedDeadline = Date()
+    /// 무지개에 그어질 기간.
+    @State private var periodStart = Date()
+    @State private var periodEnd = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    /// 지금 무지개에 줄이 그어져 있는지.
+    @State private var hasPeriod = false
 
     // 처음 한 번만 — 쪼개는 법을 직접 해보게 한다 (→ TodoSplitOnboarding.swift).
     @AppStorage(AppSettingsKey.hasSeenSplitOnboarding) private var hasSeenSplitOnboarding = false
@@ -51,6 +52,7 @@ struct TodoDetailView: View {
     /// 단계 목록 맨 아래 빈 줄의 id — 키보드가 올라올 때 그 줄로 스크롤하기 위해.
     private static let newRowID = "step.newRow"
     private static let headerRowID = "step.header"
+    private static let periodRowID = "step.period"
 
     private var rows: [(item: BacklogItem, depth: Int)] {
         // 최상위 할 일 자체는 헤더가 보여주므로 목록에는 그 아래만 그린다.
@@ -89,7 +91,7 @@ struct TodoDetailView: View {
         .onChange(of: rows.count) { _, count in
             if inputFocused { scrollToNewRow(proxy) }
             // 한 줄이라도 적었으면 그 다음을 짚어준다. 다 적을 때까지 카드가 붙어 있으면 잔소리가 된다.
-            if guide == .writeStep, count > 0 { advanceGuide(to: .pickLabel) }
+            if guide == .writeStep, count > 0 { advanceGuide(to: .period) }
         }
         .overlayPreferenceValue(SpotlightAnchorKey.self) { anchors in
             GeometryReader { geo in
@@ -170,10 +172,13 @@ struct TodoDetailView: View {
         withAnimation { guide = step }
         guard let proxy else { return }
         // 짚어주는 자리가 화면 밖이면 설명만 뜨고 정작 그 자리는 안 보인다.
-        withAnimation {
-            proxy.scrollTo(step == .header ? Self.headerRowID : Self.newRowID,
-                           anchor: step == .header ? .top : .center)
+        let target: String
+        switch step {
+        case .header:            target = Self.headerRowID
+        case .period:            target = Self.periodRowID
+        case .intro, .writeStep: target = Self.newRowID
         }
+        withAnimation { proxy.scrollTo(target, anchor: step == .header ? .top : .center) }
     }
 
     private func endGuide(showMeaning: Bool) {
@@ -201,11 +206,10 @@ struct TodoDetailView: View {
     private var headerCard: some View {
         let stepCount = tree.leafCount(of: root)
         let doneCount = tree.doneLeafCount(of: root)
-        let remaining = tree.tally(of: [root])
 
         return VStack(alignment: .leading, spacing: 12) {
             // 언제까지인지가 제일 먼저다. 그게 이 일의 크기를 정한다.
-            if let deadline { deadlineLine(deadline) }
+            if hasPeriod { deadlineLine(periodEnd) }
 
             // 단계가 하나뿐이면 "0/1 단계"와 진행 막대는 아무것도 안 알려준다.
             if stepCount > 1 {
@@ -241,17 +245,7 @@ struct TodoDetailView: View {
                             .font(.body.weight(.semibold))
                             .lineLimit(2)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        if step.label.costsMyTime {
-                            Text(formatDuration(step.durationHours))
-                                .font(.subheadline.weight(.medium))
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                        }
                     }
-                    Label(step.label.whenToDo, systemImage: step.label.symbol)
-                        .font(.subheadline)
-                        .foregroundStyle(step.label.tint)
-                        .padding(.leading, 20)
                 }
             } else if stepCount > 0 {
                 Label("모든 단계를 마쳤습니다", systemImage: "checkmark.circle.fill")
@@ -267,33 +261,16 @@ struct TodoDetailView: View {
                 TipView(StepWarningTip(warning: warning))
             }
 
-            // 남은 몫은 **착수 조건별로 갈라서** 적는다.
-            // 예전에는 "다 하면 2시간"처럼 하나로 접었는데, 그 2시간 안에는 조각 넷과
-            // 덩어리 하나가 섞여 있었다. 서로 환산되지 않는 것을 더해 놓으면
-            // "2시간 벌었는데 왜 아무것도 못 했지"가 된다 (→ TodoTree.tally).
-            //
-            // 남은 게 지금 할 단계 하나뿐이면 바로 위에 이미 다 적혀 있다. 두 번 적지 않는다.
-            if remaining.count > 1 || (remaining.first?.count ?? 0) > 1 {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("남은 몫")
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 6) {
-                            ForEach(remaining) { t in
-                                TodoLabelChip(label: t.label, hours: t.hours, count: t.count)
-                            }
-                        }
-                    }
-                    .scrollClipDisabled()
-                }
-            }
         }
         .padding(.vertical, 4)
         .spotlightAnchor(guide == .header)
         .task {
-            deadline = TodoEventBridge.shared.deadline(for: root)
             editingTitle = root.title
+            if let period = TodoEventBridge.shared.period(for: root) {
+                periodStart = period.start
+                periodEnd = period.end
+                hasPeriod = true
+            }
         }
     }
 
@@ -341,43 +318,14 @@ struct TodoDetailView: View {
                     commitTitle()
                 }
 
-            // 단계로 쪼갠 뒤에는 이 할 일의 시간이 단계들의 합이라, 여기 조건은 뜻이 없다.
-            if !tree.hasChildren(root) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("지금 시작할 수 있나요?")
-                        .font(.subheadline.weight(.medium))
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(TodoLabel.allCases) { option in
-                                Button {
-                                    TodoTree(allItems).setLabel(root, to: option)
-                                    save()
-                                } label: {
-                                    TodoLabelChip(label: option,
-                                                  isSelected: root.label == option,
-                                                  style: .full)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                    .scrollClipDisabled()
-                    Text(root.label.hint)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 4)
-            }
-
+            periodRows
+                .spotlightAnchor(guide == .period)
+                .id(Self.periodRowID)
             categoryPicker
-
-            deadlineRow
         } header: {
             Text("이 할 일")
         }
-        .sheet(isPresented: $pickingDeadline) { deadlinePickerSheet }
+
     }
 
     private var categoryPicker: some View {
@@ -418,68 +366,56 @@ struct TodoDetailView: View {
         }
     }
 
-    private var deadlineRow: some View {
-        HStack {
-            Button {
-                pickedDeadline = deadline ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
-                pickingDeadline = true
-            } label: {
-                HStack {
-                    Text("데드라인")
-                        .foregroundStyle(.primary)
-                    Spacer()
-                    Text(deadline.map(formatDeadline) ?? "없음")
-                        .foregroundStyle(.secondary)
-                }
+    /// 이 일이 언제부터 언제까지인지. 정하면 무지개에 그대로 한 줄이 그어진다.
+    @ViewBuilder
+    private var periodRows: some View {
+        DatePicker("시작", selection: $periodStart, displayedComponents: .date)
+            .onChange(of: periodStart) { _, newValue in
+                if newValue > periodEnd { periodEnd = newValue }
+                commitPeriod()
             }
-            .buttonStyle(.plain)
 
-            if deadline != nil {
-                Button {
+        DatePicker("끝", selection: $periodEnd, in: periodStart..., displayedComponents: .date)
+            .onChange(of: periodEnd) { _, _ in commitPeriod() }
+
+        HStack {
+            Image(systemName: "rainbow")
+                .foregroundStyle(.tint)
+            Text(hasPeriod ? periodSummary : "아직 무지개에 없어요")
+                .font(.subheadline)
+                .foregroundStyle(hasPeriod ? .secondary : .tertiary)
+            Spacer()
+            if hasPeriod {
+                Button("빼기") {
                     TodoEventBridge.shared.clearRainbow(for: root)
-                    deadline = nil
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.tertiary)
+                    hasPeriod = false
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("데드라인 지우기")
+                .font(.subheadline)
+            } else {
+                Button("무지개에 긋기") { commitPeriod(force: true) }
+                    .font(.subheadline)
             }
         }
     }
 
-    private var deadlinePickerSheet: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                DatePicker("데드라인", selection: $pickedDeadline,
-                           in: Calendar.current.startOfDay(for: Date())...,
-                           displayedComponents: .date)
-                    .datePickerStyle(.graphical)
-                    .padding()
-                Text("오늘부터 이 날까지 무지개에 한 줄이 그어집니다.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                Spacer()
-            }
-            .navigationTitle("데드라인")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("취소") { pickingDeadline = false }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("정하기") {
-                        let hours = tree.totalHours(of: root)
-                        TodoEventBridge.shared.drawRainbow(for: root, deadline: pickedDeadline, hours: hours)
-                        deadline = TodoEventBridge.shared.deadline(for: root)
-                        pickingDeadline = false
-                    }
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
+    private var periodSummary: String {
+        let calendar = Calendar.current
+        let days = (calendar.dateComponents([.day],
+                                            from: calendar.startOfDay(for: periodStart),
+                                            to: calendar.startOfDay(for: periodEnd)).day ?? 0) + 1
+        let left = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: Date()),
+                                           to: calendar.startOfDay(for: periodEnd)).day ?? 0
+        return left <= 0 ? "무지개에 \(days)일 · 오늘까지" : "무지개에 \(days)일 · D-\(left)"
+    }
+
+    /// 날짜를 고치면 그 즉시 무지개에 반영한다. 아직 안 그은 일은 '긋기'를 눌러야 생긴다 —
+    /// 상세를 열었다는 이유만으로 모든 할 일이 무지개에 올라오면 안 된다.
+    private func commitPeriod(force: Bool = false) {
+        guard hasPeriod || force else { return }
+        let hours = tree.totalHours(of: root)
+        TodoEventBridge.shared.drawRainbow(for: root, from: periodStart, to: periodEnd, hours: hours)
+        hasPeriod = true
     }
 
     /// 이름을 고치면 무지개에 그어 둔 줄의 이름도 따라간다.
@@ -489,18 +425,6 @@ struct TodoDetailView: View {
         root.title = trimmed
         TodoEventBridge.shared.renameRainbow(for: root)
         save()
-    }
-
-    private func formatDeadline(_ date: Date) -> String {
-        let calendar = Calendar.current
-        let days = calendar.dateComponents([.day],
-                                           from: calendar.startOfDay(for: Date()),
-                                           to: calendar.startOfDay(for: date)).day ?? 0
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        formatter.locale = Locale(identifier: "ko_KR")
-        return days <= 0 ? "\(formatter.string(from: date)) · 오늘까지"
-                         : "\(formatter.string(from: date)) · D-\(days)"
     }
 
     // MARK: - 쪼개기 도우미 (보기용 뼈대)
@@ -517,8 +441,6 @@ struct TodoDetailView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        TodoLabelChip(label: step.label)
-                            .opacity(0.7)
                     }
                     Text(step.note)
                         .font(.caption)
@@ -658,9 +580,6 @@ struct TodoDetailView: View {
                 .submitLabel(.return)
                 .onSubmit(addStep)
 
-            newShareMenu
-                .spotlightAnchor(guide == .pickLabel)
-
             if addTarget != nil {
                 // 하위로 파고들었다가 다시 맨 바깥 단계로 돌아오는 길.
                 Button {
@@ -677,29 +596,6 @@ struct TodoDetailView: View {
         .padding(.vertical, 2)
         .spotlightAnchor(guide == .writeStep)
         .id(Self.newRowID)
-    }
-
-    /// 이 단계를 지금 시작할 수 있는지. 쪼갤 때 고르는 건 이것 하나뿐이다.
-    /// 지난번에 고른 값이 따라오므로, 적고 엔터만 쳐도 한 줄이 확정된다.
-    private var newShareMenu: some View {
-        Menu {
-            Picker("지금 시작할 수 있나요?", selection: $newLabelRaw) {
-                ForEach(TodoLabel.allCases) { label in
-                    // 이름 아래에 왜 그 조건인지 한 줄. 이름만으로는 처음 보는 사람이 못 고른다.
-                    Label {
-                        Text(label.name)
-                        Text(label.costsMyTime
-                             ? "\(label.pickHint) · \(formatDuration(label.defaultHours))"
-                             : label.pickHint)
-                    } icon: {
-                        Image(systemName: label.symbol)
-                    }
-                    .tag(label.rawValue)
-                }
-            }
-        } label: {
-            TodoLabelChip(label: draftLabel)
-        }
     }
 
     /// 지금 빈 줄에 적히면 붙을 속성.
@@ -861,7 +757,6 @@ private struct StepRow: View {
 
             // 이 단계를 지금 시작할 수 있는지 — 줄에서 가장 크게 읽혀야 하는 것.
             // (예전에는 이 자리에 '전체의 몇 %'가 있었다. 아무도 그 숫자로 결정하지 않았다.)
-            TodoLabelChip(label: item.label, hours: item.durationHours)
         }
         .padding(.vertical, 4)
         .listRowBackground(isCurrent ? Color.orange.opacity(0.08) : nil)
@@ -884,30 +779,6 @@ private struct StepEditSheet: View {
             Form {
                 Section("이름") {
                     TextField("단계 이름", text: $title)
-                }
-
-                Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(TodoLabel.allCases) { option in
-                                Button {
-                                    label = option
-                                } label: {
-                                    TodoLabelChip(label: option,
-                                                  isSelected: label == option,
-                                                  style: .full)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                } header: {
-                    Text("지금 시작할 수 있나요?")
-                } footer: {
-                    Text(label.costsMyTime
-                         ? "\(label.hint)\n고르면 예상 시간 \(formatDuration(label.defaultHours))이 따라옵니다 — 언제든 바꿀 수 있어요."
-                         : label.hint)
                 }
             }
             .navigationTitle("단계")

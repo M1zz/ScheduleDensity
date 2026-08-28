@@ -50,19 +50,26 @@ final class TodoEventBridge {
 
     // MARK: - 할 일 → 무지개
 
-    /// 오늘부터 데드라인까지 무지개에 한 줄을 긋는다.
-    /// 이미 그어져 있으면 끝나는 날만 고쳐서, 줄이 두 개로 늘어나지 않게 한다.
+    /// 오늘부터 데드라인까지 무지개에 한 줄을 긋는다. (시작일을 안 정했을 때)
     @discardableResult
     func drawRainbow(for item: BacklogItem, deadline: Date, hours: Double) -> Bool {
+        drawRainbow(for: item, from: Date(), to: deadline, hours: hours)
+    }
+
+    /// 시작일부터 종료일까지 무지개에 한 줄을 긋는다.
+    /// 이미 그어져 있으면 그 줄의 날짜만 고쳐서, 줄이 두 개로 늘어나지 않게 한다.
+    @discardableResult
+    func drawRainbow(for item: BacklogItem, from startDate: Date, to endDate: Date, hours: Double) -> Bool {
         guard let schedule else { return false }
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        let end = max(today, calendar.startOfDay(for: deadline))
+        let today = calendar.startOfDay(for: startDate)
+        let end = max(today, calendar.startOfDay(for: endDate))
 
         let workDays = workDayRule(from: today, to: end)
 
         if let existing = event(for: item) {
             existing.title = item.title
+            existing.startDate = today
             existing.endDate = end
             existing.hoursPerDay = max(0.5, hours)
             existing.weeklyPattern = workDays.pattern
@@ -110,6 +117,12 @@ final class TodoEventBridge {
     /// 이 할 일에 걸린 데드라인(= 이어진 줄의 종료일).
     func deadline(for item: BacklogItem) -> Date? {
         event(for: item)?.endDate
+    }
+
+    /// 이 할 일이 무지개에서 차지하고 있는 기간.
+    func period(for item: BacklogItem) -> (start: Date, end: Date)? {
+        guard let event = event(for: item) else { return nil }
+        return (event.startDate, event.endDate)
     }
 
     /// 지금 걸려 있는 데드라인을 토큰별로 한 번에 읽는다. 목록에서 줄마다 훑지 않으려고.
