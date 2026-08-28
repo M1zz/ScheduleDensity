@@ -98,9 +98,9 @@ struct SplitMeaningView: View {
                 .foregroundStyle(.tertiary)
 
             VStack(spacing: 6) {
-                ForEach(Array(sampleSteps.enumerated()), id: \.element.title) { index, step in
+                ForEach(Array(sampleSteps.enumerated()), id: \.offset) { index, step in
                     HStack(spacing: 10) {
-                        Text(step.title)
+                        Text(step)
                             .font(.system(size: 15))
                             .tracking(-0.3)
                         Spacer(minLength: 8)
@@ -121,13 +121,8 @@ struct SplitMeaningView: View {
         .frame(maxWidth: 320)
     }
 
-    private var sampleSteps: [(title: String, label: TodoLabel)] {
-        [
-            ("무엇을 쓸지 정하기", .decide),
-            ("자료 모아 펼치기", .setup),
-            ("초안 쓰기", .deep),
-            ("오탈자 훑기", .ready)
-        ]
+    private var sampleSteps: [String] {
+        ["무엇을 쓸지 정하기", "자료 모아 펼치기", "초안 쓰기", "오탈자 훑기"]
     }
 
 

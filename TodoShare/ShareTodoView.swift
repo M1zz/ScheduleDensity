@@ -35,29 +35,6 @@ struct ShareTodoView: View {
                     }
                 }
 
-                Section {
-                    // 목록·상세와 같은 칩. 여기서는 이름까지 보여준다 — 고르는 자리라서.
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(TodoLabel.allCases) { option in
-                                Button {
-                                    model.label = option
-                                } label: {
-                                    TodoLabelChip(label: option,
-                                                  isSelected: model.label == option,
-                                                  style: .full)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                } header: {
-                    Text("얼마나 걸릴 일인가요?")
-                } footer: {
-                    Text(model.label.hint)
-                }
-
                 if let errorMessage = model.errorMessage {
                     Section {
                         Label(errorMessage, systemImage: "exclamationmark.triangle")

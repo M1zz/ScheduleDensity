@@ -186,8 +186,7 @@ final class TodoEventBridge {
         let item = BacklogItem(title: event.title,
                                durationHours: max(0.5, event.hoursPerDay),
                                sortIndex: maxIndex + 1,
-                               weekStartDate: Date.currentWeekStart,
-                               label: .ready)
+                               weekStartDate: Date.currentWeekStart)
         todoContext.insert(item)
         try? todoContext.save()
 

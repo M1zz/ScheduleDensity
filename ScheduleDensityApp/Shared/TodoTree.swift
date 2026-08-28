@@ -6,7 +6,7 @@
 //  시간은 **위에서 아래로** 내려간다.
 //  단계는 같은 BacklogItem이고, `parentToken`(부모의 dragToken)으로 매달린다.
 //
-//  시간은 **아래에서 위로** 쌓인다: 단계마다 착수 조건(→ TodoLabel)을 고르면 그 속성이
+//  시간은 **아래에서 위로** 쌓인다: 단계마다 소요시간을 적으면 그 값이
 //  시간을 데려오고, 상위 할 일의 시간은 단계들의 합이다.
 //
 //  예전에는 반대였다 — 상위 할 일의 시간이 100%이고 단계들이 그걸 나눠 갖는 구조로,
@@ -124,7 +124,7 @@ struct TodoTree {
     ///
     /// 예전에는 반대였다(상위가 100%이고 단계들이 그걸 나눠 가짐). 그 구조는
     /// "이 단계가 전체의 몇 %냐"에 답했는데, 단계를 실제로 하느냐 마느냐를 가르는 건
-    /// 비율이 아니라 착수 조건이었다 (→ TodoLabel). 그래서 비중을 걷어내고,
+    /// 비율이 아니라 '한 자리에서 닫히는 크기'였다. 그래서 비중을 걷어내고,
     /// 시간은 단계를 하나씩 더할 때마다 위로 쌓이게 했다.
     func totalHours(of item: BacklogItem) -> Double {
         let kids = children(of: item)
@@ -149,57 +149,6 @@ struct TodoTree {
 
     // MARK: - 갈라 세기 (합치지 않는 집계)
 
-    /// 남아 있는 잎 단계들을 착수 조건별로 갈라 센다.
-    ///
-    /// **합계를 내지 않는 것이 이 함수의 존재 이유다.**
-    /// '바로 15분' 넷과 '몰입해서 1시간' 하나를 더해 "2시간"이라고 적으면 조각과 덩어리가
-    /// 같은 단위인 것처럼 보인다. 실제로는 환산되지 않는다 — 조각 시간은 총량으로 돌아오지
-    /// 않고(Schulte 2014 · Whillans 2020), 전환 비용에 먹힌다(Leroy 2009).
-    /// 하나로 접힌 숫자는 "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감을 만든다.
-    ///
-    /// 그래서 [조건: 개수·시간]을 그대로 돌려주고, 하나로 접는 일은 아무 데서도 하지 않는다.
-    func tally(of items: [BacklogItem], includeCompleted: Bool = false) -> [LabelTally] {
-        var pool: [BacklogItem] = []
-        for item in items {
-            pool.append(contentsOf: leaves(of: item).filter { includeCompleted || !$0.isCompleted })
-        }
-        return Self.tally(pool)
-    }
-
-    /// 각 할 일의 '지금 할 단계' 하나씩만 갈라 센다.
-    ///
-    /// 목록 위 칩이 쓰는 셈이다. 칩의 개수가 곧 그 조건으로 걸렀을 때 남는 줄 수여야
-    /// 하므로, 잎 전체가 아니라 줄 하나당 하나만 센다.
-    func currentTally(of items: [BacklogItem]) -> [LabelTally] {
-        Self.tally(items.map { currentStep(of: $0) ?? $0 })
-    }
-
-    /// 이 줄을 지금 대표하는 단계. 필터가 무엇을 기준으로 거를지도 이 값이 정한다.
-    func facingStep(of item: BacklogItem) -> BacklogItem {
-        currentStep(of: item) ?? item
-    }
-
-    private static func tally(_ steps: [BacklogItem]) -> [LabelTally] {
-        var counts: [TodoLabel: (count: Int, hours: Double)] = [:]
-        var seen = Set<String>()
-        for step in steps {
-            guard seen.insert(step.dragToken).inserted else { continue }
-            var entry = counts[step.label] ?? (count: 0, hours: 0)
-            entry.count += 1
-            entry.hours += max(0, step.durationHours)
-            counts[step.label] = entry
-        }
-        // 순서는 언제나 TodoLabel의 선언 순서(바로 → 펼치고 → 몰입해서 → 정하고 → 기다림).
-        // 개수 순으로 정렬하면 할 일을 하나 지울 때마다 칩이 자리를 바꿔 눈이 매번 다시 찾는다.
-        return TodoLabel.allCases.compactMap { label in
-            guard let entry = counts[label], entry.count > 0 else { return nil }
-            return LabelTally(label: label, count: entry.count, hours: entry.hours)
-        }
-    }
-
-    // MARK: - 지금 할 일
-
-    /// 지금 해야 할 단계 = 순서상 첫 번째 미완료 잎. 전부 끝났으면 nil.
     func currentStep(of item: BacklogItem) -> BacklogItem? {
         leaves(of: item).first { !$0.isCompleted }
     }
@@ -269,16 +218,6 @@ struct TodoTree {
 
     // MARK: - 속성 정하기
 
-    /// 이 단계가 어떤 속성인지 정한다. 시간은 속성이 데려온다 —
-    /// 쪼갤 때 사람이 고르는 건 착수 조건 하나뿐이고, 나머지는 앱이 맡는다.
-    ///
-    /// 상위 할 일의 시간은 따로 손대지 않는다. 아래에서 위로 합산되므로
-    /// 이 한 줄만 바꾸면 위쪽 숫자는 저절로 따라온다.
-    func setLabel(_ item: BacklogItem, to label: TodoLabel) {
-        item.labelRaw = label.rawValue
-        item.durationHours = label.defaultHours
-    }
-
     /// 단계를 새로 붙일 때 쓸 sortIndex (형제들 맨 뒤).
     func nextSortIndex(under parent: BacklogItem) -> Int {
         (children(of: parent).map(\.sortIndex).max() ?? -1) + 1
@@ -290,36 +229,24 @@ struct TodoTree {
 extension TodoTree {
     /// 부모 아래에 새 단계를 만든다. 저장(insert/save)은 호출한 쪽에서 한다.
     ///
-    /// 시간은 속성이 데려온다 — 고른 속성의 기본 시간이 그대로 이 단계의 시간이 되고,
-    /// 상위 할 일의 시간은 그만큼 늘어난다(아래에서 위로).
+    /// 상위 할 일의 시간은 단계들의 합이므로 여기서 따로 손대지 않는다(아래에서 위로).
     /// 주(weekStartDate)와 카테고리는 부모를 따라간다 — 단계는 부모와 한 덩어리로 움직인다.
     static func makeStep(under parent: BacklogItem,
                          title: String,
                          sortIndex: Int,
-                         label: TodoLabel) -> BacklogItem
+                         durationHours: Double = TodoTree.defaultStepHours) -> BacklogItem
     {
         let step = BacklogItem(title: title,
-                               durationHours: label.defaultHours,
+                               durationHours: durationHours,
                                sortIndex: sortIndex,
                                categoryID: parent.categoryID,
-                               weekStartDate: parent.weekStartDate,
-                               label: label)
+                               weekStartDate: parent.weekStartDate)
         step.parentToken = parent.dragToken
         return step
     }
 }
 
-// MARK: - 갈라 센 결과
-
-/// 착수 조건 하나에 대한 셈. **다른 조건의 셈과 더하지 않는다.**
-///
-/// 이 타입이 따로 있는 이유가 그것이다 — Double 하나로 돌려주면 어디선가 반드시 더해진다.
-struct LabelTally: Identifiable, Equatable {
-    let label: TodoLabel
-    /// 이 조건에 해당하는 단계 수.
-    let count: Int
-    /// 이 조건 **안에서만** 유효한 시간 합. 다른 조건의 시간과 더하지 말 것.
-    let hours: Double
-
-    var id: String { label.rawValue }
+extension TodoTree {
+    /// 새 단계·새 할 일의 기본 소요시간. 적을 때는 안 묻고, 상세에서 고친다.
+    static let defaultStepHours: Double = 0.5
 }

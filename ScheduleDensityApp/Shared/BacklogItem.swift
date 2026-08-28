@@ -33,19 +33,19 @@ final class BacklogItem {
     ///    (지우면 라이트웨이트 마이그레이션이 깨진다.) 읽지도 쓰지도 말 것.
     var isManualWeight: Bool = false
 
-    /// 적을 때 고른 착수 조건(`TodoLabel.rawValue`). nil이면 아직 안 고른 것 = 시간으로 짐작한다.
-    /// 속성이 '얼마나 걸리나'였던 시절의 값도 `TodoLabel.resolve`가 받아 준다.
+    /// ⚠️ 더 이상 쓰지 않는다. '착수 조건'(바로/펼치고/몰입해서…)으로 단계를 나누던 시절의
+    ///    필드로, 이미 배포된 사용자·맥앱과 공유하는 CloudKit 스키마에 들어 있어 지우지 못한다.
+    ///    (지우면 라이트웨이트 마이그레이션이 깨진다.) 읽지도 쓰지도 말 것 —
+    ///    지금은 단계마다 소요시간을 직접 적는다.
     var labelRaw: String? = nil
 
     init(title: String,
          durationHours: Double = 1,
          sortIndex: Int = 0,
          categoryID: String? = nil,
-         weekStartDate: Date = Date.currentWeekStart,
-         label: TodoLabel? = nil)
+         weekStartDate: Date = Date.currentWeekStart)
     {
         self.title = title
-        self.labelRaw = label?.rawValue
         self.durationHours = durationHours
         self.sortIndex = sortIndex
         self.dragToken = UUID().uuidString

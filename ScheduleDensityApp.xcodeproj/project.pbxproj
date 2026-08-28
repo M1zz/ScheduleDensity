@@ -19,7 +19,6 @@
 		1B996BF59FB33CBFD7560DCC /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38C8AF31ACA72741BF8046B /* StatisticsView.swift */; };
 		1FFCE7DA79C38C4AA79B8738 /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */; };
 		2200136119E353E928C1888D /* BacklogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */; };
-		26BA26CDE73DE0FEB44EE370 /* BacklogItem+Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71A0378042B2C0F4B98152A /* BacklogItem+Label.swift */; };
 		2902DFF21E90EA3C9ACE62F1 /* TodoWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 979A4AF622853CA818289703 /* TodoWidgetSync.swift */; };
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
 		328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */; };
@@ -63,11 +62,9 @@
 		BCBE8F638942699B9F7B5179 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D876DDD38462D8033DE00DCB /* ShareViewController.swift */; };
 		C3570B640BED636DC7372662 /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0B7D594FCCABF21917463C /* LeeoKit */; };
 		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
-		D3C39314265212840D73EB31 /* TodoLabelChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11354B1F56A465A677B2B87 /* TodoLabelChip.swift */; };
 		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
 		DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */; };
 		DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF674923A141F19CD56EF10 /* CloudKitManager.swift */; };
-		DC246268646107F1DC49C449 /* TodoLabelChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B11354B1F56A465A677B2B87 /* TodoLabelChip.swift */; };
 		DC4C3509F9BE51C95311F272 /* ColorHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCA231C8EF9417E46288EC6 /* ColorHex.swift */; };
 		DC68D95E7F7AF87686764F32 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6D619C882389B3029929E6F /* Preview Assets.xcassets */; };
 		E0A2A4BF6AD61BD2916BF322 /* TodoShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DC91887B98DC5189F5CEAB44 /* TodoShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -145,13 +142,11 @@
 		979A4AF622853CA818289703 /* TodoWidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidgetSync.swift; sourceTree = "<group>"; };
 		998B70300E7474EF72D813EB /* TodoShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodoShare.entitlements; sourceTree = "<group>"; };
 		A16A56CFD7BFD1A4F77443B7 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		A71A0378042B2C0F4B98152A /* BacklogItem+Label.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BacklogItem+Label.swift"; sourceTree = "<group>"; };
 		A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleShareStore.swift; sourceTree = "<group>"; };
 		AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineDensityView.swift; sourceTree = "<group>"; };
 		AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareStore.swift; sourceTree = "<group>"; };
 		AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		AF61B6ED54A0AFF6E6BEBA31 /* ShareTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareTodoView.swift; sourceTree = "<group>"; };
-		B11354B1F56A465A677B2B87 /* TodoLabelChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoLabelChip.swift; sourceTree = "<group>"; };
 		B1CED998C36D51AC3B0D0859 /* ScheduleDensityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScheduleDensityApp.entitlements; sourceTree = "<group>"; };
 		B5F27359D56BF2678D1330BE /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
 		B68A9B5FCF4CBFCC699EEEA5 /* TodoWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodoWidget.entitlements; sourceTree = "<group>"; };
@@ -332,7 +327,6 @@
 			children = (
 				CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */,
 				2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */,
-				A71A0378042B2C0F4B98152A /* BacklogItem+Label.swift */,
 				5CCA231C8EF9417E46288EC6 /* ColorHex.swift */,
 				30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */,
 				AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */,
@@ -345,7 +339,6 @@
 				09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */,
 				A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */,
 				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
-				B11354B1F56A465A677B2B87 /* TodoLabelChip.swift */,
 				EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */,
 				21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */,
 				C612D8C00BFD0642D31F33A4 /* TodoTips.swift */,
@@ -505,7 +498,6 @@
 				5451D23F4DDE9A70420350A8 /* Models.swift in Sources */,
 				B67EDB1755C156A2C3F4D788 /* ShareTodoView.swift in Sources */,
 				BCBE8F638942699B9F7B5179 /* ShareViewController.swift in Sources */,
-				DC246268646107F1DC49C449 /* TodoLabelChip.swift in Sources */,
 				87F5BBFA2EFADD1D3BB509F7 /* TodoShareInbox.swift in Sources */,
 				3A77EF2266BE28AD675C335B /* TodoSplitAdvisor.swift in Sources */,
 			);
@@ -517,7 +509,6 @@
 			files = (
 				FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */,
 				1FFCE7DA79C38C4AA79B8738 /* BacklogCategory.swift in Sources */,
-				26BA26CDE73DE0FEB44EE370 /* BacklogItem+Label.swift in Sources */,
 				2200136119E353E928C1888D /* BacklogItem.swift in Sources */,
 				15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */,
 				DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */,
@@ -555,7 +546,6 @@
 				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
 				8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */,
 				8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */,
-				D3C39314265212840D73EB31 /* TodoLabelChip.swift in Sources */,
 				9B43E50F4245366DA515CE89 /* TodoShareInbox.swift in Sources */,
 				5CA7AF639085A47D9F389D75 /* TodoShareIntake.swift in Sources */,
 				AA9F79CECE202D70CD384BC5 /* TodoSplitAdvisor.swift in Sources */,

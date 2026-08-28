@@ -17,8 +17,8 @@ struct WeekLedgerView: View {
     @Environment(\.dismiss) private var dismiss
 
     let weekStart: Date
-    /// 이번 주에 남은 단계들을 착수 조건별로 갈라 센 것 (→ TodoTree.tally).
-    let work: [LabelTally]
+    /// 이번 주에 남은 단계들 (지금 할 단계 기준).
+    let work: [(title: String, hours: Double)]
 
     @State private var entry = WeekLedgerEntry()
     @State private var showingClearConfirm = false
@@ -62,15 +62,15 @@ struct WeekLedgerView: View {
                 Text("이번 주에 남은 단계가 없습니다.")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(work) { tally in
+                ForEach(Array(work.enumerated()), id: \.offset) { _, step in
                     HStack(spacing: 12) {
-                        TodoLabelChip(label: tally.label, hours: tally.hours, count: tally.count)
-                        Spacer(minLength: 0)
-                        Text(tally.label.whenToDo)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        Text(step.title)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.8)
+                        Spacer(minLength: 8)
+                        Text(formatDuration(step.hours))
+                            .font(.subheadline)
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
                     }
                     .padding(.vertical, 2)
                 }
@@ -79,7 +79,7 @@ struct WeekLedgerView: View {
             Text("남은 몫")
         } footer: {
             // 이 화면에서 가장 중요한 문장이다. 여기에만 적어 두고 목록에서는 반복하지 않는다.
-            Text("일부러 합계를 내지 않습니다. ‘바로 15분’ 넷은 1시간이 아니라 다른 단위입니다 — 조각 시간은 총량으로 환산되지 않고 전환 비용에 먹힙니다.\n하루로도 결산하지 않습니다. 하루 5분은 잡음이고, 신호는 주 단위에서만 보입니다.")
+            Text("일부러 합계를 내지 않습니다. 15분짜리 넷은 1시간이 아니라 다른 단위입니다 — 조각 시간은 총량으로 환산되지 않고 전환 비용에 먹힙니다.\n하루로도 결산하지 않습니다. 하루 5분은 잡음이고, 신호는 주 단위에서만 보입니다.")
         }
     }
 
