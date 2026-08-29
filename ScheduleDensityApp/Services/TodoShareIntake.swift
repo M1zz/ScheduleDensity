@@ -18,13 +18,22 @@ enum TodoShareIntake {
         let drafts = TodoShareInbox.drain()
         guard !drafts.isEmpty else { return 0 }
 
-        // 새로 들어온 줄은 목록 맨 아래에 붙는다 — 직접 적었을 때와 같은 자리.
-        var nextIndex = (try? context.fetch(FetchDescriptor<BacklogItem>()))?
-            .map(\.sortIndex).max().map { $0 + 1 } ?? 0
+        // 새로 들어온 줄은 목록 **맨 위**에 붙는다.
+        //
+        // 밖에서 공유해 넣는 순간에는 앱을 보고 있지 않다. 나중에 앱을 열었을 때
+        // 아래에 붙어 있으면 스크롤을 내려야 보이고, 그 사이 무엇이 새로 들어왔는지도
+        // 알 수 없다. 직접 적을 때와 달리 '방금 적었다'는 기억이 없기 때문에,
+        // 자리가 대신 말해줘야 한다.
+        let existing = (try? context.fetch(FetchDescriptor<BacklogItem>()))?.map(\.sortIndex) ?? []
+        // 받은 순서를 유지한 채 통째로 기존 줄들 위에 얹는다.
+        var nextIndex = (existing.min() ?? 0) - drafts.count
 
         for draft in drafts {
+            // 시간도 마감도 정하지 않은 채로 들어온다 = '그냥 하면 되는 것'.
+            // 공유로 밀어 넣는 줄은 계획이 아니라 "잊지 말자"에 가깝고,
+            // 시간이 필요해지면 목록에서 왼쪽으로 밀어 잡으면 된다.
             context.insert(BacklogItem(title: draft.title,
-                                       durationHours: TodoTree.defaultStepHours,
+                                       durationHours: TodoTree.errandHours,
                                        sortIndex: nextIndex,
                                        weekStartDate: .currentWeekStart))
             nextIndex += 1

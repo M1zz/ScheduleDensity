@@ -303,15 +303,18 @@ struct TodoDetailView: View {
 
             // 단계로 쪼갠 뒤에는 이 할 일의 시간이 단계들의 합이라 여기서 정할 것이 없다.
             if !tree.hasChildren(root) {
+                // 0부터 시작한다. 0은 '아직 안 정함'이 아니라 **시간을 잡지 않겠다**는
+                // 뜻이고, 그 줄은 목록에서 '그냥 하면 되는 것'으로 맨 위에 선다.
+                // 여기서 0을 못 고르면 목록의 스와이프로만 갈 수 있는 상태가 생긴다.
                 Stepper(value: Binding(get: { root.durationHours },
-                                       set: { root.durationHours = $0; save() }),
-                        in: 0.25...8, step: 0.25) {
+                                       set: { root.durationHours = max(0, $0); save() }),
+                        in: 0...8, step: 0.25) {
                     HStack {
                         Text("소요시간")
                         Spacer()
-                        Text(formatDuration(root.durationHours))
+                        Text(root.durationHours <= 0 ? "안 잡음" : formatDuration(root.durationHours))
                             .monospacedDigit()
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(root.durationHours <= 0 ? Color.teal : Color.secondary)
                     }
                 }
             }

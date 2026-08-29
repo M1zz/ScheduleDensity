@@ -35,8 +35,6 @@ struct TodoView: View {
     @State private var newTitle = ""
     @State private var showingFamilyShareNotice = false
     @State private var showingLedger = false
-    /// 방금 적은 줄. 이 줄에 대해서만 "언제까지?"를 아래에서 묻는다.
-    @State private var deadlinePromptItem: BacklogItem?
     /// 날짜를 직접 고르는 시트를 띄울 대상.
     @State private var deadlinePickerItem: BacklogItem?
     @State private var pickedDeadline = Date()
@@ -67,10 +65,14 @@ struct TodoView: View {
     /// 이번 주에 남은 단계들 — 결산 화면에 넘긴다.
     private var remainingSteps: [(title: String, hours: Double)] {
         let tree = self.tree
-        return unfilteredItems.map { item in
-            let step = tree.currentStep(of: item) ?? item
-            return (step.title, step.durationHours)
-        }
+        // '그냥 하면 되는 것'은 빼고 센다. 결산은 이번 주에 쓴/쓸 시간을 보는 자리인데,
+        // 0시간짜리 줄이 섞이면 세는 개수만 부풀고 시간은 그대로다.
+        return unfilteredItems
+            .filter { !(tree.isErrand($0) && deadlines[$0.dragToken] == nil) }
+            .map { item in
+                let step = tree.currentStep(of: item) ?? item
+                return (step.title, step.durationHours)
+            }
     }
 
     private var unfilteredItems: [BacklogItem] {
@@ -123,13 +125,6 @@ struct TodoView: View {
             // 세그먼트를 바 아래로 내리면서 제목도 인라인으로 바꾼다.
             // 큰 제목을 그대로 두면 세그먼트 뒤에 깔려 위쪽에 빈 띠만 남는다.
             .navigationBarTitleDisplayMode(.inline)
-            // 적고 나면 키보드 바로 위에서 "언제까지?"를 묻는다.
-            // 목록을 밀어내지 않고, 답하지 않아도 계속 적어 내려갈 수 있게.
-            .safeAreaInset(edge: .bottom) {
-                if let item = deadlinePromptItem, visibleTab == .mine {
-                    deadlineBar(for: item)
-                }
-            }
             .sheet(item: $deadlinePickerItem) { item in
                 deadlinePickerSheet(for: item)
             }
@@ -238,14 +233,22 @@ struct TodoView: View {
         // 지난 주에 밀린 일과 이번 주 일을 한 줄기로 세운다. 밀린 것이 위로 온다.
         // 섹션을 갈라 놓으면 '지난 주에 못 한 일'이라는 이름표를 매번 읽어야 했다 —
         // 밀렸다는 사실은 옮길 때만 필요하고, 그건 스와이프에 남겨 뒀다.
-        let items = carryover + open
+        //
+        // 다만 '그냥 하면 되는 것'만은 위로 뽑아낸다. 시간도 마감도 없는 줄이라
+        // 시간을 잡아 둔 일들 사이에 끼면 그대로 깔려서 잊힌다 — 잊히는 것이
+        // 그 줄의 유일한 실패 방식이다. 시간을 안 먹으니 위에 몇 줄 서 있어도
+        // 이번 주 계획을 흐리지 않는다.
+        let (errands, items) = splitErrands(carryover + open, tree: tree)
         let carried = Set(carryover.map(\.dragToken))
         let done = doneItems(tree)
 
         return ScrollViewReader { proxy in
         List {
+            errandSection(errands, tree: tree)
+
             rainbowPendingSection
 
+            if !items.isEmpty || !errands.isEmpty {
             Section {
                 ForEach(items) { item in
                     TodoRow(item: item,
@@ -266,22 +269,21 @@ struct TodoView: View {
                                 .tint(.blue)
                             }
                             todayButton(for: item, tree: tree)
+                            errandButton(for: item, tree: tree)
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
                 .onDelete { delete(items, at: $0, tree: tree) }
-
-                // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
-                newTodoRow
             } header: {
                 // ⚠️ 여기서 시간을 합치지 말 것.
                 //    예전에는 "\(개수)개 · \(전체 시간 합)"이었는데, 단위가 다른 것을
                 //    더하면 "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
-                Text("\(items.count)개")
+                Text("시간을 잡은 일 · \(items.count)개")
             } footer: {
                 if items.isEmpty {
-                    Text("위 빈 줄에 바로 적으면 이번 주 할 일이 됩니다. 엔터를 치면 한 줄이 확정되고 빈 줄이 다시 옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
+                    Text("위에 적은 줄을 왼쪽으로 밀어 '시간 잡기'를 누르면 여기로 내려옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
                 }
+            }
             }
 
             if !done.isEmpty {
@@ -315,6 +317,89 @@ struct TodoView: View {
     private func scrollToNewRow(_ proxy: ScrollViewProxy) {
         withAnimation(.easeOut(duration: 0.2)) {
             proxy.scrollTo(Self.newRowID, anchor: .bottom)
+        }
+    }
+
+    // MARK: - 그냥 하면 되는 것
+
+    /// 줄들을 '그냥 하면 되는 것'과 '시간을 잡은 일'로 가른다. 순서는 그대로 둔다.
+    ///
+    /// 마감이 붙은 줄은 아무리 시간이 0이어도 그냥 하면 되는 것이 아니다 —
+    /// 이미 무지개에 줄이 그어져 오늘부터 그 날까지 나를 붙잡고 있기 때문이다.
+    private func splitErrands(_ items: [BacklogItem], tree: TodoTree) -> (errands: [BacklogItem], rest: [BacklogItem]) {
+        var errands: [BacklogItem] = []
+        var rest: [BacklogItem] = []
+        for item in items {
+            if tree.isErrand(item), deadlines[item.dragToken] == nil {
+                errands.append(item)
+            } else {
+                rest.append(item)
+            }
+        }
+        return (errands, rest)
+    }
+
+    /// 목록 맨 위. **적는 자리이자 아무것도 정하지 않은 줄들이 서는 자리다.**
+    ///
+    /// 입력줄을 여기 둔 것은 자리와 뜻을 맞추기 위해서다. 적는 순간에는 우유도 공모전도
+    /// 그냥 한 줄이고, 그 상태가 바로 '그냥 하면 되는 것'이다. 입력줄만 목록 아래에
+    /// 남겨 두면 적자마자 그 줄이 맨 위로 튀어 눈앞에서 사라진다 — 적은 것이 보여야
+    /// 이어서 적는다.
+    ///
+    /// 시간을 안 먹으므로 개수만 세고, 시간은 적지 않는다.
+    private func errandSection(_ errands: [BacklogItem], tree: TodoTree) -> some View {
+        Section {
+            ForEach(errands) { item in
+                TodoRow(item: item,
+                        tree: tree,
+                        category: category(of: item),
+                        isAssignedToday: false,
+                        deadline: nil,
+                        onAdvance: advance)
+                    .swipeActions(edge: .leading) {
+                        errandButton(for: item, tree: tree)
+                    }
+                    .contextMenu { itemMenu(for: item, tree: tree) }
+            }
+            .onDelete { delete(errands, at: $0, tree: tree) }
+
+            // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
+            newTodoRow
+        } header: {
+            Label(errands.isEmpty ? "그냥 하면 되는 것" : "그냥 하면 되는 것 · \(errands.count)개",
+                  systemImage: "bolt")
+        } footer: {
+            Text("여기 적은 줄은 시간을 잡지 않습니다. 잊지만 않으면 되는 것들.\n시간이 필요하면 왼쪽으로 밀어 '시간 잡기'.")
+        }
+    }
+
+    /// 스와이프 한 번으로 두 칸 사이를 오간다.
+    ///
+    /// 시간을 0으로 만드는 것이 곧 표시다 — 따로 종류 필드를 두지 않는다.
+    /// 단계로 쪼갠 일은 이미 시간이 아래에서 쌓여 올라오므로 대상이 아니고,
+    /// 마감이 붙은 일은 무지개에서 먼저 빼야 한다.
+    @ViewBuilder
+    private func errandButton(for item: BacklogItem, tree: TodoTree) -> some View {
+        if !tree.hasChildren(item), deadlines[item.dragToken] == nil {
+            let isErrand = tree.isErrand(item)
+            Button {
+                withAnimation {
+                    if isErrand {
+                        item.durationHours = TodoTree.defaultStepHours
+                    } else {
+                        item.durationHours = TodoTree.errandHours
+                        // 시간이 0이 된 일을 오늘 계획에 세워 둘 수는 없다.
+                        if assignedToday.contains(item.title) {
+                            setAssignedToday(false, for: item, tree: tree)
+                        }
+                    }
+                    save()
+                }
+            } label: {
+                Label(isErrand ? "시간 잡기" : "그냥 하기",
+                      systemImage: isErrand ? "clock" : "bolt")
+            }
+            .tint(isErrand ? .indigo : .teal)
         }
     }
 
@@ -547,68 +632,10 @@ struct TodoView: View {
 
     // MARK: - 데드라인 묻기
 
-    /// 방금 적은 줄 아래에 붙는 "언제까지?" 한 줄.
-    private func deadlineBar(for item: BacklogItem) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "flag.checkered")
-                    .font(.caption)
-                    .foregroundStyle(.tint)
-                Text("‘\(item.title)’은 언제까지예요?")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .lineLimit(1)
-                Spacer()
-                Button {
-                    withAnimation { deadlinePromptItem = nil }
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("데드라인 묻지 않기")
-            }
-
-            // 두 줄로 나눠 다 보이게 한다. 옆으로 밀어야 나오는 칸은 없는 것과 같다.
-            VStack(spacing: 8) {
-                ForEach(Self.deadlineChoiceRows, id: \.first?.label) { row in
-                    HStack(spacing: 8) {
-                        ForEach(row, id: \.label) { choice in
-                            Button {
-                                if choice.isPicker {
-                                    beginDeadlinePick(for: item)
-                                } else {
-                                    setDeadline(choice.date(), for: item)
-                                }
-                            } label: {
-                                Text(choice.label)
-                                    .font(.subheadline)
-                                    .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.bordered)
-                            .buttonBorderShape(.capsule)
-                        }
-                    }
-                }
-            }
-
-            Text("정하면 오늘부터 그 날까지 무지개에 한 줄이 그어집니다.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.bar)
-        .transition(.move(edge: .bottom).combined(with: .opacity))
-    }
-
     /// 흔한 마감들. 날짜 고르기까지 가지 않고 한 번에 끝나도록.
     private struct DeadlineChoice {
         let label: String
         let date: () -> Date
-        /// true면 날짜를 직접 고르는 시트를 연다.
-        var isPicker: Bool = false
     }
 
     private static let deadlineChoiceRows: [[DeadlineChoice]] = [
@@ -619,14 +646,37 @@ struct TodoView: View {
         ],
         [
             DeadlineChoice(label: "2주 뒤", date: { Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date() }),
-            DeadlineChoice(label: "한 달 뒤", date: { Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date() }),
-            DeadlineChoice(label: "날짜 고르기", date: { Date() }, isPicker: true)
+            DeadlineChoice(label: "한 달 뒤", date: { Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date() })
         ]
     ]
 
     private func deadlinePickerSheet(for item: BacklogItem) -> some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // 흔한 마감은 달력까지 가지 않고 한 번에 끝난다.
+                // (예전에는 이 칩들이 적자마자 화면 아래에서 튀어나와 답을 재촉했다.
+                //  물음을 없애는 대신 칩은 여기 남긴다 — 정하러 온 사람에게는 여전히 빠르다.)
+                VStack(spacing: 8) {
+                    ForEach(Self.deadlineChoiceRows, id: \.first?.label) { row in
+                        HStack(spacing: 8) {
+                            ForEach(row, id: \.label) { choice in
+                                Button {
+                                    setDeadline(choice.date(), for: item)
+                                    deadlinePickerItem = nil
+                                } label: {
+                                    Text(choice.label)
+                                        .font(.subheadline)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+                                .buttonBorderShape(.capsule)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 12)
+
                 DatePicker("데드라인", selection: $pickedDeadline,
                            in: Calendar.current.startOfDay(for: Date())...,
                            displayedComponents: .date)
@@ -683,6 +733,25 @@ struct TodoView: View {
         } label: {
             Label(deadlines[item.dragToken] == nil ? "데드라인 정하기" : "데드라인 바꾸기",
                   systemImage: "flag.checkered")
+        }
+        if !tree.hasChildren(item), deadlines[item.dragToken] == nil {
+            let isErrand = tree.isErrand(item)
+            Button {
+                withAnimation {
+                    if isErrand {
+                        item.durationHours = TodoTree.defaultStepHours
+                    } else {
+                        item.durationHours = TodoTree.errandHours
+                        if assignedToday.contains(item.title) {
+                            setAssignedToday(false, for: item, tree: tree)
+                        }
+                    }
+                    save()
+                }
+            } label: {
+                Label(isErrand ? "시간 잡기" : "그냥 하면 되는 것으로",
+                      systemImage: isErrand ? "clock" : "bolt")
+            }
         }
         if deadlines[item.dragToken] != nil {
             Button {
@@ -752,17 +821,18 @@ struct TodoView: View {
         } else {
             let maxIndex = allItems.map(\.sortIndex).max() ?? -1
             withAnimation {
-                // 적을 때는 시간을 안 묻는다. 기본값으로 두고 상세에서 고치게 한다.
+                // 적을 때는 아무것도 정하지 않는다 — 시간도, 마감도.
+                //
+                // 예전에는 여기서 기본 30분이 붙고 곧바로 "언제까지예요?"가 떴다.
+                // 그러면 '오는 길에 우유'처럼 제일 급하게 적는 줄이 제일 손이 많이 간다:
+                // 안 쓸 30분을 이번 주에 얹고, 뜬 물음을 X로 닫아야 우유가 된다.
+                // 순서를 뒤집는다 — 적으면 그냥 '그냥 하면 되는 것'이고,
+                // 시간이 필요해지면 그때 왼쪽으로 밀어 잡는다.
                 context.insert(BacklogItem(title: title,
-                                           durationHours: TodoTree.defaultStepHours,
+                                           durationHours: TodoTree.errandHours,
                                            sortIndex: maxIndex + 1,
                                            weekStartDate: weekStart))
                 save()
-            }
-            // 적어 둔 한 줄은 단발성 심부름처럼 보인다. "언제까지"가 붙어야
-            // 오늘부터 그 날까지 나를 붙잡고 있는 일로 보인다 → 무지개에 한 줄.
-            if let added = allItems.first(where: { $0.title == title && $0.parentToken == nil }) {
-                deadlinePromptItem = added
             }
         }
         newTitle = ""
@@ -861,7 +931,6 @@ struct TodoView: View {
         guard TodoEventBridge.shared.drawRainbow(for: item, deadline: date, hours: hours) else { return }
         refreshDeadlines()
         refreshRainbowPending()
-        withAnimation { deadlinePromptItem = nil }
     }
 
     /// 홈·잠금 화면 위젯이 읽는 스냅샷을 다시 굽는다.
