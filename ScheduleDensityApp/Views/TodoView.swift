@@ -226,31 +226,30 @@ struct TodoView: View {
         }
     }
 
-    // MARK: - 갈라 센 칩 (= 필터)
-
-    /// 목록 위 칩 줄. 조건별 셈이자 곧 필터다.
-    ///
-    /// 이 줄이 예전 헤더의 **합계를 대신한다.** 합계는 조각과 덩어리를 한 숫자로 접어
-    /// 서로 환산되는 것처럼 보이게 했다 — '바로 15분' 넷과 '몰입해서 1시간' 하나를 더해
-    /// "2시간"이라고 적으면, 그 2시간은 어느 쪽으로도 쓸 수 없는 숫자다.
-    /// 조각 시간은 총량으로 돌아오지 않는다 (Schulte 2014 · Whillans 2020).
-    ///
-    /// 그래서 접지 않고 나란히 세운다. 그리고 누르면 그 조건만 남는다 —
-    /// 셈과 필터가 같은 칩인 것이 요점이다. "바로 4"를 보고 누르면 정확히 그 4줄이 남는다.
     // MARK: - 내 할 일
+    //
+    // ⚠️ 셈은 목록 아래 한 줄로만 낸다(→ countLine). 여기서 시간을 합치지 말 것 —
+    //    합계는 조각과 덩어리를 한 숫자로 접어 서로 환산되는 것처럼 보이게 한다.
+    //    15분짜리 넷과 1시간짜리 하나를 더해 "2시간"이라고 적으면, 그 2시간은
+    //    어느 쪽으로도 쓸 수 없는 숫자다 (Schulte 2014 · Whillans 2020).
 
     private var myList: some View {
         let tree = self.tree
         let carryover = carryoverItems(tree)
         let open = openItems(tree)
-        // 지난 주에 밀린 일과 이번 주 일을 한 줄기로 세운다. 밀린 것이 위로 온다.
-        // 섹션을 갈라 놓으면 '지난 주에 못 한 일'이라는 이름표를 매번 읽어야 했다 —
-        // 밀렸다는 사실은 옮길 때만 필요하고, 그건 스와이프에 남겨 뒀다.
+        // ⚠️ 이번 주 할 일은 **한 줄기**다. 섹션으로 가르지 않는다.
         //
-        // 다만 '그냥 하면 되는 것'만은 위로 뽑아낸다. 시간도 마감도 없는 줄이라
-        // 시간을 잡아 둔 일들 사이에 끼면 그대로 깔려서 잊힌다 — 잊히는 것이
-        // 그 줄의 유일한 실패 방식이다. 시간을 안 먹으니 위에 몇 줄 서 있어도
-        // 이번 주 계획을 흐리지 않는다.
+        // 예전에는 '바로 하면 되는 일 / 그냥 하면 되는 것 / 시간을 잡은 일'을 각각 섹션으로
+        // 세웠는데, 머리글과 설명이 줄보다 많아졌다. 할 일 다섯 개를 보려고 이름표 세 개를
+        // 매번 읽는 꼴이다. 갈라야 하는 건 맞지만, 가르는 일은 **순서와 색**으로 충분하다:
+        //
+        //   1. 바로 하면 되는 일 — 표시해 둔 것. 청록. 5분이 나면 눈이 여기 먼저 닿는다.
+        //   2. 그냥 하면 되는 것 — 시간을 안 잡은 줄. 옅은 회색. 그 아래가 적는 자리다.
+        //   3. 시간을 잡은 일   — 바탕색 그대로.
+        //   4. 완료           — 맨 아래, 흐리게.
+        //
+        // (지난 주에 밀린 일도 같은 이유로 안 가른다 — 밀렸다는 사실은 옮길 때만 필요하고,
+        //  그건 스와이프에 남겨 뒀다.)
         let (allErrands, allMarked, allItems) = splitErrands(carryover + open, tree: tree)
         // '지금 5분'을 켜면 두 질문에 모두 '예'인 줄만 남는다. 세는 자리(결산)는 건드리지 않는다.
         let errands = fragmentsOnly ? allErrands.filter { isFragment($0, tree: tree) } : allErrands
@@ -262,15 +261,54 @@ struct TodoView: View {
 
         return ScrollViewReader { proxy in
         List {
-            // 맨 위. 5분이 났을 때 눈이 처음 닿는 자리여야 한다.
-            markedSection(marked, tree: tree)
-
-            errandSection(errands, tree: tree)
-
             rainbowPendingSection
 
-            if !items.isEmpty || !errands.isEmpty {
             Section {
+                // 1. 바로 하면 되는 일 — 표시해 둔 줄과 단계. 차례를 안 기다린다.
+                ForEach(marked) { item in
+                    MarkedRow(item: item,
+                              parentTitle: tree.parent(of: item)?.title,
+                              root: tree.root(of: item),
+                              onDone: { finish(item, tree: tree) })
+                        .listRowBackground(Self.markedTint)
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                withAnimation {
+                                    item.setFragmentAnswer(nil, for: .start)
+                                    item.setFragmentAnswer(nil, for: .closing)
+                                    save()
+                                }
+                            } label: {
+                                Label("표시 거두기", systemImage: "bolt.slash")
+                            }
+                            .tint(.gray)
+                        }
+                }
+
+                // 2. 그냥 하면 되는 것 — 시간도 마감도 없는 줄. 잊히는 것이 이 줄의
+                //    유일한 실패 방식이라 시간을 잡은 일들 아래에 깔리지 않게 위에 둔다.
+                ForEach(errands) { item in
+                    TodoRow(item: item,
+                            tree: tree,
+                            category: category(of: item),
+                            isAssignedToday: false,
+                            deadline: nil,
+                            onAdvance: advance,
+                            showsFragmentMark: false)
+                        .listRowBackground(Self.errandTint)
+                        .swipeActions(edge: .leading) {
+                            errandButton(for: item, tree: tree)
+                        }
+                        .contextMenu { itemMenu(for: item, tree: tree) }
+                }
+                .onDelete { delete(errands, at: $0, tree: tree) }
+
+                // 적는 자리. 방금 적은 줄 바로 아래에 다시 빈 줄이 온다 —
+                // 적은 것이 눈앞에 남아 있어야 이어서 적는다.
+                newTodoRow
+                    .listRowBackground(Self.errandTint)
+
+                // 3. 시간을 잡은 일 — 바탕색 그대로.
                 ForEach(items) { item in
                     TodoRow(item: item,
                             tree: tree,
@@ -295,35 +333,20 @@ struct TodoView: View {
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
                 .onDelete { delete(items, at: $0, tree: tree) }
-            } header: {
-                // ⚠️ 여기서 시간을 합치지 말 것.
-                //    예전에는 "\(개수)개 · \(전체 시간 합)"이었는데, 단위가 다른 것을
-                //    더하면 "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
-                Text(fragmentsOnly
-                     ? "지금 5분에 집을 것 · \(items.count)개"
-                     : "시간을 잡은 일 · \(items.count)개")
-            } footer: {
-                if items.isEmpty && fragmentsOnly {
-                    // 비어 있다는 사실 자체가 조언이다 — 조각용 단계를 안 만들어 둔 것.
-                    Text("5분이 났을 때 집을 단계가 없습니다.\n할 일을 눌러 '자료 모아두기·한 줄 메모'처럼 5분에 닫히는 단계를 하나 만들어 두면 여기에 섭니다.")
-                } else if items.isEmpty {
-                    Text("위에 적은 줄을 왼쪽으로 밀어 '시간 잡기'를 누르면 여기로 내려옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
-                }
-            }
-            }
 
-            if !done.isEmpty {
-                Section("완료 · \(done.count)개") {
-                    ForEach(done) { item in
-                        TodoRow(item: item,
-                                tree: tree,
-                                category: category(of: item),
-                                isAssignedToday: false,
-                                deadline: deadlines[item.dragToken],
-                                onAdvance: advance)
-                    }
-                    .onDelete { delete(done, at: $0, tree: tree) }
+                // 4. 완료 — 맨 아래, 흐리게. 지운 게 아니라는 것만 보이면 된다.
+                ForEach(done) { item in
+                    TodoRow(item: item,
+                            tree: tree,
+                            category: category(of: item),
+                            isAssignedToday: false,
+                            deadline: deadlines[item.dragToken],
+                            onAdvance: advance)
+                        .listRowBackground(Self.doneTint)
                 }
+                .onDelete { delete(done, at: $0, tree: tree) }
+            } footer: {
+                listFooter(items: items, errands: errands, marked: marked, done: done)
             }
         }
         .listStyle(.insetGrouped)
@@ -338,6 +361,45 @@ struct TodoView: View {
             if inputFocused { scrollToNewRow(proxy) }
         }
         }
+    }
+
+    // 줄의 성질을 말하는 네 가지 바탕색. 머리글을 없앤 대신 이것들이 가른다.
+    // 옅게 쓰는 게 요점이다 — 알아보기만 하면 되고, 읽을 것은 줄 자체다.
+    private static let markedTint = Color.teal.opacity(0.12)
+    private static let errandTint = Color.secondary.opacity(0.07)
+    private static let doneTint = Color.secondary.opacity(0.03)
+
+    /// 목록 아래 한 줄. 머리글을 없앴으니 셈과 안내도 여기 한 번에 모은다.
+    @ViewBuilder
+    private func listFooter(items: [BacklogItem],
+                            errands: [BacklogItem],
+                            marked: [BacklogItem],
+                            done: [BacklogItem]) -> some View
+    {
+        VStack(alignment: .leading, spacing: 6) {
+            if fragmentsOnly && items.isEmpty && marked.isEmpty {
+                // 비어 있다는 사실 자체가 조언이다 — 조각용 단계를 안 만들어 둔 것.
+                Text("5분이 났을 때 집을 단계가 없습니다. 할 일을 눌러 '자료 모아두기·한 줄 메모'처럼 5분에 닫히는 단계를 하나 만들어 두면 여기에 섭니다.")
+            } else {
+                // ⚠️ 여기서 시간을 합치지 말 것. 단위가 다른 것을 더하면
+                //    "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
+                Text(countLine(items: items, errands: errands, marked: marked, done: done))
+                Text("청록은 바로 하면 되는 일, 회색은 시간을 안 잡은 줄입니다.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
+            }
+        }
+    }
+
+    private func countLine(items: [BacklogItem],
+                           errands: [BacklogItem],
+                           marked: [BacklogItem],
+                           done: [BacklogItem]) -> String
+    {
+        var parts: [String] = []
+        if !marked.isEmpty { parts.append("바로 \(marked.count)개") }
+        if !errands.isEmpty { parts.append("그냥 \(errands.count)개") }
+        parts.append("시간 잡은 일 \(items.count)개")
+        if !done.isEmpty { parts.append("완료 \(done.count)개") }
+        return parts.joined(separator: " · ")
     }
 
     /// 이 줄을 지금 5분에 집을 수 있는가. 쪼갠 일은 '지금 할 단계'로 판단한다 —
@@ -359,7 +421,7 @@ struct TodoView: View {
         }
     }
 
-    // MARK: - 그냥 하면 되는 것
+    // MARK: - 줄을 가르는 규칙
 
     /// 줄들을 세 자리로 가른다. 순서는 그대로 둔다.
     ///
@@ -432,80 +494,6 @@ struct TodoView: View {
         withAnimation {
             tree.setCompleted(step, true)
             save()
-        }
-    }
-
-    /// 목록 맨 위. **적는 자리이자 아무것도 정하지 않은 줄들이 서는 자리다.**
-    ///
-    /// 입력줄을 여기 둔 것은 자리와 뜻을 맞추기 위해서다. 적는 순간에는 우유도 공모전도
-    /// 그냥 한 줄이고, 그 상태가 바로 '그냥 하면 되는 것'이다. 입력줄만 목록 아래에
-    /// 남겨 두면 적자마자 그 줄이 맨 위로 튀어 눈앞에서 사라진다 — 적은 것이 보여야
-    /// 이어서 적는다.
-    ///
-    /// 시간을 안 먹으므로 개수만 세고, 시간은 적지 않는다.
-    private func errandSection(_ errands: [BacklogItem], tree: TodoTree) -> some View {
-        Section {
-            ForEach(errands) { item in
-                TodoRow(item: item,
-                        tree: tree,
-                        category: category(of: item),
-                        isAssignedToday: false,
-                        deadline: nil,
-                        onAdvance: advance,
-                        showsFragmentMark: false)
-                    .swipeActions(edge: .leading) {
-                        errandButton(for: item, tree: tree)
-                    }
-                    .contextMenu { itemMenu(for: item, tree: tree) }
-            }
-            .onDelete { delete(errands, at: $0, tree: tree) }
-
-            // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
-            newTodoRow
-        } header: {
-            // 번개는 위 칸('바로 하면 되는 일')이 가져갔다. 여기는 **적는 자리**다.
-            Label(errands.isEmpty ? "그냥 하면 되는 것" : "그냥 하면 되는 것 · \(errands.count)개",
-                  systemImage: "square.and.pencil")
-        } footer: {
-            Text("여기 적은 줄은 시간을 잡지 않습니다. 잊지만 않으면 되는 것들.\n시간이 필요하면 왼쪽으로 밀어 '시간 잡기'.")
-        }
-    }
-
-    // MARK: - 바로 하면 되는 일 (내가 표시해 둔 것)
-
-    /// 목록의 **맨 위** 칸. 사용자가 '맥락 없이 바로'라고 표시해 둔 줄과 단계들.
-    ///
-    /// 왜 맨 위인가 — 5분이 났을 때 목록을 훑으며 "이건 되나?"를 고르면 그 5분이 끝난다.
-    /// 고르는 일을 미리 해 두고, 그 결과가 **자리로** 남아 있어야 한다.
-    /// 이름표를 더 붙이는 대신 칸 색만 달리한다. 알아보기만 하면 되는 자리다.
-    @ViewBuilder
-    private func markedSection(_ marked: [BacklogItem], tree: TodoTree) -> some View {
-        if !marked.isEmpty {
-            Section {
-                ForEach(marked) { item in
-                    MarkedRow(item: item,
-                              parentTitle: tree.parent(of: item)?.title,
-                              root: tree.root(of: item),
-                              onDone: { finish(item, tree: tree) })
-                        .listRowBackground(Color.teal.opacity(0.12))
-                        .swipeActions(edge: .leading) {
-                            Button {
-                                withAnimation {
-                                    item.setFragmentAnswer(nil, for: .start)
-                                    item.setFragmentAnswer(nil, for: .closing)
-                                    save()
-                                }
-                            } label: {
-                                Label("표시 거두기", systemImage: "bolt.slash")
-                            }
-                            .tint(.gray)
-                        }
-                }
-            } header: {
-                Label("바로 하면 되는 일 · \(marked.count)개", systemImage: "bolt.fill")
-            } footer: {
-                Text("맥락 없이 지금 바로 집을 수 있다고 표시해 둔 것들입니다. 큰 일 안의 단계여도 차례를 기다리지 않고 여기 섭니다.")
-            }
         }
     }
 
