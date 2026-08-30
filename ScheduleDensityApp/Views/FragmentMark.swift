@@ -30,10 +30,10 @@ struct FragmentMark: View {
                         .foregroundStyle(.tertiary)
                 }
             }
-            .foregroundStyle(Color.teal)
+            .foregroundStyle(TodoView.nowGreen)
             .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background(Capsule().fill(Color.teal.opacity(0.15)))
+            .background(Capsule().fill(TodoView.nowGreen.opacity(0.16)))
             .accessibilityLabel("조각. 5분이 나면 집을 수 있는 단계")
         } else if showsReason, let reason = advice.reason {
             Text(reason)

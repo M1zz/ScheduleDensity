@@ -37,6 +37,8 @@ struct TodoView: View {
     @State private var showingLedger = false
     /// '지금 5분' — 조각으로 판정된 줄만 남긴다. 두 질문의 보상이 여기다.
     @State private var fragmentsOnly = false
+    /// 적는 줄이 열려 있는가. + 를 누르면 열리고, 빈 채로 포커스를 잃으면 닫힌다.
+    @State private var isAdding = false
     /// 날짜를 직접 고르는 시트를 띄울 대상.
     @State private var deadlinePickerItem: BacklogItem?
     @State private var pickedDeadline = Date()
@@ -147,7 +149,7 @@ struct TodoView: View {
                             withAnimation { fragmentsOnly.toggle() }
                         } label: {
                             Image(systemName: fragmentsOnly ? "bolt.fill" : "bolt")
-                                .foregroundStyle(fragmentsOnly ? Color.teal : Color.accentColor)
+                                .foregroundStyle(fragmentsOnly ? Self.nowGreen : Color.accentColor)
                         }
                         .accessibilityLabel(fragmentsOnly ? "전체 보기" : "지금 5분에 집을 것만 보기")
                     }
@@ -303,10 +305,14 @@ struct TodoView: View {
                 }
                 .onDelete { delete(errands, at: $0, tree: tree) }
 
-                // 적는 자리. 방금 적은 줄 바로 아래에 다시 빈 줄이 온다 —
-                // 적은 것이 눈앞에 남아 있어야 이어서 적는다.
-                newTodoRow
-                    .listRowBackground(Self.errandTint)
+                // 적는 자리는 평소에 접혀 있다. 오른쪽 아래 + 를 누르면 여기 열린다 —
+                // 늘 떠 있는 빈 줄은 할 일이 아닌데도 목록에서 한 줄을 차지했다.
+                // 열리고 나면 자리는 예전 그대로다: 방금 적은 줄 바로 아래에 다시 빈 줄이
+                // 오므로, 적은 것을 보면서 이어서 적을 수 있다.
+                if isAdding || inputFocused || !newTitle.isEmpty {
+                    newTodoRow
+                        .listRowBackground(Self.errandTint)
+                }
 
                 // 3. 시간을 잡은 일 — 바탕색 그대로.
                 ForEach(items) { item in
@@ -350,12 +356,18 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .overlay(alignment: .bottomTrailing) { addButton(proxy) }
         // 입력이 목록 안에 있으므로 스크롤로 키보드를 바로 내리면 적다가 끊긴다.
         // 손가락을 따라 내려가게 두고, 다 적었으면 빈 줄에서 엔터로 닫는다.
         .scrollDismissesKeyboard(.interactively)
         // 키보드가 올라오거나 한 줄이 확정되면 빈 줄이 계속 보이게 따라간다.
         .onChange(of: inputFocused) { _, focused in
-            if focused { scrollToNewRow(proxy) }
+            if focused {
+                scrollToNewRow(proxy)
+            } else if newTitle.isEmpty {
+                // 빈 채로 손을 뗐으면 다 적은 것이다. 빈 줄을 남겨 두지 않는다.
+                isAdding = false
+            }
         }
         .onChange(of: allItems.count) { _, _ in
             if inputFocused { scrollToNewRow(proxy) }
@@ -363,9 +375,11 @@ struct TodoView: View {
         }
     }
 
-    // 줄의 성질을 말하는 네 가지 바탕색. 머리글을 없앤 대신 이것들이 가른다.
+    // 줄의 성질을 말하는 바탕색들. 머리글을 없앤 대신 이것들이 가른다.
     // 옅게 쓰는 게 요점이다 — 알아보기만 하면 되고, 읽을 것은 줄 자체다.
-    private static let markedTint = Color.teal.opacity(0.12)
+    /// '바로 하면 되는 일'의 색. 연두 — 신호등의 그 색이다. 그냥 가면 된다는 뜻.
+    static let nowGreen = Color(hue: 0.26, saturation: 0.72, brightness: 0.66)
+    private static let markedTint = nowGreen.opacity(0.16)
     private static let errandTint = Color.secondary.opacity(0.07)
     private static let doneTint = Color.secondary.opacity(0.03)
 
@@ -384,7 +398,7 @@ struct TodoView: View {
                 // ⚠️ 여기서 시간을 합치지 말 것. 단위가 다른 것을 더하면
                 //    "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
                 Text(countLine(items: items, errands: errands, marked: marked, done: done))
-                Text("청록은 바로 하면 되는 일, 회색은 시간을 안 잡은 줄입니다.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
+                Text("연두는 바로 하면 되는 일, 회색은 시간을 안 잡은 줄입니다.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
             }
         }
     }
@@ -415,6 +429,37 @@ struct TodoView: View {
                                        pick: step.fragmentPick)
     }
 
+    /// 오른쪽 아래 + . 누르면 적는 줄이 열리고 거기로 따라간다.
+    ///
+    /// 버튼이 여기 있는 이유는 손이 여기 있기 때문이다. 목록 맨 아래까지 스크롤해서
+    /// 빈 줄을 찾아 누르는 동선이 '한 줄 적기'보다 길면, 적으려던 것이 그 사이에 샌다.
+    private func addButton(_ proxy: ScrollViewProxy) -> some View {
+        Button {
+            // 줄을 먼저 세우고 그다음에 포커스를 준다. 아직 화면에 없는 필드에
+            // 포커스를 걸면 그대로 흘러가고, 키보드는 안 올라온다.
+            isAdding = true
+            Task {
+                try? await Task.sleep(for: .milliseconds(60))
+                inputFocused = true
+                scrollToNewRow(proxy)
+            }
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 52, height: 52)
+                .background(Circle().fill(Color.accentColor))
+                .shadow(color: .black.opacity(0.18), radius: 6, y: 3)
+        }
+        .buttonStyle(.plain)
+        .padding(.trailing, 20)
+        .padding(.bottom, 20)
+        // 키보드가 올라와 있으면 적고 있는 중이다. 그때는 버튼이 가릴 것만 늘린다.
+        .opacity(inputFocused ? 0 : 1)
+        .animation(.easeOut(duration: 0.15), value: inputFocused)
+        .accessibilityLabel("할 일 추가")
+    }
+
     private func scrollToNewRow(_ proxy: ScrollViewProxy) {
         withAnimation(.easeOut(duration: 0.2)) {
             proxy.scrollTo(Self.newRowID, anchor: .bottom)
@@ -440,26 +485,21 @@ struct TodoView: View {
         var marked: [BacklogItem] = []
         var rest: [BacklogItem] = []
         for item in items {
-            let hasDeadline = deadlines[item.dragToken] != nil
-            if tree.isErrand(item), !hasDeadline {
-                errands.append(item)
-            } else if !tree.hasChildren(item), isMarked(item) {
+            let lane = tree.lane(of: item, hasDeadline: deadlines[item.dragToken] != nil)
+            switch lane {
+            case .now where !tree.hasChildren(item):
                 // 안 쪼갠 일은 통째로 위 칸으로 올라간다.
                 marked.append(item)
-            } else {
+            case .now:
                 // 쪼갠 일은 제자리에 남는다 — 그 안의 '바로' 단계만 위 칸에 따로 선다.
+                rest.append(item)
+            case .errand:
+                errands.append(item)
+            case .planned:
                 rest.append(item)
             }
         }
         return (errands, marked, rest)
-    }
-
-    /// '맥락 없이 바로'라고 **사용자 손으로** 표시된 줄인가.
-    /// 앱 판정(→ isFragment)과 일부러 구분한다. 짐작으로 올린 줄이 섞이면
-    /// 이 자리를 한 번 믿었다가 데인 뒤로 다시는 안 보게 된다.
-    private func isMarked(_ item: BacklogItem) -> Bool {
-        let pick = item.fragmentPick
-        return pick.start == true && pick.closing == true
     }
 
     /// 맨 위 칸에 설 것들 — **단계도 포함해서** 모은다.
@@ -471,7 +511,7 @@ struct TodoView: View {
         var result: [BacklogItem] = []
         for root in roots where !root.isCompleted {
             if tree.hasChildren(root) {
-                result += tree.leaves(of: root).filter { !$0.isCompleted && isMarked($0) }
+                result += tree.leaves(of: root).filter { !$0.isCompleted && $0.isMarkedNow }
             }
         }
         return result
@@ -879,7 +919,7 @@ struct TodoView: View {
         }
         // 지금 할 단계를 '맥락 없이 바로 되는 것'으로 표시한다. 표시한 줄은 위 칸에 모인다.
         if !tree.isErrand(item) || deadlines[item.dragToken] != nil {
-            let marked = isMarked(tree.hasChildren(item) ? (tree.currentStep(of: item) ?? item) : item)
+            let marked = tree.markedStep(of: item) != nil
             Button {
                 setMarked(!marked, for: item, tree: tree)
             } label: {
@@ -1253,10 +1293,12 @@ private struct MarkedRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            // 원 안에 번개. 이 줄이 무슨 줄인지를 왼쪽 끝에서 한 번 더 말한다 —
+            // 색만으로는 흑백 모드·색각 이상에서 사라진다.
             Button(action: onDone) {
-                Image(systemName: "circle")
+                Image(systemName: "bolt.circle")
                     .font(.system(size: 22))
-                    .foregroundStyle(Color.teal)
+                    .foregroundStyle(TodoView.nowGreen)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("\(item.title) 끝내기")

@@ -70,7 +70,7 @@ enum TodoWidgetSync {
             // 잠금 화면에서 5분을 집으려면 판정이 거기 이미 있어야 한다.
             // 표시해 둔 단계가 있으면 차례를 건너뛰고 그것을 세운다(앱 목록과 같은 규칙),
             // 없으면 '지금 할 단계'가 곧 지금 할 일이다.
-            let step = markedStep(of: item, tree: tree) ?? tree.currentStep(of: item) ?? item
+            let step = tree.markedStep(of: item) ?? tree.currentStep(of: item) ?? item
             let advice = TodoSplitAdvisor.advice(title: step.title,
                                                  durationHours: step.durationHours,
                                                  pick: step.fragmentPick)
@@ -105,17 +105,9 @@ enum TodoWidgetSync {
         if assignedToday.contains(item.title) { return 0 }   // 오늘 하기로 한 일
         // '바로 하면 되는 일'로 표시해 둔 것. 잠금 화면에서 5분을 집는 자리라
         // 앱 목록에서 맨 위인 것과 같은 이유로 여기서도 위로 온다.
-        if markedStep(of: item, tree: tree) != nil { return 1 }
+        if tree.markedStep(of: item) != nil { return 1 }
         if isCarryover { return 2 }                          // 지난 주에 밀린 일
         return 3                                             // 나머지 이번 주
     }
 
-    /// 이 할 일 안에서 사용자가 '맥락 없이 바로'라고 표시해 둔, 아직 안 끝난 단계.
-    /// 차례와 상관없이 이게 있으면 줄에 세운다 — 표시해 둔 뜻이 그것이다.
-    static func markedStep(of item: BacklogItem, tree: TodoTree) -> BacklogItem? {
-        let candidates = tree.hasChildren(item) ? tree.leaves(of: item) : [item]
-        return candidates.first {
-            !$0.isCompleted && $0.fragmentPick.start == true && $0.fragmentPick.closing == true
-        }
-    }
 }
