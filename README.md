@@ -102,4 +102,4 @@ docs/                GitHub Pages (소개 · 개인정보 · 릴리즈 노트)
 
 ## 문의
 
-mizzking75@gmail.com
+leeo@kakao.com

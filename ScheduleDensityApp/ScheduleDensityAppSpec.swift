@@ -8,7 +8,7 @@ import LeeoKit
 
 enum ScheduleDensityAppSpec: LeeoAppSpec {
     static let appName = "일정 밀도"
-    static let developerEmail = "mizzking75@gmail.com"
+    static let developerEmail = "leeo@kakao.com"
     // ⚠️ appIdentifier는 앱 번들 ID와 같은 값을 유지한다(com.example.ScheduleDensityApp).
     //    placeholder 도메인처럼 보여도 App Store에 배포된 실제 번들 ID이고,
     //    이 값은 피드백 허브가 기존 레코드를 찾는 키이기도 하다.
