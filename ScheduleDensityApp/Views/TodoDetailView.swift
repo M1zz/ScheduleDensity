@@ -63,7 +63,7 @@ struct TodoDetailView: View {
         let tree = self.tree
         let leaves = tree.hasChildren(root) ? tree.leaves(of: root) : []
         return TodoSplitAdvisor.hints(rootTitle: root.title,
-                                      steps: leaves.map { ($0.title, $0.durationHours) })
+                                      steps: leaves.map { ($0.title, $0.durationHours, $0.fragmentPick) })
     }
 
     var body: some View {
@@ -267,7 +267,8 @@ struct TodoDetailView: View {
             if let step = tree.currentStep(of: root),
                !tree.hasChildren(step),
                let warning = TodoSplitAdvisor.advice(title: step.title,
-                                                     durationHours: step.durationHours).warning {
+                                                     durationHours: step.durationHours,
+                                                     pick: step.fragmentPick).warning {
                 TipView(StepWarningTip(warning: warning))
             }
 
@@ -487,6 +488,12 @@ struct TodoDetailView: View {
                         hasChildren: tree.hasChildren(row.item),
                         progress: tree.progress(of: row.item),
                         share: share(of: row.item, total: totalLeafHours),
+                        // 잎(실제로 하는 단계)만 판정한다. 묶음은 그 안의 단계들이 답한다.
+                        advice: tree.hasChildren(row.item)
+                            ? nil
+                            : TodoSplitAdvisor.advice(title: row.item.title,
+                                                      durationHours: row.item.durationHours,
+                                                      pick: row.item.fragmentPick),
                         onToggle: { toggle(row.item) })
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
@@ -497,11 +504,28 @@ struct TodoDetailView: View {
                         Button {
                             editing = row.item
                         } label: {
-                            Label("속성·이름", systemImage: "slider.horizontal.3")
+                            Label("시간·조각 판정", systemImage: "slider.horizontal.3")
                         }
                         .tint(.blue)
                     }
                     .swipeActions(edge: .leading) {
+                        // 단계 하나를 '맥락 없이 바로 되는 것'으로 표시한다.
+                        // 표시한 단계는 차례와 상관없이 할 일 목록 맨 위 칸에 선다.
+                        if !tree.hasChildren(row.item) {
+                            let marked = row.item.fragmentPick.start == true
+                                && row.item.fragmentPick.closing == true
+                            Button {
+                                withAnimation {
+                                    row.item.setFragmentAnswer(marked ? nil : true, for: .start)
+                                    row.item.setFragmentAnswer(marked ? nil : true, for: .closing)
+                                    save()
+                                }
+                            } label: {
+                                Label(marked ? "표시 거두기" : "바로 하면 되는 일",
+                                      systemImage: marked ? "bolt.slash" : "bolt.fill")
+                            }
+                            .tint(marked ? .gray : .teal)
+                        }
                         Button {
                             addTarget = row.item
                             inputFocused = true
@@ -519,7 +543,7 @@ struct TodoDetailView: View {
             Text("단계")
         } footer: {
             if rows.isEmpty {
-                Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요.\n각 단계에는 ‘지금 시작할 수 있나’만 골라 주면 시간은 따라옵니다.")
+                Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요.\n적어 두면 각 단계가 조각인지 덩어리인지는 앱이 먼저 답해 둡니다. 틀렸으면 그 단계를 왼쪽으로 밀어 고치면 됩니다.")
             }
         }
     }
@@ -720,6 +744,8 @@ private struct StepRow: View {
     let progress: Double
     /// 이 단계가 이 할 일 전체에서 차지하는 몫(0...1). 잎이 아니면 nil.
     let share: Double?
+    /// 두 질문의 판정. 묶음 단계면 nil.
+    let advice: StepAdvice?
     let onToggle: () -> Void
 
     var body: some View {
@@ -752,6 +778,10 @@ private struct StepRow: View {
                     ProgressView(value: progress)
                         .tint(progress >= 1 ? .green : .accentColor)
                         .frame(maxWidth: 160)
+                } else if let advice {
+                    // 표식은 한 자리에만. 예전처럼 모든 줄에 이름표를 붙이면
+                    // 붙은 것끼리 서로를 가려서 아무것도 안 읽힌다.
+                    FragmentMark(advice: advice)
                 }
             }
 
@@ -787,6 +817,14 @@ private struct StepEditSheet: View {
 
     @State private var title: String = ""
     @State private var hours: Double = TodoTree.defaultStepHours
+    /// 두 질문에 사용자가 직접 답한 것. 시트를 취소하면 같이 버려진다.
+    @State private var pick: FragmentPick = .none
+
+    /// 지금 화면에 적힌 값으로 다시 낸 판정. **저장된 값이 아니라 편집 중인 값을 본다** —
+    /// 스테퍼를 올리는 순간 두 번째 답이 '아니오'로 넘어가는 게 이 화면이 가르치는 전부다.
+    private var advice: StepAdvice {
+        TodoSplitAdvisor.advice(title: title, durationHours: hours, pick: pick)
+    }
 
     var body: some View {
         NavigationStack {
@@ -807,6 +845,22 @@ private struct StepEditSheet: View {
                 } footer: {
                     Text("한 자리에서 닫히는 크기로 잘라 두세요. 두 시간을 넘으면 하다 말게 됩니다.")
                 }
+
+                Section {
+                    FragmentQuestionRows(title: title, hours: hours, pick: $pick)
+                } header: {
+                    Text("이걸 5분에 집어도 되나")
+                } footer: {
+                    // 두 답이 합쳐져서 무엇이 되는지를 한 줄로 닫아준다.
+                    // 답만 두 개 남겨 두면 "그래서 어쩌라고"가 된다.
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Image(systemName: advice.isFragment ? "bolt.fill" : "clock")
+                            .font(.caption)
+                            .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
+                        Text(advice.verdict)
+                            .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
+                    }
+                }
             }
             .navigationTitle("단계")
             .navigationBarTitleDisplayMode(.inline)
@@ -822,6 +876,7 @@ private struct StepEditSheet: View {
             .onAppear {
                 title = item.title
                 hours = item.durationHours
+                pick = item.fragmentPick
             }
         }
     }
@@ -831,6 +886,7 @@ private struct StepEditSheet: View {
         guard !trimmed.isEmpty else { return }
         item.title = trimmed
         item.durationHours = hours
+        item.fragmentPick = pick
         onSave()
         dismiss()
     }

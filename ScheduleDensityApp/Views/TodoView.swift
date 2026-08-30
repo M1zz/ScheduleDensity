@@ -35,6 +35,8 @@ struct TodoView: View {
     @State private var newTitle = ""
     @State private var showingFamilyShareNotice = false
     @State private var showingLedger = false
+    /// '지금 5분' — 조각으로 판정된 줄만 남긴다. 두 질문의 보상이 여기다.
+    @State private var fragmentsOnly = false
     /// 날짜를 직접 고르는 시트를 띄울 대상.
     @State private var deadlinePickerItem: BacklogItem?
     @State private var pickedDeadline = Date()
@@ -138,6 +140,17 @@ struct TodoView: View {
                         }
                         .accessibilityLabel("이번 주 결산")
                     }
+                    // 5분이 났을 때 누르는 버튼. 고르는 데 그 5분을 쓰지 않으려고
+                    // 목록에서 집을 수 없는 줄을 아예 치운다.
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            withAnimation { fragmentsOnly.toggle() }
+                        } label: {
+                            Image(systemName: fragmentsOnly ? "bolt.fill" : "bolt")
+                                .foregroundStyle(fragmentsOnly ? Color.teal : Color.accentColor)
+                        }
+                        .accessibilityLabel(fragmentsOnly ? "전체 보기" : "지금 5분에 집을 것만 보기")
+                    }
                 }
                 if visibleTab == .family {
                     ToolbarItem(placement: .topBarTrailing) { familyShareMenu }
@@ -238,12 +251,20 @@ struct TodoView: View {
         // 시간을 잡아 둔 일들 사이에 끼면 그대로 깔려서 잊힌다 — 잊히는 것이
         // 그 줄의 유일한 실패 방식이다. 시간을 안 먹으니 위에 몇 줄 서 있어도
         // 이번 주 계획을 흐리지 않는다.
-        let (errands, items) = splitErrands(carryover + open, tree: tree)
+        let (allErrands, allMarked, allItems) = splitErrands(carryover + open, tree: tree)
+        // '지금 5분'을 켜면 두 질문에 모두 '예'인 줄만 남는다. 세는 자리(결산)는 건드리지 않는다.
+        let errands = fragmentsOnly ? allErrands.filter { isFragment($0, tree: tree) } : allErrands
+        // 사용자가 직접 표시한 자리라 필터를 걸어도 그대로 둔다. 안 쪼갠 일 + 쪼갠 일의 단계.
+        let marked = allMarked + markedPicks(carryover + open, tree: tree)
+        let items = fragmentsOnly ? allItems.filter { isFragment($0, tree: tree) } : allItems
         let carried = Set(carryover.map(\.dragToken))
         let done = doneItems(tree)
 
         return ScrollViewReader { proxy in
         List {
+            // 맨 위. 5분이 났을 때 눈이 처음 닿는 자리여야 한다.
+            markedSection(marked, tree: tree)
+
             errandSection(errands, tree: tree)
 
             rainbowPendingSection
@@ -278,9 +299,14 @@ struct TodoView: View {
                 // ⚠️ 여기서 시간을 합치지 말 것.
                 //    예전에는 "\(개수)개 · \(전체 시간 합)"이었는데, 단위가 다른 것을
                 //    더하면 "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
-                Text("시간을 잡은 일 · \(items.count)개")
+                Text(fragmentsOnly
+                     ? "지금 5분에 집을 것 · \(items.count)개"
+                     : "시간을 잡은 일 · \(items.count)개")
             } footer: {
-                if items.isEmpty {
+                if items.isEmpty && fragmentsOnly {
+                    // 비어 있다는 사실 자체가 조언이다 — 조각용 단계를 안 만들어 둔 것.
+                    Text("5분이 났을 때 집을 단계가 없습니다.\n할 일을 눌러 '자료 모아두기·한 줄 메모'처럼 5분에 닫히는 단계를 하나 만들어 두면 여기에 섭니다.")
+                } else if items.isEmpty {
                     Text("위에 적은 줄을 왼쪽으로 밀어 '시간 잡기'를 누르면 여기로 내려옵니다.\n맥앱 '무지개 공방'과 자동으로 동기화됩니다.")
                 }
             }
@@ -314,6 +340,19 @@ struct TodoView: View {
         }
     }
 
+    /// 이 줄을 지금 5분에 집을 수 있는가. 쪼갠 일은 '지금 할 단계'로 판단한다 —
+    /// 줄에 서 있는 것이 그 단계이므로, 판정도 같은 것을 봐야 말이 맞는다.
+    private func isFragment(_ item: BacklogItem, tree: TodoTree) -> Bool {
+        fragmentAdvice(item, tree: tree).isFragment
+    }
+
+    private func fragmentAdvice(_ item: BacklogItem, tree: TodoTree) -> StepAdvice {
+        let step = tree.currentStep(of: item) ?? item
+        return TodoSplitAdvisor.advice(title: step.title,
+                                       durationHours: step.durationHours,
+                                       pick: step.fragmentPick)
+    }
+
     private func scrollToNewRow(_ proxy: ScrollViewProxy) {
         withAnimation(.easeOut(duration: 0.2)) {
             proxy.scrollTo(Self.newRowID, anchor: .bottom)
@@ -322,21 +361,78 @@ struct TodoView: View {
 
     // MARK: - 그냥 하면 되는 것
 
-    /// 줄들을 '그냥 하면 되는 것'과 '시간을 잡은 일'로 가른다. 순서는 그대로 둔다.
+    /// 줄들을 세 자리로 가른다. 순서는 그대로 둔다.
+    ///
+    /// - `errands` — 아무것도 안 적힌 줄. '그냥 하면 되는 것'.
+    /// - `marked` — **사용자가 직접 '맥락 없이 바로'라고 표시한 줄.** 시간이 잡혀 있어도
+    ///   여기로 올라온다. 앱의 짐작(낱말·시간)으로는 못 올리고, 사람이 표시한 것만 올린다 —
+    ///   이 자리의 값어치는 "여기 있는 건 진짜 바로 된다"는 믿음에서 나온다.
+    /// - `rest` — 시간을 잡은 일.
     ///
     /// 마감이 붙은 줄은 아무리 시간이 0이어도 그냥 하면 되는 것이 아니다 —
     /// 이미 무지개에 줄이 그어져 오늘부터 그 날까지 나를 붙잡고 있기 때문이다.
-    private func splitErrands(_ items: [BacklogItem], tree: TodoTree) -> (errands: [BacklogItem], rest: [BacklogItem]) {
+    private func splitErrands(_ items: [BacklogItem], tree: TodoTree)
+        -> (errands: [BacklogItem], marked: [BacklogItem], rest: [BacklogItem])
+    {
         var errands: [BacklogItem] = []
+        var marked: [BacklogItem] = []
         var rest: [BacklogItem] = []
         for item in items {
-            if tree.isErrand(item), deadlines[item.dragToken] == nil {
+            let hasDeadline = deadlines[item.dragToken] != nil
+            if tree.isErrand(item), !hasDeadline {
                 errands.append(item)
+            } else if !tree.hasChildren(item), isMarked(item) {
+                // 안 쪼갠 일은 통째로 위 칸으로 올라간다.
+                marked.append(item)
             } else {
+                // 쪼갠 일은 제자리에 남는다 — 그 안의 '바로' 단계만 위 칸에 따로 선다.
                 rest.append(item)
             }
         }
-        return (errands, rest)
+        return (errands, marked, rest)
+    }
+
+    /// '맥락 없이 바로'라고 **사용자 손으로** 표시된 줄인가.
+    /// 앱 판정(→ isFragment)과 일부러 구분한다. 짐작으로 올린 줄이 섞이면
+    /// 이 자리를 한 번 믿었다가 데인 뒤로 다시는 안 보게 된다.
+    private func isMarked(_ item: BacklogItem) -> Bool {
+        let pick = item.fragmentPick
+        return pick.start == true && pick.closing == true
+    }
+
+    /// 맨 위 칸에 설 것들 — **단계도 포함해서** 모은다.
+    ///
+    /// 한 일의 단계 중에도 그냥 하면 되는 것이 섞여 있다. '자료 링크 하나 챙기기'는
+    /// 그 일이 아무리 큰 일이어도 5분에 닫힌다. 그런 단계는 순서를 기다릴 이유가 없으므로
+    /// 차례와 상관없이 여기 올라와, 5분이 났을 때 그냥 집힌다.
+    private func markedPicks(_ roots: [BacklogItem], tree: TodoTree) -> [BacklogItem] {
+        var result: [BacklogItem] = []
+        for root in roots where !root.isCompleted {
+            if tree.hasChildren(root) {
+                result += tree.leaves(of: root).filter { !$0.isCompleted && isMarked($0) }
+            }
+        }
+        return result
+    }
+
+    /// '바로 하면 되는 일'로 표시하거나 거둔다. 표시는 **그 줄 자체**에 붙는다 —
+    /// 쪼갠 일이면 지금 할 단계에.
+    private func setMarked(_ value: Bool, for item: BacklogItem, tree: TodoTree) {
+        let target = tree.hasChildren(item) ? (tree.currentStep(of: item) ?? item) : item
+        withAnimation {
+            target.setFragmentAnswer(value ? true : nil, for: .start)
+            target.setFragmentAnswer(value ? true : nil, for: .closing)
+            save()
+        }
+    }
+
+    /// 표시해 둔 단계 하나를 끝낸다. 차례가 아니어도 끝낼 수 있다 —
+    /// 조각에 집어 넣으라고 위로 올려 둔 것이니 순서를 다시 강요하면 앞뒤가 안 맞는다.
+    private func finish(_ step: BacklogItem, tree: TodoTree) {
+        withAnimation {
+            tree.setCompleted(step, true)
+            save()
+        }
     }
 
     /// 목록 맨 위. **적는 자리이자 아무것도 정하지 않은 줄들이 서는 자리다.**
@@ -355,7 +451,8 @@ struct TodoView: View {
                         category: category(of: item),
                         isAssignedToday: false,
                         deadline: nil,
-                        onAdvance: advance)
+                        onAdvance: advance,
+                        showsFragmentMark: false)
                     .swipeActions(edge: .leading) {
                         errandButton(for: item, tree: tree)
                     }
@@ -366,10 +463,49 @@ struct TodoView: View {
             // 줄들 바로 아래에 빈 줄 하나. 여기에 적는다.
             newTodoRow
         } header: {
+            // 번개는 위 칸('바로 하면 되는 일')이 가져갔다. 여기는 **적는 자리**다.
             Label(errands.isEmpty ? "그냥 하면 되는 것" : "그냥 하면 되는 것 · \(errands.count)개",
-                  systemImage: "bolt")
+                  systemImage: "square.and.pencil")
         } footer: {
             Text("여기 적은 줄은 시간을 잡지 않습니다. 잊지만 않으면 되는 것들.\n시간이 필요하면 왼쪽으로 밀어 '시간 잡기'.")
+        }
+    }
+
+    // MARK: - 바로 하면 되는 일 (내가 표시해 둔 것)
+
+    /// 목록의 **맨 위** 칸. 사용자가 '맥락 없이 바로'라고 표시해 둔 줄과 단계들.
+    ///
+    /// 왜 맨 위인가 — 5분이 났을 때 목록을 훑으며 "이건 되나?"를 고르면 그 5분이 끝난다.
+    /// 고르는 일을 미리 해 두고, 그 결과가 **자리로** 남아 있어야 한다.
+    /// 이름표를 더 붙이는 대신 칸 색만 달리한다. 알아보기만 하면 되는 자리다.
+    @ViewBuilder
+    private func markedSection(_ marked: [BacklogItem], tree: TodoTree) -> some View {
+        if !marked.isEmpty {
+            Section {
+                ForEach(marked) { item in
+                    MarkedRow(item: item,
+                              parentTitle: tree.parent(of: item)?.title,
+                              root: tree.root(of: item),
+                              onDone: { finish(item, tree: tree) })
+                        .listRowBackground(Color.teal.opacity(0.12))
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                withAnimation {
+                                    item.setFragmentAnswer(nil, for: .start)
+                                    item.setFragmentAnswer(nil, for: .closing)
+                                    save()
+                                }
+                            } label: {
+                                Label("표시 거두기", systemImage: "bolt.slash")
+                            }
+                            .tint(.gray)
+                        }
+                }
+            } header: {
+                Label("바로 하면 되는 일 · \(marked.count)개", systemImage: "bolt.fill")
+            } footer: {
+                Text("맥락 없이 지금 바로 집을 수 있다고 표시해 둔 것들입니다. 큰 일 안의 단계여도 차례를 기다리지 않고 여기 섭니다.")
+            }
         }
     }
 
@@ -753,6 +889,16 @@ struct TodoView: View {
                       systemImage: isErrand ? "clock" : "bolt")
             }
         }
+        // 지금 할 단계를 '맥락 없이 바로 되는 것'으로 표시한다. 표시한 줄은 위 칸에 모인다.
+        if !tree.isErrand(item) || deadlines[item.dragToken] != nil {
+            let marked = isMarked(tree.hasChildren(item) ? (tree.currentStep(of: item) ?? item) : item)
+            Button {
+                setMarked(!marked, for: item, tree: tree)
+            } label: {
+                Label(marked ? "'바로' 표시 거두기" : "바로 하면 되는 일로 표시",
+                      systemImage: marked ? "bolt.slash" : "bolt.fill")
+            }
+        }
         if deadlines[item.dragToken] != nil {
             Button {
                 TodoEventBridge.shared.clearRainbow(for: item)
@@ -951,6 +1097,8 @@ private struct TodoRow: View {
     let deadline: Date?
     /// 탭 = 지금 할 일 하나 끝내기.
     let onAdvance: (BacklogItem, TodoTree) -> Void
+    /// 조각 표식을 달지. 칸 이름이 이미 '그냥 하면 되는 것'이면 같은 말을 두 번 하지 않는다.
+    var showsFragmentMark: Bool = true
 
     private var hasSteps: Bool { tree.hasChildren(item) }
     private var currentStep: BacklogItem? { tree.currentStep(of: item) }
@@ -985,18 +1133,12 @@ private struct TodoRow: View {
                 .font(.system(size: 22))
                 .foregroundStyle(.green)
         } else if hasSteps {
-            ZStack {
-                Circle()
-                    .stroke(Color.secondary.opacity(0.3), lineWidth: 2)
-                Circle()
-                    .trim(from: 0, to: max(0.02, tree.progress(of: item)))
-                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                    .rotationEffect(.degrees(-90))
-                Image(systemName: "checkmark")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(Color.accentColor)
-            }
-            .frame(width: 22, height: 22)
+            // 몇 번째인지는 **원을 단계 수만큼 자른 도넛**이 말한다. 예전에는 '3/4' 같은 글자를
+            // 줄에 얹었는데, 그 크기의 숫자는 지나가면서 안 읽힌다. 지나온 칸이 차 있는
+            // 그림은 읽는 게 아니라 보인다.
+            StepDonut(done: tree.doneLeafCount(of: item),
+                      total: tree.leafCount(of: item))
+                .frame(width: 24, height: 24)
         } else {
             Image(systemName: "circle")
                 .font(.system(size: 22))
@@ -1010,21 +1152,15 @@ private struct TodoRow: View {
     /// 그게 무슨 일의 일부인지는 눌러 들어가면 네비게이션 타이틀이 말해준다.
     /// 시간은 왼쪽 링이 진행을, 헤더가 총량을 이미 말하므로 줄에서는 뺐다.
     private var content: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 3) {
             // 쪼갠 할 일은 단계 이름만 서 있으면 이게 무슨 일의 일부인지 알 수 없다.
             // 그렇다고 할 일 이름을 크게 세우면 '지금 할 것'이 뒤로 밀린다.
             // 그래서 할 일 이름을 위에 작게 얹어 길 안내로만 쓴다.
             if let parentTitle {
-                HStack(spacing: 4) {
-                    Text(parentTitle)
-                        .lineLimit(1)
-                    if let stepNumber {
-                        Text("\(stepNumber.now)/\(stepNumber.total)")
-                            .monospacedDigit()
-                    }
-                }
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+                Text(parentTitle)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(1)
             }
 
             HStack(spacing: 8) {
@@ -1032,6 +1168,12 @@ private struct TodoRow: View {
                     .strikethrough(item.isCompleted)
                     .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
                     .lineLimit(2)
+
+                // 조각일 때만 붙는다. 이 줄에서 필요한 답은 "지금 이걸 집어도 되나" 하나뿐이라
+                // 덩어리라는 사실은 표식 없음으로 충분하다.
+                if showsFragmentMark, !item.isCompleted, advice.isFragment {
+                    FragmentMark(advice: advice, showsReason: false)
+                }
 
                 if isAssignedToday { todayBadge }
                 if let deadline, !item.isCompleted { deadlineBadge(deadline) }
@@ -1043,24 +1185,41 @@ private struct TodoRow: View {
                 }
                 Spacer(minLength: 0)
             }
+
         }
         .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(rowAccessibilityLabel)
     }
 
     /// 줄에 설 이름. 남은 단계가 있으면 그 단계, 아니면 할 일 자신.
     private var displayTitle: String { (currentStep ?? item).title }
 
     /// 단계를 하고 있을 때만, 그게 무슨 일의 일부인지.
+    ///
+    /// ⚠️ `currentStep`은 자식이 없으면 **자기 자신**을 돌려준다. 그것만 보고 판단하면
+    ///    안 쪼갠 줄이 제 이름을 위아래로 두 번 세운다.
     private var parentTitle: String? {
-        guard currentStep != nil else { return nil }
+        guard hasSteps, currentStep != nil else { return nil }
         return item.title
     }
 
-    /// 몇 번째 단계인지. 끝이 보여야 남은 길이 가늠된다.
-    private var stepNumber: (now: Int, total: Int)? {
-        guard currentStep != nil,
-              let number = tree.currentStepNumber(of: item) else { return nil }
-        return (number, tree.leafCount(of: item))
+    /// 줄에 서 있는 그 단계에 대한 판정. (이름이 그것이므로 판정도 그것이어야 한다)
+    private var advice: StepAdvice {
+        let step = currentStep ?? item
+        return TodoSplitAdvisor.advice(title: step.title,
+                                       durationHours: step.durationHours,
+                                       pick: step.fragmentPick)
+    }
+
+    /// 도넛은 그림이라 소리로는 안 읽힌다. 몇 번째인지를 말로 한 번 더 적는다.
+    private var rowAccessibilityLabel: String {
+        var text = displayTitle
+        if hasSteps, let number = tree.currentStepNumber(of: item) {
+            text = "\(item.title), \(tree.leafCount(of: item))단계 중 \(number)번째, \(displayTitle)"
+        }
+        if advice.isFragment { text += ", 5분에 집을 수 있음" }
+        return text
     }
 
     /// 남은 날을 세어 보여준다. 날짜보다 "며칠 남았나"가 먼저 와닿는다.
@@ -1089,6 +1248,49 @@ private struct TodoRow: View {
             .padding(.horizontal, 11)
             .padding(.vertical, 6)
             .background(Capsule().fill(Color.orange.opacity(0.15)))
+    }
+}
+
+/// 맨 위 칸의 한 줄. 할 일 자신일 수도 있고, 큰 일 안의 단계 하나일 수도 있다.
+///
+/// 여기서 원을 누르면 **그 줄이 끝난다.** 큰 일의 단계라면 차례를 건너뛰고 그것만 닫힌다 —
+/// 조각에 집으라고 올려 둔 것이라, 순서를 다시 요구하면 올려 둔 뜻이 없어진다.
+private struct MarkedRow: View {
+    let item: BacklogItem
+    /// 이게 무슨 일의 단계인지. 단계가 아니면 nil.
+    let parentTitle: String?
+    /// 눌러 들어갈 곳 — 단계여도 그 일의 상세로 간다.
+    let root: BacklogItem
+    let onDone: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button(action: onDone) {
+                Image(systemName: "circle")
+                    .font(.system(size: 22))
+                    .foregroundStyle(Color.teal)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("\(item.title) 끝내기")
+
+            NavigationLink {
+                TodoDetailView(root: root)
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    if let parentTitle {
+                        Text(parentTitle)
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(1)
+                    }
+                    Text(item.title)
+                        .lineLimit(2)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 

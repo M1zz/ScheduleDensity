@@ -94,7 +94,9 @@ private struct InlineView: View {
     var body: some View {
         if let first = snapshot.items.first {
             // 단계로 쪼갠 할 일은 '지금 할 단계'가 곧 지금 해야 하는 일이다.
-            Text([first.title, first.stepTitle].compactMap { $0 }.joined(separator: " · "))
+            // 조각이면 앞에 번개를 하나 — 한 줄짜리 자리라 이 이상은 못 넣는다.
+            Text((first.isFragment ? "⚡︎ " : "")
+                 + [first.title, first.stepLabel].compactMap { $0 }.joined(separator: " · "))
         } else {
             Text("할 일 없음")
         }
@@ -113,9 +115,17 @@ private struct RectangularView: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(snapshot.items.prefix(3)) { item in
-                    Text(item.title)
-                        .font(.system(size: 13, weight: item.isToday ? .semibold : .regular))
-                        .lineLimit(1)
+                    HStack(spacing: 3) {
+                        // 5분이 났을 때 잠금 화면에서 바로 고르라고 다는 표식.
+                        // 여기서 앱을 열어 판정을 보러 가야 하면 그 왕복에서 5분이 끝난다.
+                        if item.isFragment {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 8, weight: .bold))
+                        }
+                        Text(item.stepLabel ?? item.title)
+                            .font(.system(size: 13, weight: item.isToday ? .semibold : .regular))
+                            .lineLimit(1)
+                    }
                 }
             }
             Spacer(minLength: 0)
@@ -163,14 +173,19 @@ private struct TodoLine: View {
     var body: some View {
         HStack(spacing: 6) {
             // 오늘 하기로 한 일은 점을 채워서, 나머지는 테두리만.
+            // 조각인 줄만 점 대신 번개 — 5분이 났을 때 눈이 먼저 가야 하는 것이 그 줄이다.
             Group {
-                if item.isToday {
+                if item.isFragment {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(dotColor)
+                } else if item.isToday {
                     Circle().fill(dotColor)
                 } else {
                     Circle().strokeBorder(dotColor, lineWidth: 1.5)
                 }
             }
-            .frame(width: 7, height: 7)
+            .frame(width: 8, height: 8)
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(item.title)
@@ -180,13 +195,18 @@ private struct TodoLine: View {
 
                 if let step = item.stepTitle {
                     HStack(spacing: 3) {
-                        Image(systemName: "arrowtriangle.right.fill")
-                            .font(.system(size: 6))
+                        // 진행률(%)보다 '몇 번째'가 먼저다 — 지금 뭘 하면 되는지를
+                        // 말해주는 건 퍼센트가 아니라 순서다.
+                        if let index = item.stepIndex, let count = item.stepCount {
+                            Text("\(index)/\(count)")
+                                .monospacedDigit()
+                                .fontWeight(.semibold)
+                        } else {
+                            Image(systemName: "arrowtriangle.right.fill")
+                                .font(.system(size: 6))
+                        }
                         Text(step)
                             .lineLimit(1)
-                        Text("\(Int((item.progress * 100).rounded()))%")
-                            .monospacedDigit()
-                            .foregroundStyle(.tertiary)
                     }
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
@@ -207,13 +227,31 @@ private struct TodoLine: View {
     }
 }
 
+// MARK: - 공통
+
+private extension TodoWidgetSnapshot.Item {
+    /// "3/4 글 다듬기" — 지금 어디쯤인지까지 한 덩어리로.
+    var stepLabel: String? {
+        guard let stepTitle else { return nil }
+        guard let index = stepIndex, let count = stepCount else { return stepTitle }
+        return "\(index)/\(count) \(stepTitle)"
+    }
+}
+
 // MARK: - 접근성
 
 private func listAccessibilityLabel(_ snapshot: TodoWidgetSnapshot, limit: Int) -> String {
     guard !snapshot.isEmpty else { return "남은 할 일 없음" }
     let titles = snapshot.items.prefix(limit).map { item in
         var text = item.title
-        if let step = item.stepTitle { text += ", 지금 \(step), \(Int((item.progress * 100).rounded()))퍼센트" }
+        if let step = item.stepTitle {
+            if let index = item.stepIndex, let count = item.stepCount {
+                text += ", \(count)단계 중 \(index)번째, 지금 \(step)"
+            } else {
+                text += ", 지금 \(step)"
+            }
+        }
+        if item.isFragment { text += ", 5분에 집을 수 있음" }
         return item.isToday ? "\(text), 오늘" : text
     }
     return "할 일. " + titles.joined(separator: ", ")

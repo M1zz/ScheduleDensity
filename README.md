@@ -12,21 +12,28 @@
 ## 화면
 
 - **무지개** — 일정의 밀도를 날짜 x 시간대 격자로. 겹칠수록 진하게, 종료일까지 옅게 이어짐.
-- **할 일** — 할 일을 단계로 쪼개고, 단계마다 착수 조건 하나만 고른다.
+- **할 일** — 할 일을 단계로 쪼개고, 조각인지 덩어리인지는 두 질문으로 갈린다.
 - **공유** — 일정 공유(읽기 전용). 설정에서 켤 때만 노출.
 
-## 착수 조건
+## 두 질문
 
-쪼갤 때 묻는 것은 "이 단계가 전체의 몇 %냐"가 아니라 **"지금 시작할 수 있나"** 다.
+조각(5분에 집을 것)과 덩어리(지켜 둔 시간에 할 것)를 가르는 기준은 두 물음뿐이다.
 근거는 [`TodoSplitAdvisor.swift`](ScheduleDensityApp/Shared/TodoSplitAdvisor.swift) 머리주석에 있다.
 
-| 속성 | 뜻 | 기본 시간 |
+| | 묻는 것 | 아니면 |
 |---|---|---|
-| 바로 | 먼저 할 것도 정할 것도 없다 | 15분 |
-| 펼치고 | 자료를 펼쳐야 시작된다 | 30분 |
-| 몰입해서 | 끊기면 다시 올라와야 한다 | 1시간 |
-| 정하고 | 안 정한 것이 막고 있다 | 30분 |
-| 기다림 | 내 손을 떠나 있다 | 내 시간 아님 |
+| 하나 | 시동 없이 바로 시작되나 | 조각에서 시동만 걸다 끝난다 (Mark 2008) |
+| 둘 | 5분 안에 끝까지 가나 | 잔여물이 다음 시간까지 따라온다 (Leroy 2009) |
+
+**둘 다 '예'인 단계만 조각이다.** 답은 앱이 낱말과 시간으로 먼저 적어 두고, 사용자는
+틀렸을 때만 뒤집는다(단계 시트의 두 줄). 적을 때는 아무것도 묻지 않는다 —
+옛 '착수 조건'(바로/펼치고/몰입해서)을 걷어낸 이유와 같다.
+
+- 뒤집은 답은 `BacklogItem.labelRaw`에 `pick:` 접두어로 저장한다
+  → [`BacklogItem+Fragment.swift`](ScheduleDensityApp/Shared/BacklogItem+Fragment.swift)
+- 사용자가 직접 표시한 줄·단계는 목록 **맨 위 '바로 하면 되는 일'** 칸에 모인다.
+  큰 일 안의 단계여도 차례를 기다리지 않는다.
+- 목록에서 '몇 번째 단계인가'는 왼쪽 원을 단계 수만큼 자른 도넛이 말한다.
 
 시간은 **아래에서 위로** 쌓인다. 상위 할 일의 시간은 단계들의 합이다.
 
@@ -58,11 +65,10 @@ xcodebuild -project ScheduleDensityApp.xcodeproj -scheme ScheduleDensityApp \
 ScheduleDensityApp/
 ├── Models/          Event 등 SwiftData 모델
 ├── Shared/          두 앱이 함께 쓰는 것 (아래 주의 참고)
-│   ├── TodoSplitAdvisor.swift   착수 조건 정의 + 쪼개기 조언
+│   ├── TodoSplitAdvisor.swift   두 질문 판정 + 쪼개기 조언
 │   ├── TodoTree.swift           단계 트리, 시간 합산, 진행률
-│   ├── BacklogItem+Label.swift  저장값 -> 착수 조건
+│   ├── BacklogItem+Fragment.swift  두 질문에 직접 답한 것(labelRaw 재사용)
 │   ├── TodoTips.swift           TipKit 팁
-│   ├── TodoLabelChip.swift      속성 칩 (익스텐션도 씀)
 │   └── TodoShareInbox.swift     공유 익스텐션 -> 앱 통로
 ├── Views/           화면
 ├── Services/        위젯 스냅샷, 공유 받은 것 처리
@@ -79,7 +85,7 @@ docs/                GitHub Pages (소개 · 개인정보 · 릴리즈 노트)
 - `TodoSplitAdvisor.swift`
 - `TodoTree.swift`
 - `TodoTips.swift`
-- `BacklogItem+Label.swift`
+- `BacklogItem+Fragment.swift`
 
 `BacklogItem` / `BacklogCategory` 는 같은 CloudKit 스키마를 쓰므로 **필드 추가·삭제는 반드시 양쪽 동시에** 한다.
 맥에만 있는 전파 계약 필드처럼 한쪽에만 있는 필드는 옵셔널 또는 기본값이어야 한다.

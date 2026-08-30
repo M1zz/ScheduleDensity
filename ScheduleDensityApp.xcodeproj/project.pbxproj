@@ -34,6 +34,7 @@
 		6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */; };
 		61C8EBC20259E7FF658CDC03 /* PressHaptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C853BE37B3248C998610275 /* PressHaptics.swift */; };
 		6BF0C551702B1A5F00487205 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16A56CFD7BFD1A4F77443B7 /* Theme.swift */; };
+		6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A25397A90AF67293DBF60A2 /* FragmentMark.swift */; };
 		7100C2E9407B6C23936F98F9 /* TodoWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CCF1AED059EB801B4CC2F8E2 /* TodoWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4164272EB750B716814E94EB /* SyncSettingsManager.swift */; };
 		72FAB23FF49C0E818FAFEA09 /* RainbowWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */; };
@@ -62,6 +63,7 @@
 		BCBE8F638942699B9F7B5179 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D876DDD38462D8033DE00DCB /* ShareViewController.swift */; };
 		C3570B640BED636DC7372662 /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0B7D594FCCABF21917463C /* LeeoKit */; };
 		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
+		CFF51ED63E41C1792E020ACB /* BacklogItem+Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */; };
 		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
 		DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */; };
 		DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF674923A141F19CD56EF10 /* CloudKitManager.swift */; };
@@ -114,6 +116,7 @@
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitAdvisor.swift; sourceTree = "<group>"; };
 		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A25397A90AF67293DBF60A2 /* FragmentMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentMark.swift; sourceTree = "<group>"; };
 		2C853BE37B3248C998610275 /* PressHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressHaptics.swift; sourceTree = "<group>"; };
 		2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
 		2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeaningPage.swift; sourceTree = "<group>"; };
@@ -128,6 +131,7 @@
 		61808975C3F29C0A9061722C /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
 		6249B231B4A4D32972B8C246 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		63283233385421AD018AB5E7 /* DensityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityCalculator.swift; sourceTree = "<group>"; };
+		6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BacklogItem+Fragment.swift"; sourceTree = "<group>"; };
 		6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitOnboarding.swift; sourceTree = "<group>"; };
 		6BC3A6E73464097A7DEA1703 /* ScheduleShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleShareView.swift; sourceTree = "<group>"; };
 		6EF8BA6154DE9430653A8F56 /* TodoShareIntake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoShareIntake.swift; sourceTree = "<group>"; };
@@ -217,6 +221,7 @@
 				E2DD3A4029A1F8FABD057A7D /* ContentView.swift */,
 				8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */,
 				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
+				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
 				2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */,
 				7A5EF904E1E47DF7E2D6E33E /* RainbowMeaningView.swift */,
 				DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */,
@@ -327,6 +332,7 @@
 			children = (
 				CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */,
 				2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */,
+				6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */,
 				5CCA231C8EF9417E46288EC6 /* ColorHex.swift */,
 				30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */,
 				AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */,
@@ -509,6 +515,7 @@
 			files = (
 				FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */,
 				1FFCE7DA79C38C4AA79B8738 /* BacklogCategory.swift in Sources */,
+				CFF51ED63E41C1792E020ACB /* BacklogItem+Fragment.swift in Sources */,
 				2200136119E353E928C1888D /* BacklogItem.swift in Sources */,
 				15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */,
 				DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */,
@@ -522,6 +529,7 @@
 				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
 				9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */,
 				07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */,
+				6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */,
 				86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */,
 				328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */,
 				4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */,

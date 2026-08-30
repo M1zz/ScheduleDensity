@@ -56,8 +56,10 @@ enum TodoWidgetSync {
         // 유지되도록 인덱스를 마지막 기준으로 넣는다.
         let ordered = open.enumerated()
             .sorted { lhs, rhs in
-                let lRank = rank(item: lhs.element.0, isCarryover: lhs.element.1, assignedToday: assignedToday)
-                let rRank = rank(item: rhs.element.0, isCarryover: rhs.element.1, assignedToday: assignedToday)
+                let lRank = rank(item: lhs.element.0, isCarryover: lhs.element.1,
+                                 assignedToday: assignedToday, tree: tree)
+                let rRank = rank(item: rhs.element.0, isCarryover: rhs.element.1,
+                                 assignedToday: assignedToday, tree: tree)
                 if lRank != rRank { return lRank < rRank }
                 return lhs.offset < rhs.offset
             }
@@ -65,6 +67,13 @@ enum TodoWidgetSync {
 
         let widgetItems = ordered.prefix(TodoWidgetSnapshot.maxItems).map { item, isCarryover in
             let category = item.categoryID.flatMap { categoryByID[$0] }
+            // 잠금 화면에서 5분을 집으려면 판정이 거기 이미 있어야 한다.
+            // 표시해 둔 단계가 있으면 차례를 건너뛰고 그것을 세운다(앱 목록과 같은 규칙),
+            // 없으면 '지금 할 단계'가 곧 지금 할 일이다.
+            let step = markedStep(of: item, tree: tree) ?? tree.currentStep(of: item) ?? item
+            let advice = TodoSplitAdvisor.advice(title: step.title,
+                                                 durationHours: step.durationHours,
+                                                 pick: step.fragmentPick)
             return TodoWidgetSnapshot.Item(
                 id: item.dragToken,
                 title: item.title,
@@ -72,8 +81,13 @@ enum TodoWidgetSync {
                 categoryName: category?.name,
                 isCarryover: isCarryover,
                 isToday: assignedToday.contains(item.title),
-                stepTitle: tree.hasChildren(item) ? tree.currentStep(of: item)?.title : nil,
-                progress: tree.hasChildren(item) ? tree.progress(of: item) : 0
+                stepTitle: tree.hasChildren(item) ? step.title : nil,
+                progress: tree.hasChildren(item) ? tree.progress(of: item) : 0,
+                isFragment: advice.isFragment,
+                stepIndex: tree.hasChildren(item)
+                    ? (tree.leaves(of: item).firstIndex { $0.dragToken == step.dragToken }.map { $0 + 1 })
+                    : nil,
+                stepCount: tree.hasChildren(item) ? tree.leafCount(of: item) : nil
             )
         }
 
@@ -85,9 +99,23 @@ enum TodoWidgetSync {
     }
 
     /// 위젯 목록에서의 우선순위. 낮을수록 위.
-    private static func rank(item: BacklogItem, isCarryover: Bool, assignedToday: Set<String>) -> Int {
+    private static func rank(item: BacklogItem, isCarryover: Bool,
+                             assignedToday: Set<String>, tree: TodoTree) -> Int
+    {
         if assignedToday.contains(item.title) { return 0 }   // 오늘 하기로 한 일
-        if isCarryover { return 1 }                          // 지난 주에 밀린 일
-        return 2                                             // 나머지 이번 주
+        // '바로 하면 되는 일'로 표시해 둔 것. 잠금 화면에서 5분을 집는 자리라
+        // 앱 목록에서 맨 위인 것과 같은 이유로 여기서도 위로 온다.
+        if markedStep(of: item, tree: tree) != nil { return 1 }
+        if isCarryover { return 2 }                          // 지난 주에 밀린 일
+        return 3                                             // 나머지 이번 주
+    }
+
+    /// 이 할 일 안에서 사용자가 '맥락 없이 바로'라고 표시해 둔, 아직 안 끝난 단계.
+    /// 차례와 상관없이 이게 있으면 줄에 세운다 — 표시해 둔 뜻이 그것이다.
+    static func markedStep(of item: BacklogItem, tree: TodoTree) -> BacklogItem? {
+        let candidates = tree.hasChildren(item) ? tree.leaves(of: item) : [item]
+        return candidates.first {
+            !$0.isCompleted && $0.fragmentPick.start == true && $0.fragmentPick.closing == true
+        }
     }
 }

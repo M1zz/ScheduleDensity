@@ -23,16 +23,27 @@ struct TodoWidgetSnapshot: Codable {
         var stepTitle: String?
         /// 0...1 진행률. 단계가 없으면 0.
         var progress: Double
+        /// 지금 할 단계가 두 질문에 모두 '예'인가 — 5분이 났을 때 집어도 되는 줄.
+        /// 판정은 앱에서만 한다(위젯은 사전을 안 들고 있다).
+        var isFragment: Bool
+        /// 지금 몇 번째 단계인가 (1부터). 단계가 없으면 nil.
+        /// 잠금 화면에서도 "여기까지 왔고 지금은 이것"이 보여야 한다.
+        var stepIndex: Int?
+        /// 단계 수. 단계가 없으면 nil.
+        var stepCount: Int?
 
-        // isToday·stepTitle·progress는 나중에 추가된 필드라, 이 키가 없는 옛 스냅샷도
-        // 읽을 수 있어야 한다. (앱 업데이트 직후 위젯이 먼저 깨어나면 옛 파일을 만난다.)
+        // isToday·stepTitle·progress·isFragment는 나중에 추가된 필드라, 이 키가 없는 옛
+        // 스냅샷도 읽을 수 있어야 한다. (앱 업데이트 직후 위젯이 먼저 깨어나면 옛 파일을 만난다.)
         enum CodingKeys: String, CodingKey {
-            case id, title, colorHex, categoryName, isCarryover, isToday, stepTitle, progress
+            case id, title, colorHex, categoryName, isCarryover, isToday, stepTitle, progress, isFragment
+            case stepIndex, stepCount
         }
 
         init(id: String, title: String, colorHex: String?, categoryName: String?,
              isCarryover: Bool, isToday: Bool = false,
-             stepTitle: String? = nil, progress: Double = 0) {
+             stepTitle: String? = nil, progress: Double = 0,
+             isFragment: Bool = false,
+             stepIndex: Int? = nil, stepCount: Int? = nil) {
             self.id = id
             self.title = title
             self.colorHex = colorHex
@@ -41,6 +52,9 @@ struct TodoWidgetSnapshot: Codable {
             self.isToday = isToday
             self.stepTitle = stepTitle
             self.progress = progress
+            self.isFragment = isFragment
+            self.stepIndex = stepIndex
+            self.stepCount = stepCount
         }
 
         init(from decoder: Decoder) throws {
@@ -53,6 +67,9 @@ struct TodoWidgetSnapshot: Codable {
             isToday = try c.decodeIfPresent(Bool.self, forKey: .isToday) ?? false
             stepTitle = try c.decodeIfPresent(String.self, forKey: .stepTitle)
             progress = try c.decodeIfPresent(Double.self, forKey: .progress) ?? 0
+            isFragment = try c.decodeIfPresent(Bool.self, forKey: .isFragment) ?? false
+            stepIndex = try c.decodeIfPresent(Int.self, forKey: .stepIndex)
+            stepCount = try c.decodeIfPresent(Int.self, forKey: .stepCount)
         }
     }
 
@@ -72,11 +89,12 @@ struct TodoWidgetSnapshot: Codable {
         items: [
             Item(id: "1", title: "기획서 초안 작성", colorHex: "#007AFF", categoryName: "개발",
                  isCarryover: false, isToday: true,
-                 stepTitle: "목차 잡기", progress: 0.3),
+                 stepTitle: "목차 잡기", progress: 0.3,
+                 stepIndex: 1, stepCount: 4),
             Item(id: "2", title: "위젯 스냅샷 정리", colorHex: "#5856D6", categoryName: "개발",
                  isCarryover: true, isToday: false),
             Item(id: "3", title: "장보기 — 우유, 계란", colorHex: "#34C759", categoryName: "집안일",
-                 isCarryover: false, isToday: false),
+                 isCarryover: false, isToday: false, isFragment: true),
             Item(id: "4", title: "러닝 30분", colorHex: "#FF9500", categoryName: "운동",
                  isCarryover: false, isToday: false),
             Item(id: "5", title: "책 한 챕터 읽기", colorHex: nil, categoryName: nil,
