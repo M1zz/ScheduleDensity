@@ -298,6 +298,7 @@ struct ScheduleDensityApp: App {
                         .tag(AppTab.share)
                 }
             }
+            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
             .task { KeyboardDismissOnTap.install() }

@@ -71,6 +71,7 @@
 		DC68D95E7F7AF87686764F32 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E6D619C882389B3029929E6F /* Preview Assets.xcassets */; };
 		E0A2A4BF6AD61BD2916BF322 /* TodoShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DC91887B98DC5189F5CEAB44 /* TodoShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E5994C9CA94CC8430A874F52 /* WeekLedgerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2B5C3D31F9CE84E8559AB1 /* WeekLedgerView.swift */; };
+		B1D0E0A14C7B4E2F9A0C3311 /* DoneTodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D0E0A14C7B4E2F9A0C3322 /* DoneTodosView.swift */; };
 		EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80DA86C80CF5921D0AB83F47 /* PlanBlock.swift */; };
 		F4F25E886B69178DEA982727 /* WeekBlocksAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5087710777780307770756 /* WeekBlocksAdapter.swift */; };
 		F87263CC4CC579F6FB9B845A /* ScheduleShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */; };
@@ -168,6 +169,7 @@
 		DA01AE5B1816B32D6547ACC1 /* TodoWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidget.swift; sourceTree = "<group>"; };
 		DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowOnboardingView.swift; sourceTree = "<group>"; };
 		DC2B5C3D31F9CE84E8559AB1 /* WeekLedgerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekLedgerView.swift; sourceTree = "<group>"; };
+		B1D0E0A14C7B4E2F9A0C3322 /* DoneTodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoneTodosView.swift; sourceTree = "<group>"; };
 		DC91887B98DC5189F5CEAB44 /* TodoShareExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TodoShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0A2F8F7F90B5C18D0D0905E /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		E0F72F9EC4C2F155B4FA16D8 /* TodoWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidgetSnapshot.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */,
 				910FBBD73ECA9E9527512FE8 /* TodoView.swift */,
 				DC2B5C3D31F9CE84E8559AB1 /* WeekLedgerView.swift */,
+				B1D0E0A14C7B4E2F9A0C3322 /* DoneTodosView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */,
 				42AE13BB68F193890259458B /* WeekLedger.swift in Sources */,
 				E5994C9CA94CC8430A874F52 /* WeekLedgerView.swift in Sources */,
+				B1D0E0A14C7B4E2F9A0C3311 /* DoneTodosView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
