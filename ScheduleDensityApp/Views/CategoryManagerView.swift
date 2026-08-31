@@ -28,25 +28,22 @@ struct CategoryManagerView: View {
     @State private var isAdding = false
     /// 지우려는 분류 — 쓰고 있는 할 일이 있으면 몇 개인지 먼저 말해준다.
     @State private var deleting: BacklogCategory?
+    /// 옆에 선 숫자를 눌렀을 때 — 그 숫자가 무엇인지 펼쳐 보여줄 분류.
+    @State private var inspecting: BacklogCategory?
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
                     ForEach(categories) { category in
-                        Button {
-                            editing = category
-                        } label: {
-                            row(category)
-                        }
-                        .buttonStyle(.plain)
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                deleting = category
-                            } label: {
-                                Label("삭제", systemImage: "trash")
+                        row(category)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    deleting = category
+                                } label: {
+                                    Label("삭제", systemImage: "trash")
+                                }
                             }
-                        }
                     }
                     .onMove(perform: move)
                 } header: {
@@ -55,7 +52,7 @@ struct CategoryManagerView: View {
                     if categories.isEmpty {
                         Text("아직 만든 분류가 없습니다. 아래에서 하나 만들어 보세요.")
                     } else {
-                        Text("눌러서 고치고, 왼쪽으로 밀어 지웁니다. 길게 눌러 끌면 순서가 바뀝니다.")
+                        Text("눌러서 고치고, 왼쪽으로 밀어 지웁니다. 길게 눌러 끌면 순서가 바뀝니다.\n오른쪽 숫자는 이 분류를 쓰는 할 일 수입니다 — 눌러 보면 무엇무엇인지 나옵니다.")
                     }
                 }
 
@@ -78,6 +75,9 @@ struct CategoryManagerView: View {
                 // 고칠 때는 그 자리에서 값이 바뀌므로 돌려받을 게 없다.
                 CategoryEditSheet(category: category) { _ in save() }
             }
+            .sheet(item: $inspecting) { category in
+                CategoryItemsView(category: category)
+            }
             .sheet(isPresented: $isAdding) {
                 CategoryEditSheet(category: nil, nextSortIndex: nextSortIndex) { new in
                     if let new { context.insert(new) }
@@ -99,30 +99,65 @@ struct CategoryManagerView: View {
         }
     }
 
+    /// 한 줄에 손댈 곳이 둘이다: **이름 쪽은 고치기**, **숫자 쪽은 그 숫자의 내역**.
+    ///
+    /// 숫자를 따로 누를 수 있게 둔 이유 — 이 셈에는 완료한 것과 지난 주에서 넘어온 것,
+    /// 큰 일 안의 단계까지 들어간다(단계는 분류를 부모에게서 물려받는다). 그래서 이번 주
+    /// 목록에 보이는 줄 수와 어긋나는 순간이 오고, 그때 "그럼 이 숫자가 뭔데"를 묻게 된다.
+    /// 답이 같은 줄 안에 있어야 한다 — 세어보러 화면을 떠나게 하면 지우기가 무서워진다.
     private func row(_ category: BacklogCategory) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: category.iconName)
-                .font(.system(size: 15))
-                .foregroundStyle(category.displayColor)
-                .frame(width: 26)
-            Text(category.name)
-                .foregroundStyle(.primary)
-            Spacer(minLength: 8)
+        let count = itemCount(using: category)
+        return HStack(spacing: 12) {
+            Button {
+                editing = category
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: category.iconName)
+                        .font(.system(size: 15))
+                        .foregroundStyle(category.displayColor)
+                        .frame(width: 26)
+                    Text(category.name)
+                        .foregroundStyle(.primary)
+                    Spacer(minLength: 8)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("\(category.name), 눌러서 고치기")
+
             // 쓰고 있는 할 일이 몇인지. 지울지 말지를 여기서 판단한다.
-            let count = itemCount(using: category)
             if count > 0 {
-                Text("\(count)")
-                    .font(.footnote)
-                    .monospacedDigit()
+                Button {
+                    inspecting = category
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("\(count)")
+                            .font(.footnote)
+                            .monospacedDigit()
+                        Image(systemName: "list.bullet")
+                            .font(.system(size: 10, weight: .semibold))
+                    }
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Capsule().fill(Color.secondary.opacity(0.12)))
+                    .contentShape(Capsule())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel("\(category.name), 할 일 \(count)개. 눌러서 내역 보기")
+            }
+
+            Button {
+                editing = category
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.tertiary)
             }
-            Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.tertiary)
+            .buttonStyle(.borderless)
+            .accessibilityHidden(true)
         }
         .padding(.vertical, 2)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(category.name), 할 일 \(itemCount(using: category))개")
     }
 
     // MARK: - 동작
@@ -304,5 +339,153 @@ private struct CategoryEditSheet: View {
         case "purple": return "보라"
         default:       return name
         }
+    }
+}
+
+// MARK: - 그 숫자가 무엇인지
+
+/// 분류 줄 옆의 숫자를 눌렀을 때 열리는 자리. 같은 셈을 **그대로 펼쳐** 놓는다.
+///
+/// 셈의 규칙은 하나뿐이다 — `categoryID`가 이 분류인 항목 전부(→ `CategoryManagerView.itemCount`).
+/// 그래서 완료한 것도, 지난 주에서 넘어온 것도, 큰 일 안의 단계도 들어간다
+/// (단계는 분류를 부모에게서 물려받는다 → `TodoTree`). 이번 주 목록에 보이는 줄 수와
+/// 어긋나 보이는 건 그 때문이고, 어긋남을 설명 없이 두면 숫자가 못 믿을 것이 된다.
+///
+/// ⚠️ 여기 칸들의 합은 **언제나 그 숫자와 같아야 한다.** 그래서 '이번 주·지난 주·다음 주 이후·완료'로
+///    빠짐없이 가른다. 보기 좋으라고 한 칸이라도 빼면, 설명하러 만든 화면이 설명을 어긴다.
+private struct CategoryItemsView: View {
+    let category: BacklogCategory
+
+    @Environment(\.dismiss) private var dismiss
+
+    @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
+    private var allItems: [BacklogItem]
+
+    private let cal = Calendar(identifier: .iso8601)
+    private var weekStart: Date { .currentWeekStart }
+
+    /// 이 분류를 쓰는 항목 전부. 셈과 같은 규칙이어야 하므로 조건은 이것 하나뿐이다.
+    private var mine: [BacklogItem] { allItems.filter { $0.categoryID == category.uuid } }
+
+    private var thisWeek: [BacklogItem] {
+        mine.filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+    }
+    private var carried: [BacklogItem] {
+        mine.filter { !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+            .sorted { $0.weekStartDate > $1.weekStartDate }
+    }
+    private var later: [BacklogItem] {
+        mine.filter { !$0.isCompleted && $0.weekStartDate > weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+            .sorted { $0.weekStartDate < $1.weekStartDate }
+    }
+    private var done: [BacklogItem] {
+        mine.filter(\.isCompleted)
+            .sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                if mine.isEmpty {
+                    Section {
+                        Text("이 분류를 쓰는 할 일이 아직 없습니다.")
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    section("이번 주", items: thisWeek)
+                    section("지난 주에서 넘어온 것", items: carried)
+                    section("다음 주 이후", items: later)
+                    section("완료", items: done)
+
+                    Section {
+                        HStack {
+                            Text("합계")
+                            Spacer()
+                            Text("\(mine.count)개")
+                                .monospacedDigit()
+                                .foregroundStyle(.secondary)
+                        }
+                    } footer: {
+                        Text("분류 목록 옆의 숫자가 이 합계입니다. 완료한 것과 지난 주에서 넘어온 것, 큰 일 안의 단계까지 함께 셉니다.\n이 분류를 지우면 위 할 일들이 ‘미분류’로 바뀌고, 할 일 자체는 그대로 남습니다.")
+                    }
+                }
+            }
+            .navigationTitle(category.name)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("완료") { dismiss() }
+                }
+            }
+        }
+    }
+
+    /// 빈 칸은 아예 그리지 않는다. 다만 어느 칸도 조건에서 빠지지는 않는다(위 ⚠️).
+    @ViewBuilder
+    private func section(_ title: String, items: [BacklogItem]) -> some View {
+        if !items.isEmpty {
+            Section {
+                ForEach(items) { item in
+                    itemRow(item)
+                }
+            } header: {
+                HStack {
+                    Text(title)
+                    Spacer()
+                    Text("\(items.count)개").monospacedDigit()
+                }
+            }
+        }
+    }
+
+    private func itemRow(_ item: BacklogItem) -> some View {
+        let tree = TodoTree(allItems)
+        // 단계는 제 이름만 서 있으면 무슨 일의 일부인지 알 수 없다. 셈에 들어간 이유가
+        // 바로 '부모의 분류를 물려받아서'이므로, 그 부모를 위에 작게 적어 둔다.
+        let parentTitle = tree.parent(of: item)?.title
+        return VStack(alignment: .leading, spacing: 3) {
+            if let parentTitle {
+                Text(parentTitle)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(1)
+            }
+            HStack(spacing: 8) {
+                Text(item.title)
+                    .strikethrough(item.isCompleted)
+                    .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
+                    .lineLimit(2)
+                Spacer(minLength: 8)
+                Text(trailingText(item))
+                    .font(.caption)
+                    .monospacedDigit()
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilityLabel(item, parentTitle: parentTitle))
+    }
+
+    /// 완료한 것은 언제 끝냈는지, 남은 것은 어느 주의 것인지. 숫자가 커진 이유가 대개 이 둘이다.
+    private func trailingText(_ item: BacklogItem) -> String {
+        if item.isCompleted, let at = item.completedAt {
+            return shortDate(at) + " 완료"
+        }
+        if item.isCompleted { return "완료" }
+        return shortDate(item.weekStartDate) + " 주"
+    }
+
+    private func accessibilityLabel(_ item: BacklogItem, parentTitle: String?) -> String {
+        var text = item.title
+        if let parentTitle { text = "\(parentTitle)의 단계, " + text }
+        return text + ", " + trailingText(item)
+    }
+
+    private func shortDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
     }
 }
