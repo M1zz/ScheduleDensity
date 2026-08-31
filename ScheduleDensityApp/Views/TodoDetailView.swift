@@ -49,7 +49,10 @@ struct TodoDetailView: View {
     /// 이름·소요시간·기간·분류를 정하는 시트. 카드를 눌러야 열린다 —
     /// 한 번 정하고 나면 일하는 내내 볼 것이 아니라서 화면에 깔아 두지 않는다.
     @State private var showingSettings = false
+    /// 시트 안 '세부 단계' 빈 줄. 목록의 빈 줄과 상태를 나눠 쓰면 두 줄이 서로 커서를 뺏는다.
+    @State private var sheetStepTitle = ""
     @FocusState private var inputFocused: Bool
+    @FocusState private var sheetStepFocused: Bool
 
     private var tree: TodoTree { TodoTree(allItems) }
 
@@ -408,6 +411,7 @@ struct TodoDetailView: View {
         NavigationStack {
             Form {
                 settingsSection
+                sheetStepsSection
             }
             .navigationTitle("이 할 일")
             .navigationBarTitleDisplayMode(.inline)
@@ -425,6 +429,52 @@ struct TodoDetailView: View {
                 // 이 화면은 이미 할 일 스토어에서 돌고 있으므로 컨테이너를 따로 안 붙인다.
                 CategoryManagerView()
             }
+        }
+    }
+
+    /// 시트 맨 아래에서 이어 적는 세부 단계.
+    ///
+    /// 기간을 정하다 보면 "그래서 뭐부터 하지"가 이어서 떠오른다. 창을 닫고 다시 아래로
+    /// 스크롤해 적게 하면 그 사이에 샌다. 붙는 자리는 상세 화면의 '단계' 목록과 하나다 —
+    /// 여기서는 맨 바깥 단계만 이어 적고, 순서 바꾸기·하위 단계는 거기서 한다.
+    private var sheetStepsSection: some View {
+        let steps = tree.children(of: root)
+        return Section {
+            ForEach(steps) { step in
+                HStack(spacing: 10) {
+                    Image(systemName: step.isCompleted ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 18))
+                        .foregroundStyle(step.isCompleted ? Color.green : Color.secondary)
+                    Text(step.title)
+                        .strikethrough(step.isCompleted)
+                        .foregroundStyle(step.isCompleted ? Color.secondary : Color.primary)
+                        .lineLimit(2)
+                    Spacer(minLength: 8)
+                    Text(formatDuration(tree.totalHours(of: step)))
+                        .font(.caption)
+                        .monospacedDigit()
+                        .foregroundStyle(.tertiary)
+                }
+            }
+            .onDelete { offsets in
+                for index in offsets { remove(steps[index]) }
+            }
+
+            HStack(spacing: 10) {
+                Image(systemName: "circle.dashed")
+                    .font(.system(size: 18))
+                    .foregroundStyle(.tertiary)
+                TextField("세부 단계", text: $sheetStepTitle)
+                    .focused($sheetStepFocused)
+                    .submitLabel(.return)
+                    .onSubmit(addSheetStep)
+            }
+        } header: {
+            Text("세부 단계")
+        } footer: {
+            Text(steps.isEmpty
+                 ? "이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요. 엔터를 치면 다음 줄로 이어집니다."
+                 : "시간은 아래에서 위로 쌓여 이 할 일의 소요시간이 됩니다.\n순서 바꾸기·하위 단계는 상세 화면의 ‘단계’에서 합니다.")
         }
     }
 
@@ -847,15 +897,12 @@ struct TodoDetailView: View {
         return categories.first { $0.uuid == id }
     }
 
-    /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
-    /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
-    private func addStep() {
-        let title = newTitle.trimmingCharacters(in: .whitespaces)
-        guard !title.isEmpty else {
-            inputFocused = false
-            return
-        }
-        let parent = addTarget ?? root
+    /// 단계 한 줄을 실제로 만들어 붙인다. 목록의 빈 줄과 시트의 빈 줄이 같이 쓴다.
+    /// 빈 제목이면 아무것도 안 하고 false.
+    @discardableResult
+    private func appendStep(titled raw: String, under parent: BacklogItem) -> Bool {
+        let title = raw.trimmingCharacters(in: .whitespaces)
+        guard !title.isEmpty else { return false }
 
         let step = TodoTree.makeStep(under: parent,
                                      title: title,
@@ -869,11 +916,31 @@ struct TodoDetailView: View {
         // 새 단계는 아직 안 한 일이므로 부모가 완료 상태였다면 풀린다.
         updated.rollUp(from: step)
         withAnimation { save() }
+        return true
+    }
 
+    /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
+    /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
+    private func addStep() {
+        guard appendStep(titled: newTitle, under: addTarget ?? root) else {
+            inputFocused = false
+            return
+        }
         newTitle = ""
         // 팁이 뜨거나 섹션이 바뀌면서 포커스가 풀릴 수 있다. 다음 런루프에 다시 잡는다.
         inputFocused = true
         DispatchQueue.main.async { inputFocused = true }
+    }
+
+    /// 시트 안 빈 줄. 여기서는 언제나 맨 바깥 단계로 붙는다.
+    private func addSheetStep() {
+        guard appendStep(titled: sheetStepTitle, under: root) else {
+            sheetStepFocused = false
+            return
+        }
+        sheetStepTitle = ""
+        sheetStepFocused = true
+        DispatchQueue.main.async { sheetStepFocused = true }
     }
 
     private func toggle(_ item: BacklogItem) {
