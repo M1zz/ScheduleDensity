@@ -37,6 +37,11 @@ struct SettingsView: View {
     @State private var showingCalendarImport = false
     @State private var showingAddSampleAlert = false
     @State private var showingDeleteAllAlert = false
+    /// 유료로 가른 곁다리들 (→ ProEntitlement.swift). 잠겨 있으면 페이월을 낸다.
+    @State private var purchases = PurchaseManager.shared
+    @State private var paywallFeature: ProFeature?
+    /// 할 일 분류를 만들고 고치는 시트 (→ CategoryManagerView.swift).
+    @State private var showingCategoryManager = false
     @AppStorage("showInsightCards") private var showInsightCards = false
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
     @AppStorage(AppSettingsKey.hasSeenRainbowOnboarding) private var hasSeenRainbowOnboarding = false
@@ -84,7 +89,10 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     Button(action: {
-                        showingStatistics = true
+                        // 잠긴 자리는 아무 일도 안 일어나게 두지 않는다 —
+                        // 왜 안 되는지 그 자리에서 말해준다.
+                        if purchases.isUnlocked { showingStatistics = true }
+                        else { paywallFeature = .statistics }
                     }) {
                         HStack {
                             Image(systemName: "chart.bar.xaxis")
@@ -99,6 +107,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
+                            if !purchases.isUnlocked { ProLockBadge() }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.secondary)
@@ -107,7 +116,8 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     Button(action: {
-                        showingCalendarImport = true
+                        if purchases.isUnlocked { showingCalendarImport = true }
+                        else { paywallFeature = .calendarImport }
                     }) {
                         HStack {
                             Image(systemName: "calendar.badge.plus")
@@ -122,6 +132,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
+                            if !purchases.isUnlocked { ProLockBadge() }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.secondary)
@@ -266,14 +277,28 @@ struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
 
-                    // 공유 탭 표시 토글
-                    Toggle(isOn: $showShareTab) {
+                    // 공유 탭 표시 토글.
+                    // 잠겨 있으면 토글을 끄는 대신 켜려는 순간 페이월을 낸다 —
+                    // 회색으로 죽은 스위치는 고장인지 잠긴 건지 구분이 안 된다.
+                    Toggle(isOn: Binding(
+                        get: { showShareTab && purchases.isUnlocked },
+                        set: { wants in
+                            guard purchases.isUnlocked else {
+                                if wants { paywallFeature = .scheduleShare }
+                                return
+                            }
+                            showShareTab = wants
+                        }
+                    )) {
                         HStack(spacing: 8) {
                             Image(systemName: "person.2.circle")
-                                .foregroundColor(showShareTab ? .blue : .secondary)
+                                .foregroundColor(showShareTab && purchases.isUnlocked ? .blue : .secondary)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("공유 탭 표시")
-                                    .font(.headline)
+                                HStack(spacing: 6) {
+                                    Text("공유 탭 표시")
+                                        .font(.headline)
+                                    if !purchases.isUnlocked { ProLockBadge() }
+                                }
                                 Text("일정을 다른 사람과 공유하는 탭을 추가")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
@@ -585,6 +610,35 @@ struct SettingsView: View {
 
                 Section {
                     Button {
+                        showingCategoryManager = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "tag")
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("분류 만들기·고치기")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("할 일에 붙이는 분류의 이름·색·기호")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("할 일")
+                } footer: {
+                    Text("할 일 상세 화면의 ‘분류’를 눌러서도 바로 만들 수 있습니다.")
+                }
+
+                Section {
+                    Button {
                         TodoTips.resetAll()
                         tipsResetDone = true
                     } label: {
@@ -598,6 +652,48 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 } header: {
                     Text("조언")
+                }
+
+                Section {
+                    if purchases.isUnlocked {
+                        Label(ProEntitlement.isGrandfathered
+                                ? "쓰던 분이라 전부 열려 있습니다"
+                                : "모두 열려 있습니다",
+                              systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(.green)
+                    } else {
+                        Button {
+                            paywallFeature = .widget
+                        } label: {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 24)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("모두 열기")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text("위젯·캘린더 가져오기·공유·통계·회수 장부")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+
+                        Button("구매 복원") {
+                            Task { await purchases.restore() }
+                        }
+                        .disabled(purchases.isRestoring)
+                    }
+                } header: {
+                    Text("모두 열기")
+                } footer: {
+                    Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. 한 번 사면 끝이고 구독이 아닙니다.")
                 }
 
                 Section {
@@ -638,6 +734,23 @@ struct SettingsView: View {
         .sheet(isPresented: $showingCalendarImport) {
             CalendarImportView(viewModel: viewModel)
         }
+        .sheet(item: $paywallFeature) { feature in
+            PaywallView(highlight: feature)
+        }
+        .sheet(isPresented: $showingCategoryManager) {
+            // ⚠️ 이 설정 화면은 **일정 스토어**에서 돈다. 분류는 할 일 스토어에 있으므로
+            //    컨테이너를 붙여줘야 한다 — 안 붙이면 목록이 통째로 비어 보인다.
+            if let container = TodoEventBridge.shared.todoContainer {
+                CategoryManagerView()
+                    .modelContainer(container)
+            } else {
+                // 앱 진입 직후 다리가 아직 안 붙은 아주 짧은 순간. 빈 화면 대신 이유를 적는다.
+                ContentUnavailableView("잠시 뒤 다시 열어 주세요",
+                                       systemImage: "hourglass",
+                                       description: Text("할 일 저장소를 아직 준비하는 중입니다."))
+            }
+        }
+        .task { await purchases.refresh() }
         .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
             Button("취소", role: .cancel) { }
             Button("삭제", role: .destructive) {

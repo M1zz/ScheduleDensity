@@ -75,6 +75,8 @@ struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
+    /// 곁다리 다섯을 열었는가 (→ ProEntitlement.swift).
+    @State private var purchases = PurchaseManager.shared
     @State private var selectedTab: AppTab = .todo
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
@@ -292,7 +294,9 @@ struct ScheduleDensityApp: App {
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
-                if showShareTab {
+                // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
+                // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
+                if showShareTab, purchases.isUnlocked {
                     ScheduleShareView()
                         .tabItem { Label("공유", systemImage: "person.2.circle") }
                         .tag(AppTab.share)
@@ -314,11 +318,19 @@ struct ScheduleDensityApp: App {
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
+            // 열림/잠김의 근거는 언제나 App Store 영수증이다. App Group에 적어 둔 한 줄은
+            // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
+            .task {
+                grandfatherExistingUserIfNeeded()
+                await PurchaseManager.shared.refresh()
+            }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
                     intakeSharedTodos()
                     // 맥에서 넘어온 변경도 위젯에 반영한다.
                     RainbowWidgetSync.refresh(from: schedule)
+                    // 다른 기기에서 사거나 환불했을 수 있다.
+                    Task { await PurchaseManager.shared.refresh() }
                 }
             }
             .onOpenURL { url in
@@ -326,12 +338,25 @@ struct ScheduleDensityApp: App {
                 guard url.scheme == TodoWidgetBridge.deepLink.scheme else { return }
                 switch url.host {
                 case TodoWidgetBridge.deepLink.host:    selectedTab = .todo
+                // 번개 위젯. 조각만 보는 자리가 아직 없어 '할 일' 탭에 내린다 —
+                // 표시해 둔 조각은 그 목록 맨 위 칸에 이미 모여 있다.
+                case TodoWidgetBridge.fragmentDeepLink.host: selectedTab = .todo
                 case RainbowWidgetBridge.deepLink.host: selectedTab = .rainbow
                 default: break
                 }
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    /// 이 다섯 가지는 1.0.9까지 무료로 배포돼 있었다. 업데이트 한 번으로 쓰던 기능이
+    /// 잠기면 값을 받는 게 아니라 뺏는 것이므로, **이 버전을 처음 켤 때 이미 적어 둔 것이
+    /// 있는 기기는 영구히 열어 둔다.** 새로 받는 사람부터 값을 받는다.
+    /// 정책을 끄려면 `ProEntitlement.grandfathersExistingUsers`를 false로 두면 된다.
+    private func grandfatherExistingUserIfNeeded() {
+        let hasEvents = (try? sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Event>())) ?? 0 > 0
+        let hasTodos = (try? todoContainer.mainContext.fetchCount(FetchDescriptor<BacklogItem>())) ?? 0 > 0
+        ProEntitlement.grandfatherIfNeeded(hasExistingData: hasEvents || hasTodos)
     }
 
     /// 공유로 받아둔 할 일을 실제 줄로 만들고, 생겼으면 '할 일' 탭을 열어 보여준다.

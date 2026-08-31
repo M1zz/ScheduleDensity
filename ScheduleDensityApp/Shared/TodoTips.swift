@@ -50,6 +50,27 @@ struct ShareSplitTip: Tip {
     }
 }
 
+// MARK: - 목록의 색·손짓
+
+/// 목록의 색과 스와이프가 무엇을 뜻하는지 **한 번만**.
+///
+/// 예전에는 목록 아래에 상시로 깔려 있었다. 늘 거기 있는 글은 처음 한 번을 빼면
+/// 안 읽히면서 자리만 차지하고, 정작 세어야 할 숫자를 세 줄 아래로 밀어낸다 —
+/// 이 파일이 조언을 전부 TipKit으로 보낸 이유가 그것이다.
+struct ListLegendTip: Tip {
+    /// 목록에 줄이 하나라도 생겼는가. 빈 화면에서는 설명할 색이 없다.
+    @Parameter static var hasItems: Bool = false
+
+    var title: Text { Text("색이 말하는 것") }
+    var message: Text? {
+        Text("연두는 5분이 나면 그냥 집어도 되는 줄, 회색은 시간을 안 잡은 줄입니다.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
+    }
+    var image: Image? { Image(systemName: "paintpalette") }
+    var rules: [Rule] {
+        #Rule(Self.$hasItems) { $0 == true }
+    }
+}
+
 // MARK: - 쪼개기 조언 (내용이 그때그때 다른 팁)
 
 /// `TodoSplitAdvisor`가 만든 구성 조언 하나를 팁으로 낸다.

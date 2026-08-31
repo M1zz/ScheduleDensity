@@ -15,6 +15,8 @@ import SwiftUI
 // MARK: - 타임라인
 
 struct RainbowEntry: TimelineEntry {
+    /// 값을 안 낸 상태인가. 갤러리 미리보기에서는 언제나 false다.
+    var isLocked: Bool = false
     let date: Date
     let snapshot: RainbowWidgetSnapshot
 }
@@ -27,11 +29,13 @@ struct RainbowProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (RainbowEntry) -> Void) {
         // 위젯 갤러리에서는 빈 격자 대신 예시를 보여준다.
         let snapshot = context.isPreview ? .sample : RainbowWidgetBridge.read()
-        completion(RainbowEntry(date: Date(), snapshot: snapshot))
+        completion(RainbowEntry(isLocked: !context.isPreview && !ProEntitlement.isUnlocked,
+                                date: Date(), snapshot: snapshot))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<RainbowEntry>) -> Void) {
-        let entry = RainbowEntry(date: Date(), snapshot: RainbowWidgetBridge.read())
+        let entry = RainbowEntry(isLocked: !ProEntitlement.isUnlocked,
+                                 date: Date(), snapshot: RainbowWidgetBridge.read())
         // 내용이 바뀌면 앱이 reloadTimelines를 부른다. 여기서는 날짜가 넘어가면
         // '오늘'이 달라지므로 자정 직후 한 번만 다시 그리게 한다.
         let midnight = Calendar.current.nextDate(after: entry.date,
@@ -69,6 +73,23 @@ struct RainbowWidgetView: View {
     private var snapshot: RainbowWidgetSnapshot { entry.snapshot }
 
     var body: some View {
+        if entry.isLocked {
+            // 잠금 화면의 한 줄·동그라미 자리에는 세로로 쌓은 안내가 안 들어간다.
+            if family == .accessoryInline {
+                Text("🔒 무지개 — 모두 열기")
+            } else if family == .accessoryCircular {
+                Image(systemName: "lock.fill")
+                    .accessibilityLabel("무지개 위젯이 잠겨 있습니다")
+            } else {
+                WidgetLockedView(name: "무지개")
+            }
+        } else {
+            unlocked
+        }
+    }
+
+    @ViewBuilder
+    private var unlocked: some View {
         switch family {
         case .accessoryInline:      RainbowInlineView(snapshot: snapshot)
         case .accessoryCircular:    RainbowCircularView(snapshot: snapshot)

@@ -28,6 +28,9 @@ schemes:
         ScheduleDensityApp: all
     run:
       config: Debug
+      # 시뮬레이터에서 결제를 시험하는 데 쓰는 로컬 상품 목록.
+      # 실제 값·이름은 App Store Connect의 것이 이긴다 (여기 값은 개발용 흉내다).
+      storeKitConfiguration: ScheduleDensityApp/Products.storekit
     test:
       config: Debug
     profile:
@@ -92,6 +95,9 @@ targets:
       - path: ScheduleDensityApp/Shared/TodoWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/RainbowWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/ColorHex.swift
+      # 위젯은 값을 받고 여는 것 중 하나다. 익스텐션은 결제를 조회할 수 없으므로
+      # 앱이 App Group에 구워둔 한 줄만 읽는다 (StoreKit은 앱 쪽에만 있다).
+      - path: ScheduleDensityApp/Shared/ProEntitlement.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoWidget

@@ -35,6 +35,9 @@ struct TodoView: View {
     @State private var newTitle = ""
     @State private var showingFamilyShareNotice = false
     @State private var showingLedger = false
+    /// 회수 장부는 값을 받고 여는 것 중 하나다 (→ ProEntitlement.swift).
+    @State private var purchases = PurchaseManager.shared
+    @State private var showingLedgerPaywall = false
     /// 적는 줄이 열려 있는가. + 를 누르면 열리고, 빈 채로 포커스를 잃으면 닫힌다.
     @State private var isAdding = false
     /// 오른쪽 위 + 를 누를 때마다 하나씩 오른다. 값 자체는 뜻이 없고, 바뀌었다는 것만 신호다.
@@ -137,11 +140,12 @@ struct TodoView: View {
                 if visibleTab == .mine {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            showingLedger = true
+                            if purchases.isUnlocked { showingLedger = true }
+                            else { showingLedgerPaywall = true }
                         } label: {
-                            Image(systemName: "list.clipboard")
+                            Image(systemName: purchases.isUnlocked ? "list.clipboard" : "lock")
                         }
-                        .accessibilityLabel("이번 주 결산")
+                        .accessibilityLabel(purchases.isUnlocked ? "이번 주 결산" : "이번 주 결산, 잠김")
                     }
                 }
                 if visibleTab == .family {
@@ -173,6 +177,7 @@ struct TodoView: View {
         .sheet(isPresented: $showingLedger) {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
+        .paywall(for: .ledger, isPresented: $showingLedgerPaywall)
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
                 Task { await family.startSharing() }
@@ -355,6 +360,16 @@ struct TodoView: View {
                 if !done.isEmpty {
                     doneLinkRow(done.count)
                 }
+
+                // 색·손짓 설명. 목록 아래에 상시로 깔려 있던 두 줄을 여기로 옮겼다 —
+                // 한 번 뜨고, 닫으면 다시 안 뜬다 (→ TodoTips.swift).
+                // 설명하려는 색이 바로 위에 있으니 자리도 여기가 맞다.
+                if ListLegendTip().shouldDisplay {
+                    TipView(ListLegendTip())
+                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                }
             } footer: {
                 listFooter(items: items, errands: errands, marked: marked, done: done)
             }
@@ -435,32 +450,62 @@ struct TodoView: View {
     private static let errandTint = Color.secondary.opacity(0.07)
     private static let doneTint = Color.secondary.opacity(0.03)
 
-    /// 목록 아래 한 줄. 머리글을 없앴으니 셈과 안내도 여기 한 번에 모은다.
+    /// 목록 아래 셈. **말이 아니라 기호와 숫자로.**
+    ///
+    /// 예전에는 "바로 2개 · 그냥 3개 · 시간 잡은 일 5개 · 완료 1개" 한 줄에
+    /// 색·스와이프 설명 두 줄이 더 붙어 있었다. 세 줄이 다 같은 크기 같은 회색이라
+    /// 정작 세려던 숫자가 글 속에 묻혔다. 설명은 TipKit으로 옮기고
+    /// (→ `ListLegendTip`), 여기에는 셀 것만 남긴다.
+    ///
+    /// ⚠️ 여기서 시간을 합치지 말 것. 단위가 다른 것을 더하면
+    ///    "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
+    ///    기호가 갈라 세는 그림이라, 합치고 싶은 마음도 덜 생긴다.
     @ViewBuilder
     private func listFooter(items: [BacklogItem],
                             errands: [BacklogItem],
                             marked: [BacklogItem],
                             done: [BacklogItem]) -> some View
     {
-        VStack(alignment: .leading, spacing: 6) {
-            // ⚠️ 여기서 시간을 합치지 말 것. 단위가 다른 것을 더하면
-            //    "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
-            Text(countLine(items: items, errands: errands, marked: marked, done: done))
-            Text("연두는 5분이 나면 그냥 집어도 되는 줄입니다. 회색은 시간을 안 잡은 줄.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
+        if items.isEmpty && errands.isEmpty && marked.isEmpty && done.isEmpty {
+            // 셈줄이 빈 화면의 유일한 글이던 시절이 있었다. 셈이 없어졌으니
+            // 여기서는 다음에 뭘 하면 되는지만 말한다.
+            Text("오른쪽 위 + 를 눌러 이번 주에 할 일을 적어보세요.")
+        } else {
+            HStack(spacing: 14) {
+                if !marked.isEmpty {
+                    countChip("bolt.fill", marked.count, "바로 하면 되는 일", Self.nowGreen)
+                }
+                if !errands.isEmpty {
+                    countChip("circle.dashed", errands.count, "그냥 하면 되는 것", .secondary)
+                }
+                if !items.isEmpty {
+                    countChip("clock", items.count, "시간 잡은 일", .secondary)
+                }
+                if !done.isEmpty {
+                    countChip("checkmark", done.count, "완료", .secondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.top, 2)
         }
     }
 
-    private func countLine(items: [BacklogItem],
-                           errands: [BacklogItem],
-                           marked: [BacklogItem],
-                           done: [BacklogItem]) -> String
+    /// 기호 하나와 숫자 하나. 기호는 그 줄들이 목록에서 쓰는 것과 같은 것이라
+    /// 무엇을 센 건지 위를 보면 안다 — 번개는 바로 하면 되는 일, 점선 원은 적기만 한 줄.
+    private func countChip(_ symbol: String, _ count: Int,
+                           _ label: String, _ tint: Color) -> some View
     {
-        var parts: [String] = []
-        if !marked.isEmpty { parts.append("바로 \(marked.count)개") }
-        if !errands.isEmpty { parts.append("그냥 \(errands.count)개") }
-        parts.append("시간 잡은 일 \(items.count)개")
-        if !done.isEmpty { parts.append("완료 \(done.count)개") }
-        return parts.joined(separator: " · ")
+        HStack(spacing: 3) {
+            Image(systemName: symbol)
+                .font(.system(size: 10, weight: .semibold))
+            Text("\(count)")
+                .font(.footnote.weight(.semibold))
+                .monospacedDigit()
+        }
+        .foregroundStyle(tint)
+        // 기호는 소리로 안 읽힌다. 세던 말을 여기 그대로 남긴다.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(label) \(count)개")
     }
 
     /// 이 줄을 지금 5분에 집을 수 있는가. 쪼갠 일은 '지금 할 단계'로 판단한다 —
@@ -540,7 +585,16 @@ struct TodoView: View {
     /// '바로 하면 되는 일'로 표시하거나 거둔다. 표시는 **그 줄 자체**에 붙는다 —
     /// 쪼갠 일이면 지금 할 단계에.
     private func setMarked(_ value: Bool, for item: BacklogItem, tree: TodoTree) {
-        let target = tree.hasChildren(item) ? (tree.currentStep(of: item) ?? item) : item
+        // 쪼갠 일이면 지금 할 단계에 붙인다. 다 끝났으면 붙일 단계가 없으므로 아무것도 안 한다 —
+        // 여기서 묶음 자체에 답을 쓰면 그 자리(labelRaw)에 있는 단계 순서를 지운다
+        // (→ BacklogItem+StepOrder.swift).
+        let target: BacklogItem
+        if tree.hasChildren(item) {
+            guard let step = tree.currentStep(of: item) else { return }
+            target = step
+        } else {
+            target = item
+        }
         withAnimation {
             target.setFragmentAnswer(value ? true : nil, for: .start)
             target.setFragmentAnswer(value ? true : nil, for: .closing)
@@ -1094,6 +1148,8 @@ struct TodoView: View {
     private func refreshTipRules() {
         let tree = TodoTree(allItems)
         if tree.roots.contains(where: { tree.children(of: $0).count >= 2 }) { ShareSplitTip.hasSplit = true }
+        // 빈 화면에서는 설명할 색이 없다. 줄이 생긴 뒤에 한 번 뜬다.
+        if !tree.roots.isEmpty { ListLegendTip.hasItems = true }
     }
 
     /// 오늘 배정된 제목 집합을 다시 읽는다.
@@ -1270,8 +1326,9 @@ struct TodoRow: View {
     /// 도넛은 그림이라 소리로는 안 읽힌다. 몇 번째인지를 말로 한 번 더 적는다.
     private var rowAccessibilityLabel: String {
         var text = displayTitle
-        if hasSteps, let number = tree.currentStepNumber(of: item) {
-            text = "\(item.title), \(tree.leafCount(of: item))단계 중 \(number)번째, \(displayTitle)"
+        // 순서대로면 "3단계 중 2번째", 아무거나면 "3개 중 1개 끝".
+        if hasSteps, let phrase = tree.stepProgressPhrase(of: item) {
+            text = "\(item.title), \(phrase), \(displayTitle)"
         }
         if advice.isFragment { text += ", 5분에 집을 수 있음" }
         return text

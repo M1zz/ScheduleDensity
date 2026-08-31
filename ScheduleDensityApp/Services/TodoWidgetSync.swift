@@ -24,6 +24,7 @@ enum TodoWidgetSync {
                                         assignedToday: WeekBlocksStore.shared.titlesAssigned())
             TodoWidgetBridge.write(snapshot)
             WidgetCenter.shared.reloadTimelines(ofKind: TodoWidgetBridge.widgetKind)
+            WidgetCenter.shared.reloadTimelines(ofKind: TodoWidgetBridge.fragmentWidgetKind)
         } catch {
             print("⚠️ [Widget] 할 일 조회 실패, 스냅샷 갱신 생략: \(error)")
         }
@@ -91,11 +92,63 @@ enum TodoWidgetSync {
             )
         }
 
+        let fragments = makeFragments(ordered: ordered, tree: tree,
+                                      categoryByID: categoryByID,
+                                      assignedToday: assignedToday)
+
         return TodoWidgetSnapshot(
             items: Array(widgetItems),
+            fragments: Array(fragments.prefix(TodoWidgetSnapshot.maxFragments)),
             openCount: open.count,
+            fragmentCount: fragments.count,
             updatedAt: now
         )
+    }
+
+    /// **지금 5분에 집을 수 있는 단계들.** 번개 위젯이 읽는다.
+    ///
+    /// 목록의 단위가 다르다 — 위쪽 `items`는 최상위 할 일 하나에 한 줄이지만, 여기서는
+    /// **단계 하나가 한 줄**이다. 순서 없는 묶음에서는 한 일 안에서도 조각이 여럿 나오고,
+    /// 5분이 났을 때 필요한 건 '무슨 일이 남았나'가 아니라 '지금 집을 게 뭐가 있나'다.
+    ///
+    /// 무엇이 지금 손댈 수 있는지는 `TodoTree.availableSteps`가 정한다 (순서대로면 하나,
+    /// 아무거나면 남은 것 전부, 표시해 둔 단계는 차례 무관). 그중 조각만 남긴다.
+    private static func makeFragments(ordered: [(BacklogItem, Bool)],
+                                      tree: TodoTree,
+                                      categoryByID: [String: BacklogCategory],
+                                      assignedToday: Set<String>) -> [TodoWidgetSnapshot.Fragment]
+    {
+        var result: [TodoWidgetSnapshot.Fragment] = []
+        var seen = Set<String>()
+
+        for (root, _) in ordered {
+            let category = root.categoryID.flatMap { categoryByID[$0] }
+            for step in tree.availableSteps(of: root) {
+                let advice = TodoSplitAdvisor.advice(title: step.title,
+                                                     durationHours: step.durationHours,
+                                                     pick: step.fragmentPick)
+                guard advice.isFragment else { continue }
+                guard seen.insert(step.dragToken).inserted else { continue }
+                result.append(TodoWidgetSnapshot.Fragment(
+                    id: step.dragToken,
+                    title: step.title,
+                    // 단계 이름만 서 있으면 무슨 일의 일부인지 알 수 없다 (앱 목록과 같은 이유).
+                    parentTitle: step.dragToken == root.dragToken ? nil : root.title,
+                    colorHex: category.flatMap { paletteHex($0.colorName) },
+                    minutes: Int((max(0, step.durationHours) * 60).rounded()),
+                    isMarked: step.isMarkedNow
+                ))
+            }
+        }
+
+        // 사람이 표시한 것이 앱의 짐작보다 앞선다. 그 다음은 위쪽 목록과 같은 급한 순서인데,
+        // `ordered`를 그대로 돌았으므로 이미 그 순서다 — 안정 정렬로 표시한 것만 끌어올린다.
+        return result.enumerated()
+            .sorted { lhs, rhs in
+                if lhs.element.isMarked != rhs.element.isMarked { return lhs.element.isMarked }
+                return lhs.offset < rhs.offset
+            }
+            .map(\.element)
     }
 
     /// 위젯 목록에서의 우선순위. 낮을수록 위.

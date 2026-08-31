@@ -44,6 +44,8 @@ struct TodoDetailView: View {
     @AppStorage(AppSettingsKey.hasSeenSplitOnboarding) private var hasSeenSplitOnboarding = false
     @State private var guide: SplitGuideStep?
     @State private var showingSplitMeaning = false
+    /// 분류를 만들고 고치는 시트 (→ CategoryManagerView.swift).
+    @State private var showingCategoryManager = false
     @FocusState private var inputFocused: Bool
 
     private var tree: TodoTree { TodoTree(allItems) }
@@ -128,6 +130,10 @@ struct TodoDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingCategoryManager) {
+            // 이 화면은 이미 할 일 스토어에서 돌고 있으므로 컨테이너를 따로 안 붙인다.
+            CategoryManagerView()
+        }
         .fullScreenCover(isPresented: $showingSplitMeaning) {
             SplitMeaningView { showingSplitMeaning = false }
         }
@@ -149,7 +155,19 @@ struct TodoDetailView: View {
         // 입력이 목록 안에 있으므로 스크롤로 키보드를 바로 내리면 적다가 끊긴다.
         .scrollDismissesKeyboard(.interactively)
         .sheet(item: $editing) { item in
-            StepEditSheet(item: item) { save() }
+            // 묶음은 시간도 조각 판정도 제 것이 없다 — 시간은 아래 단계들의 합이고,
+            // 판정은 그 안의 단계들이 답한다. 이름과 순서만 고치게 한다.
+            // (묶음의 labelRaw 자리는 순서가 쓰고 있어, 여기서 판정을 쓰면 그걸 지운다.)
+            StepEditSheet(item: item,
+                          isGroup: tree.hasChildren(item),
+                          orderBinding: orderBinding(for: item),
+                          childCount: tree.children(of: item).count,
+                          // 끌어서 옮기는 게 본길이지만, 손이 미끄러지는 자리이기도 하고
+                          // 끌기 자체가 안 되는 상황(스위치 컨트롤 등)도 있다.
+                          // 자리를 한 칸씩 옮기는 길은 여기 남겨 둔다.
+                          siblingPosition: siblingPosition(of: item),
+                          onMoveUp: { move(item, by: -1) },
+                          onMoveDown: { move(item, by: 1) }) { save() }
         }
     }
 
@@ -243,7 +261,9 @@ struct TodoDetailView: View {
                 // (예전에는 칩·설명·남은 몫이 같은 말을 세 번 했다.)
                 VStack(alignment: .leading, spacing: 6) {
                     // 기호 하나로는 이게 '지금 할 것'이라는 뜻이 안 읽힌다. 말로 적는다.
-                    Text("지금 단계")
+                    // 순서가 없는 묶음에서는 '단계'가 아니라 '집을 것'이다.
+                    // 앱이 조각인 것을 앞에 세웠을 뿐, 차례가 아니다.
+                    Text(root.stepOrder == .free ? "지금 집을 것" : "지금 단계")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
                         .padding(.horizontal, 7)
@@ -345,6 +365,15 @@ struct TodoDetailView: View {
                 } label: {
                     Label(c.name, systemImage: root.categoryID == c.uuid ? "checkmark" : c.iconName)
                 }
+            }
+            Divider()
+            // 만드는 자리는 고르는 자리 안에 있어야 한다. 분류를 정하려다 '없네'를
+            // 알게 되는 것이므로, 여기서 설정까지 다녀오게 하면 하려던 일을 잊는다.
+            Button {
+                showingCategoryManager = true
+            } label: {
+                Label(categories.isEmpty ? "분류 만들기" : "분류 만들기·고치기",
+                      systemImage: "tag")
             }
         } label: {
             HStack {
@@ -484,7 +513,11 @@ struct TodoDetailView: View {
             ForEach(rows, id: \.item.id) { row in
                 StepRow(item: row.item,
                         depth: row.depth,
-                        isCurrent: row.item.dragToken == currentStepToken,
+                        // 순서가 없는 묶음 안에서는 '지금 차례'라는 게 없다.
+                        // 앱이 앞에 세운 것이라도 화살표를 달지 않는다 —
+                        // 기다릴 차례가 없는데 차례처럼 보이면 그게 거짓말이 된다.
+                        isCurrent: row.item.dragToken == currentStepToken
+                            && tree.parent(of: row.item)?.stepOrder != .free,
                         hasChildren: tree.hasChildren(row.item),
                         progress: tree.progress(of: row.item),
                         share: share(of: row.item, total: totalLeafHours),
@@ -504,7 +537,9 @@ struct TodoDetailView: View {
                         Button {
                             editing = row.item
                         } label: {
-                            Label("시간·조각 판정", systemImage: "slider.horizontal.3")
+                            // 묶음에는 제 시간도 판정도 없다. 거기서 고치는 건 이름과 순서다.
+                            Label(tree.hasChildren(row.item) ? "이름·순서" : "시간·조각 판정",
+                                  systemImage: "slider.horizontal.3")
                         }
                         .tint(.blue)
                     }
@@ -534,18 +569,80 @@ struct TodoDetailView: View {
                         }
                         .tint(.indigo)
                     }
-                    .contextMenu { rowMenu(row.item) }
+                    // ⚠️ `.contextMenu`를 걷어냈다. 롱 프레스를 컨텍스트 메뉴가 가져가면
+                    //    끌어서 순서를 바꿀 수가 없다. 메뉴에 있던 것들은 전부 다른 데 있다 —
+                    //    하위 단계·이름·삭제는 스와이프에, 묶음의 단계 순서는 편집 시트에,
+                    //    위로/아래로는 드래그가 대신한다.
+                    //
+                    //    드래그는 눈으로 하는 일이라 VoiceOver로는 안 잡힌다.
+                    //    그래서 위로/아래로를 접근성 동작으로 남긴다 (로터의 '동작').
+                    .accessibilityAction(named: "위로") { move(row.item, by: -1) }
+                    .accessibilityAction(named: "아래로") { move(row.item, by: 1) }
             }
+            .onMove(perform: moveRows)
 
             // 단계들 바로 아래 빈 줄. 여기에 적고 엔터를 치면 다음 줄로 이어진다.
             newStepRow
+                // 적는 줄은 언제나 단계들 맨 아래다. 끌어서 그 위로 보낼 수 없다.
+                .moveDisabled(true)
         } header: {
-            Text("단계")
+            HStack {
+                Text("단계")
+                Spacer()
+                // 맨 바깥 단계가 둘 이상일 때만 묻는 값이다. 하나뿐이면 순서라는 게 없다.
+                // (rows는 손자까지 세므로 여기서는 직계 자식 수를 본다.)
+                if tree.children(of: root).count > 1 { orderMenu(for: root) }
+            }
         } footer: {
             if rows.isEmpty {
                 Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요.\n적어 두면 각 단계가 조각인지 덩어리인지는 앱이 먼저 답해 둡니다. 틀렸으면 그 단계를 왼쪽으로 밀어 고치면 됩니다.")
+            } else if tree.children(of: root).count > 1 {
+                Text(root.stepOrder.note + "\n길게 눌러 끌면 순서가 바뀝니다.")
+            } else if rows.count > 1 {
+                Text("길게 눌러 끌면 순서가 바뀝니다.")
             }
         }
+    }
+
+    // MARK: - 순서대로 / 아무거나
+    //
+    // 쪼갠 단계가 서로를 기다리는지는 **묶음마다 한 번** 정한다.
+    // 단계마다 '앞의 것을 기다림'을 걸게 하면 그건 그래프이고, 사람이 손으로 쪼갠
+    // 네댓 줄에서 일부만 순서가 있는 경우는 드물다 — 대개 통째로 사슬이거나 통째로 자루다.
+    //
+    // 값은 `BacklogItem.stepOrder`에 있고, 저장 자리는 묶음의 `labelRaw`다
+    // (→ BacklogItem+StepOrder.swift). 새 필드가 아니라 CloudKit 스키마도 그대로다.
+
+    private func orderMenu(for group: BacklogItem) -> some View {
+        Menu {
+            Picker("단계 순서", selection: orderBinding(for: group)) {
+                ForEach(StepOrder.allCases, id: \.self) { order in
+                    Label(order.title, systemImage: order.systemImage).tag(order)
+                }
+            }
+            .pickerStyle(.inline)
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: group.stepOrder.systemImage)
+                Text(group.stepOrder.title)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 9, weight: .semibold))
+            }
+            .font(.caption.weight(.semibold))
+            .textCase(nil)
+        }
+        .accessibilityLabel("단계 순서, 현재 \(group.stepOrder.title)")
+    }
+
+    private func orderBinding(for group: BacklogItem) -> Binding<StepOrder> {
+        Binding(
+            get: { group.stepOrder },
+            set: { newValue in
+                guard newValue != group.stepOrder else { return }
+                withAnimation { group.stepOrder = newValue }
+                save()
+            }
+        )
     }
 
     // MARK: - 조언 (전부 TipKit)
@@ -626,37 +723,6 @@ struct TodoDetailView: View {
         .id(Self.newRowID)
     }
 
-    @ViewBuilder
-    private func rowMenu(_ item: BacklogItem) -> some View {
-        Button {
-            addTarget = item
-            inputFocused = true
-        } label: {
-            Label("하위 단계 추가", systemImage: "arrow.turn.down.right")
-        }
-        Button {
-            editing = item
-        } label: {
-            Label("속성·이름 고치기", systemImage: "slider.horizontal.3")
-        }
-        Button {
-            move(item, by: -1)
-        } label: {
-            Label("위로", systemImage: "arrow.up")
-        }
-        Button {
-            move(item, by: 1)
-        } label: {
-            Label("아래로", systemImage: "arrow.down")
-        }
-        Divider()
-        Button(role: .destructive) {
-            remove(item)
-        } label: {
-            Label("삭제", systemImage: "trash")
-        }
-    }
-
     // MARK: - 동작
 
     private func category(of item: BacklogItem) -> BacklogCategory? {
@@ -716,6 +782,51 @@ struct TodoDetailView: View {
     }
 
     /// 형제들 사이에서 순서를 한 칸 옮긴다.
+    /// 끌어서 놓은 자리로 단계를 옮긴다.
+    ///
+    /// **형제끼리만 옮긴다.** 목록은 트리를 평평하게 펴서 그린 것이라, 끌어 놓은 자리
+    /// 하나로는 '그 줄 다음'인지 '그 줄 안으로'인지를 가릴 수가 없다. 둘을 가르려면
+    /// 가로 위치까지 봐야 하고, 그러면 손이 조금만 흔들려도 단계가 남의 묶음 안으로
+    /// 들어가 버린다. 그래서 놓은 자리는 **가장 가까운 형제 경계**로 붙는다 —
+    /// 다른 묶음의 하위 단계 위에 놓아도 그 묶음 앞이나 뒤로 갈 뿐, 안으로는 안 들어간다.
+    ///
+    /// 묶음을 끌면 그 아래 단계들도 같이 간다. 매달린 자리(`parentToken`)는 안 건드리고
+    /// 형제들의 `sortIndex`만 다시 매기기 때문이다.
+    private func moveRows(from source: IndexSet, to destination: Int) {
+        let tree = self.tree
+        let rows = self.rows
+        guard let sourceFlat = source.first, rows.indices.contains(sourceFlat) else { return }
+        let moved = rows[sourceFlat].item
+        guard let parent = tree.parent(of: moved) else { return }
+
+        var siblings = tree.children(of: parent)
+        guard let from = siblings.firstIndex(where: { $0.dragToken == moved.dragToken }) else { return }
+
+        // 평평한 목록의 자리를 형제 사이의 자리로 옮긴다.
+        // 앞에 놓인 형제가 몇인지 세면 그게 곧 들어갈 칸이다('이 앞에 넣는다'는 같은 셈법).
+        let siblingFlat = siblings.compactMap { sibling in
+            rows.firstIndex { $0.item.dragToken == sibling.dragToken }
+        }
+        let to = siblingFlat.filter { $0 < destination }.count
+
+        // 제자리면 아무것도 안 한다. 제 하위 단계 위에 놓은 경우도 여기서 걸린다
+        // (하위 단계는 형제가 아니라 안 세어지므로 to == from + 1 이 된다).
+        guard to != from, to != from + 1 else { return }
+
+        siblings.move(fromOffsets: IndexSet(integer: from), toOffset: to)
+        for (i, sibling) in siblings.enumerated() { sibling.sortIndex = i }
+        withAnimation { save() }
+    }
+
+    /// 형제들 사이의 자리. 최상위(부모 없음)면 nil.
+    private func siblingPosition(of item: BacklogItem) -> (index: Int, total: Int)? {
+        let tree = self.tree
+        guard let parent = tree.parent(of: item) else { return nil }
+        let siblings = tree.children(of: parent)
+        guard let index = siblings.firstIndex(where: { $0.dragToken == item.dragToken }) else { return nil }
+        return (index + 1, siblings.count)
+    }
+
     private func move(_ item: BacklogItem, by offset: Int) {
         let tree = self.tree
         guard let parent = tree.parent(of: item) else { return }
@@ -811,6 +922,15 @@ private struct StepRow: View {
 
 private struct StepEditSheet: View {
     let item: BacklogItem
+    /// 이 줄이 아래 단계를 거느린 묶음인가. 묶음이면 시간·조각 판정을 감춘다.
+    let isGroup: Bool
+    /// 묶음일 때만 쓰는, 그 아래 단계들의 순서.
+    let orderBinding: Binding<StepOrder>
+    let childCount: Int
+    /// 형제들 사이에서 몇 번째인가 (1부터)와 형제 수. 끝에서는 그 방향 버튼을 막는다.
+    let siblingPosition: (index: Int, total: Int)?
+    let onMoveUp: () -> Void
+    let onMoveDown: () -> Void
     let onSave: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -832,37 +952,79 @@ private struct StepEditSheet: View {
                 Section("이름") {
                     TextField("단계 이름", text: $title)
                 }
-                Section {
-                    Stepper(value: $hours, in: 0.25...8, step: 0.25) {
-                        HStack {
-                            Text("소요시간")
-                            Spacer()
-                            Text(formatDuration(hours))
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
+
+                if let position = siblingPosition, position.total > 1 {
+                    Section {
+                        Button {
+                            onMoveUp()
+                            dismiss()
+                        } label: {
+                            Label("위로", systemImage: "arrow.up")
                         }
+                        .disabled(position.index <= 1)
+
+                        Button {
+                            onMoveDown()
+                            dismiss()
+                        } label: {
+                            Label("아래로", systemImage: "arrow.down")
+                        }
+                        .disabled(position.index >= position.total)
+                    } header: {
+                        Text("자리")
+                    } footer: {
+                        Text("같은 층에서 \(position.total)개 중 \(position.index)번째입니다.\n목록에서 길게 눌러 끌어도 됩니다.")
                     }
-                } footer: {
-                    Text("한 자리에서 닫히는 크기로 잘라 두세요. 두 시간을 넘으면 하다 말게 됩니다.")
                 }
 
-                Section {
-                    FragmentQuestionRows(title: title, hours: hours, pick: $pick)
-                } header: {
-                    Text("이걸 5분에 집어도 되나")
-                } footer: {
-                    // 두 답이 합쳐져서 무엇이 되는지를 한 줄로 닫아준다.
-                    // 답만 두 개 남겨 두면 "그래서 어쩌라고"가 된다.
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
-                        Image(systemName: advice.isFragment ? "bolt.fill" : "clock")
-                            .font(.caption)
-                            .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
-                        Text(advice.verdict)
-                            .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
+                if isGroup {
+                    if childCount > 1 {
+                        Section {
+                            Picker("단계 순서", selection: orderBinding) {
+                                ForEach(StepOrder.allCases, id: \.self) { order in
+                                    Label(order.title, systemImage: order.systemImage).tag(order)
+                                }
+                            }
+                            .pickerStyle(.inline)
+                        } header: {
+                            Text("이 안의 단계들")
+                        } footer: {
+                            Text(orderBinding.wrappedValue.note)
+                        }
+                    }
+                } else {
+                    Section {
+                        Stepper(value: $hours, in: 0.25...8, step: 0.25) {
+                            HStack {
+                                Text("소요시간")
+                                Spacer()
+                                Text(formatDuration(hours))
+                                    .monospacedDigit()
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } footer: {
+                        Text("한 자리에서 닫히는 크기로 잘라 두세요. 두 시간을 넘으면 하다 말게 됩니다.")
+                    }
+
+                    Section {
+                        FragmentQuestionRows(title: title, hours: hours, pick: $pick)
+                    } header: {
+                        Text("이걸 5분에 집어도 되나")
+                    } footer: {
+                        // 두 답이 합쳐져서 무엇이 되는지를 한 줄로 닫아준다.
+                        // 답만 두 개 남겨 두면 "그래서 어쩌라고"가 된다.
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Image(systemName: advice.isFragment ? "bolt.fill" : "clock")
+                                .font(.caption)
+                                .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
+                            Text(advice.verdict)
+                                .foregroundStyle(advice.isFragment ? Color.teal : Color.secondary)
+                        }
                     }
                 }
             }
-            .navigationTitle("단계")
+            .navigationTitle(isGroup ? "묶음" : "단계")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -885,8 +1047,12 @@ private struct StepEditSheet: View {
         let trimmed = title.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
         item.title = trimmed
-        item.durationHours = hours
-        item.fragmentPick = pick
+        // 묶음의 시간·판정은 쓰지 않는다. 시간은 아래 단계들의 합으로 그때그때 계산되고
+        // (→ TodoTree.totalHours), 판정 자리(labelRaw)는 순서가 쓰고 있다.
+        if !isGroup {
+            item.durationHours = hours
+            item.fragmentPick = pick
+        }
         onSave()
         dismiss()
     }

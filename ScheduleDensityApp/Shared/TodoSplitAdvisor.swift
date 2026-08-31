@@ -299,8 +299,17 @@ enum TodoSplitAdvisor {
             if looksClosing || looksFragment {
                 return .init(isYes: true, reason: "끝이 정해져 있어 여기서 닫힙니다.")
             }
+            // ⚠️ 시간을 안 적은 줄은 **모른다**. 예전에는 여기서 '예'라고 답했는데,
+            //    그러면 방금 적은 줄이 전부 조각(⚡︎)으로 떴다 — 적자마자 아무 근거 없이
+            //    "이건 5분에 집을 수 있다"고 앱이 단언한 셈이다.
+            //    이 자리의 값어치는 "여기 있는 건 진짜 바로 된다"는 믿음에서 나오는데
+            //    (→ BacklogItem+Fragment.swift), 아무 줄에나 붙으면 그 믿음이 먼저 죽는다.
+            //
+            //    '그냥 하면 되는 것'은 이 분기가 아니라 **낱말**이 알아본다 —
+            //    위의 `looksClosing || looksFragment`가 먼저 걸러 가고(전화·주문·예약·챙기기…),
+            //    그래도 아니면 시간을 15분으로 적어 두면 바로 조각이 된다.
             if durationHours <= 0 {
-                return .init(isYes: true, reason: "시간을 안 잡은 줄이라 조각에 들어갑니다.")
+                return .init(isYes: false, reason: "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다.")
             }
             return .init(isYes: true, reason: "\(formatHours(durationHours))짜리라 조각 안에 들어갑니다.")
         }()

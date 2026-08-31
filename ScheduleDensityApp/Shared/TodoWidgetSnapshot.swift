@@ -73,14 +73,63 @@ struct TodoWidgetSnapshot: Codable {
         }
     }
 
+    /// 지금 5분에 집을 수 있는 단계 하나. (→ 번개 위젯)
+    ///
+    /// `Item`과 달리 **최상위 할 일이 아니라 단계 하나**가 한 줄이다. 한 일 안에서도
+    /// 조각은 여럿일 수 있고(순서 없는 묶음), 5분이 났을 때 필요한 건 '무슨 일이 남았나'가
+    /// 아니라 '지금 집을 게 뭐가 있나'라서 목록의 단위가 다르다.
+    struct Fragment: Codable, Identifiable {
+        var id: String
+        /// 단계 이름. 줄에 서는 것은 이것이다.
+        var title: String
+        /// 무슨 일의 일부인지. 안 쪼갠 줄이면 nil.
+        var parentTitle: String?
+        /// 카테고리 색 hex. 미분류면 nil.
+        var colorHex: String?
+        /// 걸리는 시간(분). 0이면 시간을 안 잡은 줄.
+        var minutes: Int
+        /// **사용자가 직접 표시한 것인가.** 앱의 짐작(낱말·시간)과 구분해서 그린다 —
+        /// 이 자리의 값어치는 "여기 있는 건 진짜 바로 된다"는 믿음에서 나온다.
+        var isMarked: Bool
+    }
+
     /// 아직 안 한 일. 오늘 배정 → 지난 주 잔여 → 이번 주 순서(급한 것부터).
     var items: [Item]
+    /// 지금 집을 수 있는 조각들. 표시해 둔 것 먼저, 그 다음 급한 순서.
+    var fragments: [Fragment]
     /// 안 한 일 전체 개수. 화면에는 안 쓰지만 `items`가 잘렸는지 판단하는 데 쓴다.
     var openCount: Int
+    /// 조각 전체 개수. `fragments`가 잘렸는지 판단하는 데 쓴다.
+    var fragmentCount: Int
     var updatedAt: Date
 
     /// 위젯이 아무리 커도 이 이상은 못 보여준다. 파일도 작게 유지.
     static let maxItems = 12
+    static let maxFragments = 12
+
+    init(items: [Item], fragments: [Fragment] = [],
+         openCount: Int, fragmentCount: Int = 0, updatedAt: Date) {
+        self.items = items
+        self.fragments = fragments
+        self.openCount = openCount
+        self.fragmentCount = fragmentCount
+        self.updatedAt = updatedAt
+    }
+
+    // fragments·fragmentCount는 나중에 추가된 필드다. 이 키가 없는 옛 스냅샷도 읽어야 한다 —
+    // 여기서 디코딩이 실패하면 앱을 한 번 열기 전까지 **할 일 위젯까지 같이 빈다.**
+    enum CodingKeys: String, CodingKey {
+        case items, fragments, openCount, fragmentCount, updatedAt
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        items = try c.decode([Item].self, forKey: .items)
+        fragments = try c.decodeIfPresent([Fragment].self, forKey: .fragments) ?? []
+        openCount = try c.decode(Int.self, forKey: .openCount)
+        fragmentCount = try c.decodeIfPresent(Int.self, forKey: .fragmentCount) ?? 0
+        updatedAt = try c.decode(Date.self, forKey: .updatedAt)
+    }
 
     static let empty = TodoWidgetSnapshot(items: [], openCount: 0, updatedAt: .distantPast)
 
@@ -100,10 +149,19 @@ struct TodoWidgetSnapshot: Codable {
             Item(id: "5", title: "책 한 챕터 읽기", colorHex: nil, categoryName: nil,
                  isCarryover: false, isToday: false),
         ],
-        openCount: 5, updatedAt: Date()
+        fragments: [
+            Fragment(id: "f1", title: "자료 링크 하나 챙기기", parentTitle: "기획서 초안 작성",
+                     colorHex: "#007AFF", minutes: 5, isMarked: true),
+            Fragment(id: "f2", title: "장보기 — 우유, 계란", parentTitle: nil,
+                     colorHex: "#34C759", minutes: 15, isMarked: false),
+            Fragment(id: "f3", title: "업체 예약 전화", parentTitle: "이사 준비",
+                     colorHex: "#FF9500", minutes: 10, isMarked: false),
+        ],
+        openCount: 5, fragmentCount: 3, updatedAt: Date()
     )
 
     var isEmpty: Bool { items.isEmpty }
+    var hasNoFragments: Bool { fragments.isEmpty }
 }
 
 /// 앱 ↔ 위젯 사이의 App Group 통로.
@@ -113,9 +171,15 @@ enum TodoWidgetBridge {
 
     /// `WidgetCenter.reloadTimelines(ofKind:)`에 쓰는 위젯 종류 ID.
     static let widgetKind = "TodoWidget"
+    /// 조각만 모아 보여주는 위젯. 같은 스냅샷 파일을 읽으므로 통로는 하나뿐이다.
+    static let fragmentWidgetKind = "FragmentWidget"
 
     /// 위젯을 탭하면 앱의 '할 일' 탭으로 이동한다.
     static let deepLink = URL(string: "rainbow://todo")!
+
+    /// 번개 위젯의 착지점. 지금은 '할 일' 탭과 같은 자리에 내리지만 호스트를 따로 둔다 —
+    /// 조각만 보는 자리가 생기면 위젯을 안 고치고 앱에서만 갈아끼울 수 있다.
+    static let fragmentDeepLink = URL(string: "rainbow://fragment")!
 
     private static let fileName = "todo-widget-snapshot.json"
 

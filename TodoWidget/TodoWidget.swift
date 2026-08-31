@@ -12,6 +12,9 @@ import SwiftUI
 // MARK: - 타임라인
 
 struct TodoEntry: TimelineEntry {
+    /// 값을 안 낸 상태인가. 갤러리 미리보기에서는 언제나 false다 —
+    /// 뭘 얻는지 보여줘야 살지 말지를 정할 수 있다.
+    var isLocked: Bool = false
     let date: Date
     let snapshot: TodoWidgetSnapshot
 }
@@ -24,11 +27,13 @@ struct TodoProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (TodoEntry) -> Void) {
         // 위젯 갤러리에서는 빈 화면 대신 예시를 보여준다.
         let snapshot = context.isPreview ? .sample : TodoWidgetBridge.read()
-        completion(TodoEntry(date: Date(), snapshot: snapshot))
+        completion(TodoEntry(isLocked: !context.isPreview && !ProEntitlement.isUnlocked,
+                             date: Date(), snapshot: snapshot))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TodoEntry>) -> Void) {
-        let entry = TodoEntry(date: Date(), snapshot: TodoWidgetBridge.read())
+        let entry = TodoEntry(isLocked: !ProEntitlement.isUnlocked,
+                              date: Date(), snapshot: TodoWidgetBridge.read())
         // 내용이 바뀌면 앱이 reloadTimelines를 부른다. 여기서는 날짜가 넘어가면
         // '지난 주 잔여' 구분이 달라지므로 자정 직후 한 번만 다시 그리게 한다.
         let midnight = Calendar.current.nextDate(after: entry.date,
@@ -62,6 +67,7 @@ struct TodoWidget: Widget {
 struct RainbowWidgetBundle: WidgetBundle {
     var body: some Widget {
         TodoWidget()
+        FragmentWidget()
         RainbowWidget()
     }
 }
@@ -75,6 +81,20 @@ struct TodoWidgetView: View {
     private var snapshot: TodoWidgetSnapshot { entry.snapshot }
 
     var body: some View {
+        if entry.isLocked {
+            // 잠금 화면의 한 줄짜리 자리에는 세로로 쌓은 안내가 안 들어간다.
+            if family == .accessoryInline {
+                Text("🔒 할 일 — 모두 열기")
+            } else {
+                WidgetLockedView(name: "할 일")
+            }
+        } else {
+            unlocked
+        }
+    }
+
+    @ViewBuilder
+    private var unlocked: some View {
         switch family {
         case .accessoryInline:      InlineView(snapshot: snapshot)
         case .accessoryRectangular: RectangularView(snapshot: snapshot)
