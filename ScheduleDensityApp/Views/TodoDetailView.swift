@@ -46,6 +46,9 @@ struct TodoDetailView: View {
     @State private var showingSplitMeaning = false
     /// 분류를 만들고 고치는 시트 (→ CategoryManagerView.swift).
     @State private var showingCategoryManager = false
+    /// 이름·소요시간·기간·분류를 정하는 시트. 카드를 눌러야 열린다 —
+    /// 한 번 정하고 나면 일하는 내내 볼 것이 아니라서 화면에 깔아 두지 않는다.
+    @State private var showingSettings = false
     @FocusState private var inputFocused: Bool
 
     private var tree: TodoTree { TodoTree(allItems) }
@@ -53,7 +56,6 @@ struct TodoDetailView: View {
     /// 단계 목록 맨 아래 빈 줄의 id — 키보드가 올라올 때 그 줄로 스크롤하기 위해.
     private static let newRowID = "step.newRow"
     private static let headerRowID = "step.header"
-    private static let periodRowID = "step.period"
 
     private var rows: [(item: BacklogItem, depth: Int)] {
         // 최상위 할 일 자체는 헤더가 보여주므로 목록에는 그 아래만 그린다.
@@ -71,11 +73,14 @@ struct TodoDetailView: View {
     var body: some View {
         ScrollViewReader { proxy in
         List {
-            // 이름·시간·기간·분류가 맨 위다. 이 화면에 들어오는 이유가 그걸 정하려는 것이고,
-            // 목록에서는 이름만 받으므로 여기가 유일하게 정할 수 있는 자리다.
-            settingsSection
-
-            Section { headerCard.id(Self.headerRowID) }
+            // 맨 위는 **요약 카드 하나**다. 이 일이 지금 어디까지 왔는지가 주인공이고,
+            // 정해 둔 것(시간·기간·분류)은 그 아래 작은 칩으로 조용히 선다.
+            //
+            // 예전에는 이름·소요시간·시작/끝·분류를 펼친 채로 맨 위에 두었다. 정할 때는
+            // 맞는 자리였는데, 한 번 정하고 나면 일하는 내내 그 다섯 줄을 지나야 단계가
+            // 나왔다. 정하는 일은 처음 한 번이고 들여다보는 일은 매번이다 — 매번 오는 것이
+            // 위에 서야 한다. 고치는 자리는 카드를 눌러 시트로 온다.
+            Section { summaryCard.id(Self.headerRowID) }
 
             // 팁은 한 번에 하나만. 둘 다 뜨면 단계를 보러 들어온 화면이
             // 설명 카드 두 장으로 덮인다. 이 할 일에 대한 조언을 먼저 내고,
@@ -130,9 +135,8 @@ struct TodoDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingCategoryManager) {
-            // 이 화면은 이미 할 일 스토어에서 돌고 있으므로 컨테이너를 따로 안 붙인다.
-            CategoryManagerView()
+        .sheet(isPresented: $showingSettings) {
+            settingsSheet
         }
         .fullScreenCover(isPresented: $showingSplitMeaning) {
             SplitMeaningView { showingSplitMeaning = false }
@@ -193,11 +197,13 @@ struct TodoDetailView: View {
         // 짚어주는 자리가 화면 밖이면 설명만 뜨고 정작 그 자리는 안 보인다.
         let target: String
         switch step {
-        case .header:            target = Self.headerRowID
-        case .period:            target = Self.periodRowID
+        // 기간을 정하는 문이 카드로 옮겨왔으므로, 기간 차례에도 카드를 짚는다.
+        case .header, .period:   target = Self.headerRowID
         case .intro, .writeStep: target = Self.newRowID
         }
-        withAnimation { proxy.scrollTo(target, anchor: step == .header ? .top : .center) }
+        withAnimation {
+            proxy.scrollTo(target, anchor: (step == .header || step == .period) ? .top : .center)
+        }
     }
 
     private func endGuide(showMeaning: Bool) {
@@ -222,18 +228,69 @@ struct TodoDetailView: View {
         tree.currentStep(of: root)?.dragToken
     }
 
-    // MARK: - 헤더
+    // MARK: - 요약 카드
 
-    /// 이 일이 지금 어디까지 왔고, 다음에 뭘 하면 되는지.
+    /// 이 일이 지금 어디까지 왔고, 무엇으로 정해져 있는지 — 한 장으로.
     ///
-    /// 예전에는 여기에 '전체 예상 시간 = 100%'를 두고 단계들이 그 시간을 나눠 갖게 했다.
-    /// 사람이 답할 수 없는 물음이었다 — 쪼개면서 "이건 전체의 몇 %지?"를 정할 방법이 없다.
-    /// 지금은 반대다: 단계마다 착수 조건만 고르고, 시간은 아래에서 위로 저절로 쌓인다.
-    private var headerCard: some View {
+    /// 누르면 이름·소요시간·기간·분류를 정하는 시트가 열린다(→ `settingsSheet`).
+    /// 정하는 일은 처음 한 번이고 들여다보는 일은 매번이다. 그래서 매번 오는 것(단계가
+    /// 어디까지 왔나 · 지금 뭘 하면 되나)이 카드의 큰 자리를 쓰고, 한 번 정한 것들은
+    /// 아래 작은 칩으로 물러난다. 아직 아무것도 안 정한 일은 빈 카드로 서서
+    /// "눌러서 정하라"고만 말한다 — 처음 들어온 사람에게 서식 다섯 줄을 들이밀지 않는다.
+    ///
+    /// 예전에는 이름·소요시간·시작/끝·분류가 펼친 채로 맨 위에 있었다. 정할 때는 맞는
+    /// 자리였지만, 정하고 난 뒤에는 단계를 보러 올 때마다 지나야 하는 벽이 됐다.
+    private var summaryCard: some View {
         let stepCount = tree.leafCount(of: root)
         let doneCount = tree.doneLeafCount(of: root)
 
         return VStack(alignment: .leading, spacing: 12) {
+            Button {
+                showingSettings = true
+            } label: {
+                cardFace(stepCount: stepCount, doneCount: doneCount)
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("눌러서 이름·소요시간·기간·분류 고치기")
+
+            // 지금 할 단계에 경고가 있으면 그것만 팁으로. (다른 줄에는 안 깐다)
+            // 카드를 누르는 자리 **밖**에 둔다 — 팁에도 손댈 곳이 있어서, 안에 있으면
+            // 팁을 닫으려다 설정 시트가 열린다.
+            if let step = tree.currentStep(of: root),
+               !tree.hasChildren(step),
+               let warning = TodoSplitAdvisor.advice(title: step.title,
+                                                     durationHours: step.durationHours,
+                                                     pick: step.fragmentPick).warning {
+                TipView(StepWarningTip(warning: warning))
+            }
+        }
+        .padding(.vertical, 4)
+        // 안내가 기간을 짚을 때도 이 카드를 짚는다 — 기간으로 가는 문이 여기라서.
+        .spotlightAnchor(guide == .header || guide == .period)
+        .task {
+            editingTitle = root.title
+            if let period = TodoEventBridge.shared.period(for: root) {
+                periodStart = period.start
+                periodEnd = period.end
+                hasPeriod = true
+            }
+        }
+    }
+
+    /// 카드에서 **누르는 면**. 여기 있는 것은 전부 '보는 것'이고, 손대는 것은 시트에 있다.
+    private func cardFace(stepCount: Int, doneCount: Int) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(root.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                Spacer(minLength: 8)
+                Image(systemName: "square.and.pencil")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
+
             // 단계가 하나뿐이면 "0/1 단계"와 진행 막대는 아무것도 안 알려준다.
             if stepCount > 1 {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -245,24 +302,16 @@ struct TodoDetailView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    if let category = category(of: root) {
-                        Circle()
-                            .fill(category.displayColor)
-                            .frame(width: 12, height: 12)
-                            .accessibilityLabel(category.name)
-                    }
                 }
                 ProgressView(value: tree.progress(of: root))
                     .tint(doneCount == stepCount ? .green : .accentColor)
             }
 
             if let step = tree.currentStep(of: root) {
-                // 지금 할 단계. 시간은 오른쪽에 한 번, 언제 하면 되는지는 아래에 한 번.
-                // (예전에는 칩·설명·남은 몫이 같은 말을 세 번 했다.)
+                // 지금 할 단계. 기호 하나로는 '지금 할 것'이라는 뜻이 안 읽혀서 말로 적는다.
+                // 순서가 없는 묶음에서는 '단계'가 아니라 '집을 것'이다 — 앱이 조각인 것을
+                // 앞에 세웠을 뿐, 차례가 아니다.
                 VStack(alignment: .leading, spacing: 6) {
-                    // 기호 하나로는 이게 '지금 할 것'이라는 뜻이 안 읽힌다. 말로 적는다.
-                    // 순서가 없는 묶음에서는 '단계'가 아니라 '집을 것'이다.
-                    // 앱이 조각인 것을 앞에 세웠을 뿐, 차례가 아니다.
                     Text(root.stepOrder == .free ? "지금 집을 것" : "지금 단계")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.orange)
@@ -270,12 +319,10 @@ struct TodoDetailView: View {
                         .padding(.vertical, 2)
                         .background(Capsule().fill(Color.orange.opacity(0.15)))
 
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text(step.title)
-                            .font(.body.weight(.semibold))
-                            .lineLimit(2)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                    Text(step.title)
+                        .font(.body.weight(.semibold))
+                        .lineLimit(2)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             } else if stepCount > 0 {
                 Label("모든 단계를 마쳤습니다", systemImage: "checkmark.circle.fill")
@@ -283,29 +330,103 @@ struct TodoDetailView: View {
                     .foregroundStyle(.green)
             }
 
-            // 지금 할 단계에 경고가 있으면 그것만 팁으로. (다른 줄에는 안 깐다)
-            if let step = tree.currentStep(of: root),
-               !tree.hasChildren(step),
-               let warning = TodoSplitAdvisor.advice(title: step.title,
-                                                     durationHours: step.durationHours,
-                                                     pick: step.fragmentPick).warning {
-                TipView(StepWarningTip(warning: warning))
+            if isBlank(stepCount: stepCount) {
+                // 빈 카드. 아무것도 안 정한 일에 칩 세 개가 "안 잡음 · 없음 · 미분류"로
+                // 서 있으면, 정하라는 말이 아니라 못 한 것 셋으로 읽힌다.
+                Text("눌러서 소요시간·기간·분류를 정하세요")
+                    .font(.subheadline)
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 6)
+            } else {
+                settingChips
             }
-
         }
-        .padding(.vertical, 4)
-        .spotlightAnchor(guide == .header)
-        .task {
-            editingTitle = root.title
-            if let period = TodoEventBridge.shared.period(for: root) {
-                periodStart = period.start
-                periodEnd = period.end
-                hasPeriod = true
+        .contentShape(Rectangle())
+    }
+
+    /// 이름 말고는 아무것도 안 정했고 단계도 없는가 — 그러면 카드는 빈 카드로 선다.
+    private func isBlank(stepCount: Int) -> Bool {
+        stepCount == 0 && !hasPeriod && root.durationHours <= 0 && root.categoryID == nil
+    }
+
+    /// 한 번 정하고 나면 다시 볼 일이 드문 것들. 작게, 한 줄로.
+    private var settingChips: some View {
+        let hours = tree.hasChildren(root) ? tree.totalHours(of: root) : root.durationHours
+        return HStack(spacing: 6) {
+            chip(icon: "clock",
+                 text: hours <= 0 ? "시간 안 잡음" : formatDuration(hours),
+                 tint: .secondary,
+                 dim: hours <= 0)
+            chip(icon: "rainbow",
+                 text: periodChipText,
+                 tint: .accentColor,
+                 dim: !hasPeriod)
+            if let category = category(of: root) {
+                chip(icon: category.iconName, text: category.name, tint: category.displayColor, dim: false)
+            } else {
+                chip(icon: "tag", text: "미분류", tint: .secondary, dim: true)
             }
+            Spacer(minLength: 0)
         }
     }
 
+    /// 무지개 칩은 '며칠 남았나'만 말한다. 날짜 두 개는 시트에서 본다.
+    private var periodChipText: String {
+        guard hasPeriod else { return "무지개에 없음" }
+        let calendar = Calendar.current
+        let left = calendar.dateComponents([.day],
+                                           from: calendar.startOfDay(for: Date()),
+                                           to: calendar.startOfDay(for: periodEnd)).day ?? 0
+        if left > 0 { return "D-\(left)" }
+        return left == 0 ? "오늘까지" : "기간 지남"
+    }
+
+    private func chip(icon: String, text: String, tint: Color, dim: Bool) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .semibold))
+            Text(text)
+                .font(.caption)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+        }
+        .foregroundStyle(dim ? Color.secondary.opacity(0.7) : tint)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Capsule().fill(Color.secondary.opacity(dim ? 0.07 : 0.12)))
+    }
+
     // MARK: - 이 할 일 (목록에서 못 정한 것들을 여기서 정한다)
+
+    /// 정하는 자리. 카드를 눌러야 열린다.
+    ///
+    /// 화면에 깔아 두지 않는 이유는 하나다 — 기간·시간·분류는 **처음 한 번** 정하는 것이고,
+    /// 그 뒤로 이 화면에 오는 이유는 단계다. 매번 오는 것 위에 한 번 쓰는 것을 얹으면
+    /// 일하는 내내 그것을 지나야 한다.
+    private var settingsSheet: some View {
+        NavigationStack {
+            Form {
+                settingsSection
+            }
+            .navigationTitle("이 할 일")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("완료") {
+                        commitTitle()
+                        showingSettings = false
+                    }
+                }
+            }
+            // 분류를 만드는 시트는 **이 시트 위**에서 열려야 한다. 아래 화면에 붙여 두면
+            // 이 시트에 덮여 열리지 않는다.
+            .sheet(isPresented: $showingCategoryManager) {
+                // 이 화면은 이미 할 일 스토어에서 돌고 있으므로 컨테이너를 따로 안 붙인다.
+                CategoryManagerView()
+            }
+        }
+    }
 
     /// 목록의 빈 줄은 이름만 받는다. 착수 조건·분류·데드라인은 적을 때가 아니라
     /// **들여다볼 때** 정하는 게 맞다 — 한 줄 적으려다 매번 세 가지를 고르게 되면
@@ -341,11 +462,7 @@ struct TodoDetailView: View {
             }
 
             periodRows
-                .spotlightAnchor(guide == .period)
-                .id(Self.periodRowID)
             categoryPicker
-        } header: {
-            Text("이 할 일")
         }
 
     }
