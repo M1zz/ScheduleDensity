@@ -45,6 +45,7 @@ struct SettingsView: View {
     @AppStorage("showInsightCards") private var showInsightCards = false
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
     @AppStorage(AppSettingsKey.hasSeenRainbowOnboarding) private var hasSeenRainbowOnboarding = false
+    @AppStorage(AppSettingsKey.hasSeenBoltOnboarding) private var hasSeenBoltOnboarding = false
 
     private let cloudKitManager = CloudKitManager.shared
     private let syncSettings = SyncSettingsManager.shared
@@ -60,7 +61,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Group {
                     // 일정 관리 섹션
@@ -635,6 +636,52 @@ struct SettingsView: View {
                     Text("할 일")
                 } footer: {
                     Text("할 일 상세 화면의 ‘분류’를 눌러서도 바로 만들 수 있습니다.")
+                }
+
+                // 번개(‘바로 하면 되는 일’) — 스와이프에서 글자를 뺐으므로, 그 아이콘이
+                // 무슨 뜻이었는지 잊었을 때 펴 볼 자리가 앱 안에 하나는 있어야 한다.
+                Section {
+                    // 덮어 씌우는 대신 밀어 넣는다. 설정 안의 다른 문들과 같은 손짓이다.
+                    NavigationLink {
+                        BoltMeaningView(eyebrow: "할 일 목록의 번개",
+                                        showsDoneButton: false) { }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bolt.fill")
+                                .foregroundStyle(TodoView.nowGreen)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("번개가 뭔가요")
+                                    .font(.headline)
+                                Text("‘지금 바로 되는 일’ 표시 — 뜻과 쓰는 법")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        hasSeenBoltOnboarding = false
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.draw")
+                                .foregroundColor(.blue)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("번개 안내 다시 보기")
+                                    .font(.headline)
+                                Text("할 일 목록 맨 위에 안내 줄을 다시 세웁니다")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("번개")
                 }
 
                 Section {

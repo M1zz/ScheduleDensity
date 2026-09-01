@@ -69,6 +69,10 @@ struct RainbowWidgetBundle: WidgetBundle {
         TodoWidget()
         FragmentWidget()
         RainbowWidget()
+        // 제어센터 컨트롤은 iOS 18부터다 (→ QuickTodoControl.swift).
+        if #available(iOS 18.0, *) {
+            QuickTodoControl()
+        }
     }
 }
 

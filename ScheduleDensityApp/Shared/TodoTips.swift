@@ -63,7 +63,9 @@ struct ListLegendTip: Tip {
 
     var title: Text { Text("색이 말하는 것") }
     var message: Text? {
-        Text("연두는 5분이 나면 그냥 집어도 되는 줄, 회색은 시간을 안 잡은 줄입니다.\n왼쪽으로 밀면 시간 잡기·오늘·바로 표시.")
+        // 스와이프에 남은 것은 번개 하나다. '시간 잡기'는 상세의 스테퍼가,
+        // '오늘'은 상세의 날짜가 답한다 (→ TodoView, TodoWhen).
+        Text("연두는 5분이 나면 그냥 집어도 되는 줄, 회색은 시간을 안 잡은 줄입니다.\n오른쪽으로 밀면 번개를 붙이고 거둡니다.")
     }
     var image: Image? { Image(systemName: "paintpalette") }
     var rules: [Rule] {

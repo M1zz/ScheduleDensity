@@ -31,7 +31,7 @@ struct EventManagementView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 // 검색 바
                 HStack {

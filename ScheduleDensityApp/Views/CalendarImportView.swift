@@ -22,7 +22,7 @@ struct CalendarImportView: View {
     @State private var showEventPreview = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Group {
                     if !eventKitManager.isAuthorized {

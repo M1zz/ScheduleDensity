@@ -95,6 +95,9 @@ targets:
       - path: ScheduleDensityApp/Shared/TodoWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/RainbowWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/ColorHex.swift
+      # 제어센터 컨트롤이 앱에 '적을 준비 해둬'를 건네는 통로. 인텐트가 앱 타깃과
+      # 위젯 타깃 양쪽에 있어야 하므로(→ QuickTodoControl.swift), 통로도 양쪽에 든다.
+      - path: ScheduleDensityApp/Shared/QuickTodoBridge.swift
       # 위젯은 값을 받고 여는 것 중 하나다. 익스텐션은 결제를 조회할 수 없으므로
       # 앱이 App Group에 구워둔 한 줄만 읽는다 (StoreKit은 앱 쪽에만 있다).
       - path: ScheduleDensityApp/Shared/ProEntitlement.swift

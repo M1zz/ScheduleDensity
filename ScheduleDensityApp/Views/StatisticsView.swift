@@ -15,7 +15,7 @@ struct StatisticsView: View {
     @State private var isLoading = true
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     if isLoading {

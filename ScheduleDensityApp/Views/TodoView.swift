@@ -55,6 +55,14 @@ struct TodoView: View {
     @State private var periods: [String: (start: Date, end: Date)] = [:]
     @FocusState private var inputFocused: Bool
 
+    // MARK: 번개 안내 (→ BoltOnboarding.swift)
+    //
+    // 스와이프에서 글자를 뺐으므로, 그 아이콘이 무슨 뜻인지 말해 줄 자리가
+    // 목록 어디에도 없다. 처음 한 번은 앱이 직접 짚어 준다.
+    @AppStorage(AppSettingsKey.hasSeenBoltOnboarding) private var hasSeenBoltOnboarding = false
+    /// 번개 뜻풀이 한 장을 밀어 넣는 중인가 (→ BoltOnboarding.swift).
+    @State private var showingBoltMeaning = false
+
     private let cal = Calendar(identifier: .iso8601)
     private var weekStart: Date { .currentWeekStart }
 
@@ -176,6 +184,10 @@ struct TodoView: View {
                     tabPicker
                 }
             }
+            // 뜻풀이는 덮어 씌우지 않고 밀어 넣는다 (→ BoltOnboarding.swift).
+            .navigationDestination(isPresented: $showingBoltMeaning) {
+                BoltMeaningView(showsDoneButton: false) { }
+            }
         }
         .sheet(isPresented: $showingLedger) {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
@@ -205,8 +217,15 @@ struct TodoView: View {
         .onChange(of: showsFamilyTab) { _, shows in
             if !shows { tab = .mine }
         }
+        // 제어센터에서 '할 일 적기'를 눌렀다 (→ QuickTodoBridge.swift).
+        // 콜드 런치는 이 .task 가, 이미 떠 있으면 아래 알림이 받는다.
+        .task { consumeQuickAddRequest() }
+        .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
+            consumeQuickAddRequest()
+        }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
+                consumeQuickAddRequest()
                 // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
                 // 날이 바뀌었을 수 있으므로 주차와 오늘 계획도 다시 맞춘다.
                 pullForwardOverdueWeeks()
@@ -284,7 +303,18 @@ struct TodoView: View {
             rainbowPendingSection
 
             Section {
-                // 0. 적는 자리. 평소에는 없고, + 를 누르면 여기 열린다 —
+                // 0. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
+                //    뒤가 계속 보이고, 그동안 아무거나 할 수 있다 (→ BoltOnboarding.swift).
+                if showsBoltHint(items: items, errands: errands) {
+                    BoltHintRow(onDetail: { showingBoltMeaning = true },
+                                onDismiss: { withAnimation { hasSeenBoltOnboarding = true } })
+                        // 연두를 아주 옅게만 깐다. 이 줄이 말하려는 색이 연두라서
+                        // 색은 있어야 하지만, 진하면 할 일보다 안내가 먼저 읽힌다.
+                        .listRowBackground(Self.hintTint)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+
+                // 1. 적는 자리. 평소에는 없고, + 를 누르면 여기 열린다 —
                 //    동그라미가 날아와 앉는 자리이자, 방금 적은 줄이 바로 아래에 쌓이는 자리다.
                 if isAdding || inputFocused || !newTitle.isEmpty {
                     newTodoRow
@@ -297,7 +327,7 @@ struct TodoView: View {
                             removal: .opacity))
                 }
 
-                // 1. 바로 하면 되는 일 — 표시해 둔 줄과 단계. 차례를 안 기다린다.
+                // 2. 바로 하면 되는 일 — 표시해 둔 줄과 단계. 차례를 안 기다린다.
                 ForEach(marked) { item in
                     MarkedRow(item: item,
                               parentTitle: tree.parent(of: item)?.title,
@@ -313,12 +343,13 @@ struct TodoView: View {
                                 }
                             } label: {
                                 Label("표시 거두기", systemImage: "bolt.slash")
+                                    .labelStyle(.iconOnly)
                             }
                             .tint(.gray)
                         }
                 }
 
-                // 2. 그냥 하면 되는 것 — 시간도 마감도 없는 줄. 잊히는 것이 이 줄의
+                // 3. 그냥 하면 되는 것 — 시간도 마감도 없는 줄. 잊히는 것이 이 줄의
                 //    유일한 실패 방식이라 시간을 잡은 일들 아래에 깔리지 않게 위에 둔다.
                 ForEach(errands) { item in
                     TodoRow(item: item,
@@ -332,13 +363,12 @@ struct TodoView: View {
                         .listRowBackground(isFragment(item, tree: tree) ? Self.markedTint : Self.errandTint)
                         .swipeActions(edge: .leading) {
                             markButton(for: item, tree: tree)
-                            errandButton(for: item, tree: tree)
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
                 .onDelete { delete(errands, at: $0, tree: tree) }
 
-                // 3. 시간을 잡은 일 — 바탕색 그대로.
+                // 4. 시간을 잡은 일 — 바탕색 그대로.
                 ForEach(items) { item in
                     TodoRow(item: item,
                             tree: tree,
@@ -349,19 +379,18 @@ struct TodoView: View {
                         // 앱이 조각으로 본 줄도 같은 연두다. 사용자가 표시한 것과 뜻이 같고
                         // (그냥 집으면 된다), 다른 색을 하나 더 두면 색이 말을 시작한다.
                         .listRowBackground(isFragment(item, tree: tree) ? Self.markedTint : nil)
-                        // ⚠️ '오늘'과 '이번 주로'는 여기 없다. 언제 할 일인지는 상세의 날짜
-                        //    하나가 답하고(→ TodoWhen), 주차는 앱이 알아서 끌어온다
-                        //    (→ pullForwardOverdueWeeks). 스와이프에는 '지금 여기서'
-                        //    하는 것만 남긴다.
+                        // ⚠️ 스와이프에는 번개 하나만 둔다. '오늘'·'이번 주로'는 상세의
+                        //    날짜가 답하고(→ TodoWhen), '시간 잡기'는 상세의 스테퍼가
+                        //    답한다. 손끝에서 정할 일이 둘을 넘으면 스와이프는 메뉴가 되고,
+                        //    메뉴는 열 때마다 읽어야 한다.
                         .swipeActions(edge: .leading) {
                             markButton(for: item, tree: tree)
-                            errandButton(for: item, tree: tree)
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
                 .onDelete { delete(items, at: $0, tree: tree) }
 
-                // 4. 완료 — 목록에는 줄 하나만 남기고 상세로 넘긴다. 끝난 일은
+                // 5. 완료 — 목록에는 줄 하나만 남기고 상세로 넘긴다. 끝난 일은
                 //    '없어진 게 아니라는 것'만 확인하면 되는 것이라, 이번 주 목록에서
                 //    자리를 차지하면 남은 일이 그만큼 뒤로 밀린다.
                 if !done.isEmpty {
@@ -401,6 +430,18 @@ struct TodoView: View {
         }
     }
 
+    // MARK: - 번개 안내
+    //
+    // 스와이프에서 글자를 뺀 대신, 처음 한 번 목록 맨 위에 줄 하나가 선다.
+    // 화면을 덮지 않고, 손짓을 작게 재연하고, 실제로 붙이면 사라진다
+    // (→ BoltOnboarding.swift).
+
+    /// 안내 줄을 세울 때인가. 빈 목록에서는 밀어 볼 줄이 없고,
+    /// 밀 것이 없는 설명은 그냥 읽을 거리다.
+    private func showsBoltHint(items: [BacklogItem], errands: [BacklogItem]) -> Bool {
+        !hasSeenBoltOnboarding && !(items.isEmpty && errands.isEmpty)
+    }
+
     /// 완료한 것으로 가는 줄. 개수는 여기서도 보인다 — 오늘 뭘 끝냈는지는
     /// 들어가 보지 않고도 알 수 있어야 하고, 그게 이 줄이 하는 일의 절반이다.
     private func doneLinkRow(_ count: Int) -> some View {
@@ -425,6 +466,22 @@ struct TodoView: View {
     // 오른쪽 위 + 를 누르면 목록 맨 위에 줄이 하나 **밀려 내려온다**. 위에서 들어와
     // 아래 줄들을 그만큼 내리는 움직임이라, 목록에 한 칸이 새로 생겼다는 것이
     // 설명 없이 읽힌다. 버튼과 그 자리가 같은 쪽 위라 눈이 따라갈 거리도 짧다.
+
+    /// 제어센터에서 온 요청을 거둔다. **플래그를 거두는 곳은 여기 하나뿐이다** —
+    /// 콜드 런치의 `.task` 와 이미 떠 있을 때의 알림이 둘 다 도착해도 한 번만 열린다.
+    ///
+    /// 적는 자리는 '내 할 일'의 목록 맨 위다. 공유 목록을 보고 있었거나 어떤 일의
+    /// 상세에 들어가 있었다면 거기부터 걷어낸다 — 눌러서 온 사람이 원한 건
+    /// '지금 떠오른 한 줄을 적는 것'이지 화면 구경이 아니다.
+    private func consumeQuickAddRequest() {
+        guard QuickTodoBridge.consumePendingAdd() else { return }
+        pushedTodo = nil
+        showingBoltMeaning = false
+        tab = .mine
+        // 목록이 실제로 그려진 다음에 빈 줄을 밀어 넣어야 스크롤이 걸린다.
+        // (→ beginAdding 은 ScrollViewReader 안에서 addRequest 변화를 받는다.)
+        addRequest += 1
+    }
 
     /// + 를 눌렀을 때. 줄을 밀어 넣고, 그 줄이 자리를 잡으면 키보드를 올린다.
     private func beginAdding(_ proxy: ScrollViewProxy) {
@@ -453,7 +510,9 @@ struct TodoView: View {
     // 옅게 쓰는 게 요점이다 — 알아보기만 하면 되고, 읽을 것은 줄 자체다.
     /// '바로 하면 되는 일'의 색. 연두 — 신호등의 그 색이다. 그냥 가면 된다는 뜻.
     static let nowGreen = Color(hue: 0.26, saturation: 0.72, brightness: 0.66)
-    private static let markedTint = nowGreen.opacity(0.16)
+    static let markedTint = nowGreen.opacity(0.16)
+    /// 안내 줄의 바탕. 번개 칸보다 훨씬 옅다 — 이 줄은 할 일이 아니다.
+    static let hintTint = nowGreen.opacity(0.05)
     private static let errandTint = Color.secondary.opacity(0.07)
     private static let doneTint = Color.secondary.opacity(0.03)
 
@@ -651,6 +710,13 @@ struct TodoView: View {
             target.setFragmentAnswer(value ? true : nil, for: .start)
             target.setFragmentAnswer(value ? true : nil, for: .closing)
             save()
+            // 한 번 붙여 봤으면 안내는 제 할 일을 다 했다. 읽었는지가 아니라
+            // 해봤는지로 끝난다 (→ BoltOnboarding.swift).
+            //
+            // ⚠️ '번개가 붙은 줄이 있는지'로 재지 말 것. 앱을 열 때 @Query가 채워지며
+            //    개수가 0에서 오르는데, 그걸 손짓으로 읽으면 이미 번개를 쓰는 사람에게는
+            //    안내가 뜨자마자 사라진다 — 설정에서 '다시 보기'를 눌러도 마찬가지다.
+            if value { hasSeenBoltOnboarding = true }
         }
     }
 
@@ -676,32 +742,14 @@ struct TodoView: View {
         Button {
             setMarked(!marked, for: item, tree: tree)
         } label: {
+            // 손짓 하나에 뜻 하나. 글자를 붙이면 스와이프가 읽을 거리가 되고,
+            // 읽을 거리가 되면 손이 멈춘다. 번개 하나면 충분하다 —
+            // 이름은 VoiceOver가 읽고, 오래 누르면 메뉴에 그대로 있다.
             Label(marked ? "표시 거두기" : "바로 하면 됨",
                   systemImage: marked ? "bolt.slash" : "bolt.fill")
+                .labelStyle(.iconOnly)
         }
         .tint(marked ? .gray : Self.nowGreen)
-    }
-
-    /// 스와이프 한 번으로 두 칸 사이를 오간다.
-    ///
-    /// 시간을 0으로 만드는 것이 곧 표시다 — 따로 종류 필드를 두지 않는다.
-    /// 단계로 쪼갠 일은 이미 시간이 아래에서 쌓여 올라오므로 대상이 아니고,
-    /// 날짜를 정한 일은 무지개에서 먼저 빼야 한다.
-    @ViewBuilder
-    private func errandButton(for item: BacklogItem, tree: TodoTree) -> some View {
-        if !tree.hasChildren(item), periods[item.dragToken] == nil {
-            let isErrand = tree.isErrand(item)
-            Button {
-                withAnimation {
-                    item.durationHours = isErrand ? TodoTree.defaultStepHours : TodoTree.errandHours
-                    save()
-                }
-            } label: {
-                Label(isErrand ? "시간 잡기" : "그냥 하기",
-                      systemImage: isErrand ? "clock" : "bolt")
-            }
-            .tint(isErrand ? .indigo : .teal)
-        }
     }
 
     // MARK: - 공유 할 일
@@ -1009,25 +1057,15 @@ struct TodoView: View {
 
     @ViewBuilder
     private func itemMenu(for item: BacklogItem, tree: TodoTree) -> some View {
-        // '오늘로 배정'은 여기 없다. 언제 할 일인지는 상세의 날짜가 답한다 (→ TodoWhen).
+        // '오늘로 배정'도 '시간 잡기'도 여기 없다. 언제 할 일인지는 상세의 날짜가
+        // (→ TodoWhen), 얼마나 걸리는지는 상세의 스테퍼가 답한다. 같은 것을 정하는
+        // 문이 둘이면 어느 쪽이 진짜인지 매번 고르게 된다.
         // 여기 남은 '데드라인'은 그 날짜를 한 손으로 잡는 지름길이다 — 오늘부터 그 날까지.
         Button {
             beginDeadlinePick(for: item)
         } label: {
             Label(periods[item.dragToken] == nil ? "데드라인 정하기" : "데드라인 바꾸기",
                   systemImage: "flag.checkered")
-        }
-        if !tree.hasChildren(item), periods[item.dragToken] == nil {
-            let isErrand = tree.isErrand(item)
-            Button {
-                withAnimation {
-                    item.durationHours = isErrand ? TodoTree.defaultStepHours : TodoTree.errandHours
-                    save()
-                }
-            } label: {
-                Label(isErrand ? "시간 잡기" : "그냥 하면 되는 것으로",
-                      systemImage: isErrand ? "clock" : "bolt")
-            }
         }
         // 지금 할 단계를 '맥락 없이 바로 되는 것'으로 표시한다. 표시한 줄은 위 칸에 모인다.
         //
@@ -1162,24 +1200,6 @@ struct TodoView: View {
         syncWidget()
     }
 
-    /// **오늘 계획을 날짜에 맞춘다.** 사람이 누르는 자리는 상세의 시작일·끝나는 날 하나뿐이고,
-    /// 맥 '무지개 공방'의 계획 블록은 그 날짜를 따라오는 그림자다.
-    ///
-    /// 계획 블록의 제목은 항상 최상위 할 일 제목이다 — 단계가 넘어가도 배지가 계속
-    /// 맞아떨어져야 하기 때문. 대신 올리는 **시간**은 오늘 실제로 할 만큼,
-    /// 즉 지금 할 단계의 예상 시간을 쓴다.
-    ///
-    /// 맥에서 손으로 만든 블록은 건드리지 않는다 (→ `WeekBlocksStore.syncToday`).
-    private func syncTodayPlan() {
-        let tree = TodoTree(allItems)
-        let wanted = tree.roots
-            .filter { !$0.isCompleted && when($0) == .today }
-            .map { item in
-                (title: item.title,
-                 hours: tree.currentStep(of: item)?.durationHours ?? tree.totalHours(of: item))
-            }
-        WeekBlocksStore.shared.syncToday(wanted)
-    }
 
     /// **안 끝난 채 주를 넘긴 일을 이번 주로 끌어온다.**
     ///
@@ -1213,7 +1233,6 @@ struct TodoView: View {
     /// 목록의 '오늘·이번 주·밀림' 판정이 전부 이 한 벌에서 나온다 (→ `TodoWhen`).
     private func refreshPeriods() {
         periods = TodoEventBridge.shared.periodsByToken()
-        syncTodayPlan()
     }
 
     /// 무지개에만 있고 할 일에는 아직 없는 일들을 다시 읽는다.

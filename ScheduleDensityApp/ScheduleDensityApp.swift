@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import CloudKit
 import LeeoKit
+import WidgetKit
 
 // MARK: - CloudKit 공유 초대 수락 연결
 // SwiftUI 라이프사이클에서는 씬 델리게이트의 userDidAcceptCloudKitShareWith로
@@ -63,6 +64,8 @@ enum AppSettingsKey {
     static let hasSeenRainbowOnboarding = "hasSeenRainbowOnboarding"
     /// 할 일 쪼개는 법 안내를 이미 봤는지. 단계가 없는 할 일에 처음 들어갈 때 한 번 뜬다.
     static let hasSeenSplitOnboarding = "hasSeenSplitOnboarding"
+    /// 번개(‘바로 하면 되는 일’) 안내를 이미 봤는지. 할 일이 한 줄이라도 생기면 한 번 뜬다.
+    static let hasSeenBoltOnboarding = "hasSeenBoltOnboarding"
 }
 
 /// 루트 TabView의 탭. 위젯 딥링크가 특정 탭을 열 수 있도록 태그를 붙인다.
@@ -318,6 +321,16 @@ struct ScheduleDensityApp: App {
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
+            // 제어센터에서 '할 일 적기'를 눌렀다면 그 탭으로 내려 준다.
+            // **플래그는 여기서 거두지 않는다** — 빈 줄을 여는 쪽이 거둔다(→ TodoView).
+            // 여기서 같이 거두면 어느 쪽이 먼저 도착했는지에 따라 줄이 열리다 말다 한다.
+            .task {
+                if QuickTodoBridge.hasPendingAdd { selectedTab = .todo }
+                reloadControls()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
+                selectedTab = .todo
+            }
             // 열림/잠김의 근거는 언제나 App Store 영수증이다. App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
             .task {
@@ -326,6 +339,7 @@ struct ScheduleDensityApp: App {
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {
+                    if QuickTodoBridge.hasPendingAdd { selectedTab = .todo }
                     intakeSharedTodos()
                     // 맥에서 넘어온 변경도 위젯에 반영한다.
                     RainbowWidgetSync.refresh(from: schedule)
@@ -357,6 +371,15 @@ struct ScheduleDensityApp: App {
         let hasEvents = (try? sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Event>())) ?? 0 > 0
         let hasTodos = (try? todoContainer.mainContext.fetchCount(FetchDescriptor<BacklogItem>())) ?? 0 > 0
         ProEntitlement.grandfatherIfNeeded(hasExistingData: hasEvents || hasTodos)
+    }
+
+    /// 이미 추가해 둔 제어센터 버튼이 죽은 채 남지 않게 켤 때마다 다시 등록한다.
+    /// 업데이트로 인텐트가 바뀌면 시스템이 옛 등록 정보를 캐시해서, 눌러도 아무 일이
+    /// 없는 버튼이 홈 화면 한켠에 남는다 (→ QuickTodoControl.swift).
+    private func reloadControls() {
+        if #available(iOS 18.0, *) {
+            ControlCenter.shared.reloadAllControls()
+        }
     }
 
     /// 공유로 받아둔 할 일을 실제 줄로 만들고, 생겼으면 '할 일' 탭을 열어 보여준다.

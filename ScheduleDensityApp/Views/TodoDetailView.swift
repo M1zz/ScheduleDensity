@@ -29,7 +29,6 @@ struct TodoDetailView: View {
     private var categories: [BacklogCategory]
 
     /// 새 단계를 붙일 자리. 기본은 최상위 할 일 바로 아래.
-    @State private var addTarget: BacklogItem?
     @State private var newTitle = ""
     /// 새 단계의 속성. 목록 화면의 빈 줄과 같은 키를 써서, 어디서 적든 지난번 값이 따라온다.
     @State private var editing: BacklogItem?
@@ -165,7 +164,6 @@ struct TodoDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    addTarget = nil
                     inputFocused = true
                 } label: {
                     Image(systemName: "plus")
@@ -950,32 +948,6 @@ struct TodoDetailView: View {
                         }
                         .tint(.blue)
                     }
-                    .swipeActions(edge: .leading) {
-                        // 단계 하나를 '맥락 없이 바로 되는 것'으로 표시한다.
-                        // 표시한 단계는 차례와 상관없이 할 일 목록 맨 위 칸에 선다.
-                        if !tree.hasChildren(row.item) {
-                            let marked = row.item.fragmentPick.start == true
-                                && row.item.fragmentPick.closing == true
-                            Button {
-                                withAnimation {
-                                    row.item.setFragmentAnswer(marked ? nil : true, for: .start)
-                                    row.item.setFragmentAnswer(marked ? nil : true, for: .closing)
-                                    save()
-                                }
-                            } label: {
-                                Label(marked ? "표시 거두기" : "바로 하면 되는 일",
-                                      systemImage: marked ? "bolt.slash" : "bolt.fill")
-                            }
-                            .tint(marked ? .gray : .teal)
-                        }
-                        Button {
-                            addTarget = row.item
-                            inputFocused = true
-                        } label: {
-                            Label("하위 단계", systemImage: "arrow.turn.down.right")
-                        }
-                        .tint(.indigo)
-                    }
                     // 롱 프레스 = **이 단계를 더 쪼개러 들어가기.**
                     //
                     // 단계를 적다 보면 그중 하나가 여전히 덩어리인 것이 보인다. 그때
@@ -1069,45 +1041,21 @@ struct TodoDetailView: View {
     // 줄에 적으면 '단계를 한 줄씩 적어 내려가는' 느낌이 된다. 엔터를 치면 그 줄이
     // 확정되고 빈 줄이 다시 와서 계속 이어 적을 수 있다.
 
-    /// 빈 줄이 놓일 깊이. 하위 단계를 적는 중이면 그 부모보다 한 칸 안쪽에 놓여,
-    /// 어디에 붙는 줄인지 들여쓰기만 보고도 안다.
-    private var newStepDepth: Int {
-        guard let addTarget else { return 1 }
-        return (rows.first { $0.item.dragToken == addTarget.dragToken }?.depth ?? 1) + 1
-    }
-
+    /// 빈 줄은 언제나 맨 바깥 단계에 붙는다.
+    ///
+    /// 한 단계를 더 쪼개는 자리는 여기가 아니라 **그 단계의 상세 화면**이다
+    /// (롱 프레스 → `pushedStep`). 적는 자리를 하나로 두면 빈 줄이 어디에
+    /// 붙는지 매번 확인하지 않아도 된다.
     private var newStepRow: some View {
         HStack(spacing: 10) {
-            if newStepDepth > 1 {
-                Rectangle()
-                    .fill(Color.secondary.opacity(0.25))
-                    .frame(width: 1)
-                    .padding(.leading, CGFloat(newStepDepth - 2) * 14)
-                    .padding(.vertical, 2)
-            }
-
             Image(systemName: "circle.dashed")
                 .font(.system(size: 22))
                 .foregroundStyle(.tertiary)
 
-            TextField(addTarget == nil ? "세부 단계" : "‘\(addTarget!.title)’의 하위 단계",
-                      text: $newTitle)
+            TextField("세부 단계", text: $newTitle)
                 .focused($inputFocused)
                 .submitLabel(.return)
                 .onSubmit(addStep)
-
-            if addTarget != nil {
-                // 하위로 파고들었다가 다시 맨 바깥 단계로 돌아오는 길.
-                Button {
-                    addTarget = nil
-                } label: {
-                    Image(systemName: "arrow.turn.left.up")
-                        .font(.system(size: 13, weight: .semibold))
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .accessibilityLabel("맨 바깥 단계로")
-            }
         }
         .padding(.vertical, 2)
         .spotlightAnchor(guide == .writeStep)
@@ -1146,7 +1094,7 @@ struct TodoDetailView: View {
     /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
     /// 그 외에는 한 줄을 확정하고, 다시 빈 줄에 커서를 둔 채 이어 적게 한다.
     private func addStep() {
-        guard appendStep(titled: newTitle, under: addTarget ?? root) else {
+        guard appendStep(titled: newTitle, under: root) else {
             inputFocused = false
             return
         }

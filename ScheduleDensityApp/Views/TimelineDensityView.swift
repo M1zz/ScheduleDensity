@@ -1576,7 +1576,7 @@ struct EventQuickLookView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
                 // 제목
                 HStack(spacing: 10) {
@@ -1634,7 +1634,8 @@ struct EventQuickLookView: View {
             }
             .task { loadLinkedTodo() }
             .padding()
-            .navigationTitle("일정 보기")
+            // 제목은 카드 맨 위의 일정 이름 하나뿐이다. 바에 '일정 보기'를 또 달면
+            // 한 시트에 제목이 둘이 되고, 무엇을 보고 있는지는 이름이 이미 말한다.
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -1706,59 +1707,54 @@ struct DateWrapper: Identifiable {
 
 // Color(hex:)는 공용 Theme.swift에 있다.
 extension Color {
-    // 색상 믹스 기반 변형 함수
-    // variantIndex: 같은 레인 내의 이벤트 인덱스 (0, 1, 2, ...)
-    // totalVariants: 같은 레인 내의 총 이벤트 수
+    /// 같은 레인에 여러 일정이 겹칠 때, 서로를 가르되 **레인은 그대로 보이게** 한다.
+    ///
+    /// ⚠️ **색상(hue)은 절대 건드리지 않는다.** 이 앱에서 색상은 장식이 아니라
+    ///    그 레인의 **이름**이다. 노랑 줄은 어디까지 가도 노랑이어야 한다.
+    ///
+    /// 예전에는 RGB에 흰색·검정을 섞었는데, 검정을 섞으면 색상 자체가 바뀐다 —
+    /// 노랑(#FFCC00)에 검정 50%를 섞으면 #997A1A, 노랑이 아니라 **진흙색**이다.
+    /// 초록은 국방색이 되고 빨강은 고동색이 됐다. 채널마다 따로 0.1로 잘라내던
+    /// 것도 없는 색조를 만들어 냈다(파랑이 0 → 0.1이 되며 푸른 기가 끼었다).
+    ///
+    /// 그래서 HSB로 옮겨, **색상은 고정하고 채도·밝기만 좁게 흔든다:**
+    ///   - 옅은 쪽은 **채도를 덜어** 파스텔로 (시스템 색은 밝기가 이미 꽉 차 있어
+    ///     더 밝힐 데가 없다).
+    ///   - 진한 쪽은 **밝기만 조금** 내린다. 검정을 섞지 않는다.
+    /// 노랑이면 크림(#FFE680) ~ 금색(#D1A700) 사이를 오간다. 둘 다 노랑이다.
+    ///
+    /// - Parameters:
+    ///   - variantIndex: 같은 레인 안에서 몇 번째인가 (0부터).
+    ///   - totalVariants: 그 레인에 몇 개가 있는가.
     func variant(index variantIndex: Int, totalVariants: Int) -> Color {
-        // 변형이 필요 없는 경우 (단일 이벤트)
-        if totalVariants <= 1 {
-            return self
-        }
+        guard totalVariants > 1 else { return self }
 
-        // UIColor로 변환하여 RGB 추출
-        let uiColor = UIColor(self)
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        // 무채색이면 색상이 없어 실패한다. 그때는 원색 그대로 둔다.
+        guard UIColor(self).getHue(&hue, saturation: &saturation,
+                                   brightness: &brightness, alpha: &alpha) else { return self }
 
-        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        // -1(가장 옅게) … 0(원색) … +1(가장 진하게)
+        let t = CGFloat(variantIndex) / CGFloat(totalVariants - 1) * 2 - 1
 
-        // 믹스 강도 계산 (0.0 ~ 0.5 범위)
-        // 총 이벤트 수가 많을수록 각 단계의 차이를 크게
-        let maxBlendFactor: CGFloat = totalVariants >= 4 ? 0.5 : 0.4
-
-        // 인덱스에 따라 흰색 또는 검정색 믹스
-        // 첫 번째 이벤트: 흰색 믹스 (밝게)
-        // 중간 이벤트: 원색에 가깝게
-        // 마지막 이벤트: 검정색 믹스 (어둡게)
-        let midpoint = CGFloat(totalVariants - 1) / 2.0
-        let position = CGFloat(variantIndex)
-
-        var newRed: CGFloat
-        var newGreen: CGFloat
-        var newBlue: CGFloat
-
-        if position <= midpoint {
-            // 앞쪽 절반: 흰색 믹스 (tint)
-            let blendFactor = (midpoint - position) / midpoint * maxBlendFactor
-            newRed = red + (1.0 - red) * blendFactor
-            newGreen = green + (1.0 - green) * blendFactor
-            newBlue = blue + (1.0 - blue) * blendFactor
+        let newSaturation: CGFloat
+        let newBrightness: CGFloat
+        if t < 0 {
+            newSaturation = saturation * (1 + t * 0.50)
+            newBrightness = min(1, brightness * (1 - t * 0.05))
         } else {
-            // 뒤쪽 절반: 검정색 믹스 (shade)
-            let blendFactor = (position - midpoint) / (CGFloat(totalVariants - 1) - midpoint) * maxBlendFactor
-            newRed = red * (1.0 - blendFactor)
-            newGreen = green * (1.0 - blendFactor)
-            newBlue = blue * (1.0 - blendFactor)
+            newSaturation = min(1, saturation * (1 + t * 0.05))
+            // ⚠️ 0.18을 크게 올리지 말 것. 밝기를 많이 내리면 따뜻한 색이 갈색으로
+            //    넘어간다 — 어두운 주황은 그냥 갈색이고, 어두운 노랑은 진흙색이다.
+            //    이 폭에서 노랑은 금색(#D1A700)까지만 가고 노랑으로 남는다.
+            newBrightness = brightness * (1 - t * 0.18)
         }
 
-        // 최종 색상이 너무 극단적이지 않도록 제한
-        newRed = max(0.1, min(1.0, newRed))
-        newGreen = max(0.1, min(1.0, newGreen))
-        newBlue = max(0.1, min(1.0, newBlue))
-
-        return Color(red: Double(newRed), green: Double(newGreen), blue: Double(newBlue), opacity: Double(alpha))
+        // 너무 옅어 흰 칸으로 보이거나, 너무 어두워 검은 칸으로 보이지 않게 막는다.
+        return Color(hue: Double(hue),
+                     saturation: Double(max(0.25, min(1, newSaturation))),
+                     brightness: Double(max(0.45, min(1, newBrightness))),
+                     opacity: Double(alpha))
     }
 }
 //

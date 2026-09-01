@@ -86,7 +86,7 @@ struct AddEventView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollViewReader { proxy in
             Form {
                 titleSection
@@ -234,7 +234,7 @@ struct AddEventView: View {
                     Text("특정 날짜를 일정에서 제외합니다. 과거 예외는 30일 후 자동 삭제됩니다.")
                 }
                 .sheet(isPresented: $showingExceptionDatePicker) {
-                    NavigationView {
+                    NavigationStack {
                         VStack {
                             DatePicker("날짜 선택", selection: $newExceptionDate,
                                       in: startDate...endDate,
