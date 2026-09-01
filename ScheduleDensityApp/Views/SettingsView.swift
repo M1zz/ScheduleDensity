@@ -813,7 +813,7 @@ struct SettingsView: View {
                     }
                     .disabled(tipsResetDone)
 
-                    Text("할 일 화면에서 닫았던 조언(라벨·비중·쪼개기 팁)을 처음부터 다시 봅니다.")
+                    Text("할 일 화면에서 닫았던 조언(쪼개기·단계 크기 팁)을 처음부터 다시 봅니다.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } header: {

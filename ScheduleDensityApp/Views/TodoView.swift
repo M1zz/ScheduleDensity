@@ -396,16 +396,6 @@ struct TodoView: View {
                 if !done.isEmpty {
                     doneLinkRow(done.count)
                 }
-
-                // 색·손짓 설명. 목록 아래에 상시로 깔려 있던 두 줄을 여기로 옮겼다 —
-                // 한 번 뜨고, 닫으면 다시 안 뜬다 (→ TodoTips.swift).
-                // 설명하려는 색이 바로 위에 있으니 자리도 여기가 맞다.
-                if ListLegendTip().shouldDisplay {
-                    TipView(ListLegendTip())
-                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                }
             } footer: {
                 listFooter(items: items, errands: errands, marked: marked, done: done)
             }
@@ -520,8 +510,8 @@ struct TodoView: View {
     ///
     /// 예전에는 "바로 2개 · 그냥 3개 · 시간 잡은 일 5개 · 완료 1개" 한 줄에
     /// 색·스와이프 설명 두 줄이 더 붙어 있었다. 세 줄이 다 같은 크기 같은 회색이라
-    /// 정작 세려던 숫자가 글 속에 묻혔다. 설명은 TipKit으로 옮기고
-    /// (→ `ListLegendTip`), 여기에는 셀 것만 남긴다.
+    /// 정작 세려던 숫자가 글 속에 묻혔다. 여기에는 셀 것만 남긴다.
+    /// (색·손짓 설명은 번개 안내 줄이 한 번만 한다 → BoltOnboarding.swift)
     ///
     /// ⚠️ 여기서 시간을 합치지 말 것. 단위가 다른 것을 더하면
     ///    "2시간 벌었는데 왜 아무것도 못 했지"라는 잘못된 죄책감이 생긴다.
@@ -1225,8 +1215,6 @@ struct TodoView: View {
     private func refreshTipRules() {
         let tree = TodoTree(allItems)
         if tree.roots.contains(where: { tree.children(of: $0).count >= 2 }) { ShareSplitTip.hasSplit = true }
-        // 빈 화면에서는 설명할 색이 없다. 줄이 생긴 뒤에 한 번 뜬다.
-        if !tree.roots.isEmpty { ListLegendTip.hasItems = true }
     }
 
     /// 무지개에 그어져 있는 기간들을 다시 읽고, 오늘 계획을 거기 맞춘다.
