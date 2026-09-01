@@ -73,6 +73,22 @@ enum AppTab: Hashable {
     case rainbow, share, todo
 }
 
+/// 할 일 스토어가 지금 **어디에** 쓰고 있는지.
+/// CloudKit이 안 붙으면 조용히 로컬 전용으로 떨어지는데, 그 사실이 화면 어디에도 없으면
+/// "맥이랑 할 일이 다른데?"의 원인을 찾을 길이 없다. 설정 > 동기화 진단이 이 값을 읽는다.
+enum TodoStoreMode: String {
+    case cloud = "iCloud 동기화 중"
+    case localOnly = "이 기기에만 저장 중"
+    case memory = "임시 저장 (앱을 끄면 사라짐)"
+}
+
+enum CloudDiagnostics {
+    static var todoStoreMode: TodoStoreMode = .cloud
+    static var todoStoreError: String?
+    /// 설정 화면이 할 일 개수를 세려고 들여다보는 자리.
+    static var todoContainer: ModelContainer?
+}
+
 @main
 struct ScheduleDensityApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -253,36 +269,30 @@ struct ScheduleDensityApp: App {
         }
     }()
 
-    /// 할 일(백로그) 전용 컨테이너 — 맥 '무지개 공방'과 같은 CloudKit 컨테이너를 써서
-    /// BacklogItem/BacklogCategory가 기기 간 동기화된다.
-    /// Event 스토어(sharedModelContainer)·WeekBlocksStore 미러와는 완전히 분리된 별도 store.
+    /// 할 일 화면이 쓰는 컨테이너 — **미러와 같은 하나의 스토어**다.
+    ///
+    /// ⚠️ 예전에는 할 일만 별도 CloudKit 스토어(WeekBlocksTodos)로 열었다. 그런데 미러
+    ///    (WeekBlocksMirror)와 같은 컨테이너의 같은 private DB를 함께 미러링하는 구성이라,
+    ///    Core Data가 지원하지 않는 모양이었다. 미러만 오가고 **할 일은 양방향으로 한 톨도
+    ///    안 건너왔다** — 맥에는 1개, 아이폰에는 4개가 각자 쌓여 있었다.
+    ///    이제 스토어는 한 채고, 그 한 채를 WeekBlocksStore가 세운다.
+    ///    (→ WeekBlocksStore.sharedContainer, Event 스토어와는 여전히 별개다)
     var todoContainer: ModelContainer = {
         // iOS 샌드박스에는 Application Support 디렉터리가 없을 수 있어 먼저 만들어 둔다.
         try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
 
-        let schema = Schema([BacklogItem.self, BacklogCategory.self])
-        // groupContainer: .none — 위 Event 스토어와 같은 이유. App Group entitlement 때문에
-        // 저장 위치가 옮겨가면 기존 store를 못 찾고 CloudKit에서 전부 다시 받아야 한다.
-        let cloudConfig = ModelConfiguration(
-            "WeekBlocksTodos",
-            schema: schema,
-            groupContainer: .none,
-            cloudKitDatabase: .private("iCloud.com.devkoan.ScheduleDensity")
-        )
-        do {
-            return try ModelContainer(for: schema, configurations: [cloudConfig])
-        } catch {
-            // iCloud 미로그인 등으로 실패하면 로컬 전용으로라도 동작하게 한다.
-            print("⚠️ [Todo] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(error)")
-            let localConfig = ModelConfiguration("WeekBlocksTodos", schema: schema,
-                                                 groupContainer: .none, cloudKitDatabase: .none)
-            do {
-                return try ModelContainer(for: schema, configurations: [localConfig])
-            } catch {
-                let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-                return try! ModelContainer(for: schema, configurations: [memoryConfig])
-            }
+        if let shared = WeekBlocksStore.sharedContainer {
+            CloudDiagnostics.todoContainer = shared
+            return shared
         }
+        // 여기까지 오면 로컬 전용도 실패한 것이다. 할 일을 못 적는 것보다는
+        // 이번 실행 동안만이라도 남는 편이 낫다.
+        print("⚠️ [Todo] 스토어를 못 열었다 — 메모리 전용으로 뜬다")
+        CloudDiagnostics.todoStoreMode = .memory
+        let memory = ModelConfiguration(schema: WeekBlocksStore.schema, isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(for: WeekBlocksStore.schema, configurations: [memory])
+        CloudDiagnostics.todoContainer = container
+        return container
     }()
 
     var body: some Scene {

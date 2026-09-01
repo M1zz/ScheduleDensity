@@ -12,9 +12,23 @@
 //     (시각화 입력용 임시 객체).
 //   - 변환은 의존성 없는 순수 코어 WeekBlocksAdapter를 재사용.
 //
-//  ⚠️ 2026-08: 원래 읽기 전용이었으나 '할 일을 오늘로 배정' 기능 때문에
-//     PlanBlock 쓰기(assign/unassign)가 추가되었다. 쓰기는 PlanBlock에만 한정하며
-//     Routine은 여전히 읽기만 한다.
+//  ⚠️ **다시 읽기 전용이다.** 2026-08에 '할 일을 오늘로 배정'을 위해 PlanBlock 쓰기가
+//     들어왔다가 걷어냈다. 두 가지 이유다:
+//
+//     1. **뜻이 틀렸다.** 그 쓰기는 마감이 오늘인 할 일을 맥의 오늘 칸에 자동으로
+//        올렸다. 그런데 '마감이 오늘까지'와 '오늘 하기로 했다'는 다른 일이다.
+//        앞의 것은 밖에서 온 제약이고 뒤의 것은 사람이 한 약속이다. 앱이 제약을
+//        약속으로 바꿔 적으면, 사람은 약속한 적이 없는데 계획표에는 약속이 서 있다.
+//        (마감이 3주 뒤인 일은 3주 내내 오늘 칸에 못 올라오는 문제도 같은 뿌리다.)
+//
+//     2. **맥의 데이터를 지웠다.** 되돌리는 길이 `unassign(title:)`이었는데, 같은 날
+//        같은 제목이면 **맥에서 사람이 손으로 만든 블록까지** 지웠다. 이 앱의 PlanBlock
+//        모델에는 맥에 있는 필드 13개(전파 계약)가 없어서, 지워진 것이 무엇이었는지
+//        알 수도 없었다.
+//
+//     '언제 손댈지'는 맥이 정하고, 이 앱은 그걸 **읽어서 보여준다.** 폰에서 약속을
+//     잡는 길은 나중에 PlanBlock에 안정적인 열쇠(할 일의 dragToken)가 실린 뒤에 연다 —
+//     제목으로 맞추는 한 어떤 쓰기도 남의 블록을 건드릴 수 있다.
 //
 
 import Foundation
@@ -35,7 +49,22 @@ final class WeekBlocksStore {
     static let containerID = "iCloud.com.devkoan.ScheduleDensity"
 
     /// 로컬 미러의 store 파일 이름(확장자 제외).
-    private static let storeName = "WeekBlocksMirror"
+    /// 이 앱이 iCloud로 오가는 **단 하나의** 스토어 파일.
+    ///
+    /// ⚠️ 예전에는 이 미러(루틴·계획)와 할 일이 **서로 다른 스토어**로 갈라져 있었다.
+    ///    Core Data는 한 컨테이너에 여러 스토어를 미러링하는 것을 데이터베이스 범위가
+    ///    서로 다를 때만(private/public/shared) 지원한다. private 하나에 둘을 붙이면
+    ///    한쪽이 조용히 진다 — 실제로 미러만 오가고 **할 일은 양방향으로 한 톨도
+    ///    안 건너왔다**(맥 1개 / 아이폰 4개로 갈라져 있었다).
+    ///    그래서 둘을 한 스토어로 합쳤다. **다시 갈라놓지 말 것.**
+    ///
+    ///    파일은 할 일이 들어 있던 쪽(WeekBlocksTodos)을 쓴다 — 그 할 일이 이 기기에만
+    ///    있는 유일본이라 옮기지 않고 그 자리에 두는 것이 가장 안전하다.
+    ///    루틴·계획은 어차피 iCloud에서 다시 내려온다.
+    static let storeName = "WeekBlocksTodos"
+
+    /// 갈라져 있던 시절의 미러 파일. 이제 열지 않는다 (리셋만 이 이름을 겨눈다).
+    private static let legacyMirrorStoreName = "WeekBlocksMirror"
 
     /// 미러를 통째로 버리고 CloudKit에서 다시 받아야 할 때 올리는 토큰.
     ///
@@ -56,29 +85,34 @@ final class WeekBlocksStore {
     /// 연동 자체가 끊긴 것을 구분하기 위해 보관한다.
     private(set) var lastErrorDescription: String?
 
-    init() {
-        Self.resetMirrorIfTokenChanged()
+    /// 루틴·계획·할 일이 **한 스토어**에 함께 산다. 맥 '무지개 공방'과 같은 여섯 타입이다.
+    static let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self,
+                                RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self])
+
+    /// 앱 전체가 함께 쓰는 단 하나의 컨테이너. 할 일 화면도 이것을 꽂아 쓴다.
+    /// (→ ScheduleDensityApp.todoContainer)
+    static let sharedContainer: ModelContainer? = {
+        resetMirrorIfTokenChanged()
         do {
-            // 관계 없는 독립 모델이라 필요한 것만 스키마로 선언해도 읽을 수 있다.
-            // RoutineOccurrence·QuotaPlacement는 맥에서 요일별로 옮긴 위치다 —
-            // 이게 없으면 맥에서 드래그해 옮긴 루틴이 iOS에서는 제자리에 안 보인다.
-            let schema = Schema([Routine.self, PlanBlock.self,
-                                 RoutineOccurrence.self, QuotaPlacement.self])
-            self.container = try Self.makeContainer(schema)
-            print("✅ [WeekBlocks] 읽기 컨테이너 준비됨 (container=\(Self.containerID))")
+            let container = try makeContainer(schema)
+            CloudDiagnostics.todoStoreMode = .cloud
+            print("✅ [WeekBlocks] 컨테이너 준비됨 — 한 스토어(\(storeName)), container=\(containerID)")
+            return container
         } catch {
-            // 요일별 배치 모델을 못 붙였다 — 맥이 아직 그 레코드 타입을 안 올렸을 수 있다.
-            // 그것 때문에 연동 전체가 끊기면 안 되므로, 원래 두 모델만으로 다시 연다.
-            // (그러면 하루 타임라인의 '요일별로 옮긴 위치'만 기본값으로 보인다.)
-            print("⚠️ [WeekBlocks] 확장 스키마 실패, 기본 스키마로 재시도: \(error)")
-            do {
-                self.container = try Self.makeContainer(Schema([Routine.self, PlanBlock.self]))
-                print("✅ [WeekBlocks] 읽기 컨테이너 준비됨 (기본 스키마)")
-            } catch {
-                print("⚠️ [WeekBlocks] 읽기 컨테이너 생성 실패: \(error)")
-                self.container = nil
-                self.lastErrorDescription = String(describing: error)
-            }
+            print("⚠️ [WeekBlocks] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(error)")
+            CloudDiagnostics.todoStoreMode = .localOnly
+            CloudDiagnostics.todoStoreError = String(describing: error)
+            let local = ModelConfiguration(storeName, schema: schema,
+                                           groupContainer: .none, cloudKitDatabase: .none)
+            return try? ModelContainer(for: schema, configurations: [local])
+        }
+    }()
+
+    init() {
+        self.container = Self.sharedContainer
+        if self.container == nil {
+            self.lastErrorDescription = CloudDiagnostics.todoStoreError ?? "컨테이너 생성 실패"
+            print("⚠️ [WeekBlocks] 컨테이너 없음 — 계획도 할 일도 읽지 못한다")
         }
     }
 
@@ -97,11 +131,11 @@ final class WeekBlocksStore {
         return try ModelContainer(for: schema, configurations: [config])
     }
 
-    /// 리셋 토큰이 바뀌었으면 로컬 미러 파일을 지운다. 컨테이너를 만들기 **전에** 호출해야 한다.
+    /// 갈라져 있던 시절의 미러 파일을 치운다. 컨테이너를 만들기 **전에** 호출해야 한다.
     ///
-    /// 지우는 대상은 `WeekBlocksMirror` store와 그 부속 파일(-wal/-shm)뿐이다.
-    /// 앱의 다른 저장소(Event 로컬 원본, 할 일)는 건드리지 않는다 — 그쪽은 로컬에만 있는
-    /// 데이터가 섞여 있어 지우면 진짜로 유실된다.
+    /// ⚠️ 지우는 대상은 이제 쓰지 않는 `WeekBlocksMirror`뿐이다.
+    ///    합쳐진 스토어(WeekBlocksTodos)는 **절대 지우지 않는다** — 그 안의 할 일이
+    ///    iCloud에 아직 없는 유일본일 수 있다.
     private static func resetMirrorIfTokenChanged() {
         let defaults = UserDefaults.standard
         guard defaults.string(forKey: mirrorResetKey) != mirrorResetToken else { return }
@@ -114,7 +148,9 @@ final class WeekBlocksStore {
         }
 
         // SwiftData가 store 옆에 만드는 부속 파일까지 함께 지워야 잔여 상태가 남지 않는다.
-        let targets = ["\(storeName).store", "\(storeName).store-wal", "\(storeName).store-shm"]
+        let targets = ["\(legacyMirrorStoreName).store",
+                       "\(legacyMirrorStoreName).store-wal",
+                       "\(legacyMirrorStoreName).store-shm"]
         var removed: [String] = []
         for name in targets {
             let url = supportURL.appendingPathComponent(name)
@@ -135,20 +171,15 @@ final class WeekBlocksStore {
     /// 컨테이너가 준비되었는지(=연동 가능 상태인지).
     var isAvailable: Bool { container != nil }
 
-    // MARK: - 오늘로 배정 (PlanBlock 쓰기)
-    //
-    // 맥앱이 백로그 항목을 요일에 떨어뜨릴 때와 **같은 모양의 PlanBlock**을 만든다
-    // (WeekBlocks/ContentView.swift `dropBacklogItem` 참고). 그래야 맥 타임라인에서
-    // 똑같이 보이고, iOS 밀도(무지개)에서도 loadVisualEvents가 그대로 집어간다.
-    //
-    // 맥은 배정하면서 BacklogItem을 지우지만 iOS는 남겨 둔다 — 할 일 목록과 위젯에서
-    // 계속 보여야 하기 때문. 대신 같은 (제목, 주, 요일) 블록이 이미 있으면 새로 만들지 않는다.
-    //
-    // ⚠️ BacklogItem ↔ PlanBlock을 잇는 식별자가 스키마에 없어서 **제목으로 매칭**한다.
-    //    PlanBlock에 필드를 추가하면 맥앱과 공유하는 CloudKit 스키마가 갈라지므로 피했다.
-    //    제목이 완전히 같은 할 일이 둘 있으면 배지가 함께 켜진다(알려진 한계).
+    // MARK: - 계획 읽기
 
-    /// 주어진 날짜에 배정되어 있는 계획 블록들의 제목.
+    /// 그 날 계획에 올라 있는 블록들의 제목.
+    ///
+    /// 이제 여기 들어오는 것은 **사람이 맥에서 잡은 약속뿐이다.** 이 앱이 마감을 보고
+    /// 자동으로 올리던 그림자는 없앴다(위 헤더 참조). 위젯 배지가 이 값을 쓴다.
+    ///
+    /// ⚠️ 제목으로 맞추므로 같은 제목의 할 일이 둘이면 배지가 함께 켜진다(알려진 한계).
+    ///    할 일과 블록을 잇는 열쇠가 스키마에 생기면 그때 정확해진다.
     func titlesAssigned(to date: Date = Date()) -> Set<String> {
         guard let container else { return [] }
         let key = Self.dayKey(for: date)
@@ -270,7 +301,7 @@ final class WeekBlocksStore {
         return true
     }
 
-    // MARK: - 배정 헬퍼
+    // MARK: - 날짜 열쇠
 
     /// (그 주 월요일 00:00, 월=0 기준 요일).
     private static func dayKey(for date: Date) -> (weekStart: Date, day: Int) {
@@ -278,11 +309,6 @@ final class WeekBlocksStore {
         cal.firstWeekday = 2
         let weekday = cal.component(.weekday, from: date)   // 1=일 … 7=토
         return (date.weekStart(), (weekday + 5) % 7)        // 월=0 … 일=6
-    }
-
-    private static func matches(_ block: PlanBlock, key: (weekStart: Date, day: Int)) -> Bool {
-        block.dayRaw == key.day
-            && Calendar.current.isDate(block.weekStartDate, inSameDayAs: key.weekStart)
     }
 
     /// 배정 시각이 속한 시간대. 맥앱 `timeBand(for:)`와 같은 경계를 쓴다.
@@ -295,6 +321,12 @@ final class WeekBlocksStore {
         default:      return .night
         }
     }
+
+    private static func matches(_ block: PlanBlock, key: (weekStart: Date, day: Int)) -> Bool {
+        block.dayRaw == key.day
+            && Calendar.current.isDate(block.weekStartDate, inSameDayAs: key.weekStart)
+    }
+
 
     // MARK: - 하루 읽기 (타임라인용)
 
@@ -371,6 +403,15 @@ final class WeekBlocksStore {
     /// WeekBlocks 계획 → 밀도 시각화용 Event 배열(메모리 전용).
     /// **루틴은 종류를 가리지 않고 전부 제외**하고, 계획 블록만 넘긴다.
     /// 컨테이너가 없거나 데이터가 비어 있으면 빈 배열.
+    /// 미러가 지금 들고 있는 것. 설정 > 동기화 진단이 그대로 보여준다.
+    /// 0/0이면 맥에서 아무것도 안 내려온 것 — 계정이 다르거나 iCloud가 안 붙은 것이다.
+    func mirrorCounts() -> (routines: Int, blocks: Int) {
+        guard let container else { return (0, 0) }
+        let context = ModelContext(container)
+        return ((try? context.fetchCount(FetchDescriptor<Routine>())) ?? 0,
+                (try? context.fetchCount(FetchDescriptor<PlanBlock>())) ?? 0)
+    }
+
     func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
         guard let container else {
             print("⛔️ [WeekBlocks] 컨테이너 없음 — 계획을 읽지 않음. 사유: \(lastErrorDescription ?? "알 수 없음")")

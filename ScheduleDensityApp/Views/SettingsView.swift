@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import LeeoKit
+import CloudKit
 
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
@@ -31,6 +32,14 @@ struct SettingsView: View {
     @State private var showingEventManagement = false
     @State private var showingStatistics = false
     @State private var showingDeleteiCloudAlert = false
+
+    // MARK: 동기화 진단
+    // "맥이랑 할 일이 다른데?"를 화면에서 바로 판별하려고 둔 값들.
+    @State private var accountStatusText = "확인 중…"
+    @State private var userRecordName = "확인 중…"
+    @State private var mirrorRoutines = 0
+    @State private var mirrorBlocks = 0
+    @State private var todoCount = 0
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
@@ -562,6 +571,52 @@ struct SettingsView: View {
                 }
                 }
 
+                // 할 일이 iCloud로 오가고 있는지, 맥 것이 내려와 있는지를 한 화면에서 본다.
+                // 조용히 로컬 전용으로 떨어져도 여기서는 드러난다.
+                Section {
+                    HStack {
+                        Text("할 일 저장 위치")
+                        Spacer()
+                        Text(CloudDiagnostics.todoStoreMode.rawValue)
+                            .foregroundColor(CloudDiagnostics.todoStoreMode == .cloud ? .secondary : .red)
+                    }
+                    if let error = CloudDiagnostics.todoStoreError {
+                        Text(error)
+                            .font(.caption2)
+                            .foregroundColor(.red)
+                    }
+                    HStack {
+                        Text("iCloud 계정")
+                        Spacer()
+                        Text(accountStatusText).foregroundColor(.secondary)
+                    }
+                    HStack {
+                        Text("계정 식별자")
+                        Spacer()
+                        Text(userRecordName)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .textSelection(.enabled)
+                    }
+                    HStack {
+                        Text("맥에서 내려온 계획")
+                        Spacer()
+                        Text("루틴 \(mirrorRoutines) · 블록 \(mirrorBlocks)")
+                            .foregroundColor(mirrorBlocks == 0 ? .red : .secondary)
+                    }
+                    HStack {
+                        Text("이 기기의 할 일")
+                        Spacer()
+                        Text("\(todoCount)개").foregroundColor(.secondary)
+                    }
+                } header: {
+                    Text("동기화 진단")
+                } footer: {
+                    Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.")
+                }
+
                 Group {
                     Section {
                     Stepper(value: $monthsToShow, in: 1...12) {
@@ -798,6 +853,7 @@ struct SettingsView: View {
             }
         }
         .task { await purchases.refresh() }
+        .task { await loadSyncDiagnostics() }
         .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
             Button("취소", role: .cancel) { }
             Button("삭제", role: .destructive) {
@@ -1204,6 +1260,39 @@ struct SettingsView: View {
 }
 
 // MARK: - 개발자 문의
+extension SettingsView {
+    /// 동기화 진단 값을 채운다. iCloud 계정·미러 상태를 한 번에 물어본다.
+    @MainActor
+    func loadSyncDiagnostics() async {
+        let counts = WeekBlocksStore.shared.mirrorCounts()
+        mirrorRoutines = counts.routines
+        mirrorBlocks = counts.blocks
+        if let todos = CloudDiagnostics.todoContainer {
+            todoCount = (try? ModelContext(todos).fetchCount(FetchDescriptor<BacklogItem>())) ?? 0
+        }
+
+        let container = CKContainer(identifier: WeekBlocksStore.containerID)
+        do {
+            switch try await container.accountStatus() {
+            case .available: accountStatusText = "로그인됨"
+            case .noAccount: accountStatusText = "로그인 안 됨"
+            case .restricted: accountStatusText = "제한됨"
+            case .couldNotDetermine: accountStatusText = "확인 불가"
+            case .temporarilyUnavailable: accountStatusText = "일시적으로 사용 불가"
+            @unknown default: accountStatusText = "알 수 없음"
+            }
+        } catch {
+            accountStatusText = "확인 실패"
+        }
+        do {
+            let id = try await container.userRecordID()
+            userRecordName = id.recordName
+        } catch {
+            userRecordName = "가져오지 못함"
+        }
+    }
+}
+
 struct DeveloperContactSection: View {
     var body: some View {
         Section {
