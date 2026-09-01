@@ -40,6 +40,10 @@ struct SettingsView: View {
     @State private var mirrorRoutines = 0
     @State private var mirrorBlocks = 0
     @State private var todoCount = 0
+    /// CloudKit에 레코드 타입이 실제로 있는지 (→ CloudSchemaProbe.swift).
+    /// 여섯 번의 왕복이라 화면을 열 때마다 돌리지 않고, 눌렀을 때만 확인한다.
+    @State private var schemaResults: [(type: String, result: CloudSchemaProbe.Result)] = []
+    @State private var isProbingSchema = false
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
@@ -611,10 +615,35 @@ struct SettingsView: View {
                         Spacer()
                         Text("\(todoCount)개").foregroundColor(.secondary)
                     }
+
+                    // 스키마가 배포 안 된 것은 위 값들로는 안 드러난다 —
+                    // 계정도 맞고 저장 위치도 '클라우드'인데 아무것도 안 오간다.
+                    Button {
+                        Task { await probeSchema() }
+                    } label: {
+                        HStack {
+                            Text(isProbingSchema ? "확인 중…" : "레코드 타입 확인")
+                            Spacer()
+                            if isProbingSchema { ProgressView() }
+                        }
+                    }
+                    .disabled(isProbingSchema)
+
+                    ForEach(schemaResults, id: \.type) { row in
+                        HStack {
+                            Text(row.type.replacingOccurrences(of: "CD_", with: ""))
+                                .font(.callout)
+                            Spacer()
+                            Text(row.result.label)
+                                .font(.caption)
+                                .foregroundColor(row.result.isProblem ? .red : .secondary)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
                 } header: {
                     Text("동기화 진단")
                 } footer: {
-                    Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.")
+                    Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.\n\n'없음 — 미배포'가 하나라도 있으면 CloudKit 콘솔에서 Development → Production 스키마를 배포해야 합니다. 그때까지 그 타입은 오가지 않습니다.")
                 }
 
                 Group {
@@ -1261,6 +1290,14 @@ struct SettingsView: View {
 
 // MARK: - 개발자 문의
 extension SettingsView {
+    /// 레코드 타입이 실제로 있는지 물어본다 (→ CloudSchemaProbe.swift).
+    @MainActor
+    func probeSchema() async {
+        isProbingSchema = true
+        schemaResults = await CloudSchemaProbe.probeAll()
+        isProbingSchema = false
+    }
+
     /// 동기화 진단 값을 채운다. iCloud 계정·미러 상태를 한 번에 물어본다.
     @MainActor
     func loadSyncDiagnostics() async {
