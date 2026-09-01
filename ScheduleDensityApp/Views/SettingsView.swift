@@ -42,7 +42,7 @@ struct SettingsView: View {
     @State private var todoCount = 0
     /// CloudKit에 레코드 타입이 실제로 있는지 (→ CloudSchemaProbe.swift).
     /// 여섯 번의 왕복이라 화면을 열 때마다 돌리지 않고, 눌렀을 때만 확인한다.
-    @State private var schemaResults: [(type: String, result: CloudSchemaProbe.Result)] = []
+    @State private var zoneCensus: CloudSchemaProbe.Outcome?
     @State private var isProbingSchema = false
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
@@ -622,28 +622,42 @@ struct SettingsView: View {
                         Task { await probeSchema() }
                     } label: {
                         HStack {
-                            Text(isProbingSchema ? "확인 중…" : "레코드 타입 확인")
+                            Text(isProbingSchema ? "세는 중…" : "iCloud에 뭐가 있나 세어 보기")
                             Spacer()
                             if isProbingSchema { ProgressView() }
                         }
                     }
                     .disabled(isProbingSchema)
 
-                    ForEach(schemaResults, id: \.type) { row in
-                        HStack {
-                            Text(row.type.replacingOccurrences(of: "CD_", with: ""))
-                                .font(.callout)
-                            Spacer()
-                            Text(row.result.label)
-                                .font(.caption)
-                                .foregroundColor(row.result.isProblem ? .red : .secondary)
-                                .multilineTextAlignment(.trailing)
+                    switch zoneCensus {
+                    case .counted(let counts):
+                        // 0인 줄이 곧 '아직 안 올라온 것'이다. 거기부터 보면 된다.
+                        ForEach(counts.keys.sorted(), id: \.self) { type in
+                            HStack {
+                                Text(type.replacingOccurrences(of: "CD_", with: ""))
+                                    .font(.callout)
+                                Spacer()
+                                Text("\(counts[type] ?? 0)개")
+                                    .font(.callout)
+                                    .monospacedDigit()
+                                    .foregroundColor((counts[type] ?? 0) == 0 ? .red : .secondary)
+                            }
                         }
+                    case .noZone:
+                        Text("iCloud에 존이 아직 없습니다 — 이 계정에서 아무것도 안 올라갔습니다.")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    case .failed(let why):
+                        Text("세지 못했습니다: \(why)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    case .none:
+                        EmptyView()
                     }
                 } header: {
                     Text("동기화 진단")
                 } footer: {
-                    Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.\n\n'없음 — 미배포'가 하나라도 있으면 CloudKit 콘솔에서 Development → Production 스키마를 배포해야 합니다. 그때까지 그 타입은 오가지 않습니다.")
+                    Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.\n\n'세어 보기'는 iCloud에 실제로 올라가 있는 것을 셉니다. 어떤 타입이 0개면 그건 **아직 안 올라간** 것이고, 대개 CloudKit 콘솔에서 Development → Production 스키마를 배포하지 않아서입니다. 반대로 개수가 있는데 앱 목록이 비었다면 올라온 걸 **못 읽는** 것이라 다른 문제입니다.")
                 }
 
                 Group {
@@ -1290,11 +1304,11 @@ struct SettingsView: View {
 
 // MARK: - 개발자 문의
 extension SettingsView {
-    /// 레코드 타입이 실제로 있는지 물어본다 (→ CloudSchemaProbe.swift).
+    /// iCloud 존에 실제로 무엇이 들어 있는지 센다 (→ CloudSchemaProbe.swift).
     @MainActor
     func probeSchema() async {
         isProbingSchema = true
-        schemaResults = await CloudSchemaProbe.probeAll()
+        zoneCensus = await CloudSchemaProbe.census()
         isProbingSchema = false
     }
 
