@@ -165,14 +165,16 @@ struct TodoView: View {
                 // 적는 자리는 목록 맨 위에 열린다. 그래서 버튼도 그 바로 위,
                 // 오른쪽 끝에 둔다 — 누른 곳과 생긴 곳이 한 눈에 들어와야
                 // "눌렀더니 줄이 하나 내려왔다"로 읽힌다.
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        addRequest += 1
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 17, weight: .semibold))
+                if TodoAccess.canEdit {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            addRequest += 1
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 17, weight: .semibold))
+                        }
+                        .accessibilityLabel("할 일 추가")
                     }
-                    .accessibilityLabel("할 일 추가")
                 }
             }
             // 세그먼트를 네비게이션 바(.principal) 대신 그 아래에 둔다.
@@ -303,7 +305,13 @@ struct TodoView: View {
             rainbowPendingSection
 
             Section {
-                // 0. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
+                // 0. 잠긴 기기라는 것부터 말한다. + 가 안 눌리는 이유를 모르면
+                //    고장으로 읽힌다 (→ TodoAccess.swift).
+                if !TodoAccess.canEdit {
+                    readOnlyNotice
+                }
+
+                // 1. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
                 //    뒤가 계속 보이고, 그동안 아무거나 할 수 있다 (→ BoltOnboarding.swift).
                 if showsBoltHint(items: items, errands: errands) {
                     BoltHintRow(onDetail: { showingBoltMeaning = true },
@@ -314,9 +322,9 @@ struct TodoView: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
 
-                // 1. 적는 자리. 평소에는 없고, + 를 누르면 여기 열린다 —
+                // 2. 적는 자리. 평소에는 없고, + 를 누르면 여기 열린다 —
                 //    동그라미가 날아와 앉는 자리이자, 방금 적은 줄이 바로 아래에 쌓이는 자리다.
-                if isAdding || inputFocused || !newTitle.isEmpty {
+                if TodoAccess.canEdit, isAdding || inputFocused || !newTitle.isEmpty {
                     newTodoRow
                         .listRowBackground(Self.errandTint)
                         // 위에서 한 줄이 밀려 내려오고, 아래 줄들이 그만큼 자리를 내준다.
@@ -327,7 +335,7 @@ struct TodoView: View {
                             removal: .opacity))
                 }
 
-                // 2. 바로 하면 되는 일 — 표시해 둔 줄과 단계. 차례를 안 기다린다.
+                // 3. 바로 하면 되는 일 — 표시해 둔 줄과 단계. 차례를 안 기다린다.
                 ForEach(marked) { item in
                     MarkedRow(item: item,
                               parentTitle: tree.parent(of: item)?.title,
@@ -349,7 +357,7 @@ struct TodoView: View {
                         }
                 }
 
-                // 3. 그냥 하면 되는 것 — 시간도 마감도 없는 줄. 잊히는 것이 이 줄의
+                // 4. 그냥 하면 되는 것 — 시간도 마감도 없는 줄. 잊히는 것이 이 줄의
                 //    유일한 실패 방식이라 시간을 잡은 일들 아래에 깔리지 않게 위에 둔다.
                 ForEach(errands) { item in
                     TodoRow(item: item,
@@ -362,13 +370,13 @@ struct TodoView: View {
                         // '우유 사 오기'는 5분에 집는 줄이고, 화면이 그렇게 보여야 한다.
                         .listRowBackground(isFragment(item, tree: tree) ? Self.markedTint : Self.errandTint)
                         .swipeActions(edge: .leading) {
-                            markButton(for: item, tree: tree)
+                            if TodoAccess.canEdit { markButton(for: item, tree: tree) }
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
-                .onDelete { delete(errands, at: $0, tree: tree) }
+                .onDelete(perform: TodoAccess.canEdit ? { delete(errands, at: $0, tree: tree) } : nil)
 
-                // 4. 시간을 잡은 일 — 바탕색 그대로.
+                // 5. 시간을 잡은 일 — 바탕색 그대로.
                 ForEach(items) { item in
                     TodoRow(item: item,
                             tree: tree,
@@ -384,13 +392,13 @@ struct TodoView: View {
                         //    답한다. 손끝에서 정할 일이 둘을 넘으면 스와이프는 메뉴가 되고,
                         //    메뉴는 열 때마다 읽어야 한다.
                         .swipeActions(edge: .leading) {
-                            markButton(for: item, tree: tree)
+                            if TodoAccess.canEdit { markButton(for: item, tree: tree) }
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
                 }
-                .onDelete { delete(items, at: $0, tree: tree) }
+                .onDelete(perform: TodoAccess.canEdit ? { delete(items, at: $0, tree: tree) } : nil)
 
-                // 5. 완료 — 목록에는 줄 하나만 남기고 상세로 넘긴다. 끝난 일은
+                // 6. 완료 — 목록에는 줄 하나만 남기고 상세로 넘긴다. 끝난 일은
                 //    '없어진 게 아니라는 것'만 확인하면 되는 것이라, 이번 주 목록에서
                 //    자리를 차지하면 남은 일이 그만큼 뒤로 밀린다.
                 if !done.isEmpty {
@@ -432,6 +440,34 @@ struct TodoView: View {
         !hasSeenBoltOnboarding && !(items.isEmpty && errands.isEmpty)
     }
 
+    /// 잠긴 기기임을 말하는 줄. **이미 적어 둔 것은 그대로 보인다** —
+    /// 목록이 비면 그건 값을 받는 게 아니라 뺏는 것이다.
+    private var readOnlyNotice: some View {
+        Button {
+            showingLedgerPaywall = true
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "lock")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(TodoAccess.lockedTitle)
+                        .font(.system(size: 14, weight: .semibold))
+                        .tracking(-0.3)
+                    Text(TodoAccess.lockedNote)
+                        .font(.system(size: 12))
+                        .tracking(-0.2)
+                        .lineSpacing(3)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+    }
+
     /// 완료한 것으로 가는 줄. 개수는 여기서도 보인다 — 오늘 뭘 끝냈는지는
     /// 들어가 보지 않고도 알 수 있어야 하고, 그게 이 줄이 하는 일의 절반이다.
     private func doneLinkRow(_ count: Int) -> some View {
@@ -465,6 +501,8 @@ struct TodoView: View {
     /// '지금 떠오른 한 줄을 적는 것'이지 화면 구경이 아니다.
     private func consumeQuickAddRequest() {
         guard QuickTodoBridge.consumePendingAdd() else { return }
+        // 잠긴 기기에서는 적는 자리를 열지 않는다. 요청은 거뒀으니 다음에 또 안 뜬다.
+        guard TodoAccess.canEdit else { return }
         pushedTodo = nil
         showingBoltMeaning = false
         tab = .mine

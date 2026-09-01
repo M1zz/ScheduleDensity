@@ -82,6 +82,7 @@
 		C3570B640BED636DC7372662 /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0B7D594FCCABF21917463C /* LeeoKit */; };
 		C5A8628CA718CEF5D0C15249 /* DoneTodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECBA157204B5F06367463A9 /* DoneTodosView.swift */; };
 		CB298C12B23FF6BBBD9B23DD /* CloudSyncLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059E898FF838C334CC121045 /* CloudSyncLog.swift */; };
+		CE5BCD25D19C6102CB9668AC /* TodoAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */; };
 		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
 		CFF51ED63E41C1792E020ACB /* BacklogItem+Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */; };
 		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
@@ -220,6 +221,7 @@
 		F1DFC2876EC6FE5666C43486 /* TodoTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTree.swift; sourceTree = "<group>"; };
 		F2DFFB40BB030A552DC9AC4C /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrencePattern.swift; sourceTree = "<group>"; };
+		FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoAccess.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -403,6 +405,7 @@
 				09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */,
 				A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */,
 				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
+				FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */,
 				EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */,
 				21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */,
 				C612D8C00BFD0642D31F33A4 /* TodoTips.swift */,
@@ -630,6 +633,7 @@
 				71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */,
 				6BF0C551702B1A5F00487205 /* Theme.swift in Sources */,
 				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
+				CE5BCD25D19C6102CB9668AC /* TodoAccess.swift in Sources */,
 				51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */,
 				8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */,
 				8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */,
