@@ -11,9 +11,6 @@ final class BacklogCategory {
     var iconName: String = "tag"
     var sortIndex: Int = 0
     var createdAt: Date = Date()
-    /// 맥에서 '전파 필요'를 자동으로 켜는 분류인지. 이 앱은 안 쓰지만,
-    /// 같은 스토어를 공유하므로 칸은 있어야 한다 (위 두 모델과 같은 이유).
-    var isBroadcast: Bool = false
 
     init(name: String,
          colorName: String = "blue",

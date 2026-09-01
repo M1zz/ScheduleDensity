@@ -28,11 +28,6 @@ final class BacklogItem {
     /// 상위 할 일의 dragToken. nil이면 최상위 할 일.
     var parentToken: String? = nil
 
-    /// ⚠️ 더 이상 쓰지 않는다. 비중(%)으로 단계를 나누던 시절의 필드로,
-    ///    이미 배포된 사용자·맥앱과 공유하는 CloudKit 스키마에 들어 있어 지우지 못한다.
-    ///    (지우면 라이트웨이트 마이그레이션이 깨진다.) 읽지도 쓰지도 말 것.
-    var isManualWeight: Bool = false
-
     /// '착수 조건'(바로/펼치고/몰입해서…)으로 단계를 나누던 시절의 필드.
     ///    이미 배포된 사용자·맥앱과 공유하는 CloudKit 스키마에 들어 있어 지우지 못한다.
     ///    (지우면 라이트웨이트 마이그레이션이 깨진다.)
@@ -41,33 +36,6 @@ final class BacklogItem {
     ///    자리로 다시 쓰고 있고, 접두어(`pick:`)로 옛 값과 구분한다.
     ///    → BacklogItem+Fragment.swift 의 `fragmentPick`으로만 드나든다.
     var labelRaw: String? = nil
-
-
-    // MARK: - 전파 계약 (맥 '무지개 공방' 전용 기능)
-    //
-    // ⚠️ **이 앱은 이 값들을 쓰지 않는다. 그런데 반드시 있어야 한다.**
-    //
-    // 맥과 iOS가 **같은 CloudKit 스토어 하나**를 공유하므로(→ WeekBlocksStore),
-    // 레코드의 모양이 양쪽에서 같아야 한다. iOS 모델에 이 칸들이 없으면 이 앱이
-    // 저장할 때마다 맥이 적어 둔 계약(대상·두 날짜·넘길 형태·이미 보낸 시점)이
-    // 날아갈 수 있고, 무엇이 날아갔는지 이 앱은 알지도 못한다.
-    //
-    // 그래서 **저장 프로퍼티만** 맥과 똑같이 둔다. 계산·화면은 맥에만 있다
-    // (→ 무지개 공방/WeekBlocks/BroadcastContract.swift).
-    // 맥에서 필드가 늘면 여기도 같이 늘려야 한다.
-    var needsBroadcast: Bool = false
-    var deadline: Date? = nil
-    var broadcastAudienceRaw: String = "decisionMaker"
-    var broadcastRecipient: String = ""
-    var handoffForm: String = ""
-    var earliestDate: Date? = nil
-    var latestDate: Date? = nil
-    var broadcastConfidenceRaw: String = "medium"
-    var openVariable: String = ""
-    var variableResolveDate: Date? = nil
-    var noSignalRuleAgreed: Bool = false
-    var broadcastContractVerified: Bool = false
-    var sentCheckpointsRaw: String = ""
 
     init(title: String,
          durationHours: Double = 1,
