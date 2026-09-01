@@ -18,6 +18,7 @@
 
 import Foundation
 import CoreData
+import CloudKit
 
 @Observable
 final class CloudSyncLog {
@@ -54,7 +55,7 @@ final class CloudSyncLog {
 
             let entry = Entry(succeeded: event.succeeded,
                               at: event.endDate ?? Date(),
-                              error: event.error.map { String(describing: $0) })
+                              error: event.error.map { Self.describe($0) })
             switch event.type {
             case .setup:  self?.setup = entry
             case .import: self?.importing = entry
@@ -62,5 +63,39 @@ final class CloudSyncLog {
             @unknown default: break
             }
         }
+    }
+
+    /// 에러를 **읽을 수 있는 한 줄**로 만든다.
+    ///
+    /// ⚠️ CloudKit이 내는 실패는 대개 `partialFailure`(코드 2)다. 그런데 그건
+    ///    "몇 개가 실패했다"는 봉투일 뿐이고, **진짜 사유는 그 안에 레코드별로 들어 있다.**
+    ///    봉투만 찍으면 `CKErrorDomain Code=2 "(null)"` 이라고만 나와서 아무것도
+    ///    알 수 없다. 그래서 봉투를 열어 안에 있는 사유를 종류별로 모아 보여준다.
+    static func describe(_ error: Error) -> String {
+        guard let ckError = error as? CKError else { return String(describing: error) }
+        guard ckError.code == .partialFailure,
+              let partials = ckError.partialErrorsByItemID, !partials.isEmpty else {
+            return line(for: ckError)
+        }
+
+        // 같은 사유가 수십 건씩 나오므로 종류별로 접어서 센다.
+        var tally: [String: Int] = [:]
+        for case let inner as CKError in partials.values {
+            tally[line(for: inner), default: 0] += 1
+        }
+        let detail = tally.sorted { $0.value > $1.value }
+            .prefix(3)
+            .map { "· \($0.key) (\($0.value)건)" }
+            .joined(separator: "\n")
+        return "부분 실패 \(partials.count)건\n" + (detail.isEmpty ? "· 사유 없음" : detail)
+    }
+
+    /// CKError 하나를 한 줄로. 서버가 붙여 준 설명이 있으면 그게 제일 쓸모 있다.
+    private static func line(for error: CKError) -> String {
+        let name = "\(error.code)"
+        if let server = error.userInfo["ServerErrorDescription"] as? String {
+            return "\(name): \(server)"
+        }
+        return "\(name): \(error.localizedDescription)"
     }
 }
