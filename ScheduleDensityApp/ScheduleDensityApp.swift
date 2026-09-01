@@ -105,6 +105,9 @@ struct ScheduleDensityApp: App {
         LeeoEngagement.shared.registerLaunch()
         // 할 일 화면의 조언은 전부 TipKit으로 낸다 (→ TodoTips.swift).
         TodoTips.configure()
+        // 동기화 엔진이 남기는 말을 받아 적기 시작한다 (→ CloudSyncLog.swift).
+        // 스토어를 열기 **전에** 걸어야 준비(setup) 결과를 놓치지 않는다.
+        CloudSyncLog.shared.start()
     }
 
     var sharedModelContainer: ModelContainer = {

@@ -618,6 +618,11 @@ struct SettingsView: View {
 
                     // 스키마가 배포 안 된 것은 위 값들로는 안 드러난다 —
                     // 계정도 맞고 저장 위치도 '클라우드'인데 아무것도 안 오간다.
+                    // 엔진이 직접 남긴 결과. 결과 숫자만으로는 '왜'를 알 수 없다.
+                    syncEventRow("준비", CloudSyncLog.shared.setup)
+                    syncEventRow("받기", CloudSyncLog.shared.importing)
+                    syncEventRow("보내기", CloudSyncLog.shared.exporting)
+
                     Button {
                         Task { await probeSchema() }
                     } label: {
@@ -1304,6 +1309,31 @@ struct SettingsView: View {
 
 // MARK: - 개발자 문의
 extension SettingsView {
+    /// 동기화 엔진이 남긴 마지막 결과 한 줄 (→ CloudSyncLog.swift).
+    @ViewBuilder
+    func syncEventRow(_ name: String, _ entry: CloudSyncLog.Entry?) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(name)
+            Spacer()
+            if let entry {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(entry.succeeded ? "성공" : "실패")
+                        .foregroundColor(entry.succeeded ? .secondary : .red)
+                    if let error = entry.error {
+                        Text(error)
+                            .font(.caption2)
+                            .foregroundColor(.red)
+                            .multilineTextAlignment(.trailing)
+                            .textSelection(.enabled)
+                    }
+                }
+            } else {
+                // 한 번도 안 돈 것과 실패한 것은 다르다. 섞어 적지 않는다.
+                Text("아직 안 돌았음").foregroundColor(.orange)
+            }
+        }
+    }
+
     /// iCloud 존에 실제로 무엇이 들어 있는지 센다 (→ CloudSchemaProbe.swift).
     @MainActor
     func probeSchema() async {
