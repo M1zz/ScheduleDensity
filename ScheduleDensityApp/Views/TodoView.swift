@@ -73,7 +73,10 @@ struct TodoView: View {
     // '지금 할 일'로 접혀 보이고, 전체 흐름은 TodoDetailView에서 본다.
 
     /// 부모-자식 색인. 한 번 만들어 목록·칩·결산이 함께 쓴다.
-    private var tree: TodoTree { TodoTree(allItems) }
+    /// ⚠️ **감추는 자리는 여기 하나뿐이다** (→ TodoSharing.swift).
+    ///    목록·칩·결산이 전부 이 트리에서 나오므로, 여기서 한 번 거르면 어디에도
+    ///    안 샌다. 화면마다 조건을 따로 쓰면 반드시 어딘가는 새어 보인다.
+    private var tree: TodoTree { TodoTree(allItems.filter(TodoSharing.isVisible)) }
 
     /// 필터를 걸기 전의 이번 주 줄들 (밀린 것 + 이번 주).
     /// 칩의 셈은 **언제나 이 집합**으로 낸다 — 걸러진 결과로 세면 필터를 켜는 순간
@@ -442,6 +445,11 @@ struct TodoView: View {
 
     /// 잠긴 기기임을 말하는 줄. **이미 적어 둔 것은 그대로 보인다** —
     /// 목록이 비면 그건 값을 받는 게 아니라 뺏는 것이다.
+    /// 이 기기에서 적었지만 아직 상대에게 안 보이는 줄의 수.
+    private var hiddenCount: Int {
+        allItems.filter { !$0.isShared && TodoSharing.isMine($0) && !$0.isCompleted }.count
+    }
+
     private var readOnlyNotice: some View {
         Button {
             showingLedgerPaywall = true
@@ -460,6 +468,14 @@ struct TodoView: View {
                         .lineSpacing(3)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+                    // 여기 것이 저기서 안 보인다는 사실을 숫자로 말한다.
+                    // "동기화가 고장났나"와 "안 열어서 그렇다"를 가르는 한 줄이다.
+                    if hiddenCount > 0 {
+                        Text("이 기기의 \(hiddenCount)개는 다른 기기에서 안 보입니다.")
+                            .font(.system(size: 12, weight: .medium))
+                            .tracking(-0.2)
+                            .foregroundStyle(TodoView.nowGreen)
+                    }
                 }
                 Spacer(minLength: 0)
             }
@@ -1182,10 +1198,14 @@ struct TodoView: View {
                 // 안 쓸 30분을 이번 주에 얹고, 뜬 물음을 X로 닫아야 우유가 된다.
                 // 순서를 뒤집는다 — 적으면 그냥 '그냥 하면 되는 것'이고,
                 // 시간이 필요해지면 그때 왼쪽으로 밀어 잡는다.
-                context.insert(BacklogItem(title: title,
-                                           durationHours: TodoTree.errandHours,
-                                           sortIndex: maxIndex + 1,
-                                           weekStartDate: weekStart))
+                let fresh = BacklogItem(title: title,
+                                        durationHours: TodoTree.errandHours,
+                                        sortIndex: maxIndex + 1,
+                                        weekStartDate: weekStart)
+                // 어느 자리에서 났고, 그때 함께 쓸 수 있었는지를 줄에 새긴다
+                // (→ TodoSharing.swift).
+                TodoSharing.stamp(fresh)
+                context.insert(fresh)
                 save()
             }
         }

@@ -29,33 +29,6 @@ final class PlanBlock {
     var reviewNote: String? = nil
     var reviewedAt: Date? = nil
 
-
-    // MARK: - 전파 계약 (맥 '무지개 공방' 전용 기능)
-    //
-    // ⚠️ **이 앱은 이 값들을 쓰지 않는다. 그런데 반드시 있어야 한다.**
-    //
-    // 맥과 iOS가 **같은 CloudKit 스토어 하나**를 공유하므로(→ WeekBlocksStore)
-    // 레코드의 모양이 양쪽에서 같아야 한다. 이 앱 모델에 칸이 없으면, 저장할 때마다
-    // 맥이 적어 둔 계약(대상·두 날짜·넘길 형태·이미 보낸 시점)이 날아갈 수 있고
-    // 무엇이 날아갔는지 이 앱은 알지도 못한다.
-    //
-    // 저장 프로퍼티만 맥과 똑같이 둔다. 계산·화면은 맥에만 있다
-    // (→ 무지개 공방/WeekBlocks/BroadcastContract.swift).
-    // **맥에서 필드가 늘면 여기도 같이 늘릴 것.**
-    var needsBroadcast: Bool = false
-    var deadline: Date? = nil
-    var broadcastAudienceRaw: String = "decisionMaker"
-    var broadcastRecipient: String = ""
-    var handoffForm: String = ""
-    var earliestDate: Date? = nil
-    var latestDate: Date? = nil
-    var broadcastConfidenceRaw: String = "medium"
-    var openVariable: String = ""
-    var variableResolveDate: Date? = nil
-    var noSignalRuleAgreed: Bool = false
-    var broadcastContractVerified: Bool = false
-    var sentCheckpointsRaw: String = ""
-
     init(day: DayOfWeek,
          timeBand: TimeBand,
          durationHours: Double,

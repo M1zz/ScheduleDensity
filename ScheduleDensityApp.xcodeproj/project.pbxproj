@@ -24,6 +24,7 @@
 		24CCB060110F59A56D7CAAA3 /* QuickTodoControlIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6DF589326498AA250AB8FAE /* QuickTodoControlIntent.swift */; };
 		2902DFF21E90EA3C9ACE62F1 /* TodoWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 979A4AF622853CA818289703 /* TodoWidgetSync.swift */; };
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
+		2DA6447E5C4C977781B3F105 /* TodoSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */; };
 		311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */; };
 		328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */; };
 		365C0C76527D982BAB6ED969 /* CloudSchemaPrimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */; };
@@ -186,6 +187,7 @@
 		AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyShareStore.swift; sourceTree = "<group>"; };
 		AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDismiss.swift; sourceTree = "<group>"; };
 		AF61B6ED54A0AFF6E6BEBA31 /* ShareTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareTodoView.swift; sourceTree = "<group>"; };
+		B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSharing.swift; sourceTree = "<group>"; };
 		B152BA511813FF0AD6412A7C /* CloudSchemaProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSchemaProbe.swift; sourceTree = "<group>"; };
 		B1CED998C36D51AC3B0D0859 /* ScheduleDensityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScheduleDensityApp.entitlements; sourceTree = "<group>"; };
 		B5F27359D56BF2678D1330BE /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
 				FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */,
 				EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */,
+				B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */,
 				21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */,
 				C612D8C00BFD0642D31F33A4 /* TodoTips.swift */,
 				F1DFC2876EC6FE5666C43486 /* TodoTree.swift */,
@@ -639,6 +642,7 @@
 				8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */,
 				9B43E50F4245366DA515CE89 /* TodoShareInbox.swift in Sources */,
 				5CA7AF639085A47D9F389D75 /* TodoShareIntake.swift in Sources */,
+				2DA6447E5C4C977781B3F105 /* TodoSharing.swift in Sources */,
 				AA9F79CECE202D70CD384BC5 /* TodoSplitAdvisor.swift in Sources */,
 				15BD1FF9295E0253422A35FA /* TodoSplitOnboarding.swift in Sources */,
 				035D5DF623150C93CC30AEB7 /* TodoTips.swift in Sources */,

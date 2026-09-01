@@ -9,8 +9,8 @@
 //  그러면 출시 뒤 사용자가 그 값을 **처음 넣는 순간** 서버가 모르는 필드라며 거절하고,
 //  거절 하나가 미러링 초기화를 통째로 실패시켜 동기화가 멈춘다. 조용히, 그 사람에게만.
 //
-//    var needsBroadcast: Bool = false   → false 도 값이라 칸이 생긴다
-//    var deadline: Date? = nil          → nil 이면 안 보내서 칸이 안 생긴다  ⚠️
+//    var isShared: Bool = true      → 값이 있으니 칸이 생긴다
+//    var completedAt: Date? = nil   → nil 이면 안 보내서 칸이 안 생긴다  ⚠️
 //
 //  손으로 기능을 하나씩 다 써 보는 것으로는 이걸 못 막는다. 빠뜨리기 쉽고,
 //  빠뜨린 것은 눈에 안 보인다. 그래서 **모든 옵셔널에 값을 채운 표본을 한 벌 만들어
@@ -48,24 +48,14 @@ enum CloudSchemaPrimer {
         // ── 모든 옵셔널에 값을 넣는다. 이게 이 파일의 존재 이유다. ──────────
         let category = BacklogCategory(name: marker, colorName: "blue",
                                        iconName: "tag", sortIndex: 9_999)
-        category.isBroadcast = true
 
         let item = BacklogItem(title: marker, durationHours: 1, sortIndex: 9_999,
                                categoryID: category.uuid, weekStartDate: week)
         item.completedAt = now
         item.parentToken = "schema-sample-parent"
         item.labelRaw = "schema-sample-label"
-        item.needsBroadcast = true
-        item.deadline = now
-        item.broadcastRecipient = "sample"
-        item.handoffForm = "sample"
-        item.earliestDate = now
-        item.latestDate = now
-        item.openVariable = "sample"
-        item.variableResolveDate = now
-        item.noSignalRuleAgreed = true
-        item.broadcastContractVerified = true
-        item.sentCheckpointsRaw = "sample"
+        item.isShared = true
+        item.originInstallID = "schema-sample-install"
 
         let block = PlanBlock(day: .mon, timeBand: .morning, durationHours: 1,
                               title: marker, successCriteria: "sample",
@@ -73,17 +63,6 @@ enum CloudSchemaPrimer {
         block.reviewStatusRaw = "sample"
         block.reviewNote = "sample"
         block.reviewedAt = now
-        block.needsBroadcast = true
-        block.deadline = now
-        block.broadcastRecipient = "sample"
-        block.handoffForm = "sample"
-        block.earliestDate = now
-        block.latestDate = now
-        block.openVariable = "sample"
-        block.variableResolveDate = now
-        block.noSignalRuleAgreed = true
-        block.broadcastContractVerified = true
-        block.sentCheckpointsRaw = "sample"
 
         for model in [category as any PersistentModel, item, block] {
             context.insert(model)

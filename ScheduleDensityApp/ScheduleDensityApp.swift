@@ -357,6 +357,12 @@ struct ScheduleDensityApp: App {
                 grandfatherExistingUserIfNeeded()
                 await PurchaseManager.shared.refresh()
             }
+            // 값을 치르면 이 기기에서 적어 둔 것이 상대에게도 보이게 열린다
+            // (→ TodoSharing.swift). 그때부터 올라가는 게 아니라 이미 올라가 있던 것이
+            // 그제서야 보이는 것이라 기다림이 없다.
+            .onChange(of: purchases.isUnlocked) { _, unlocked in
+                if unlocked { TodoSharing.openMyItems(in: todoContainer.mainContext) }
+            }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .background {
                     // 쓰던 것을 안전망에 반영해 둔다. 다음에 스토어가 비어도 여기까지는 남는다.
