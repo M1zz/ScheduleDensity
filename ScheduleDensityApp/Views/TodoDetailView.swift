@@ -35,6 +35,8 @@ struct TodoDetailView: View {
     @State private var editing: BacklogItem?
     @State private var editingTitle = ""
     /// 무지개에 그어질 기간.
+    /// 더 쪼개러 들어갈 단계. 그 단계가 제 상세 화면의 주인이 되어 다시 쪼개진다.
+    @State private var pushedStep: BacklogItem?
     @State private var periodStart = Date()
     @State private var periodEnd = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     /// 지금 무지개에 줄이 그어져 있는지.
@@ -49,6 +51,8 @@ struct TodoDetailView: View {
     /// 이름·소요시간·기간·분류를 정하는 시트. 카드를 눌러야 열린다 —
     /// 한 번 정하고 나면 일하는 내내 볼 것이 아니라서 화면에 깔아 두지 않는다.
     @State private var showingSettings = false
+    /// 쪼개기 도우미 — 목록에 펼쳐 두지 않고 눌러서 연다.
+    @State private var showingSplitHelper = false
     /// 시트 안 '세부 단계' 빈 줄. 목록의 빈 줄과 상태를 나눠 쓰면 두 줄이 서로 커서를 뺏는다.
     @State private var sheetStepTitle = ""
     @FocusState private var inputFocused: Bool
@@ -94,7 +98,9 @@ struct TodoDetailView: View {
             // 단계가 아직 없어도 이 섹션은 그린다 — 그 안의 빈 줄이 '첫 단계를 적는 자리'다.
             stepsSection
             // 뼈대는 계속 둔다. 적다 말고 "다음에 뭐가 오지?" 할 때 되짚을 자리가 있어야 한다.
-            templateSection
+            // 다만 **펼쳐 두지는 않는다** — 아래를 참고하는 일은 가끔이고, 그 네 줄이 늘
+            // 깔려 있으면 내가 적은 단계와 뼈대가 한 화면에서 섞여 보인다.
+            templateButton
         }
         .onChange(of: inputFocused) { _, focused in
             if focused { scrollToNewRow(proxy) }
@@ -141,6 +147,9 @@ struct TodoDetailView: View {
         .sheet(isPresented: $showingSettings) {
             settingsSheet
         }
+        .sheet(isPresented: $showingSplitHelper) {
+            splitHelperSheet
+        }
         .fullScreenCover(isPresented: $showingSplitMeaning) {
             SplitMeaningView { showingSplitMeaning = false }
         }
@@ -148,6 +157,11 @@ struct TodoDetailView: View {
         }
         .navigationTitle(root.title)
         .navigationBarTitleDisplayMode(.inline)
+        // 단계를 또 쪼개는 자리는 **그 단계의 상세 화면**이다. 같은 화면이 한 층 아래로
+        // 다시 열리므로, 세 번째 층도 네 번째 층도 같은 손짓으로 이어진다.
+        .navigationDestination(item: $pushedStep) { step in
+            TodoDetailView(root: step)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -163,12 +177,10 @@ struct TodoDetailView: View {
         .scrollDismissesKeyboard(.interactively)
         .sheet(item: $editing) { item in
             // 묶음은 시간도 조각 판정도 제 것이 없다 — 시간은 아래 단계들의 합이고,
-            // 판정은 그 안의 단계들이 답한다. 이름과 순서만 고치게 한다.
-            // (묶음의 labelRaw 자리는 순서가 쓰고 있어, 여기서 판정을 쓰면 그걸 지운다.)
+            // 판정은 그 안의 단계들이 답한다. 그래서 묶음에서는 이름과 자리만 고친다.
+            // (묶음의 labelRaw 자리는 단계 순서가 쓰고 있어, 여기서 판정을 쓰면 그걸 지운다.)
             StepEditSheet(item: item,
                           isGroup: tree.hasChildren(item),
-                          orderBinding: orderBinding(for: item),
-                          childCount: tree.children(of: item).count,
                           // 끌어서 옮기는 게 본길이지만, 손이 미끄러지는 자리이기도 하고
                           // 끌기 자체가 안 되는 상황(스위치 컨트롤 등)도 있다.
                           // 자리를 한 칸씩 옮기는 길은 여기 남겨 둔다.
@@ -310,7 +322,10 @@ struct TodoDetailView: View {
                     .tint(doneCount == stepCount ? .green : .accentColor)
             }
 
-            if let step = tree.currentStep(of: root) {
+            // ⚠️ `currentStep`은 자식이 없으면 **자기 자신**을 돌려준다. 안 쪼갠 일에서
+            //    그것만 보고 세우면 카드가 제 이름을 위아래로 두 번 적는다 —
+            //    "제목 / 지금 단계 / 같은 제목". 쪼갠 일에만 이 자리가 있다.
+            if tree.hasChildren(root), let step = tree.currentStep(of: root) {
                 // 지금 할 단계. 기호 하나로는 '지금 할 것'이라는 뜻이 안 읽혀서 말로 적는다.
                 // 순서가 없는 묶음에서는 '단계'가 아니라 '집을 것'이다 — 앱이 조각인 것을
                 // 앞에 세웠을 뿐, 차례가 아니다.
@@ -327,7 +342,7 @@ struct TodoDetailView: View {
                         .lineLimit(2)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-            } else if stepCount > 0 {
+            } else if tree.hasChildren(root) {
                 Label("모든 단계를 마쳤습니다", systemImage: "checkmark.circle.fill")
                     .font(.callout)
                     .foregroundStyle(.green)
@@ -361,10 +376,12 @@ struct TodoDetailView: View {
                  text: hours <= 0 ? "시간 안 잡음" : formatDuration(hours),
                  tint: .secondary,
                  dim: hours <= 0)
-            chip(icon: "rainbow",
-                 text: periodChipText,
-                 tint: .accentColor,
-                 dim: !hasPeriod)
+            if !isSubStep {
+                chip(icon: "rainbow",
+                     text: periodChipText,
+                     tint: .accentColor,
+                     dim: !hasPeriod)
+            }
             if let category = category(of: root) {
                 chip(icon: category.iconName, text: category.name, tint: category.displayColor, dim: false)
             } else {
@@ -374,15 +391,20 @@ struct TodoDetailView: View {
         }
     }
 
-    /// 무지개 칩은 '며칠 남았나'만 말한다. 날짜 두 개는 시트에서 본다.
+    /// 무지개 칩은 '언제의 일인가'를 말한다 — 목록의 배지와 같은 말이어야 한다
+    /// (→ `TodoWhen`). 날짜 두 개는 시트에서 본다.
     private var periodChipText: String {
-        guard hasPeriod else { return "무지개에 없음" }
-        let calendar = Calendar.current
-        let left = calendar.dateComponents([.day],
-                                           from: calendar.startOfDay(for: Date()),
-                                           to: calendar.startOfDay(for: periodEnd)).day ?? 0
-        if left > 0 { return "D-\(left)" }
-        return left == 0 ? "오늘까지" : "기간 지남"
+        switch currentWhen {
+        case .backlog: return "날짜 없음"
+        case .overdue: return "밀림"
+        case .today: return "오늘"
+        case .thisWeek, .later:
+            let calendar = Calendar.current
+            let left = calendar.dateComponents([.day],
+                                               from: calendar.startOfDay(for: Date()),
+                                               to: calendar.startOfDay(for: periodEnd)).day ?? 0
+            return left <= 0 ? "오늘까지" : "D-\(left)"
+        }
     }
 
     private func chip(icon: String, text: String, tint: Color, dim: Bool) -> some View {
@@ -511,7 +533,21 @@ struct TodoDetailView: View {
                 }
             }
 
-            periodRows
+            // 5분에 집을 수 있는 일인가 — **사람이 직접 하는 말**이다. 앱도 제목과 시간을
+            // 보고 짐작하지만(→ TodoSplitAdvisor), 짐작이 틀렸을 때 사람이 답할 자리가
+            // 있어야 한다. 쪼갠 일에서는 지금 할 단계에 붙는다.
+            Toggle(isOn: markedBinding) {
+                HStack(spacing: 6) {
+                    Image(systemName: "bolt.fill")
+                        .foregroundStyle(TodoView.nowGreen)
+                    Text("바로 하면 되는 일")
+                }
+            }
+
+            // 날짜는 **그 일 전체**에 붙는다. 단계를 열고 들어온 화면에서는 안 묻는다 —
+            // 단계마다 기간이 생기면 무지개에 한 일이 여러 줄로 그어지고,
+            // '언제 할 일인가'의 답이 한 일 안에서 갈라진다 (→ TodoWhen).
+            if !isSubStep { periodRows }
             categoryPicker
         }
 
@@ -564,9 +600,70 @@ struct TodoDetailView: View {
         }
     }
 
-    /// 이 일이 언제부터 언제까지인지. 정하면 무지개에 그대로 한 줄이 그어진다.
+    /// '바로 하면 되는 일' 표시. 켜면 목록 맨 위 칸에 서고, 차례를 안 기다린다.
+    ///
+    /// 표시가 붙는 자리는 **그 줄 자체**다 — 쪼갠 일이면 지금 할 단계에.
+    /// (묶음에 직접 쓰면 그 자리(`labelRaw`)에 있는 단계 순서를 지운다
+    /// → BacklogItem+StepOrder.swift)
+    private var markedBinding: Binding<Bool> {
+        Binding(
+            get: { tree.markedStep(of: root) != nil },
+            set: { on in
+                let target: BacklogItem
+                if tree.hasChildren(root) {
+                    guard let step = tree.currentStep(of: root) else { return }
+                    target = step
+                } else {
+                    target = root
+                }
+                withAnimation {
+                    target.setFragmentAnswer(on ? true : nil, for: .start)
+                    target.setFragmentAnswer(on ? true : nil, for: .closing)
+                    save()
+                }
+            }
+        )
+    }
+
+    /// 이 화면의 주인이 더 큰 일의 **한 단계**인가. (더 쪼개러 들어온 화면)
+    /// 날짜처럼 일 전체에 붙는 것은 여기서 묻지 않는다.
+    private var isSubStep: Bool { tree.parent(of: root) != nil }
+
+    /// **이 일이 언제의 일인가.** 시작일과 끝나는 날, 그 하나로 정한다.
+    ///
+    /// 목록의 '오늘 · 이번 주 · 밀림'은 전부 이 날짜에서 나온다 (→ `TodoWhen`).
+    /// 예전에는 목록 스와이프에 '오늘'과 '이번 주로'가 따로 있었다. 오늘인지는 맥 계획
+    /// 블록이, 이번 주인지는 할 일의 주차가 들고 있어서 같은 것을 두 군데서 말한 셈이고,
+    /// 둘이 어긋나면 화면이 어느 쪽이 맞는지 답하지 못했다. 이제 답하는 자리는 여기 하나다.
+    ///
+    /// 아무것도 안 정하면 백로그다 — 갓 적은 일은 전부 여기서 시작한다.
     @ViewBuilder
     private var periodRows: some View {
+        HStack {
+            Text("언제")
+            Spacer()
+            Text(whenSummary)
+                .foregroundStyle(whenTint)
+        }
+
+        // 자주 쓰는 두 답은 버튼 하나로. 날짜를 두 번 굴려 오늘을 고르게 하면
+        // '오늘 할 일'이라고 적는 데 손이 넷 든다.
+        HStack(spacing: 8) {
+            whenChip("오늘", isOn: currentWhen == .today) {
+                setPeriod(start: Date(), end: Date())
+            }
+            whenChip("이번 주", isOn: currentWhen == .thisWeek) {
+                // 이번 주 일요일까지. 끝나는 날이 이 일이 언제 일인지를 정한다 (→ TodoWhen).
+                setPeriod(start: Date(), end: Date.endOfThisWeek)
+            }
+            whenChip("안 정함", isOn: !hasPeriod) {
+                TodoEventBridge.shared.clearRainbow(for: root)
+                hasPeriod = false
+            }
+            Spacer(minLength: 0)
+        }
+        .buttonStyle(.plain)
+
         DatePicker("시작", selection: $periodStart, displayedComponents: .date)
             .onChange(of: periodStart) { _, newValue in
                 if newValue > periodEnd { periodEnd = newValue }
@@ -594,6 +691,50 @@ struct TodoDetailView: View {
                     .font(.subheadline)
             }
         }
+    }
+
+    /// 지금 이 할 일이 서 있는 자리. 날짜 두 줄을 읽지 않고도 한눈에 답이 보여야 한다.
+    private var currentWhen: TodoWhen {
+        TodoWhen.of(hasPeriod ? (periodStart, periodEnd) : nil)
+    }
+
+    private var whenSummary: String {
+        switch currentWhen {
+        case .backlog: return "백로그"
+        case .today: return "오늘"
+        case .thisWeek: return "이번 주"
+        case .later: return "다음 주 뒤"
+        case .overdue: return "밀림"
+        }
+    }
+
+    private var whenTint: Color {
+        switch currentWhen {
+        case .overdue: return .red
+        case .today: return .orange
+        case .thisWeek: return .primary
+        case .later, .backlog: return .secondary
+        }
+    }
+
+    private func whenChip(_ title: String, isOn: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(isOn ? .semibold : .regular))
+                .foregroundStyle(isOn ? Color.accentColor : Color.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Capsule().fill(isOn ? Color.accentColor.opacity(0.15)
+                                                : Color.secondary.opacity(0.12)))
+        }
+    }
+
+    /// 날짜를 한 번에 정한다. 안 그어져 있던 일도 여기서 그어진다 —
+    /// '오늘'을 눌렀는데 무지개에 안 올라가면 눌러도 아무 일이 없는 것처럼 보인다.
+    private func setPeriod(start: Date, end: Date) {
+        periodStart = start
+        periodEnd = max(start, end)
+        commitPeriod(force: true)
     }
 
     private var periodSummary: String {
@@ -625,34 +766,133 @@ struct TodoDetailView: View {
         save()
     }
 
-    // MARK: - 쪼개기 도우미 (보기용 뼈대)
+    // MARK: - 쪼개기 도우미 (눌러서 보는 뼈대)
 
-    /// 내 단계가 아니라 '참고할 순서'다. 실제 단계 목록과 헷갈리지 않게
-    /// 글자를 한 단 낮추고 흐리게 둔다.
-    @ViewBuilder
-    private var templateSection: some View {
+    /// 목록 아래 한 줄. 누르면 모달이 열린다.
+    ///
+    /// 예전에는 뼈대 네 줄이 단계 목록 아래에 늘 펼쳐져 있었다. 되짚을 때는 좋았지만,
+    /// 내가 적은 단계와 남이 준 보기가 한 화면에 나란히 서서 어디까지가 내 것인지
+    /// 매번 다시 읽어야 했다. 참고는 필요할 때만 여는 것이 맞다.
+    private var templateButton: some View {
         Section {
-            ForEach(Array(TodoSplitAdvisor.template(for: root.title).enumerated()), id: \.offset) { _, step in
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 10) {
-                        Text(step.title)
-                            .font(.subheadline)
+            Button {
+                showingSplitHelper = true
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "lightbulb")
+                        .font(.system(size: 16))
+                        .foregroundStyle(.orange)
+                        .frame(width: 22)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("쪼개기 도우미")
+                            .foregroundStyle(.primary)
+                        Text("어떤 순서로 쪼개면 되는지 보기")
+                            .font(.caption)
                             .foregroundStyle(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    Text(step.note)
-                        .font(.caption)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(.tertiary)
                 }
-                .padding(.vertical, 3)
+                .padding(.vertical, 2)
             }
-        } header: {
-            Text("쪼개기 도우미")
-        } footer: {
-            // 이 뼈대는 '보기'다. 한 번에 네 줄을 밀어 넣는 버튼이 있었는데,
-            // 남의 일에 맞춘 이름 넷이 통째로 들어오면 그걸 지우고 고치는 게
-            // 처음부터 적는 것보다 오래 걸렸다. 순서만 보여주고 적는 건 사람이 한다.
-            Text("일이 굴러가는 순서입니다 — 정하고 → 펼치고 → 몰입해서 → 바로.\n그대로 따를 필요는 없어요. 위 빈 줄에 내 말로 적으면 됩니다.")
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// 뼈대를 **촘촘하게** 펼쳐 놓는 자리. 목록에서는 네 줄로 줄여 보여줬지만,
+    /// 여기서는 그 네 마디가 왜 그 순서인지까지 적는다 — 순서만 보고 따라 적으면
+    /// 남의 일에 맞춘 이름 넷이 되고, 이유를 알면 내 일의 이름이 나온다.
+    private var splitHelperSheet: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("일은 네 마디로 굴러갑니다")
+                        .font(.title3.weight(.semibold))
+                    Text("정하고 → 펼치고 → 몰입해서 → 바로.\n앞 마디가 안 끝나면 뒤 마디는 열리지 않습니다. 막혀 있을 때는 대개 지금 마디가 아니라 **그 앞 마디**가 안 끝나 있는 것입니다.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    ForEach(Array(TodoSplitAdvisor.template(for: root.title).enumerated()), id: \.offset) { index, step in
+                        helperRow(index: index, step: step)
+                    }
+
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        helperNote(icon: "bolt.fill", tint: TodoView.nowGreen,
+                                   title: "5분에 집을 수 있는 마디를 하나는 두세요",
+                                   body: "2번(펼치기)과 4번(마무리)이 대개 그렇습니다. 짬이 났을 때 집을 게 하나도 없으면, 그 일은 큰 시간이 날 때까지 아무 일도 안 일어납니다.")
+                        helperNote(icon: "clock", tint: .secondary,
+                                   title: "한 마디는 한 자리에서 닫히는 크기로",
+                                   body: "두 시간을 넘기면 하다 말게 됩니다. 넘을 것 같으면 그 마디를 다시 쪼개세요 — 단계를 길게 누르면 그 단계만 따로 쪼갤 수 있습니다.")
+                        helperNote(icon: "pencil", tint: .accentColor,
+                                   title: "그대로 옮겨 적지는 마세요",
+                                   body: "이 네 줄을 한 번에 넣어주는 버튼이 있었는데, 남의 일에 맞춘 이름 넷을 지우고 고치는 게 처음부터 적는 것보다 오래 걸렸습니다. 순서만 빌리고 이름은 내 말로 적으세요.")
+                    }
+                }
+                .padding(20)
+            }
+            .navigationTitle("쪼개기 도우미")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("닫기") { showingSplitHelper = false }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+
+    private func helperRow(index: Int, step: TodoSplitAdvisor.TemplateStep) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text("\(index + 1)")
+                .font(.subheadline.weight(.bold))
+                .monospacedDigit()
+                .foregroundStyle(.white)
+                .frame(width: 24, height: 24)
+                .background(Circle().fill(Color.accentColor))
+            VStack(alignment: .leading, spacing: 3) {
+                HStack(spacing: 6) {
+                    Text(step.title)
+                        .font(.body.weight(.semibold))
+                    if let mark = helperMark(for: index) {
+                        Image(systemName: mark.icon)
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(mark.tint)
+                    }
+                }
+                Text(step.note)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// 그 마디가 대개 조각인지 덩어리인지. 뼈대는 고정된 네 줄이라 자리로 안다
+    /// (→ `TodoSplitAdvisor.template`). 줄이 늘면 표식 없이 그냥 선다.
+    private func helperMark(for index: Int) -> (icon: String, tint: Color)? {
+        switch index {
+        case 1, 3: return ("bolt.fill", TodoView.nowGreen)   // 펼치기 · 마무리 = 조각
+        case 2: return ("moon.zzz", .indigo)                 // 실제로 하기 = 몰입
+        default: return nil
+        }
+    }
+
+    private func helperNote(icon: String, tint: Color, title: String, body: String) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: icon)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 18)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                Text(body)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -704,8 +944,8 @@ struct TodoDetailView: View {
                         Button {
                             editing = row.item
                         } label: {
-                            // 묶음에는 제 시간도 판정도 없다. 거기서 고치는 건 이름과 순서다.
-                            Label(tree.hasChildren(row.item) ? "이름·순서" : "시간·조각 판정",
+                            // 묶음에는 제 시간도 판정도 없다. 거기서 고치는 건 이름이다.
+                            Label(tree.hasChildren(row.item) ? "이름" : "시간·조각 판정",
                                   systemImage: "slider.horizontal.3")
                         }
                         .tint(.blue)
@@ -736,15 +976,38 @@ struct TodoDetailView: View {
                         }
                         .tint(.indigo)
                     }
-                    // ⚠️ `.contextMenu`를 걷어냈다. 롱 프레스를 컨텍스트 메뉴가 가져가면
-                    //    끌어서 순서를 바꿀 수가 없다. 메뉴에 있던 것들은 전부 다른 데 있다 —
-                    //    하위 단계·이름·삭제는 스와이프에, 묶음의 단계 순서는 편집 시트에,
-                    //    위로/아래로는 드래그가 대신한다.
+                    // 롱 프레스 = **이 단계를 더 쪼개러 들어가기.**
                     //
-                    //    드래그는 눈으로 하는 일이라 VoiceOver로는 안 잡힌다.
-                    //    그래서 위로/아래로를 접근성 동작으로 남긴다 (로터의 '동작').
+                    // 단계를 적다 보면 그중 하나가 여전히 덩어리인 것이 보인다. 그때
+                    // 필요한 건 그 줄 아래 한 칸을 더 적는 게 아니라, 그 단계를 **제 일로
+                    // 놓고** 다시 쪼개는 것이다. 그래서 여기서 그 단계의 상세로 들어간다.
+                    //
+                    // ⚠️ 롱 프레스를 이 메뉴가 가져가므로 **끌어서 순서 바꾸기가 막힌다.**
+                    //    그래서 위로/아래로를 메뉴 안에 같이 둔다 — 순서를 바꾸는 길이
+                    //    사라지면 안 된다. (스와이프의 이름·삭제·하위 단계는 그대로다.)
+                    .contextMenu {
+                        Button {
+                            pushedStep = row.item
+                        } label: {
+                            Label("더 쪼개기", systemImage: "square.split.2x1")
+                        }
+                        Divider()
+                        Button {
+                            move(row.item, by: -1)
+                        } label: {
+                            Label("위로", systemImage: "arrow.up")
+                        }
+                        Button {
+                            move(row.item, by: 1)
+                        } label: {
+                            Label("아래로", systemImage: "arrow.down")
+                        }
+                    }
+                    // 메뉴는 눈으로 여는 것이라 VoiceOver로는 잘 안 잡힌다.
+                    // 위로/아래로를 접근성 동작으로도 남긴다 (로터의 '동작').
                     .accessibilityAction(named: "위로") { move(row.item, by: -1) }
                     .accessibilityAction(named: "아래로") { move(row.item, by: 1) }
+                    .accessibilityAction(named: "더 쪼개기") { pushedStep = row.item }
             }
             .onMove(perform: moveRows)
 
@@ -753,64 +1016,25 @@ struct TodoDetailView: View {
                 // 적는 줄은 언제나 단계들 맨 아래다. 끌어서 그 위로 보낼 수 없다.
                 .moveDisabled(true)
         } header: {
-            HStack {
-                Text("단계")
-                Spacer()
-                // 맨 바깥 단계가 둘 이상일 때만 묻는 값이다. 하나뿐이면 순서라는 게 없다.
-                // (rows는 손자까지 세므로 여기서는 직계 자식 수를 본다.)
-                if tree.children(of: root).count > 1 { orderMenu(for: root) }
-            }
+            Text("단계")
         } footer: {
             if rows.isEmpty {
                 Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요.\n적어 두면 각 단계가 조각인지 덩어리인지는 앱이 먼저 답해 둡니다. 틀렸으면 그 단계를 왼쪽으로 밀어 고치면 됩니다.")
-            } else if tree.children(of: root).count > 1 {
-                Text(root.stepOrder.note + "\n길게 눌러 끌면 순서가 바뀝니다.")
             } else if rows.count > 1 {
                 Text("길게 눌러 끌면 순서가 바뀝니다.")
             }
         }
     }
 
-    // MARK: - 순서대로 / 아무거나
+    // ⚠️ '순서대로 / 아무거나'를 **고르는 자리는 없앴다.**
     //
-    // 쪼갠 단계가 서로를 기다리는지는 **묶음마다 한 번** 정한다.
-    // 단계마다 '앞의 것을 기다림'을 걸게 하면 그건 그래프이고, 사람이 손으로 쪼갠
-    // 네댓 줄에서 일부만 순서가 있는 경우는 드물다 — 대개 통째로 사슬이거나 통째로 자루다.
+    // 쪼갠 단계가 서로를 기다리는지를 묶음마다 묻던 메뉴가 단계 머리글에 있었는데,
+    // 단계를 적으러 온 사람에게 그건 먼저 답해야 할 질문이 아니었다. 대부분의 일은
+    // 적은 순서가 곧 하는 순서이고, 아니어도 위에서부터 집으면 그만이다.
     //
-    // 값은 `BacklogItem.stepOrder`에 있고, 저장 자리는 묶음의 `labelRaw`다
-    // (→ BacklogItem+StepOrder.swift). 새 필드가 아니라 CloudKit 스키마도 그대로다.
-
-    private func orderMenu(for group: BacklogItem) -> some View {
-        Menu {
-            Picker("단계 순서", selection: orderBinding(for: group)) {
-                ForEach(StepOrder.allCases, id: \.self) { order in
-                    Label(order.title, systemImage: order.systemImage).tag(order)
-                }
-            }
-            .pickerStyle(.inline)
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: group.stepOrder.systemImage)
-                Text(group.stepOrder.title)
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.system(size: 9, weight: .semibold))
-            }
-            .font(.caption.weight(.semibold))
-            .textCase(nil)
-        }
-        .accessibilityLabel("단계 순서, 현재 \(group.stepOrder.title)")
-    }
-
-    private func orderBinding(for group: BacklogItem) -> Binding<StepOrder> {
-        Binding(
-            get: { group.stepOrder },
-            set: { newValue in
-                guard newValue != group.stepOrder else { return }
-                withAnimation { group.stepOrder = newValue }
-                save()
-            }
-        )
-    }
+    // 값(`BacklogItem.stepOrder`)과 그것을 읽는 쪽(→ TodoTree.currentStep,
+    // availableSteps)은 그대로 둔다. 이미 '아무거나'로 정해 둔 묶음이 있는 사람에게
+    // 그 뜻이 갑자기 뒤집히면 안 되기 때문이다. 새로 정하는 길만 닫혀 있다.
 
     // MARK: - 조언 (전부 TipKit)
 
@@ -1108,9 +1332,6 @@ private struct StepEditSheet: View {
     let item: BacklogItem
     /// 이 줄이 아래 단계를 거느린 묶음인가. 묶음이면 시간·조각 판정을 감춘다.
     let isGroup: Bool
-    /// 묶음일 때만 쓰는, 그 아래 단계들의 순서.
-    let orderBinding: Binding<StepOrder>
-    let childCount: Int
     /// 형제들 사이에서 몇 번째인가 (1부터)와 형제 수. 끝에서는 그 방향 버튼을 막는다.
     let siblingPosition: (index: Int, total: Int)?
     let onMoveUp: () -> Void
@@ -1161,22 +1382,7 @@ private struct StepEditSheet: View {
                     }
                 }
 
-                if isGroup {
-                    if childCount > 1 {
-                        Section {
-                            Picker("단계 순서", selection: orderBinding) {
-                                ForEach(StepOrder.allCases, id: \.self) { order in
-                                    Label(order.title, systemImage: order.systemImage).tag(order)
-                                }
-                            }
-                            .pickerStyle(.inline)
-                        } header: {
-                            Text("이 안의 단계들")
-                        } footer: {
-                            Text(orderBinding.wrappedValue.note)
-                        }
-                    }
-                } else {
+                if !isGroup {
                     Section {
                         Stepper(value: $hours, in: 0.25...8, step: 0.25) {
                             HStack {

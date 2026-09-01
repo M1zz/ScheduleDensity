@@ -29,9 +29,6 @@ struct TodoView: View {
 
     @State private var tab: Tab = .mine
     @State private var family = FamilyShareStore.shared
-    /// 오늘 계획으로 배정된 할 일 제목들. WeekBlocks store는 다른 컨테이너라
-    /// @Query로 못 보므로 직접 읽어 와 캐시한다.
-    @State private var assignedToday: Set<String> = []
     @State private var newTitle = ""
     @State private var showingFamilyShareNotice = false
     @State private var showingLedger = false
@@ -50,9 +47,12 @@ struct TodoView: View {
     @State private var rainbowPending: [Event] = []
     /// 무지개에서 가져와 단계를 적으러 갈 할 일.
     @State private var pushedTodo: BacklogItem?
-    /// 지금 무지개에 그어져 있는 데드라인 (할 일 dragToken → 종료일).
+    /// 지금 무지개에 그어져 있는 기간 (할 일 dragToken → 시작일·끝나는 날).
     /// 일정 스토어는 다른 컨테이너라 @Query로 못 보므로 읽어 와 캐시한다.
-    @State private var deadlines: [String: Date] = [:]
+    ///
+    /// **목록의 거의 모든 판정이 여기서 나온다** — 오늘 할 일인지, 이번 주 일인지,
+    /// 밀렸는지, 아직 백로그인지 (→ `TodoWhen`). 사람이 정하는 것은 상세의 날짜 하나뿐이다.
+    @State private var periods: [String: (start: Date, end: Date)] = [:]
     @FocusState private var inputFocused: Bool
 
     private let cal = Calendar(identifier: .iso8601)
@@ -76,7 +76,7 @@ struct TodoView: View {
         // '그냥 하면 되는 것'은 빼고 센다. 결산은 이번 주에 쓴/쓸 시간을 보는 자리인데,
         // 0시간짜리 줄이 섞이면 세는 개수만 부풀고 시간은 그대로다.
         return unfilteredItems
-            .filter { !(tree.isErrand($0) && deadlines[$0.dragToken] == nil) }
+            .filter { !(tree.isErrand($0) && periods[$0.dragToken] == nil) }
             .map { item in
                 let step = tree.currentStep(of: item) ?? item
                 return (step.title, step.durationHours)
@@ -100,8 +100,11 @@ struct TodoView: View {
             .sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
     }
 
-    /// 지난 주에 못 하고 남은 일. 목록에서는 이번 주 것과 한 줄기로 섞이고,
-    /// '이번 주로 옮기기' 스와이프가 붙는지만 달라진다.
+    /// 지난 주에 못 하고 남은 일. 목록에서는 이번 주 것과 한 줄기로 섞인다.
+    ///
+    /// 앱을 열면 이 줄들의 주차는 이번 주로 끌려온다(→ `pullForwardOverdueWeeks`).
+    /// 그래서 여기 걸리는 것은 **아직 안 끌어온 순간의 줄들**뿐이다 — 화면이 뜨는 사이에도
+    /// 목록에서 빠지지 않게 남겨 둔다.
     private func carryoverItems(_ tree: TodoTree) -> [BacklogItem] {
         tree.roots.filter {
             !$0.isCompleted && $0.weekStartDate < weekStart && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart)
@@ -190,8 +193,8 @@ struct TodoView: View {
             TodoDetailView(root: item)
         }
         .task {
-            refreshAssignedToday()
-            refreshDeadlines()
+            pullForwardOverdueWeeks()
+            refreshPeriods()
             refreshRainbowPending()
             syncWidget()
             refreshTipRules()
@@ -205,16 +208,21 @@ struct TodoView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 // 맥 '무지개 공방'에서 넘어온 CloudKit 변경도 위젯에 반영한다.
-                refreshAssignedToday()
-                refreshDeadlines()
+                // 날이 바뀌었을 수 있으므로 주차와 오늘 계획도 다시 맞춘다.
+                pullForwardOverdueWeeks()
+                refreshPeriods()
                 refreshRainbowPending()
                 syncWidget()
                 Task { await family.refresh() }
             }
         }
-        // 맥에서 배정/해제한 결과가 CloudKit으로 내려오면 배지도 따라 바뀐다.
+        // 맥에서 배정/해제한 결과가 CloudKit으로 내려오면 위젯도 따라 바뀐다.
         .onReceive(NotificationCenter.default.publisher(for: .NSPersistentStoreRemoteChange)) { _ in
-            refreshAssignedToday()
+            syncWidget()
+        }
+        // 상세에서 날짜를 고치면 '오늘 · 이번 주 · 밀림'이 통째로 다시 답해져야 한다.
+        .onReceive(NotificationCenter.default.publisher(for: .todoPeriodDidChange)) { _ in
+            withAnimation { refreshPeriods() }
         }
     }
 
@@ -257,14 +265,18 @@ struct TodoView: View {
         //   3. 시간을 잡은 일   — 바탕색 그대로.
         //   4. 완료           — 맨 아래, 흐리게.
         //
-        // (지난 주에 밀린 일도 같은 이유로 안 가른다 — 밀렸다는 사실은 옮길 때만 필요하고,
-        //  그건 스와이프에 남겨 뒀다.)
+        // 칸 **안**에서는 급한 순으로 선다 — 밀림 → 오늘 → 이번 주 → 그 뒤 → 백로그,
+        // 같은 급함이면 번개 먼저 (→ `urgentFirst`). 칸이 '무엇부터 볼까'를 갈랐다면,
+        // 이 규칙은 그 칸 안에서 '무엇이 먼저 급한가'를 갈라 준다. 둘 다 없으면 목록은
+        // 적은 순 그대로라, 줄이 늘수록 아무 뜻도 없는 순서가 된다.
+        //
+        // (지난 주에 밀린 일도 같은 이유로 안 가른다 — 주차는 앱이 알아서 이번 주로
+        //  끌어오고(→ pullForwardOverdueWeeks), 밀렸다는 사실은 날짜가 말한다.)
         let (allErrands, allMarked, allItems) = splitErrands(carryover + open, tree: tree)
-        let errands = allErrands
+        let errands = urgentFirst(allErrands, tree: tree)
         // 안 쪼갠 일 + 쪼갠 일 안의 '바로' 단계.
-        let marked = allMarked + markedPicks(carryover + open, tree: tree)
-        let items = allItems
-        let carried = Set(carryover.map(\.dragToken))
+        let marked = urgentFirst(allMarked + markedPicks(carryover + open, tree: tree), tree: tree)
+        let items = urgentFirst(allItems, tree: tree)
         let done = doneItems(tree)
 
         return ScrollViewReader { proxy in
@@ -312,13 +324,14 @@ struct TodoView: View {
                     TodoRow(item: item,
                             tree: tree,
                             category: category(of: item),
-                            isAssignedToday: false,
+                            when: .backlog,
                             deadline: nil,
                             onAdvance: advance)
                         // 시간을 안 잡은 줄도 번개면 번개다. 칸 이름으로 뭉뚱그리지 않는다 —
                         // '우유 사 오기'는 5분에 집는 줄이고, 화면이 그렇게 보여야 한다.
                         .listRowBackground(isFragment(item, tree: tree) ? Self.markedTint : Self.errandTint)
                         .swipeActions(edge: .leading) {
+                            markButton(for: item, tree: tree)
                             errandButton(for: item, tree: tree)
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
@@ -330,24 +343,18 @@ struct TodoView: View {
                     TodoRow(item: item,
                             tree: tree,
                             category: category(of: item),
-                            isAssignedToday: assignedToday.contains(item.title),
-                            deadline: deadlines[item.dragToken],
+                            when: when(item),
+                            deadline: periods[item.dragToken]?.end,
                             onAdvance: advance)
                         // 앱이 조각으로 본 줄도 같은 연두다. 사용자가 표시한 것과 뜻이 같고
                         // (그냥 집으면 된다), 다른 색을 하나 더 두면 색이 말을 시작한다.
                         .listRowBackground(isFragment(item, tree: tree) ? Self.markedTint : nil)
+                        // ⚠️ '오늘'과 '이번 주로'는 여기 없다. 언제 할 일인지는 상세의 날짜
+                        //    하나가 답하고(→ TodoWhen), 주차는 앱이 알아서 끌어온다
+                        //    (→ pullForwardOverdueWeeks). 스와이프에는 '지금 여기서'
+                        //    하는 것만 남긴다.
                         .swipeActions(edge: .leading) {
-                            if carried.contains(item.dragToken) {
-                                Button {
-                                    // 단계도 부모와 한 덩어리로 같이 옮긴다.
-                                    for node in tree.subtree(of: item) { node.weekStartDate = weekStart }
-                                    save()
-                                } label: {
-                                    Label("이번 주로", systemImage: "arrow.uturn.left")
-                                }
-                                .tint(.blue)
-                            }
-                            todayButton(for: item, tree: tree)
+                            markButton(for: item, tree: tree)
                             errandButton(for: item, tree: tree)
                         }
                         .contextMenu { itemMenu(for: item, tree: tree) }
@@ -508,6 +515,51 @@ struct TodoView: View {
         .accessibilityLabel("\(label) \(count)개")
     }
 
+    /// **급한 순** — 칸 안에서 줄이 서는 하나의 규칙.
+    ///
+    /// 칸(바로 하면 되는 일 · 그냥 하면 되는 것 · 시간을 잡은 일)이 '무엇부터 볼까'는 이미
+    /// 갈라 놨다. 여기서 정하는 건 그 **칸 안에서 무엇이 먼저 급한가**이고, 재는 자는
+    /// **기간 하나**다 — 사람이 상세에 적어 둔 시작일과 끝나는 날 (→ `TodoWhen`).
+    ///
+    ///   1. 밀림   — 끝나는 날이 지났다. 이미 늦은 일이라 맨 위다.
+    ///   2. 오늘   — 기간이 오늘을 덮는다.
+    ///   3. 이번 주 — 이번 주에 걸쳤다.
+    ///   4. 그 뒤  — 다음 주 이후에 시작한다.
+    ///   5. 백로그 — 날짜를 안 정했다.
+    ///
+    /// 급하기가 같으면 **번개가 먼저**다. 5분이 났을 때 집을 수 있는 줄이 위에 있어야
+    /// 그 5분이 쓰인다 — 맨 위 칸이 그렇듯, 여기서도 같은 이유로 앞선다.
+    /// 그것도 같으면 **끝나는 날이 가까운 것부터**, 마지막으로 **원래 순서를 지킨다**
+    /// (안정 정렬). 볼 때마다 줄이 뒤집히면 어제 어디쯤 있었는지가 안 남고, 목록이 매번
+    /// 처음 보는 목록이 된다. (`sorted`는 안정 정렬을 보장하지 않아서 원래 자리를
+    /// 마지막 열쇠로 들고 간다.)
+    ///
+    /// 단계 줄('바로' 칸에 따로 서는 것)은 제 기간이 없다 — 날짜는 그 일 전체에 붙는 것이라
+    /// 뿌리를 보고 잰다.
+    private func urgentFirst(_ items: [BacklogItem], tree: TodoTree) -> [BacklogItem] {
+        func rank(_ item: BacklogItem) -> (Int, Int, Date) {
+            let root = tree.root(of: item)
+            let period = periods[root.dragToken]
+            return (TodoWhen.of(period, weekStart: weekStart).rawValue,
+                    isFragment(item, tree: tree) ? 0 : 1,
+                    period?.end ?? .distantFuture)
+        }
+        return items.enumerated()
+            .sorted { lhs, rhs in
+                let l = rank(lhs.element), r = rank(rhs.element)
+                if l.0 != r.0 { return l.0 < r.0 }
+                if l.1 != r.1 { return l.1 < r.1 }
+                if l.2 != r.2 { return l.2 < r.2 }
+                return lhs.offset < rhs.offset
+            }
+            .map(\.element)
+    }
+
+    /// 이 할 일이 언제의 일인가 — 기간 하나로 답한다 (→ `TodoWhen`).
+    private func when(_ item: BacklogItem) -> TodoWhen {
+        TodoWhen.of(periods[item.dragToken], weekStart: weekStart)
+    }
+
     /// 이 줄을 지금 5분에 집을 수 있는가. 쪼갠 일은 '지금 할 단계'로 판단한다 —
     /// 줄에 서 있는 것이 그 단계이므로, 판정도 같은 것을 봐야 말이 맞는다.
     private func isFragment(_ item: BacklogItem, tree: TodoTree) -> Bool {
@@ -550,7 +602,7 @@ struct TodoView: View {
         var marked: [BacklogItem] = []
         var rest: [BacklogItem] = []
         for item in items {
-            let lane = tree.lane(of: item, hasDeadline: deadlines[item.dragToken] != nil)
+            let lane = tree.lane(of: item, hasDeadline: periods[item.dragToken] != nil)
             switch lane {
             case .now where !tree.hasChildren(item):
                 // 안 쪼갠 일은 통째로 위 칸으로 올라간다.
@@ -611,26 +663,37 @@ struct TodoView: View {
         }
     }
 
+    /// **번개를 붙이고 거둔다.** 스와이프 한 번.
+    ///
+    /// 이 표시는 앱의 짐작이 아니라 **사람이 직접 하는 말**이다 — "이건 맥락 없이 바로
+    /// 된다". 그래서 어느 줄에서든 할 수 있어야 한다. 예전에는 롱 프레스 메뉴 안에만
+    /// 있었고 그것도 시간을 잡은 줄에만 떴다. 붙일 수 있다는 걸 알 방법이 없었다.
+    ///
+    /// 쪼갠 일에서는 지금 할 단계에 붙는다 (→ `setMarked`).
+    @ViewBuilder
+    private func markButton(for item: BacklogItem, tree: TodoTree) -> some View {
+        let marked = tree.markedStep(of: item) != nil
+        Button {
+            setMarked(!marked, for: item, tree: tree)
+        } label: {
+            Label(marked ? "표시 거두기" : "바로 하면 됨",
+                  systemImage: marked ? "bolt.slash" : "bolt.fill")
+        }
+        .tint(marked ? .gray : Self.nowGreen)
+    }
+
     /// 스와이프 한 번으로 두 칸 사이를 오간다.
     ///
     /// 시간을 0으로 만드는 것이 곧 표시다 — 따로 종류 필드를 두지 않는다.
     /// 단계로 쪼갠 일은 이미 시간이 아래에서 쌓여 올라오므로 대상이 아니고,
-    /// 마감이 붙은 일은 무지개에서 먼저 빼야 한다.
+    /// 날짜를 정한 일은 무지개에서 먼저 빼야 한다.
     @ViewBuilder
     private func errandButton(for item: BacklogItem, tree: TodoTree) -> some View {
-        if !tree.hasChildren(item), deadlines[item.dragToken] == nil {
+        if !tree.hasChildren(item), periods[item.dragToken] == nil {
             let isErrand = tree.isErrand(item)
             Button {
                 withAnimation {
-                    if isErrand {
-                        item.durationHours = TodoTree.defaultStepHours
-                    } else {
-                        item.durationHours = TodoTree.errandHours
-                        // 시간이 0이 된 일을 오늘 계획에 세워 둘 수는 없다.
-                        if assignedToday.contains(item.title) {
-                            setAssignedToday(false, for: item, tree: tree)
-                        }
-                    }
+                    item.durationHours = isErrand ? TodoTree.defaultStepHours : TodoTree.errandHours
                     save()
                 }
             } label: {
@@ -807,7 +870,7 @@ struct TodoView: View {
                     Button {
                         guard let item = TodoEventBridge.shared.makeTodo(for: event) else { return }
                         refreshRainbowPending()
-                        refreshDeadlines()
+                        refreshPeriods()
                         pushedTodo = item
                     } label: {
                         rainbowPendingRow(event)
@@ -944,46 +1007,21 @@ struct TodoView: View {
         .presentationDetents([.medium, .large])
     }
 
-    /// 스와이프용 '오늘' 토글 버튼.
-    @ViewBuilder
-    private func todayButton(for item: BacklogItem, tree: TodoTree) -> some View {
-        let assigned = assignedToday.contains(item.title)
-        Button {
-            setAssignedToday(!assigned, for: item, tree: tree)
-        } label: {
-            Label(assigned ? "오늘 취소" : "오늘",
-                  systemImage: assigned ? "calendar.badge.minus" : "calendar.badge.plus")
-        }
-        .tint(assigned ? .gray : .orange)
-    }
-
     @ViewBuilder
     private func itemMenu(for item: BacklogItem, tree: TodoTree) -> some View {
-        let assigned = assignedToday.contains(item.title)
-        Button {
-            setAssignedToday(!assigned, for: item, tree: tree)
-        } label: {
-            Label(assigned ? "오늘 배정 취소" : "오늘 할 일로 배정",
-                  systemImage: assigned ? "calendar.badge.minus" : "calendar.badge.plus")
-        }
+        // '오늘로 배정'은 여기 없다. 언제 할 일인지는 상세의 날짜가 답한다 (→ TodoWhen).
+        // 여기 남은 '데드라인'은 그 날짜를 한 손으로 잡는 지름길이다 — 오늘부터 그 날까지.
         Button {
             beginDeadlinePick(for: item)
         } label: {
-            Label(deadlines[item.dragToken] == nil ? "데드라인 정하기" : "데드라인 바꾸기",
+            Label(periods[item.dragToken] == nil ? "데드라인 정하기" : "데드라인 바꾸기",
                   systemImage: "flag.checkered")
         }
-        if !tree.hasChildren(item), deadlines[item.dragToken] == nil {
+        if !tree.hasChildren(item), periods[item.dragToken] == nil {
             let isErrand = tree.isErrand(item)
             Button {
                 withAnimation {
-                    if isErrand {
-                        item.durationHours = TodoTree.defaultStepHours
-                    } else {
-                        item.durationHours = TodoTree.errandHours
-                        if assignedToday.contains(item.title) {
-                            setAssignedToday(false, for: item, tree: tree)
-                        }
-                    }
+                    item.durationHours = isErrand ? TodoTree.defaultStepHours : TodoTree.errandHours
                     save()
                 }
             } label: {
@@ -992,19 +1030,21 @@ struct TodoView: View {
             }
         }
         // 지금 할 단계를 '맥락 없이 바로 되는 것'으로 표시한다. 표시한 줄은 위 칸에 모인다.
-        if !tree.isErrand(item) || deadlines[item.dragToken] != nil {
-            let marked = tree.markedStep(of: item) != nil
-            Button {
-                setMarked(!marked, for: item, tree: tree)
-            } label: {
-                Label(marked ? "'바로' 표시 거두기" : "바로 하면 되는 일로 표시",
-                      systemImage: marked ? "bolt.slash" : "bolt.fill")
-            }
+        //
+        // ⚠️ 예전에는 시간이 0인 줄에서는 이 항목을 감췄다 — 이미 '그냥 하면 되는 것'
+        //    칸에 있으니 뜻이 겹친다고 봤다. 그런데 겹치는 건 앱의 짐작이고, 이 표시는
+        //    사람이 직접 하는 말이다. 감추면 "왜 여기선 못 붙이지"가 된다. 이제 늘 뜬다.
+        let marked = tree.markedStep(of: item) != nil
+        Button {
+            setMarked(!marked, for: item, tree: tree)
+        } label: {
+            Label(marked ? "'바로' 표시 거두기" : "바로 하면 되는 일로 표시",
+                  systemImage: marked ? "bolt.slash" : "bolt.fill")
         }
-        if deadlines[item.dragToken] != nil {
+        if periods[item.dragToken] != nil {
             Button {
                 TodoEventBridge.shared.clearRainbow(for: item)
-                refreshDeadlines()
+                refreshPeriods()
             } label: {
                 Label("무지개에서 빼기", systemImage: "rainbow")
             }
@@ -1113,7 +1153,7 @@ struct TodoView: View {
             TodoEventBridge.shared.clearRainbow(for: items[index])
             for node in tree.subtree(of: items[index]) { context.delete(node) }
         }
-        refreshDeadlines()
+        refreshPeriods()
         save()
     }
 
@@ -1122,26 +1162,43 @@ struct TodoView: View {
         syncWidget()
     }
 
-    /// 할 일을 오늘 계획 블록으로 올리거나 내린다.
-    /// 성공하면 맥 '무지개 공방' 타임라인과 iOS 무지개(밀도) 화면 양쪽에 반영된다.
-    /// 계획 블록의 제목은 항상 최상위 할 일 제목이다 — 단계가 넘어가도 배지와
-    /// 배정 취소가 계속 맞아떨어져야 하기 때문. 대신 올리는 **시간**은 오늘 실제로 할
-    /// 만큼, 즉 지금 할 단계의 예상 시간을 쓴다.
-    private func setAssignedToday(_ assign: Bool, for item: BacklogItem, tree: TodoTree) {
-        let store = WeekBlocksStore.shared
-        let hours = tree.currentStep(of: item)?.durationHours ?? tree.totalHours(of: item)
-        let ok = assign
-            ? store.assign(title: item.title, durationHours: hours)
-            : store.unassign(title: item.title)
+    /// **오늘 계획을 날짜에 맞춘다.** 사람이 누르는 자리는 상세의 시작일·끝나는 날 하나뿐이고,
+    /// 맥 '무지개 공방'의 계획 블록은 그 날짜를 따라오는 그림자다.
+    ///
+    /// 계획 블록의 제목은 항상 최상위 할 일 제목이다 — 단계가 넘어가도 배지가 계속
+    /// 맞아떨어져야 하기 때문. 대신 올리는 **시간**은 오늘 실제로 할 만큼,
+    /// 즉 지금 할 단계의 예상 시간을 쓴다.
+    ///
+    /// 맥에서 손으로 만든 블록은 건드리지 않는다 (→ `WeekBlocksStore.syncToday`).
+    private func syncTodayPlan() {
+        let tree = TodoTree(allItems)
+        let wanted = tree.roots
+            .filter { !$0.isCompleted && when($0) == .today }
+            .map { item in
+                (title: item.title,
+                 hours: tree.currentStep(of: item)?.durationHours ?? tree.totalHours(of: item))
+            }
+        WeekBlocksStore.shared.syncToday(wanted)
+    }
 
-        guard ok else {
-            // iCloud 미로그인 등으로 계획 스토어를 못 열면 조용히 실패한다.
-            // 배지가 켜지지 않는 것으로 사용자에게 드러난다.
-            print("⚠️ [Todo] 오늘 배정 \(assign ? "실패" : "취소 실패"): \(item.title)")
-            return
+    /// **안 끝난 채 주를 넘긴 일을 이번 주로 끌어온다.**
+    ///
+    /// 예전에는 사람이 줄마다 '이번 주로'를 밀어 옮겼다. 그런데 안 끝난 일이 지난 주에
+    /// 남아 있어야 할 이유가 없다 — 그건 여전히 **지금** 할 일이고, 목록에도 이미 섞여
+    /// 서 있었다. 옮기는 손짓은 뜻을 더하지 않고 손만 하나 더 쓰게 했다.
+    ///
+    /// 주차(`weekStartDate`)는 이제 결산이 "이번 주에 무엇을 했나"를 세는 자리로만 쓴다.
+    /// 완료한 일은 건드리지 않는다 — 지난 주에 끝낸 것은 지난 주의 셈이다.
+    private func pullForwardOverdueWeeks() {
+        let tree = TodoTree(allItems)
+        let stale = tree.roots.filter { !$0.isCompleted && $0.weekStartDate < weekStart
+                                        && !cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+        guard !stale.isEmpty else { return }
+        for root in stale {
+            // 단계도 부모와 한 덩어리로 같이 옮긴다.
+            for node in tree.subtree(of: root) { node.weekStartDate = weekStart }
         }
-        withAnimation { refreshAssignedToday() }
-        syncWidget()
+        try? context.save()
     }
 
     /// 팁이 언제 뜰지 정하는 값들을 최신으로 맞춘다 (→ TodoTips.swift).
@@ -1152,14 +1209,11 @@ struct TodoView: View {
         if !tree.roots.isEmpty { ListLegendTip.hasItems = true }
     }
 
-    /// 오늘 배정된 제목 집합을 다시 읽는다.
-    private func refreshAssignedToday() {
-        assignedToday = WeekBlocksStore.shared.titlesAssigned()
-    }
-
-    /// 무지개에 그어져 있는 데드라인들을 다시 읽는다.
-    private func refreshDeadlines() {
-        deadlines = TodoEventBridge.shared.deadlinesByToken()
+    /// 무지개에 그어져 있는 기간들을 다시 읽고, 오늘 계획을 거기 맞춘다.
+    /// 목록의 '오늘·이번 주·밀림' 판정이 전부 이 한 벌에서 나온다 (→ `TodoWhen`).
+    private func refreshPeriods() {
+        periods = TodoEventBridge.shared.periodsByToken()
+        syncTodayPlan()
     }
 
     /// 무지개에만 있고 할 일에는 아직 없는 일들을 다시 읽는다.
@@ -1171,7 +1225,7 @@ struct TodoView: View {
 
     /// 날짜를 직접 고르는 시트를 연다. 이미 정해져 있으면 그 날짜에서 시작한다.
     private func beginDeadlinePick(for item: BacklogItem) {
-        pickedDeadline = deadlines[item.dragToken] ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+        pickedDeadline = periods[item.dragToken]?.end ?? Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
         deadlinePickerItem = item
     }
 
@@ -1179,7 +1233,7 @@ struct TodoView: View {
     private func setDeadline(_ date: Date, for item: BacklogItem) {
         let hours = TodoTree(allItems).totalHours(of: item)
         guard TodoEventBridge.shared.drawRainbow(for: item, deadline: date, hours: hours) else { return }
-        refreshDeadlines()
+        refreshPeriods()
         refreshRainbowPending()
     }
 
@@ -1195,9 +1249,9 @@ struct TodoRow: View {
     let item: BacklogItem
     let tree: TodoTree
     let category: BacklogCategory?
-    /// 오늘 계획 블록으로 올라가 있는지 (맥 타임라인·무지개에 표시되는 상태).
-    let isAssignedToday: Bool
-    /// 무지개에 그어 둔 줄의 끝나는 날. 없으면 아직 마감이 없는 일.
+    /// 언제의 일인가 — 상세에 적어 둔 기간 하나로 판정한 것 (→ `TodoWhen`).
+    let when: TodoWhen
+    /// 무지개에 그어 둔 줄의 끝나는 날. 없으면 아직 날짜를 안 정한 일.
     let deadline: Date?
     /// 탭 = 지금 할 일 하나 끝내기.
     let onAdvance: (BacklogItem, TodoTree) -> Void
@@ -1239,7 +1293,8 @@ struct TodoRow: View {
             // (어디까지 왔나 + 지금 것은 그냥 집어도 되나)
             ZStack {
                 StepDonut(done: tree.doneLeafCount(of: item),
-                          total: tree.leafCount(of: item))
+                          total: tree.leafCount(of: item),
+                          fragments: fragmentSlices)
                 Image(systemName: "bolt.fill")
                     .font(.system(size: 9, weight: .bold))
                     .foregroundStyle(TodoView.nowGreen)
@@ -1254,13 +1309,30 @@ struct TodoRow: View {
             // 줄에 얹었는데, 그 크기의 숫자는 지나가면서 안 읽힌다. 지나온 칸이 차 있는
             // 그림은 읽는 게 아니라 보인다.
             StepDonut(done: tree.doneLeafCount(of: item),
-                      total: tree.leafCount(of: item))
+                      total: tree.leafCount(of: item),
+                      fragments: fragmentSlices)
                 .frame(width: 24, height: 24)
         } else {
             Image(systemName: "circle")
                 .font(.system(size: 22))
                 .foregroundStyle(Color.secondary)
         }
+    }
+
+    /// 조각인 단계들이 도넛의 몇 번째 칸인가.
+    ///
+    /// 왼쪽 그림 하나가 "어디까지 왔나"에 더해 **"5분이 나면 어느 칸을 집을 수 있나"**까지
+    /// 말하게 하는 값이다. 아직 차례가 아닌 칸이라도 연두면, 그 일 안에 짧게 집을 게
+    /// 남아 있다는 뜻이 목록에서 그대로 보인다.
+    private var fragmentSlices: Set<Int> {
+        var result: Set<Int> = []
+        for (index, leaf) in tree.leaves(of: item).enumerated() {
+            let advice = TodoSplitAdvisor.advice(title: leaf.title,
+                                                 durationHours: leaf.durationHours,
+                                                 pick: leaf.fragmentPick)
+            if advice.isFragment { result.insert(index) }
+        }
+        return result
     }
 
     /// 한 줄은 '지금 할 일' 하나만 말한다.
@@ -1286,8 +1358,8 @@ struct TodoRow: View {
                     .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
                     .lineLimit(2)
 
-                if isAssignedToday { todayBadge }
-                if let deadline, !item.isCompleted { deadlineBadge(deadline) }
+                if !item.isCompleted, let badge = when.badge { whenBadge(badge) }
+                if let deadline, !item.isCompleted, when != .overdue { deadlineBadge(deadline) }
                 if let category {
                     Circle()
                         .fill(category.displayColor)
@@ -1340,6 +1412,7 @@ struct TodoRow: View {
         let days = calendar.dateComponents([.day],
                                            from: calendar.startOfDay(for: Date()),
                                            to: calendar.startOfDay(for: deadline)).day ?? 0
+        // 지난 날짜는 여기서 세지 않는다 — 그건 '밀림' 배지가 이미 말했다.
         let text = days <= 0 ? "오늘까지" : "D-\(days)"
         // 사흘 안쪽이면 색으로 먼저 말한다.
         let tint: Color = days <= 0 ? .red : (days <= 3 ? .orange : .secondary)
@@ -1353,13 +1426,16 @@ struct TodoRow: View {
             .accessibilityLabel("데드라인 \(text)")
     }
 
-    private var todayBadge: some View {
-        Text("오늘")
+    /// 날짜가 말하는 것 한 마디 — '오늘'이거나 '밀림'이거나. 나머지는 아무 말도 안 붙는다
+    /// (→ `TodoWhen.badge`). 이번 주 일에까지 배지를 달면 모든 줄에 배지가 생긴다.
+    private func whenBadge(_ text: String) -> some View {
+        let tint: Color = when == .overdue ? .red : .orange
+        return Text(text)
             .font(.subheadline.weight(.semibold))
-            .foregroundStyle(.orange)
+            .foregroundStyle(tint)
             .padding(.horizontal, 11)
             .padding(.vertical, 6)
-            .background(Capsule().fill(Color.orange.opacity(0.15)))
+            .background(Capsule().fill(tint.opacity(0.15)))
     }
 }
 

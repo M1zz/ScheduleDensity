@@ -19,6 +19,15 @@
 import Foundation
 import SwiftData
 
+extension Notification.Name {
+    /// 할 일의 기간(무지개에 그은 줄)이 바뀌었다.
+    ///
+    /// 그 줄 하나가 바뀌면 '오늘인가 · 이번 주인가 · 밀렸나'가 통째로 다시 답해져야 하고
+    /// (→ TodoWhen), 맥 계획도 거기 맞춰 따라가야 한다. 일정 스토어와 할 일 목록은
+    /// 서로 다른 컨테이너라 @Query로는 서로를 못 보므로, 바꾼 쪽이 알린다.
+    static let todoPeriodDidChange = Notification.Name("todoPeriodDidChange")
+}
+
 @MainActor
 final class TodoEventBridge {
     static let shared = TodoEventBridge()
@@ -75,6 +84,7 @@ final class TodoEventBridge {
             existing.weeklyPattern = workDays.pattern
             existing.selectedWeekdays = workDays.weekdays
             schedule.updateEvent(existing)
+            NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
             return true
         }
 
@@ -92,6 +102,7 @@ final class TodoEventBridge {
         )
         event.todoToken = item.dragToken
         schedule.addEvent(event)
+        NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
         return true
     }
 
@@ -125,11 +136,15 @@ final class TodoEventBridge {
         return (event.startDate, event.endDate)
     }
 
-    /// 지금 걸려 있는 데드라인을 토큰별로 한 번에 읽는다. 목록에서 줄마다 훑지 않으려고.
-    func deadlinesByToken() -> [String: Date] {
-        var result: [String: Date] = [:]
+    /// 지금 그어져 있는 기간을 토큰별로 한 번에 읽는다. 목록에서 줄마다 훑지 않으려고.
+    ///
+    /// 목록이 '오늘인가 · 이번 주인가 · 언제까지인가'를 전부 이 한 벌로 판정한다
+    /// (→ `TodoWhen`). 예전에는 끝나는 날만 읽어 갔는데, 그러면 "오늘부터 시작하는 일"과
+    /// "다음 주에 시작해서 다음 주에 끝나는 일"이 화면에서 구분되지 않는다.
+    func periodsByToken() -> [String: (start: Date, end: Date)] {
+        var result: [String: (start: Date, end: Date)] = [:]
         for event in storedEvents() {
-            if let token = event.todoToken { result[token] = event.endDate }
+            if let token = event.todoToken { result[token] = (event.startDate, event.endDate) }
         }
         return result
     }
@@ -156,6 +171,7 @@ final class TodoEventBridge {
     func clearRainbow(for item: BacklogItem) {
         guard let schedule, let event = event(for: item) else { return }
         schedule.deleteEvent(event)
+        NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
     }
 
     /// 할 일 제목을 고치면 무지개에 그어 둔 줄의 이름도 따라간다.

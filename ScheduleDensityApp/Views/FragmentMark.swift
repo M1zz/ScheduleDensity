@@ -123,14 +123,24 @@ struct FragmentQuestionRows: View {
 ///
 /// 목록에서 '몇 번째인가'를 말하는 유일한 자리다. 글자로 적어봤지만(예: `3/4`)
 /// 그 크기의 숫자는 지나가면서 안 읽혔다. 칸이 차 있는 그림은 읽는 게 아니라 보인다.
+///
+/// 칸 하나하나가 **그 단계가 조각인지도** 같이 말한다 — 5분에 집을 수 있는 단계 자리는
+/// 연두로 칠한다. 그러면 아직 시작도 안 한 일을 보면서 "저 안에 5분짜리가 둘 있네"가
+/// 그림으로 읽힌다. 지금 차례인 칸은 조각이든 아니든 주황이다 — 그 칸이 말해야 하는 것은
+/// '지금 여기'이고, 두 색이 한 칸을 두고 다투면 둘 다 안 읽힌다.
 struct StepDonut: View {
     /// 끝낸 단계 수.
     let done: Int
     /// 전체 단계 수.
     let total: Int
+    /// 조각인 단계들의 자리(0부터). 잎을 세는 순서와 같다.
+    var fragments: Set<Int> = []
 
     /// 이보다 잘게 자르면 칸이 아니라 점선으로 보인다. 그때는 그냥 한 줄로 채운다.
     private static let maxSlices = 12
+
+    /// 목록의 '바로 하면 되는 일' 칸과 **같은** 연두. 같은 뜻은 같은 색이어야 한다.
+    static let fragmentGreen = TodoView.nowGreen
 
     var body: some View {
         ZStack {
@@ -156,11 +166,14 @@ struct StepDonut: View {
         let gap = min(0.02, span * 0.18)
         let isDone = index < done
         let isCurrent = index == done
+        // 지금 차례(주황) > 끝낸 것(파랑) > 조각(연두) > 아직 안 온 것(회색).
+        let color: Color = isCurrent ? .orange
+            : (isDone ? Color.accentColor
+               : (fragments.contains(index) ? StepDonut.fragmentGreen
+                  : Color.secondary.opacity(0.28)))
         return Circle()
             .trim(from: Double(index) * span + gap / 2,
                   to: Double(index + 1) * span - gap / 2)
-            .stroke(isDone ? Color.accentColor
-                    : (isCurrent ? Color.orange : Color.secondary.opacity(0.28)),
-                    style: StrokeStyle(lineWidth: isCurrent ? 3.5 : 3, lineCap: .butt))
+            .stroke(color, style: StrokeStyle(lineWidth: isCurrent ? 3.5 : 3, lineCap: .butt))
     }
 }

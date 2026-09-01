@@ -157,6 +157,57 @@ final class WeekBlocksStore {
         return Set(blocks.filter { Self.matches($0, key: key) }.map(\.title))
     }
 
+    /// **오늘 계획을 기간에 맞춘다.** 사람이 누르는 자리는 상세의 시작일·끝나는 날 하나뿐이고,
+    /// 계획 블록은 그 날짜를 따라오는 그림자다 (→ `TodoWhen`).
+    ///
+    /// ⚠️ 자동으로 **지우는** 것이 위험한 자리다. 맥에서 손으로 만든 블록까지 제목이 같다는
+    ///    이유로 지우면, 사람이 아무것도 안 눌렀는데 계획이 사라진다. 그래서 **이 앱이
+    ///    올려 둔 것만** 기억해 두고(아래 `autoAssignedKey`), 그중 기간에서 빠진 것만 내린다.
+    ///    맥에서 만든 블록은 이 목록에 없으므로 끝까지 건드리지 않는다.
+    ///
+    /// - Parameter wanted: 오늘 계획에 있어야 할 (제목, 시간)들.
+    func syncToday(_ wanted: [(title: String, hours: Double)]) {
+        guard container != nil else { return }
+        let wantedTitles = Set(wanted.map { $0.title.trimmingCharacters(in: .whitespacesAndNewlines) }
+                                    .filter { !$0.isEmpty })
+        let mine = Self.autoAssignedTitles()
+
+        // 기간에서 빠진 것 내리기 — 이 앱이 올린 것만.
+        for title in mine.subtracting(wantedTitles) { unassign(title: title) }
+
+        // 기간에 새로 들어온 것 올리기. 이미 같은 제목의 블록이 있으면 assign이 알아서 넘어간다.
+        let already = titlesAssigned()
+        for entry in wanted {
+            let title = entry.title.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !title.isEmpty, !already.contains(title) else { continue }
+            assign(title: title, durationHours: entry.hours)
+        }
+        Self.setAutoAssignedTitles(wantedTitles)
+    }
+
+    /// 이 앱이 오늘 계획에 올려 둔 제목들. 날이 바뀌면 빈 집합에서 다시 시작한다 —
+    /// 어제 올린 것은 어제 계획이지, 오늘 내릴 대상이 아니다.
+    private static func autoAssignedTitles() -> Set<String> {
+        let defaults = UserDefaults.standard
+        guard defaults.string(forKey: autoAssignedDayKey) == todayKey() else { return [] }
+        return Set(defaults.stringArray(forKey: autoAssignedKey) ?? [])
+    }
+
+    private static func setAutoAssignedTitles(_ titles: Set<String>) {
+        let defaults = UserDefaults.standard
+        defaults.set(todayKey(), forKey: autoAssignedDayKey)
+        defaults.set(Array(titles), forKey: autoAssignedKey)
+    }
+
+    private static let autoAssignedKey = "weekBlocks.autoAssignedToday"
+    private static let autoAssignedDayKey = "weekBlocks.autoAssignedDay"
+
+    private static func todayKey() -> String {
+        let cal = Calendar.current
+        let c = cal.dateComponents([.year, .month, .day], from: Date())
+        return "\(c.year ?? 0)-\(c.month ?? 0)-\(c.day ?? 0)"
+    }
+
     /// 할 일을 그 날짜의 계획 블록으로 배정한다. 이미 있으면 아무것도 하지 않고 true.
     @discardableResult
     func assign(title: String, durationHours: Double, to date: Date = Date()) -> Bool {
