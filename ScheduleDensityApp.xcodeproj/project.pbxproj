@@ -26,12 +26,14 @@
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
 		311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */; };
 		328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */; };
+		365C0C76527D982BAB6ED969 /* CloudSchemaPrimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */; };
 		3A77EF2266BE28AD675C335B /* TodoSplitAdvisor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */; };
 		3C892AB3EA9C8B5F384E8630 /* TodoWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F72F9EC4C2F155B4FA16D8 /* TodoWidgetSnapshot.swift */; };
 		41D7EB4840F00B281ADBFCF9 /* RainbowOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */; };
 		42AE13BB68F193890259458B /* WeekLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3700DE7959B6C0D6FF3AC4 /* WeekLedger.swift */; };
 		434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3513E47DA1D5F509870816E5 /* Assets.xcassets */; };
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
+		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */; };
 		5BD084E0CFCA79A3B76131DF /* CategoryManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */; };
@@ -131,10 +133,12 @@
 
 /* Begin PBXFileReference section */
 		059E898FF838C334CC121045 /* CloudSyncLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncLog.swift; sourceTree = "<group>"; };
+		0913AF014705CF42B5A7C188 /* TodoArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoArchive.swift; sourceTree = "<group>"; };
 		094038A30FE0C5205D38B208 /* TodoEventBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoEventBridge.swift; sourceTree = "<group>"; };
 		09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineOccurrence.swift; sourceTree = "<group>"; };
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSchemaPrimer.swift; sourceTree = "<group>"; };
 		21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitAdvisor.swift; sourceTree = "<group>"; };
 		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A25397A90AF67293DBF60A2 /* FragmentMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentMark.swift; sourceTree = "<group>"; };
@@ -308,12 +312,14 @@
 			isa = PBXGroup;
 			children = (
 				EDF674923A141F19CD56EF10 /* CloudKitManager.swift */,
+				1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */,
 				B152BA511813FF0AD6412A7C /* CloudSchemaProbe.swift */,
 				059E898FF838C334CC121045 /* CloudSyncLog.swift */,
 				EA829919C711830D349E106C /* EventKitManager.swift */,
 				771562271827FDCDA952A709 /* PurchaseManager.swift */,
 				7A696AAEE492018F406A9411 /* RainbowWidgetSync.swift */,
 				4164272EB750B716814E94EB /* SyncSettingsManager.swift */,
+				0913AF014705CF42B5A7C188 /* TodoArchive.swift */,
 				094038A30FE0C5205D38B208 /* TodoEventBridge.swift */,
 				6EF8BA6154DE9430653A8F56 /* TodoShareIntake.swift */,
 				979A4AF622853CA818289703 /* TodoWidgetSync.swift */,
@@ -582,6 +588,7 @@
 				15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */,
 				5BD084E0CFCA79A3B76131DF /* CategoryManagerView.swift in Sources */,
 				DB9CB30FC88A37557EF86206 /* CloudKitManager.swift in Sources */,
+				365C0C76527D982BAB6ED969 /* CloudSchemaPrimer.swift in Sources */,
 				6E2D4DB1A37A82C855C96400 /* CloudSchemaProbe.swift in Sources */,
 				CB298C12B23FF6BBBD9B23DD /* CloudSyncLog.swift in Sources */,
 				DC4C3509F9BE51C95311F272 /* ColorHex.swift in Sources */,
@@ -623,6 +630,7 @@
 				71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */,
 				6BF0C551702B1A5F00487205 /* Theme.swift in Sources */,
 				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
+				51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */,
 				8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */,
 				8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */,
 				9B43E50F4245366DA515CE89 /* TodoShareInbox.swift in Sources */,

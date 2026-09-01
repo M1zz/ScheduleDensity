@@ -46,6 +46,8 @@ struct SettingsView: View {
     @State private var isProbingSchema = false
     /// 모델에는 있는데 서버에는 없는 필드. 하나라도 있으면 동기화 전체가 죽는다.
     @State private var missingFields: [String: [String]] = [:]
+    @State private var isPrimingSchema = false
+    @State private var primeNote: String?
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
@@ -596,6 +598,7 @@ struct SettingsView: View {
                         Spacer()
                         Text(accountStatusText).foregroundColor(.secondary)
                     }
+                    #if DEBUG
                     HStack {
                         Text("계정 식별자")
                         Spacer()
@@ -606,6 +609,7 @@ struct SettingsView: View {
                             .truncationMode(.middle)
                             .textSelection(.enabled)
                     }
+                    #endif
                     HStack {
                         Text("맥에서 내려온 계획")
                         Spacer()
@@ -620,6 +624,9 @@ struct SettingsView: View {
 
                     // 스키마가 배포 안 된 것은 위 값들로는 안 드러난다 —
                     // 계정도 맞고 저장 위치도 '클라우드'인데 아무것도 안 오간다.
+                    // ── 여기부터는 개발용이다. 사용자에게는 위 네 줄이면 충분하고,
+                    //    아래는 원문 에러와 필드 이름이라 읽을 사람이 다르다.
+                    #if DEBUG
                     // 엔진이 직접 남긴 결과. 결과 숫자만으로는 '왜'를 알 수 없다.
                     syncEventRow("준비", CloudSyncLog.shared.setup)
                     syncEventRow("받기", CloudSyncLog.shared.importing)
@@ -675,6 +682,28 @@ struct SettingsView: View {
                             }
                         }
                     }
+
+                    // 옵셔널 필드는 값을 한 번 넣어야 서버에 칸이 생긴다.
+                    // 손으로 다 써 보는 대신 표본 한 벌로 만들어 둔다
+                    // (→ CloudSchemaPrimer.swift). Development에서만 뜻이 있다.
+                    Button {
+                        Task { await primeSchema() }
+                    } label: {
+                        HStack {
+                            Text(isPrimingSchema ? "만드는 중… (25초)" : "스키마 만들기")
+                            Spacer()
+                            if isPrimingSchema { ProgressView() }
+                        }
+                    }
+                    .disabled(isPrimingSchema)
+
+                    if let note = primeNote {
+                        Text(note)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .textSelection(.enabled)
+                    }
+                    #endif
                 } header: {
                     Text("동기화 진단")
                 } footer: {
@@ -1349,6 +1378,23 @@ extension SettingsView {
             }
         }
     }
+
+    #if DEBUG
+    /// 모든 필드에 값을 넣은 표본을 한 벌 올렸다 지운다 (→ CloudSchemaPrimer.swift).
+    /// 레코드는 지워도 스키마는 남는다 — 그게 목적이다.
+    @MainActor
+    func primeSchema() async {
+        guard let container = CloudDiagnostics.todoContainer else {
+            primeNote = "스토어가 없습니다."
+            return
+        }
+        isPrimingSchema = true
+        primeNote = nil
+        let report = await CloudSchemaPrimer.prime(container.mainContext)
+        primeNote = report.note
+        isPrimingSchema = false
+    }
+    #endif
 
     /// iCloud 존에 실제로 무엇이 들어 있는지 센다 (→ CloudSchemaProbe.swift).
     @MainActor

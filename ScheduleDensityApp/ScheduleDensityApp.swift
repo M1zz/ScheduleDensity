@@ -334,6 +334,13 @@ struct ScheduleDensityApp: App {
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
+            // 할 일을 스토어 밖에 한 벌 더 떠 둔다 (→ TodoArchive.swift).
+            // 스토어가 빈 채로 열렸으면 떠 둔 것으로 되돌린다 — 이 기기에만 있는
+            // 유일본이라 스토어가 한 번 비면 되찾을 데가 없다.
+            .task {
+                await TodoArchive.restoreIfStoreIsEmpty(todoContainer.mainContext)
+                TodoArchive.write(from: todoContainer.mainContext)
+            }
             // 제어센터에서 '할 일 적기'를 눌렀다면 그 탭으로 내려 준다.
             // **플래그는 여기서 거두지 않는다** — 빈 줄을 여는 쪽이 거둔다(→ TodoView).
             // 여기서 같이 거두면 어느 쪽이 먼저 도착했는지에 따라 줄이 열리다 말다 한다.
@@ -351,6 +358,10 @@ struct ScheduleDensityApp: App {
                 await PurchaseManager.shared.refresh()
             }
             .onChange(of: scenePhase) { _, phase in
+                if phase == .background {
+                    // 쓰던 것을 안전망에 반영해 둔다. 다음에 스토어가 비어도 여기까지는 남는다.
+                    TodoArchive.write(from: todoContainer.mainContext)
+                }
                 if phase == .active {
                     if QuickTodoBridge.hasPendingAdd { selectedTab = .todo }
                     intakeSharedTodos()
