@@ -21,11 +21,20 @@ import Foundation
 
 enum TodoAccess {
 
-    /// 이 기기에서 할 일을 적고 고칠 수 있는가.
+    /// **적기를 팔기 시작했는가.** false인 동안에는 모두에게 열려 있다.
     ///
-    /// 지금은 '모두 열기' 하나에 걸어 둔다 (→ ProEntitlement.swift). 나중에 적기만
-    /// 따로 파는 상품이 생기면 여기 한 줄만 바꾸면 된다 — 화면들은 전부 이 값만 본다.
-    static var canEdit: Bool { ProEntitlement.isUnlocked }
+    /// ⚠️ 이 스위치가 없으면 업데이트를 내는 순간 **지금까지 무료로 적던 사람들이
+    ///    갑자기 못 적게 된다.** 그건 값을 받는 게 아니라 뺏는 것이다.
+    ///    상품이 실제로 팔리기 시작할 때 켠다. 맥의 `MacEntitlement.sellsAccess`와
+    ///    짝이고, 두 앱을 따로 팔 것이므로 **각자 따로 켠다.**
+    static let sellsEditing = false
+
+    /// 이 기기에서 할 일을 적고 고칠 수 있는가.
+    /// 화면들은 **이 값 하나만** 본다.
+    static var canEdit: Bool {
+        guard sellsEditing else { return true }
+        return ProEntitlement.isUnlocked
+    }
 
     /// 잠긴 기기에서 안내에 쓰는 말. 화면마다 따로 쓰면 문구가 갈라진다.
     static let lockedTitle = "이 기기에서는 읽기만 됩니다"

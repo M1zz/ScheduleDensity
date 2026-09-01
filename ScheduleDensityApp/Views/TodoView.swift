@@ -35,6 +35,8 @@ struct TodoView: View {
     /// 회수 장부는 값을 받고 여는 것 중 하나다 (→ ProEntitlement.swift).
     @State private var purchases = PurchaseManager.shared
     @State private var showingLedgerPaywall = false
+    /// '적기'가 잠겼을 때 내는 페이월 (→ ProFeature.editing).
+    @State private var editingPaywall = false
     /// 적는 줄이 열려 있는가. + 를 누르면 열리고, 빈 채로 포커스를 잃으면 닫힌다.
     @State private var isAdding = false
     /// 오른쪽 위 + 를 누를 때마다 하나씩 오른다. 값 자체는 뜻이 없고, 바뀌었다는 것만 신호다.
@@ -198,6 +200,7 @@ struct TodoView: View {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
         .paywall(for: .ledger, isPresented: $showingLedgerPaywall)
+        .paywall(for: .editing, isPresented: $editingPaywall)
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
                 Task { await family.startSharing() }
@@ -452,7 +455,7 @@ struct TodoView: View {
 
     private var readOnlyNotice: some View {
         Button {
-            showingLedgerPaywall = true
+            editingPaywall = true
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "lock")

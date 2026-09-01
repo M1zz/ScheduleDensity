@@ -21,6 +21,9 @@ import Foundation
 /// 값을 받고 여는 것들. 목록은 페이월과 설정 화면이 함께 읽는다 —
 /// 무엇이 열리는지 두 군데에 따로 적으면 반드시 어긋난다.
 enum ProFeature: String, CaseIterable, Identifiable {
+    /// 이 기기에서 할 일을 적기. 잠기면 상대 기기에서 온 것을 보기만 한다
+    /// (→ TodoAccess.swift). 목록 맨 위에 서므로 제일 앞에 둔다.
+    case editing
     case widget
     case calendarImport
     case scheduleShare
@@ -31,6 +34,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .editing:        return "이 기기에서 적기"
         case .widget:         return "홈·잠금 화면 위젯"
         case .calendarImport: return "캘린더에서 가져오기"
         case .scheduleShare:  return "일정 공유"
@@ -41,6 +45,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var note: String {
         switch self {
+        case .editing:        return "할 일을 적고 고칩니다. 적은 것은 맥에서도 보입니다."
         case .widget:         return "지금 할 단계와 무지개를 앱을 안 열고도 봅니다."
         case .calendarImport: return "시스템 캘린더의 일정을 무지개로 들여옵니다."
         case .scheduleShare:  return "내 일정을 읽기 전용으로 나눠 봅니다."
@@ -51,6 +56,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
+        case .editing:        return "square.and.pencil"
         case .widget:         return "rectangle.3.group"
         case .calendarImport: return "calendar.badge.plus"
         case .scheduleShare:  return "person.2"
