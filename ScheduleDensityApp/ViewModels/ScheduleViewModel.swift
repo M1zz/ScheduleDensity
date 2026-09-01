@@ -792,10 +792,12 @@ class ScheduleViewModel {
                 }
 
                 // 선택 1: 이 일정을 추가하는 경우
+                // 다음 일정과 견줄 끝은 `effectiveEndDate()`다 — 무한 반복 일정은
+                // endDate 뒤로도 1년치가 그려지므로, endDate로 재면 그 위에 겹쳐 놓인다.
                 if canAdd {
                     var newCombination = currentCombination
                     newCombination.append(event)
-                    findBestCombination(index: index + 1, currentCombination: newCombination, currentDays: currentDays + eventCells, lastEndDate: event.endDate)
+                    findBestCombination(index: index + 1, currentCombination: newCombination, currentDays: currentDays + eventCells, lastEndDate: event.effectiveEndDate())
                 }
 
                 // 선택 2: 이 일정을 건너뛰는 경우
@@ -818,11 +820,11 @@ class ScheduleViewModel {
                         if let dayAfterLastEnd = calendar.date(byAdding: .day, value: 1, to: lastEnd),
                            event.startDate >= dayAfterLastEnd {
                             laneEvents.append(event)
-                            lastEndDate = event.endDate
+                            lastEndDate = event.effectiveEndDate()
                         }
                     } else {
                         laneEvents.append(event)
-                        lastEndDate = event.endDate
+                        lastEndDate = event.effectiveEndDate()
                     }
                 }
                 bestCombination = laneEvents
@@ -952,8 +954,18 @@ class ScheduleViewModel {
                     event1.actualCellCount() > event2.actualCellCount()
                 }
 
+                // 이 레인에 **이번에 새로 넣은** 일정들. 후보들은 각자 원래 있던 일정과만
+                // 견줘 봤을 뿐, 서로는 안 견줬다. 그대로 다 넣으면 서로 겹치는 둘이 한 레인에
+                // 들어가고, 그 날 칸에는 둘 중 하나만 그려진다 — 두 개인데 한 줄로 보인다.
+                var placedHere: [Event] = []
+
                 // 배치 가능한 일정들을 모두 이 레인에 추가
                 for event in fittableEvents {
+                    guard !placedHere.contains(where: { eventsOverlap(event, $0) }) else {
+                        print("               ↩️  '\(event.title)': 방금 넣은 일정과 겹쳐 건너뜀")
+                        continue
+                    }
+                    placedHere.append(event)
                     gapFilledLanes.append((event: event, lane: lane))
                     assignedSet.insert(ObjectIdentifier(event))
                     unassignedEvents.removeAll { ObjectIdentifier($0) == ObjectIdentifier(event) }
@@ -1148,16 +1160,38 @@ class ScheduleViewModel {
     }
 
     // 두 일정이 겹치는지 확인
+    /// 두 일정이 **한 레인을 같이 쓸 수 없는가.**
+    ///
+    /// 재는 자는 화면이다. 한 칸(날짜×레인)에는 일정 하나만 그려지므로
+    /// (→ `DateRow.getEventForLane`), 그 칸을 둘이 원하면 겹친 것이다.
+    ///
+    /// ⚠️ 그래서 **'종료일까지 이어 칠하기'가 켜져 있으면 기간 전체가 그 칸을 쓴다.**
+    ///    예전에는 '실제로 하는 날'만 견줬다. 그러면 마감 하루만 진한 두 일정
+    ///    (할 일에서 그은 줄이 늘 그렇다 → TodoEventBridge.workDayRule)은
+    ///    진한 날이 안 겹친다는 이유로 한 레인에 들어가고, 화면에서는 옅은 기간 칸이
+    ///    서로를 덮어 **두 일정이 한 줄로** 보인다. 8/29~9/29짜리와 8/31~9/7짜리가
+    ///    한 줄에 겹쳐 나오던 것이 이것이다.
+    ///
+    /// 이어 칠하기를 끄면 옅은 칸이 없으므로, 그때만 '하는 날'로 잰다.
     private func eventsOverlap(_ event1: Event, _ event2: Event) -> Bool {
+        // ⚠️ 끝나는 날은 `effectiveEndDate()`로 본다. 무한 반복 일정은 `endDate`가
+        //    지나 있어도 화면에는 1년치가 그려지므로(→ Event.effectiveEndDate),
+        //    `endDate`로 재면 "안 겹친다"고 답하고 한 레인에 겹쳐 들어간다.
+        let end1 = event1.effectiveEndDate()
+        let end2 = event2.effectiveEndDate()
+
         // 날짜 범위가 겹치지 않으면 false
-        guard event1.startDate <= event2.endDate && event2.startDate <= event1.endDate else {
+        guard event1.startDate <= end2 && event2.startDate <= end1 else {
             return false
         }
+
+        // 기간 전체가 칸을 차지한다 — 범위가 겹치면 그것으로 끝이다.
+        if fillSpanToEndDate { return true }
 
         // 💡 개선: 실제로 두 일정이 동시에 활성화되는 날짜가 있는지 확인
         let calendar = Calendar.current
         let overlapStart = max(event1.startDate, event2.startDate)
-        let overlapEnd = min(event1.endDate, event2.endDate)
+        let overlapEnd = min(end1, end2)
 
         // 겹치는 날짜 범위를 순회하며 실제 겹침 확인
         var currentDate = overlapStart
@@ -1178,9 +1212,13 @@ class ScheduleViewModel {
         return false
     }
 
-    // 두 일정이 같은지 확인 (색상으로 비교)
+    /// 두 일정이 **같은 일정인지**.
+    ///
+    /// ⚠️ 예전에는 색으로 비교했다. 팔레트에서 고른 색은 여러 일정이 나눠 쓰므로,
+    ///    겹침 검사에서 "자기 자신"을 빼려던 자리가 **같은 색 남의 일정까지** 빼 버렸다.
+    ///    그러면 실제로 겹치는 줄이 안 겹친다고 판정되어 한 레인에 같이 들어간다.
     private func isSameEvent(_ event1: Event, _ event2: Event) -> Bool {
-        return event1.color == event2.color
+        event1.persistentModelID == event2.persistentModelID
     }
 
     // 요일 배열을 문자열로 포맷 (예: "월,수,금" 또는 "모든 요일")
