@@ -93,6 +93,56 @@ enum CloudSchemaProbe {
         }
     }
 
+    // MARK: - 서버에 없는 필드 찾기
+    //
+    // 필드가 하나라도 Production 스키마에 없으면 **동기화 전체가 죽는다.**
+    // 미러링 델리게이트가 초기화에 실패해서 받기도 보내기도 안 돈다
+    // ("Never successfully initialized"). 그래서 하나 지우고 다시 돌리는
+    // 두더지잡기가 아니라, 어긋난 것을 **한 번에 다** 찾아야 한다.
+    //
+    // 서버가 가진 필드는 레코드를 한 건 받아 보면 알 수 있고, 이 앱이 가진 필드는
+    // SwiftData 스키마에서 읽는다. 둘을 빼면 '보낼 수 없는 필드' 목록이 나온다.
+
+    /// 타입별로 **모델에는 있는데 서버에는 없는** 필드 이름들.
+    static func missingFields() async -> [String: [String]] {
+        let database = CKContainer(identifier: WeekBlocksStore.containerID).privateCloudDatabase
+        let zoneID = CKRecordZone.ID(zoneName: zoneName, ownerName: CKCurrentUserDefaultName)
+
+        // 1) 서버가 가진 필드: 타입마다 레코드 한 건씩 받아 열쇠를 모은다.
+        //    (한 건만 보면 nil인 필드가 빠질 수 있어, 받은 건 전부 합집합으로 모은다.)
+        var serverKeys: [String: Set<String>] = [:]
+        let configuration = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
+        let operation = CKFetchRecordZoneChangesOperation(
+            recordZoneIDs: [zoneID],
+            configurationsByRecordZoneID: [zoneID: configuration])
+        operation.fetchAllChanges = true
+        operation.recordWasChangedBlock = { _, result in
+            if case .success(let record) = result {
+                serverKeys[record.recordType, default: []].formUnion(record.allKeys())
+            }
+        }
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            var done = false
+            operation.fetchRecordZoneChangesResultBlock = { _ in
+                if !done { done = true; continuation.resume() }
+            }
+            database.add(operation)
+        }
+
+        // 2) 이 앱이 가진 필드: SwiftData 스키마에서 그대로 읽는다.
+        var out: [String: [String]] = [:]
+        for entity in WeekBlocksStore.schema.entities {
+            let recordType = "CD_\(entity.name)"
+            guard let have = serverKeys[recordType], !have.isEmpty else { continue }
+            let mine = entity.attributes.map { "CD_\($0.name)" }
+            let missing = mine.filter { !have.contains($0) }.sorted()
+            if !missing.isEmpty {
+                out[entity.name] = missing.map { $0.replacingOccurrences(of: "CD_", with: "") }
+            }
+        }
+        return out
+    }
+
     /// 실패를 이름 붙인다. **모르는 것을 '없음'으로 적지 않는다** —
     /// 네트워크가 끊긴 것을 미배포로 읽으면 멀쩡한 스키마를 배포하러 가게 된다.
     private static func describe(_ error: Error) -> Outcome {

@@ -44,6 +44,8 @@ struct SettingsView: View {
     /// 여섯 번의 왕복이라 화면을 열 때마다 돌리지 않고, 눌렀을 때만 확인한다.
     @State private var zoneCensus: CloudSchemaProbe.Outcome?
     @State private var isProbingSchema = false
+    /// 모델에는 있는데 서버에는 없는 필드. 하나라도 있으면 동기화 전체가 죽는다.
+    @State private var missingFields: [String: [String]] = [:]
     @State private var showingBalanceAlert = false
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
@@ -658,6 +660,20 @@ struct SettingsView: View {
                             .foregroundColor(.secondary)
                     case .none:
                         EmptyView()
+                    }
+
+                    if !missingFields.isEmpty {
+                        ForEach(missingFields.keys.sorted(), id: \.self) { entity in
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(entity) — 서버에 없는 필드")
+                                    .font(.callout)
+                                    .foregroundColor(.red)
+                                Text((missingFields[entity] ?? []).joined(separator: ", "))
+                                    .font(.caption2)
+                                    .foregroundColor(.red)
+                                    .textSelection(.enabled)
+                            }
+                        }
                     }
                 } header: {
                     Text("동기화 진단")
@@ -1339,6 +1355,9 @@ extension SettingsView {
     func probeSchema() async {
         isProbingSchema = true
         zoneCensus = await CloudSchemaProbe.census()
+        // 개수만으로는 왜 안 오는지 모른다. 어긋난 필드까지 함께 찾는다 —
+        // 하나라도 서버에 없으면 그것 때문에 동기화 전체가 죽는다.
+        missingFields = await CloudSchemaProbe.missingFields()
         isProbingSchema = false
     }
 
