@@ -2,6 +2,30 @@
 
 ## 1.1.0
 
+### 앱스토어 (한국어)
+
+<!-- App Store Connect '이 버전의 새로운 기능' 에 그대로 올라가는 글이다.
+     DeployBar 가 이 코드펜스 안을 읽어 쓴다 (→ RepoNotes.swift).
+     글머리표·번호·이모지·마크다운은 넣지 않는다. 줄바꿈으로만 가른다. -->
+
+```
+맥과 할 일이 오가지 않던 문제를 고쳤습니다
+제어센터에서 바로 할 일을 적습니다
+줄을 오른쪽으로 밀면 번개를 붙입니다
+무지개 색이 탁하게 보이던 것을 고쳤습니다
+일정 화면에서 글자가 겹치던 것을 고쳤습니다
+```
+
+### 앱스토어 (English)
+
+```
+Fixed todos not syncing with your Mac
+Add a todo right from Control Center
+Swipe a row right to flag it as quick
+Fixed washed out colors in the rainbow
+Fixed overlapping text on schedule cards
+```
+
 ### 욕망의 무지개 (iOS)
 
 **맥과 할 일이 오가지 않던 것을 고쳤습니다.**

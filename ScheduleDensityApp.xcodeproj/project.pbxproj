@@ -175,6 +175,7 @@
 		771562271827FDCDA952A709 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		7A5EF904E1E47DF7E2D6E33E /* RainbowMeaningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowMeaningView.swift; sourceTree = "<group>"; };
 		7A696AAEE492018F406A9411 /* RainbowWidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowWidgetSync.swift; sourceTree = "<group>"; };
+		7BBB2D06AC909CB432EBA228 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		80DA86C80CF5921D0AB83F47 /* PlanBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanBlock.swift; sourceTree = "<group>"; };
 		82AA5977A04ACF9EED7C7BCA /* ProEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlement.swift; sourceTree = "<group>"; };
 		83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
@@ -311,6 +312,7 @@
 		0B560E5E408CB2EDE6C36B82 = {
 			isa = PBXGroup;
 			children = (
+				7F1018E4604E2139BCDCA321 /* Config */,
 				35DBDFBD378031DF075E6A8B /* ScheduleDensityApp */,
 				0060244B2F5AF4A1F0ED0C1A /* TodoShare */,
 				54A5BBF181BA8FFBBF879A69 /* TodoWidget */,
@@ -381,6 +383,14 @@
 				3A2A03CCD4552470BED4636C /* WidgetLockedView.swift */,
 			);
 			path = TodoWidget;
+			sourceTree = "<group>";
+		};
+		7F1018E4604E2139BCDCA321 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				7BBB2D06AC909CB432EBA228 /* Version.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		A470A9D09715721C28BEFEC5 /* Models */ = {
@@ -738,6 +748,7 @@
 		};
 		54147216BD39840710C18D1E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BBB2D06AC909CB432EBA228 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -771,7 +782,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -791,7 +801,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -805,6 +814,7 @@
 		};
 		9593051BEBEFF77DF6CE6524 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7BBB2D06AC909CB432EBA228 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -838,7 +848,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QGAQ3AY3R3;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -852,7 +861,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

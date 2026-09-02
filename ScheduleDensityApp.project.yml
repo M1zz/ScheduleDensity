@@ -1,4 +1,10 @@
 name: ScheduleDensityApp
+# 버전·빌드번호의 단일 소스 (→ Config/Version.xcconfig).
+# DeployBar 가 배포할 때 이 파일만 고쳐 버전을 올린다 (deploy.env 의 VERSION_XCCONFIG).
+configFiles:
+  Debug: Config/Version.xcconfig
+  Release: Config/Version.xcconfig
+
 options:
   # ⚠️ App Store에 이미 배포된 번들 ID다. 절대 바꾸지 말 것 —
   #    번들 ID를 바꾸면 기존 앱의 업데이트가 아니라 별개의 새 앱이 되어
@@ -14,11 +20,10 @@ packages:
     majorVersion: 3.5.1
 settings:
   base:
-    MARKETING_VERSION: "1.1.0"
-    # ⚠️ 빌드 번호는 **한 번 올린 것보다 항상 커야 한다.** 스토어에 9까지 올라가 있어서
-    #    1로 되돌렸다가 업로드가 거절됐다("must contain a higher version than [9]").
-    #    마케팅 버전(1.1.0)과 달리 이 값은 되돌리거나 다시 쓰지 못한다. 올리기만 한다.
-    CURRENT_PROJECT_VERSION: "11"
+# ⚠️ MARKETING_VERSION 과 CURRENT_PROJECT_VERSION 은 **여기 두지 않는다.**
+    #    Config/Version.xcconfig 한 곳에서만 정한다 — 타겟이 셋이라 흩어지면
+    #    번들끼리 버전이 어긋나 업로드가 거절된다. 프로젝트 설정은 xcconfig 보다
+    #    우선하므로, 여기 되살리는 순간 그 파일이 조용히 무시된다.
     DEVELOPMENT_TEAM: QGAQ3AY3R3
     SWIFT_VERSION: "5.0"
     ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
