@@ -89,6 +89,22 @@ enum TodoShareInbox {
         return drafts.sorted { $0.receivedAt < $1.receivedAt }
     }
 
+    /// 상자에 몇 개가 기다리고 있는가. **비우지 않는다.**
+    ///
+    /// 잠긴 기기는 상자를 비우지 못하므로(→ TodoShareIntake), 받아 둔 것이 있다는
+    /// 사실만이라도 말해줘야 한다. 조용히 두면 공유한 것이 사라진 것처럼 보인다.
+    ///
+    /// 읽기만 하는데도 쓰기 조율을 쓴다 — 익스텐션이 같은 순간 파일을 고치고 있을 수
+    /// 있고, 이 값은 화면을 열 때 한 번만 필요해서 아낄 이유가 없다.
+    static func pendingCount() -> Int {
+        guard let url = fileURL else { return 0 }
+        var count = 0
+        coordinate(writingTo: url) { url in
+            count = decode(at: url).count
+        }
+        return count
+    }
+
     // MARK: - 파일
 
     /// 앱과 익스텐션은 서로 다른 프로세스라 같은 파일을 동시에 만질 수 있다.

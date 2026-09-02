@@ -27,7 +27,12 @@ enum TodoAccess {
     ///    갑자기 못 적게 된다.** 그건 값을 받는 게 아니라 뺏는 것이다.
     ///    상품이 실제로 팔리기 시작할 때 켠다. 맥의 `MacEntitlement.sellsAccess`와
     ///    짝이고, 두 앱을 따로 팔 것이므로 **각자 따로 켠다.**
-    static let sellsEditing = false
+    ///
+    /// 🚢 1.1.0에서 켰다. 이 버전부터 판다.
+    ///    쓰던 사람은 `ProEntitlement.grandfathersExistingUsers`가 받아낸다 —
+    ///    **그 스위치를 끄면 1.0.9까지 무료로 적던 사람들이 이 업데이트로 못 적게 된다.**
+    ///    둘은 반드시 함께 켜져 있어야 한다.
+    static let sellsEditing = true
 
     /// 이 기기에서 할 일을 적고 고칠 수 있는가.
     /// 화면들은 **이 값 하나만** 본다.
@@ -39,4 +44,21 @@ enum TodoAccess {
     /// 잠긴 기기에서 안내에 쓰는 말. 화면마다 따로 쓰면 문구가 갈라진다.
     static let lockedTitle = "이 기기에서는 읽기만 됩니다"
     static let lockedNote = "적는 것은 열어야 합니다. 이미 적어 둔 것은 그대로 보이고, 다른 기기에서 적은 것도 계속 내려옵니다."
+}
+
+// MARK: - 지금 실제로 값을 받는 것들
+//
+// `ProFeature.allCases`는 **팔 수 있는 것의 목록**이지 지금 파는 것의 목록이 아니다.
+// '적기'에는 스위치가 따로 달려 있어서(위 `sellsEditing`), 켜기 전까지는 무료다.
+// 화면이 allCases를 그대로 세면 잠기지도 않은 것을 잠겼다고 말하게 된다.
+//
+// ⚠️ ProEntitlement.swift가 아니라 여기 둔다. 그 파일은 위젯 익스텐션도 함께
+//    컴파일하는데 위젯에는 이 파일이 없다 (→ ScheduleDensityApp.project.yml).
+
+extension ProFeature {
+
+    /// 페이월과 설정이 함께 읽는, **오늘 잠겨 있는 것들**.
+    static var sold: [ProFeature] {
+        allCases.filter { $0 != .editing || TodoAccess.sellsEditing }
+    }
 }

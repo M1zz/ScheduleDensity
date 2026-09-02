@@ -56,6 +56,9 @@ struct TodoDetailView: View {
     @State private var sheetStepTitle = ""
     @FocusState private var inputFocused: Bool
     @FocusState private var sheetStepFocused: Bool
+    /// 잠긴 기기에서 고치려 들면 내는 페이월 (→ ProFeature.editing).
+    /// 목록 화면과 같다 — 잠긴 자리는 아무 일도 안 일어나게 두지 않는다.
+    @State private var editingPaywall = false
 
     private var tree: TodoTree { TodoTree(allItems) }
 
@@ -101,6 +104,7 @@ struct TodoDetailView: View {
             // 깔려 있으면 내가 적은 단계와 뼈대가 한 화면에서 섞여 보인다.
             templateButton
         }
+        .paywall(for: .editing, isPresented: $editingPaywall)
         .onChange(of: inputFocused) { _, focused in
             if focused { scrollToNewRow(proxy) }
         }
@@ -259,12 +263,15 @@ struct TodoDetailView: View {
 
         return VStack(alignment: .leading, spacing: 12) {
             Button {
-                showingSettings = true
+                // 시트 안은 전부 고치는 자리(이름·시간·기간·분류)라 통째로 잠근다.
+                if TodoAccess.canEdit { showingSettings = true } else { editingPaywall = true }
             } label: {
                 cardFace(stepCount: stepCount, doneCount: doneCount)
             }
             .buttonStyle(.plain)
-            .accessibilityHint("눌러서 이름·소요시간·기간·분류 고치기")
+            .accessibilityHint(TodoAccess.canEdit
+                               ? "눌러서 이름·소요시간·기간·분류 고치기"
+                               : "잠김. 눌러서 여는 법 보기")
 
             // 지금 할 단계에 경고가 있으면 그것만 팁으로. (다른 줄에는 안 깐다)
             // 카드를 누르는 자리 **밖**에 둔다 — 팁에도 손댈 곳이 있어서, 안에 있으면
@@ -932,21 +939,29 @@ struct TodoDetailView: View {
                             : TodoSplitAdvisor.advice(title: row.item.title,
                                                       durationHours: row.item.durationHours,
                                                       pick: row.item.fragmentPick),
-                        onToggle: { toggle(row.item) })
+                        onToggle: {
+                            // 끝냈다고 표시하는 것도 고치는 일이다.
+                            if TodoAccess.canEdit { toggle(row.item) } else { editingPaywall = true }
+                        })
                     .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            remove(row.item)
-                        } label: {
-                            Label("삭제", systemImage: "trash")
+                        // 삭제·이름·시간은 잠긴 기기에서 아예 나오지 않는다.
+                        // 눌러서 막히는 것보다 없는 편이 낫다 — 스와이프는 손끝의 일이라
+                        // 매번 페이월이 뜨면 잔소리가 된다.
+                        if TodoAccess.canEdit {
+                            Button(role: .destructive) {
+                                remove(row.item)
+                            } label: {
+                                Label("삭제", systemImage: "trash")
+                            }
+                            Button {
+                                editing = row.item
+                            } label: {
+                                // 묶음에는 제 시간도 판정도 없다. 거기서 고치는 건 이름이다.
+                                Label(tree.hasChildren(row.item) ? "이름" : "시간·조각 판정",
+                                      systemImage: "slider.horizontal.3")
+                            }
+                            .tint(.blue)
                         }
-                        Button {
-                            editing = row.item
-                        } label: {
-                            // 묶음에는 제 시간도 판정도 없다. 거기서 고치는 건 이름이다.
-                            Label(tree.hasChildren(row.item) ? "이름" : "시간·조각 판정",
-                                  systemImage: "slider.horizontal.3")
-                        }
-                        .tint(.blue)
                     }
                     // 롱 프레스 = **이 단계를 더 쪼개러 들어가기.**
                     //
@@ -958,39 +973,52 @@ struct TodoDetailView: View {
                     //    그래서 위로/아래로를 메뉴 안에 같이 둔다 — 순서를 바꾸는 길이
                     //    사라지면 안 된다. (스와이프의 이름·삭제·하위 단계는 그대로다.)
                     .contextMenu {
+                        // '더 쪼개기'는 그 단계의 상세로 **들어가는** 길이라 잠기지 않는다.
+                        // 잠긴 기기에서도 아래를 들여다보는 것은 읽는 일이다.
                         Button {
                             pushedStep = row.item
                         } label: {
                             Label("더 쪼개기", systemImage: "square.split.2x1")
                         }
-                        Divider()
-                        Button {
-                            move(row.item, by: -1)
-                        } label: {
-                            Label("위로", systemImage: "arrow.up")
-                        }
-                        Button {
-                            move(row.item, by: 1)
-                        } label: {
-                            Label("아래로", systemImage: "arrow.down")
+                        if TodoAccess.canEdit {
+                            Divider()
+                            Button {
+                                move(row.item, by: -1)
+                            } label: {
+                                Label("위로", systemImage: "arrow.up")
+                            }
+                            Button {
+                                move(row.item, by: 1)
+                            } label: {
+                                Label("아래로", systemImage: "arrow.down")
+                            }
                         }
                     }
                     // 메뉴는 눈으로 여는 것이라 VoiceOver로는 잘 안 잡힌다.
                     // 위로/아래로를 접근성 동작으로도 남긴다 (로터의 '동작').
-                    .accessibilityAction(named: "위로") { move(row.item, by: -1) }
-                    .accessibilityAction(named: "아래로") { move(row.item, by: 1) }
+                    .accessibilityAction(named: "위로") {
+                        if TodoAccess.canEdit { move(row.item, by: -1) }
+                    }
+                    .accessibilityAction(named: "아래로") {
+                        if TodoAccess.canEdit { move(row.item, by: 1) }
+                    }
                     .accessibilityAction(named: "더 쪼개기") { pushedStep = row.item }
             }
-            .onMove(perform: moveRows)
+            .onMove(perform: TodoAccess.canEdit ? moveRows : nil)
 
             // 단계들 바로 아래 빈 줄. 여기에 적고 엔터를 치면 다음 줄로 이어진다.
-            newStepRow
-                // 적는 줄은 언제나 단계들 맨 아래다. 끌어서 그 위로 보낼 수 없다.
-                .moveDisabled(true)
+            // 잠긴 기기에는 서지 않는다 — 적을 수 없는 자리를 열어 두면 눌러 보고서야 안다.
+            if TodoAccess.canEdit {
+                newStepRow
+                    // 적는 줄은 언제나 단계들 맨 아래다. 끌어서 그 위로 보낼 수 없다.
+                    .moveDisabled(true)
+            }
         } header: {
             Text("단계")
         } footer: {
-            if rows.isEmpty {
+            if !TodoAccess.canEdit {
+                Text(TodoAccess.lockedNote)
+            } else if rows.isEmpty {
                 Text("이 일을 이루는 단계를 위 빈 줄에 순서대로 적어보세요.\n적어 두면 각 단계가 조각인지 덩어리인지는 앱이 먼저 답해 둡니다. 틀렸으면 그 단계를 왼쪽으로 밀어 고치면 됩니다.")
             } else if rows.count > 1 {
                 Text("길게 눌러 끌면 순서가 바뀝니다.")

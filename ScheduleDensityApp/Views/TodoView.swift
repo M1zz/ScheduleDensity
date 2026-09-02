@@ -314,7 +314,7 @@ struct TodoView: View {
                 // 0. 잠긴 기기라는 것부터 말한다. + 가 안 눌리는 이유를 모르면
                 //    고장으로 읽힌다 (→ TodoAccess.swift).
                 if !TodoAccess.canEdit {
-                    readOnlyNotice
+                    readOnlyNotice()
                 }
 
                 // 1. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
@@ -378,7 +378,7 @@ struct TodoView: View {
                         .swipeActions(edge: .leading) {
                             if TodoAccess.canEdit { markButton(for: item, tree: tree) }
                         }
-                        .contextMenu { itemMenu(for: item, tree: tree) }
+                        .contextMenu { if TodoAccess.canEdit { itemMenu(for: item, tree: tree) } }
                 }
                 .onDelete(perform: TodoAccess.canEdit ? { delete(errands, at: $0, tree: tree) } : nil)
 
@@ -400,7 +400,7 @@ struct TodoView: View {
                         .swipeActions(edge: .leading) {
                             if TodoAccess.canEdit { markButton(for: item, tree: tree) }
                         }
-                        .contextMenu { itemMenu(for: item, tree: tree) }
+                        .contextMenu { if TodoAccess.canEdit { itemMenu(for: item, tree: tree) } }
                 }
                 .onDelete(perform: TodoAccess.canEdit ? { delete(items, at: $0, tree: tree) } : nil)
 
@@ -449,11 +449,22 @@ struct TodoView: View {
     /// 잠긴 기기임을 말하는 줄. **이미 적어 둔 것은 그대로 보인다** —
     /// 목록이 비면 그건 값을 받는 게 아니라 뺏는 것이다.
     /// 이 기기에서 적었지만 아직 상대에게 안 보이는 줄의 수.
+    /// 공유로 받아 상자에 남아 있는 개수. 잠긴 동안에만 본다 —
+    /// 열려 있으면 앱을 켤 때 이미 비워져 늘 0이다.
+    private var pendingSharedCount: Int {
+        TodoAccess.canEdit ? 0 : TodoShareInbox.pendingCount()
+    }
+
     private var hiddenCount: Int {
         allItems.filter { !$0.isShared && TodoSharing.isMine($0) && !$0.isCompleted }.count
     }
 
-    private var readOnlyNotice: some View {
+    /// 잠긴 기기라고 말하는 줄. 두 목록이 같은 줄을 쓴다 — 화면마다 다른 말을 하면
+    /// 같은 잠금이 다른 잠금처럼 읽힌다.
+    ///
+    /// - Parameter showsMyListCounts: 내 목록에서만 뜻이 있는 숫자들(받은 상자·안 보이는 줄)을
+    ///   함께 보일지. 공유 목록에서는 그 숫자가 이 화면 이야기가 아니라 끈다.
+    private func readOnlyNotice(showsMyListCounts: Bool = true) -> some View {
         Button {
             editingPaywall = true
         } label: {
@@ -471,9 +482,19 @@ struct TodoView: View {
                         .lineSpacing(3)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
+                    // 공유로 넘긴 것이 사라진 게 아니라 **기다리고 있다**는 말.
+                    // 이 줄이 없으면 공유가 고장 난 것으로 읽힌다
+                    // (→ TodoShareIntake는 잠긴 동안 상자를 비우지 않는다).
+                    if showsMyListCounts, pendingSharedCount > 0 {
+                        Text("공유로 받아 둔 \(pendingSharedCount)개가 기다리고 있습니다. 열면 목록에 들어옵니다.")
+                            .font(.system(size: 12, weight: .medium))
+                            .tracking(-0.2)
+                            .foregroundStyle(TodoView.nowGreen)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     // 여기 것이 저기서 안 보인다는 사실을 숫자로 말한다.
                     // "동기화가 고장났나"와 "안 열어서 그렇다"를 가르는 한 줄이다.
-                    if hiddenCount > 0 {
+                    if showsMyListCounts, hiddenCount > 0 {
                         Text("이 기기의 \(hiddenCount)개는 다른 기기에서 안 보입니다.")
                             .font(.system(size: 12, weight: .medium))
                             .tracking(-0.2)
@@ -520,8 +541,13 @@ struct TodoView: View {
     /// '지금 떠오른 한 줄을 적는 것'이지 화면 구경이 아니다.
     private func consumeQuickAddRequest() {
         guard QuickTodoBridge.consumePendingAdd() else { return }
-        // 잠긴 기기에서는 적는 자리를 열지 않는다. 요청은 거뒀으니 다음에 또 안 뜬다.
-        guard TodoAccess.canEdit else { return }
+        // 잠긴 기기에서는 적는 자리를 열지 못한다. 그렇다고 아무 일도 없이 두면
+        // 제어센터에 **눌러도 반응 없는 버튼**이 남는다 — 왜 안 되는지 여기서 말한다.
+        // (요청은 이미 거뒀으니 다음에 또 뜨지 않는다.)
+        guard TodoAccess.canEdit else {
+            editingPaywall = true
+            return
+        }
         pushedTodo = nil
         showingBoltMeaning = false
         tab = .mine
@@ -815,18 +841,21 @@ struct TodoView: View {
             let open = family.items.filter { !$0.isCompleted }
             let done = family.items.filter { $0.isCompleted }
 
+            // 함께 보는 목록도 같은 규칙이다 — 잠긴 기기는 **보기만** 한다.
+            // 내 목록에서 하던 말을 여기서도 그대로 한다 (→ TodoAccess.swift).
+            if !TodoAccess.canEdit {
+                Section { readOnlyNotice(showsMyListCounts: false) }
+            }
+
             Section {
                 ForEach(open) { todo in
                     FamilyTodoRow(todo: todo) { t in
-                        Task { await family.toggle(t) }
+                        toggleShared(t)
                     }
                 }
-                .onDelete { offsets in
-                    let victims = offsets.map { open[$0] }
-                    Task { for v in victims { await family.delete(v) } }
-                }
+                .onDelete(perform: sharedDeleteAction(from: open))
 
-                if family.isSharing || !family.items.isEmpty {
+                if TodoAccess.canEdit, family.isSharing || !family.items.isEmpty {
                     newTodoRow
                 }
             } header: {
@@ -841,13 +870,10 @@ struct TodoView: View {
                 Section("완료 · \(done.count)개") {
                     ForEach(done) { todo in
                         FamilyTodoRow(todo: todo) { t in
-                            Task { await family.toggle(t) }
+                            toggleShared(t)
                         }
                     }
-                    .onDelete { offsets in
-                        let victims = offsets.map { done[$0] }
-                        Task { for v in victims { await family.delete(v) } }
-                    }
+                    .onDelete(perform: sharedDeleteAction(from: done))
                 }
             }
         }
@@ -874,12 +900,34 @@ struct TodoView: View {
                     ContentUnavailableView(
                         "아직 함께 보는 목록이 없습니다",
                         systemImage: "person.2",
-                        description: Text("오른쪽 위 공유 버튼으로 함께할 사람을 초대하거나,\n상대가 보낸 초대 링크를 눌러 참여하세요.")
+                        description: Text(TodoAccess.canEdit
+                                          ? "오른쪽 위 공유 버튼으로 함께할 사람을 초대하거나,\n상대가 보낸 초대 링크를 눌러 참여하세요."
+                                          : "함께 보려면 열어야 합니다.\n상대가 보낸 초대 링크를 눌러 참여하는 것은 그대로 됩니다.")
                     )
                     .allowsHitTesting(false)
                 }
             }
         }
+        }
+    }
+
+    /// 함께 보는 목록에서 체크하기. 내 목록의 줄을 누르는 것과 같은 규칙이다 —
+    /// 잠겨 있으면 왜 안 되는지 말한다.
+    private func toggleShared(_ todo: FamilyTodo) {
+        guard TodoAccess.canEdit else {
+            editingPaywall = true
+            return
+        }
+        Task { await family.toggle(todo) }
+    }
+
+    /// 함께 보는 목록에서 지우기. 잠긴 기기에서는 nil을 줘서 **스와이프 자체가 안 나오게** 한다
+    /// (손끝의 일마다 페이월이 뜨면 잔소리가 된다 — 내 목록의 삭제와 같은 처리다).
+    private func sharedDeleteAction(from source: [FamilyTodo]) -> ((IndexSet) -> Void)? {
+        guard TodoAccess.canEdit else { return nil }
+        return { offsets in
+            let victims = offsets.map { source[$0] }
+            Task { for v in victims { await family.delete(v) } }
         }
     }
 
@@ -894,9 +942,14 @@ struct TodoView: View {
                 }
             default:
                 if let url = family.shareURL {
-                    ShareLink(item: url) {
-                        Label("초대 링크 보내기", systemImage: "square.and.arrow.up")
+                    // 링크를 보내는 것은 **공유를 넓히는 일**이다. 잠긴 기기에서는 막는다.
+                    if TodoAccess.canEdit {
+                        ShareLink(item: url) {
+                            Label("초대 링크 보내기", systemImage: "square.and.arrow.up")
+                        }
                     }
+                    // ⚠️ 중지와 나가기는 **잠겨도 늘 열어 둔다.** 값을 안 냈다고
+                    //    이미 시작한 공유에서 빠져나오지 못하면 그건 가두는 것이다.
                     Button(role: .destructive) {
                         Task { await family.stopSharing() }
                     } label: {
@@ -904,7 +957,8 @@ struct TodoView: View {
                     }
                 } else {
                     Button {
-                        showingFamilyShareNotice = true
+                        if TodoAccess.canEdit { showingFamilyShareNotice = true }
+                        else { editingPaywall = true }
                     } label: {
                         Label("할 일 공유 시작", systemImage: "person.2.badge.plus")
                     }
@@ -963,6 +1017,11 @@ struct TodoView: View {
             Section {
                 ForEach(shown) { event in
                     Button {
+                        // 누르면 **새 할 일이 생긴다.** 적는 일이므로 잠금을 지난다.
+                        guard TodoAccess.canEdit else {
+                            editingPaywall = true
+                            return
+                        }
                         guard let item = TodoEventBridge.shared.makeTodo(for: event) else { return }
                         refreshRainbowPending()
                         refreshPeriods()
@@ -1222,6 +1281,13 @@ struct TodoView: View {
     /// 탭 = 지금 할 일 하나를 끝낸다. 단계가 있으면 다음 단계로 넘어가고,
     /// 마지막 단계였다면 할 일 전체가 완료된다. 단계가 없는 할 일은 그냥 체크.
     private func advance(_ item: BacklogItem, tree: TodoTree) {
+        // ⚠️ 줄을 누르는 것도 **고치는 일**이다 (단계를 밀거나 완료로 넘긴다).
+        //    잠긴 기기에서 조용히 아무 일도 안 일어나면 고장으로 읽히므로,
+        //    왜 안 되는지 그 자리에서 말한다 (→ TodoAccess.swift).
+        guard TodoAccess.canEdit else {
+            editingPaywall = true
+            return
+        }
         withAnimation {
             if item.isCompleted {
                 // 완료된 줄을 다시 누르면 마지막 단계만 되돌린다.

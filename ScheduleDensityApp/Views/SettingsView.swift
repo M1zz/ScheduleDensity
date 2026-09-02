@@ -77,9 +77,91 @@ struct SettingsView: View {
         _isSyncEnabled = State(initialValue: SyncSettingsManager.shared.isSyncEnabled)
     }
 
+    // MARK: - 내 버전 (설정 맨 위)
+
+    /// 무료인가 열려 있는가. 한 단어로 먼저 답한다.
+    private var entitlementTitle: String {
+        purchases.isUnlocked ? "모두 열림" : "무료 버전"
+    }
+
+    /// 그래서 지금 무엇을 쓰고 있는가. 잠긴 쪽에서도 **본체는 다 쓴다**는 말을 먼저 한다 —
+    /// 이 앱은 무료로도 온전히 돌아가고, 그 사실을 감추면 안 사는 사람이 지운다.
+    private var entitlementNote: String {
+        if purchases.isUnlocked {
+            return ProEntitlement.isGrandfathered
+                ? "쓰던 분이라 곁다리까지 전부 열려 있습니다."
+                : "한 번 사서 곁다리까지 전부 열려 있습니다."
+        }
+        return "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 \(ProFeature.sold.count)가지가 잠겨 있습니다."
+    }
+
+    /// 값을 받고 여는 것들의 이름.
+    /// ⚠️ 손으로 적지 않는다. 전에 여기 다섯 개만 적혀 있어서 나중에 들어온
+    ///    '이 기기에서 적기'가 빠져 있었다 — 목록은 `ProFeature` 한 곳에서만 읽는다.
+    private var lockedFeatureList: String {
+        ProFeature.sold.map(\.title).joined(separator: ", ")
+    }
+
     var body: some View {
         NavigationStack {
             Form {
+                // ⚠️ 이 섹션은 **맨 위**에 둔다. 설정을 열고 제일 먼저 궁금한 것은
+                //    "나는 지금 무료인가, 열려 있는가"인데, 전에는 이 답이 설정 바닥에
+                //    있어서 끝까지 내려가야 알 수 있었다.
+                Section {
+                    HStack(spacing: 12) {
+                        Image(systemName: purchases.isUnlocked ? "checkmark.seal.fill" : "lock.fill")
+                            .font(.title3)
+                            .foregroundStyle(purchases.isUnlocked ? Color.green : Color.secondary)
+                            .frame(width: 24)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(entitlementTitle)
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            Text(entitlementNote)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                    .accessibilityElement(children: .combine)
+
+                    if !purchases.isUnlocked {
+                        Button {
+                            paywallFeature = .widget
+                        } label: {
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 24)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("모두 열기")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text(lockedFeatureList)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.vertical, 4)
+
+                        Button("구매 복원") {
+                            Task { await purchases.restore() }
+                        }
+                        .disabled(purchases.isRestoring)
+                    }
+                } header: {
+                    Text("내 버전")
+                } footer: {
+                    Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. 한 번 사면 끝이고 구독이 아닙니다.")
+                }
+
                 Group {
                     // 일정 관리 섹션
                     Section {
@@ -847,48 +929,6 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 } header: {
                     Text("조언")
-                }
-
-                Section {
-                    if purchases.isUnlocked {
-                        Label(ProEntitlement.isGrandfathered
-                                ? "쓰던 분이라 전부 열려 있습니다"
-                                : "모두 열려 있습니다",
-                              systemImage: "checkmark.seal.fill")
-                            .foregroundStyle(.green)
-                    } else {
-                        Button {
-                            paywallFeature = .widget
-                        } label: {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                    .foregroundColor(.accentColor)
-                                    .frame(width: 24)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("모두 열기")
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    Text("위젯·캘린더 가져오기·공유·통계·회수 장부")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding(.vertical, 4)
-
-                        Button("구매 복원") {
-                            Task { await purchases.restore() }
-                        }
-                        .disabled(purchases.isRestoring)
-                    }
-                } header: {
-                    Text("모두 열기")
-                } footer: {
-                    Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. 한 번 사면 끝이고 구독이 아닙니다.")
                 }
 
                 Section {

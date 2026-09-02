@@ -34,7 +34,7 @@ struct PaywallView: View {
                 }
 
                 Section {
-                    ForEach(ProFeature.allCases) { feature in
+                    ForEach(ProFeature.sold) { feature in
                         row(feature)
                     }
                 } header: {

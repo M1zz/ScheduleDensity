@@ -19,6 +19,9 @@ struct DoneTodosView: View {
 
     @Environment(\.modelContext) private var context
 
+    /// 잠긴 기기에서 되돌리려 들면 내는 페이월 (→ ProFeature.editing).
+    @State private var editingPaywall = false
+
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]
 
@@ -38,23 +41,28 @@ struct DoneTodosView: View {
                 ForEach(done) { item in
                     row(item)
                 }
-                .onDelete(perform: delete)
+                // 되돌리는 것도 지우는 것도 고치는 일이다. 끝낸 목록은
+                // 잠긴 기기에서 **보이기만** 한다 (→ TodoAccess.swift).
+                .onDelete(perform: TodoAccess.canEdit ? delete : nil)
             } footer: {
                 if done.isEmpty {
                     Text("이번 주에 끝낸 일이 아직 없습니다.")
-                } else {
+                } else if TodoAccess.canEdit {
                     Text("줄을 누르면 마지막 단계가 되돌아옵니다. 왼쪽으로 밀면 지웁니다.")
+                } else {
+                    Text(TodoAccess.lockedNote)
                 }
             }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("완료한 것")
         .navigationBarTitleDisplayMode(.inline)
+        .paywall(for: .editing, isPresented: $editingPaywall)
     }
 
     private func row(_ item: BacklogItem) -> some View {
         Button {
-            rewind(item)
+            if TodoAccess.canEdit { rewind(item) } else { editingPaywall = true }
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "checkmark.circle.fill")

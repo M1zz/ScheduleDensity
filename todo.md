@@ -4,6 +4,57 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] '적기' 판매 개시 — `TodoAccess.sellsEditing` = true (2026-09-02, 1.1.0)
+      - 이번 버전부터 실제로 판다. 안 산 기기는 읽기 전용, 잠기는 것 6가지
+      - 유예(`grandfathersExistingUsers = true`)와 반드시 함께 켜져 있어야 한다 —
+        끄면 1.0.9까지 무료로 적던 사람들이 이 업데이트로 못 적게 된다
+      - `ProFeature.sold` 신설(TodoAccess.swift): 페이월·설정이 `allCases`가 아니라
+        '오늘 파는 것'을 읽는다. 스위치 하나로 5↔6이 저절로 바뀐다
+
+- [x] 잠금이 새던 자리 전부 막음 (2024 판매 개시에 딸림) — **읽기 전용으로 통일**
+      기준: `canEdit`의 정의가 "적고 **고칠** 수 있는가"이고 완료 표시가 이미 잠겨 있었다.
+      들어가서 **보는 길은 열어 둔다** (더 쪼개기, 쪼개기 도우미, 완료 목록 보기).
+      - TodoView: 줄 눌러 완료/되돌리기(advance), 길게 눌러 뜨는 메뉴(itemMenu — 데드라인·
+        '바로' 표시·무지개에서 빼기·되돌리기·분류·삭제), '무지개에 걸려 있는 일' 누르면
+        새 할 일 생기던 것
+      - TodoDetailView: 요약 카드 → 설정 시트(이름·시간·기간·분류), 단계 완료 토글,
+        스와이프 삭제·이름, 순서 위/아래, 끌어 옮기기, 단계 적는 빈 줄, 접근성 동작
+      - DoneTodosView: 통째로 열려 있었다 — 눌러 되돌리기, 밀어 지우기
+      - 제어센터 '할 일 적기': 죽은 버튼이던 것 → 페이월
+      - 공유 시트: `TodoShareIntake.drain`이 잠기면 **상자를 비우지 않는다**.
+        `TodoShareInbox.pendingCount()` 신설, 잠금 안내에 "공유로 받아 둔 N개가
+        기다리고 있습니다" 한 줄 — 조용히 버리면 공유가 고장 난 것으로 읽힌다
+
+- [x] 공유(가족) 할 일도 같은 규칙으로 잠금 — **결제 안 하면 공유 못 한다**
+      - 잠금: 공유 시작, 초대 링크 보내기, 목록 체크(toggle), 삭제, 적는 빈 줄
+      - 열어 둠: 목록 보기, **공유 중지·나가기** — 값을 안 냈다고 이미 시작한 공유에서
+        빠져나오지 못하면 그건 가두는 것이다
+      - 잠긴 안내 줄(`readOnlyNotice`)을 두 목록이 함께 쓴다. 다만 내 목록에서만 뜻이 있는
+        숫자(받은 상자·안 보이는 줄)는 `showsMyListCounts: false`로 끈다
+      - 빈 화면 문구도 갈랐다: 잠기면 "초대하세요" 대신 "참여하는 것은 그대로 됩니다"
+
+  잠금 규칙 한 줄: **보는 것과 빠져나오는 것은 되고, 적고 고치고 넓히는 것은 안 된다.**
+  (위젯·일정 공유 탭은 원래부터 `purchases.isUnlocked`로 잠겨 있어 손대지 않았다)
+- [x] 설정 맨 위에 "내 버전" 표시 (2026-09-02)
+      - 무료인지 열려 있는지를 설정 첫 줄에서 답한다. 전에는 이 상태가 설정 바닥에 있어
+        끝까지 내려가야 알 수 있었다 — 기존 '모두 열기' 섹션을 통째로 맨 위로 옮겼다.
+      - 잠김: 자물쇠 + "무료 버전" + "무지개·쪼개기·두 질문·단계 순서는 그대로 쓰십니다,
+        곁다리 N가지가 잠겨 있습니다" (N은 `ProFeature.allCases.count`에서 읽는다)
+      - 열림: 초록 도장 + "모두 열림" + 산 것인지(`한 번 사서`) 유예인지(`쓰던 분이라`) 구분
+      - 잠긴 기능 목록을 손으로 적던 것을 `ProFeature.allCases`에서 읽게 바꿈 —
+        전에는 다섯 개만 적혀 있어 나중에 들어온 '이 기기에서 적기'가 빠져 있었다
+- [x] 빌드 지뢰 제거 — `project.yml`의 `excludes` 목록 폐기 (2026-09-02)
+      - 배경: 깨진 화면 5개를 타깃 소스에서 제외해 숨겨둔 상태였다. 빌드는 통과했지만
+        제외 목록이 유일한 방어선이라, 재생성이나 파일 추가 한 번이면 11개 에러가 터졌다.
+      - 삭제(대체돼 죽은 화면): `InsightCardsView.swift`(TimelineDensityView 1769~과 100% 동일),
+        `WeekView.swift`(삭제된 `EventInstance`/`TimeSlot`에 의존),
+        `RecommendationView.swift`(삭제된 `Recommendation` 타입 의존 — 추천 UI는 AddEventView로 옮겨감)
+      - 수정 후 타깃 복귀: `DensityChartView.swift`(`getDensityData()` → `getAllDensityData()`),
+        `WeekDensityView.swift`(`getWeekDensityData()` → `weekDensity()`, 중복 `EventListCard` 제거)
+      - 두 파일에서 지역 `Color(hex:)` 재선언 제거 → `Shared/ColorHex.swift` 한 곳으로 통일
+      - 경고 0으로: EventKit `.authorized`(iOS 17 deprecated) → `.fullAccess`,
+        존재하지 않는 애셋을 가리키던 `ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME` 제거
+      - 검증: Debug 시뮬레이터 / Release 실기기 / 서명 아카이브 모두 에러·경고 0
 - [x] WeekBlocks 소스를 `WeekBlocks/` 폴더로 흡수
 - [x] `ScheduleDensityApp.xcodeproj`에 macOS 타깃 `WeekBlocks` 추가
 - [x] WeekBlocks 타깃에 macOS 빌드 설정(SDKROOT/배포타깃) 오버라이드
