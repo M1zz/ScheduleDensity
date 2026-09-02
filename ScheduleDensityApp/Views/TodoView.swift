@@ -311,9 +311,11 @@ struct TodoView: View {
             rainbowPendingSection
 
             Section {
-                // 0. 잠긴 기기라는 것부터 말한다. + 가 안 눌리는 이유를 모르면
-                //    고장으로 읽힌다 (→ TodoAccess.swift).
-                if !TodoAccess.canEdit {
+                // 0. 여기서 적은 것이 아직 맥에 안 간다는 사실을 말한다
+                //    (→ TodoAccess.swift). **적는 것은 아무 지장이 없으므로**
+                //    막는 말이 아니라 알려 주는 말이다. 그래서 실제로 안 건너간
+                //    줄이 있을 때만 뜬다 — 없는데 띄우면 팔려고 세운 벽이 된다.
+                if !TodoAccess.canSync, hiddenCount > 0 {
                     readOnlyNotice()
                 }
 
@@ -469,7 +471,7 @@ struct TodoView: View {
             editingPaywall = true
         } label: {
             HStack(spacing: 10) {
-                Image(systemName: "lock")
+                Image(systemName: "arrow.left.arrow.right")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.secondary)
                 VStack(alignment: .leading, spacing: 3) {
@@ -843,7 +845,7 @@ struct TodoView: View {
 
             // 함께 보는 목록도 같은 규칙이다 — 잠긴 기기는 **보기만** 한다.
             // 내 목록에서 하던 말을 여기서도 그대로 한다 (→ TodoAccess.swift).
-            if !TodoAccess.canEdit {
+            if !TodoAccess.canSync, hiddenCount > 0 {
                 Section { readOnlyNotice(showsMyListCounts: false) }
             }
 

@@ -66,7 +66,7 @@ enum TodoSharing {
     /// 새로 적는 줄에 지금 상태를 새긴다.
     static func stamp(_ item: BacklogItem) {
         item.originInstallID = installID
-        item.isShared = TodoAccess.canEdit
+        item.isShared = TodoAccess.canSync
     }
 
     // MARK: - 열리고 잠길 때

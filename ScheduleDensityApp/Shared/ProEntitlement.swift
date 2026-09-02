@@ -21,8 +21,8 @@ import Foundation
 /// 값을 받고 여는 것들. 목록은 페이월과 설정 화면이 함께 읽는다 —
 /// 무엇이 열리는지 두 군데에 따로 적으면 반드시 어긋난다.
 enum ProFeature: String, CaseIterable, Identifiable {
-    /// 이 기기에서 할 일을 적기. 잠기면 상대 기기에서 온 것을 보기만 한다
-    /// (→ TodoAccess.swift). 목록 맨 위에 서므로 제일 앞에 둔다.
+    /// 이 기기에서 적은 할 일이 맥으로 건너가기 (→ TodoAccess.swift).
+    /// **적는 것 자체는 값을 안 받는다.**
     case editing
     case widget
     case calendarImport
@@ -32,9 +32,17 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// **지금 실제로 파는 것들.** 페이월과 설정이 이 목록만 읽는다.
+    ///
+    /// 아직 안 파는 것을 목록에 올리면, 산 사람이 "돈을 냈는데 이건 왜 안 열리지"로
+    /// 읽는다. 판매 스위치가 꺼져 있는 항목은 여기서 빠진다 (→ TodoAccess.swift).
+    static var sold: [ProFeature] {
+        allCases.filter { $0 != .editing || ProEntitlement.sellsSync }
+    }
+
     var title: String {
         switch self {
-        case .editing:        return "이 기기에서 적기"
+        case .editing:        return "맥과 함께 쓰기"
         case .widget:         return "홈·잠금 화면 위젯"
         case .calendarImport: return "캘린더에서 가져오기"
         case .scheduleShare:  return "일정 공유"
@@ -45,7 +53,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var note: String {
         switch self {
-        case .editing:        return "할 일을 적고 고칩니다. 적은 것은 맥에서도 보입니다."
+        case .editing:        return "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다."
         case .widget:         return "지금 할 단계와 무지개를 앱을 안 열고도 봅니다."
         case .calendarImport: return "시스템 캘린더의 일정을 무지개로 들여옵니다."
         case .scheduleShare:  return "내 일정을 읽기 전용으로 나눠 봅니다."
@@ -56,7 +64,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .editing:        return "square.and.pencil"
+        case .editing:        return "arrow.left.arrow.right"
         case .widget:         return "rectangle.3.group"
         case .calendarImport: return "calendar.badge.plus"
         case .scheduleShare:  return "person.2"
@@ -67,6 +75,15 @@ enum ProFeature: String, CaseIterable, Identifiable {
 }
 
 enum ProEntitlement {
+
+    /// **'맥과 함께 쓰기'를 팔기 시작했는가.** false인 동안에는 모두 함께 쓴다.
+    ///
+    /// ⚠️ 파는 것은 **적기가 아니라 건너가기**다. 적는 것은 이 앱의 본체라 잠그지
+    ///    않는다 — 잠그면 새로 깐 사람이 첫 화면에서 한 줄도 못 적고, 앱이 무엇인지
+    ///    알기도 전에 값부터 치르라는 말이 된다 (→ TodoAccess.swift).
+    ///
+    /// 위젯도 이 파일을 함께 쓰므로 스위치가 여기 있다.
+    static let sellsSync = true
 
     /// App Store Connect의 비소모성 상품 ID. 한 번 사면 끝이다(구독 아님).
     static let productID = "com.example.ScheduleDensityApp.pro"
