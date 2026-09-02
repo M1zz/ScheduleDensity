@@ -37,6 +37,7 @@
 		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */; };
+		5B21D07248C94CD8FDB8A629 /* WeekDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4588973A0D03582D8296C3 /* WeekDensityView.swift */; };
 		5BD084E0CFCA79A3B76131DF /* CategoryManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */; };
 		5CA7AF639085A47D9F389D75 /* TodoShareIntake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EF8BA6154DE9430653A8F56 /* TodoShareIntake.swift */; };
 		6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */; };
@@ -57,6 +58,7 @@
 		86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */; };
 		87F5BBFA2EFADD1D3BB509F7 /* TodoShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */; };
 		8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */; };
+		8C481777010B7DB840761A77 /* DensityChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487173E8267E76CC3E7ECAB7 /* DensityChartView.swift */; };
 		8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CFB5D8A2281DBA1DBC8ABB /* TodoDetailView.swift */; };
 		8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094038A30FE0C5205D38B208 /* TodoEventBridge.swift */; };
 		8FADD23CE3778B0B1FEFF630 /* RainbowWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB91B4FD6D2CC7AA5218EDE /* RainbowWidget.swift */; };
@@ -156,7 +158,9 @@
 		3F5087710777780307770756 /* WeekBlocksAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksAdapter.swift; sourceTree = "<group>"; };
 		4164272EB750B716814E94EB /* SyncSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncSettingsManager.swift; sourceTree = "<group>"; };
 		44EAF9C0B39BD23B314B2ED9 /* QuickTodoControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickTodoControl.swift; sourceTree = "<group>"; };
+		487173E8267E76CC3E7ECAB7 /* DensityChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityChartView.swift; sourceTree = "<group>"; };
 		4CD675833C6A34143CC8C6F5 /* Routine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routine.swift; sourceTree = "<group>"; };
+		4D4588973A0D03582D8296C3 /* WeekDensityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekDensityView.swift; sourceTree = "<group>"; };
 		4ECBA157204B5F06367463A9 /* DoneTodosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoneTodosView.swift; sourceTree = "<group>"; };
 		4FABE19E747350732827346E /* BoltOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoltOnboarding.swift; sourceTree = "<group>"; };
 		5CCA231C8EF9417E46288EC6 /* ColorHex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorHex.swift; sourceTree = "<group>"; };
@@ -266,6 +270,7 @@
 				EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */,
 				E2DD3A4029A1F8FABD057A7D /* ContentView.swift */,
 				8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */,
+				487173E8267E76CC3E7ECAB7 /* DensityChartView.swift */,
 				4ECBA157204B5F06367463A9 /* DoneTodosView.swift */,
 				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
 				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
@@ -280,6 +285,7 @@
 				88CFB5D8A2281DBA1DBC8ABB /* TodoDetailView.swift */,
 				6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */,
 				910FBBD73ECA9E9527512FE8 /* TodoView.swift */,
+				4D4588973A0D03582D8296C3 /* WeekDensityView.swift */,
 				DC2B5C3D31F9CE84E8559AB1 /* WeekLedgerView.swift */,
 			);
 			path = Views;
@@ -603,6 +609,7 @@
 				57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */,
 				8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */,
 				1A9DF801882FB2C7865CD0F6 /* DensityCalculator.swift in Sources */,
+				8C481777010B7DB840761A77 /* DensityChartView.swift in Sources */,
 				C5A8628CA718CEF5D0C15249 /* DoneTodosView.swift in Sources */,
 				74E045A5DC1AF66E082EA7EC /* Event.swift in Sources */,
 				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
@@ -653,6 +660,7 @@
 				2902DFF21E90EA3C9ACE62F1 /* TodoWidgetSync.swift in Sources */,
 				F4F25E886B69178DEA982727 /* WeekBlocksAdapter.swift in Sources */,
 				90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */,
+				5B21D07248C94CD8FDB8A629 /* WeekDensityView.swift in Sources */,
 				42AE13BB68F193890259458B /* WeekLedger.swift in Sources */,
 				E5994C9CA94CC8430A874F52 /* WeekLedgerView.swift in Sources */,
 			);
@@ -700,7 +708,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -860,7 +867,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ScheduleDensityApp/ScheduleDensityApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;

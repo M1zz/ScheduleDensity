@@ -23,11 +23,9 @@ final class EventKitManager {
     // MARK: - Permission Management
 
     func checkAuthorization() {
-        #if targetEnvironment(simulator)
+        // iOS 17부터 `.authorized`는 `.fullAccess`로 이름이 바뀌었다(값은 같다).
+        // 배포 타깃이 17.0이라 시뮬레이터·실기기 구분 없이 `.fullAccess` 하나면 된다.
         isAuthorized = (EKEventStore.authorizationStatus(for: .event) == .fullAccess)
-        #else
-        isAuthorized = (EKEventStore.authorizationStatus(for: .event) == .authorized)
-        #endif
     }
 
     func requestAuthorization() async throws {

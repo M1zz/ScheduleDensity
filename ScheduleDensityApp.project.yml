@@ -48,13 +48,10 @@ targets:
     type: application
     platform: iOS
     sources:
+      # ⚠️ 제외 목록을 두지 않는다. 예전에 깨진 화면 5개를 excludes로 숨겨뒀는데,
+      #    목록이 유일한 방어선이라 재생성 한 번에 빌드가 깨졌다.
+      #    안 쓰는 화면은 지우고, 남긴 화면은 컴파일되게 고쳐서 전부 타깃에 넣는다.
       - path: ScheduleDensityApp
-        excludes:
-          - "Views/WeekView.swift"
-          - "Views/RecommendationView.swift"
-          - "Views/DensityChartView.swift"
-          - "Views/WeekDensityView.swift"
-          - "Views/InsightCardsView.swift"
     dependencies:
       - package: LeeoKit
       - target: TodoWidgetExtension
@@ -79,7 +76,10 @@ targets:
         ENABLE_PREVIEWS: YES
         DEVELOPMENT_ASSET_PATHS: "\"ScheduleDensityApp/Preview Content\""
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # ⚠️ ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME은 두지 않는다.
+        #    Assets.xcassets에 AccentColor 색상 세트가 없어 "not present in any
+        #    asset catalogs" 경고만 났다. 설정이 없어도 틴트는 똑같은 시스템 기본
+        #    파랑이므로, 색을 새로 굽는 대신 가리키는 곳 없는 설정을 지운다.
         SWIFT_EMIT_LOC_STRINGS: YES
         SUPPORTS_MACCATALYST: NO
         TARGETED_DEVICE_FAMILY: "1"
