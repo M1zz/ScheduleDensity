@@ -4,6 +4,15 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] 죽은 잠금 게이트 걷어내기 (2026-09-03) — `TodoAccess.canEdit` 폐기
+      0a03eec가 canEdit을 항상 참으로 바꿔 두고 "지우는 것은 한 번에 하라"고 남긴 것을 지운다.
+      - TodoView·TodoDetailView·DoneTodosView·TodoShareIntake의 `if canEdit` 40여 곳 제거.
+        전부 열린 쪽으로만 흐르던 자리라 동작은 그대로다
+      - `pendingSharedCount` 삭제 — 상자는 이제 늘 비워지므로 항상 0이었다
+      - `editingPaywall`은 TodoView에만 남는다. 거기서만 살아 있는 길
+        (건너가기 안내 줄 → 페이월)이고, 나머지 둘에서는 죽은 상태였다
+      - TodoAccess 머리말이 아직 "선을 '적기'에 그었다"고 말하고 있어 다시 썼다
+
 - [x] 유예(grandfather) 폐기 — 열림/잠김의 조건은 '샀는가' 하나 (2026-09-03)
       무료였던 앱이 유료가 된 것뿐이다. '쓰던 사람인가'라는 두 번째 질문을 없앤다.
       - 그 질문의 자격을 **로컬 데이터 개수**로 추측했는데, 할 일 스토어가 CloudKit

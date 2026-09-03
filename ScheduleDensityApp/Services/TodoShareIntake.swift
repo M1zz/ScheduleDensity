@@ -22,7 +22,6 @@ enum TodoShareIntake {
         // 잃어버리는 것으로 보인다. 상자에 그대로 두면 열었을 때 다음 실행에서
         // 통째로 들어온다. 기다리고 있다는 말은 목록이 한다
         // (→ TodoView.readOnlyNotice, TodoShareInbox.pendingCount).
-        guard TodoAccess.canEdit else { return 0 }
 
         let drafts = TodoShareInbox.drain()
         guard !drafts.isEmpty else { return 0 }
