@@ -67,12 +67,25 @@ final class PurchaseManager {
     /// 영수증을 다시 읽어 열림/잠김을 정한다. 앱이 켜질 때와 활성화될 때마다 부른다.
     func refresh() async {
         var owned = false
+        var seen: [String] = []
         for await entitlement in Transaction.currentEntitlements {
             guard case .verified(let transaction) = entitlement else { continue }
+            seen.append(transaction.productID)
             if transaction.productID == ProEntitlement.productID, transaction.revocationDate == nil {
                 owned = true
             }
         }
+#if DEBUG
+        // 안 열릴 때 물어볼 것은 둘뿐이다 — 영수증이 오기는 했는가, 그리고 그 안의
+        // 상품 ID가 우리가 찾는 것과 같은가. 둘 다 여기서 눈으로 확인한다.
+        //
+        // ⚠️ 스킴에 로컬 StoreKit 설정이 붙어 있으면 이 목록은 **가짜 스토어의 것**이다.
+        //    진짜 영수증을 보려면 Edit Scheme → Run → Options → StoreKit Configuration
+        //    을 None 으로 두고 실기기에서 돌려야 한다 (→ project.yml 의 schemes).
+        print("🔑 [Purchase] 찾는 ID: \(ProEntitlement.productID)")
+        print("🔑 [Purchase] 영수증에 있는 ID: \(seen.isEmpty ? "(없음)" : seen.joined(separator: ", "))")
+        print("🔑 [Purchase] 샀는가: \(owned) / 지금 열려 있는가: \(ProEntitlement.isUnlocked)")
+#endif
         apply(owned: owned)
     }
 

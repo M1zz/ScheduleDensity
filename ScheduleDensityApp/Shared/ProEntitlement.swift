@@ -97,6 +97,18 @@ enum ProEntitlement {
         UserDefaults(suiteName: appGroupID) ?? .standard
     }
 
+#if DEBUG
+    /// **Xcode에서 돌릴 때 열어 둘 것인가.** 배포 빌드에는 이 줄이 아예 없다.
+    ///
+    /// 개발 중에는 진짜 영수증을 받을 길이 사실상 없다. 스킴에 로컬 StoreKit 설정이
+    /// 붙어 있으면 App Store에서 코드로 받은 권한이 **보이지도 않고**, 시뮬레이터는
+    /// 애초에 진짜 계정으로 살 수 없다. 그래서 개발 빌드는 그냥 열어 둔다.
+    ///
+    /// ⚠️ **잠긴 화면을 보려면 이 한 줄을 false 로 바꾼다.** 페이월과 안내 줄은
+    ///    이 앱이 파는 것의 얼굴이라, 가끔은 잠근 채로 봐야 한다.
+    static let unlockedInDebug = true
+#endif
+
     /// 이 기능들을 써도 되는가.
     ///
     /// 근거는 **App Store 영수증 하나뿐이다.** 산 사람은 열리고, 안 산 사람은 잠긴다.
@@ -104,7 +116,10 @@ enum ProEntitlement {
     /// 그걸 판단하려고 로컬 데이터 개수를 셌고, 그 스토어가 CloudKit 미러라
     /// **동기화 타이밍이 결제 여부를 흔들었다.** 조건이 둘이 되는 순간 그렇게 된다.
     static var isUnlocked: Bool {
-        defaults.bool(forKey: purchasedKey)
+#if DEBUG
+        if unlockedInDebug { return true }
+#endif
+        return defaults.bool(forKey: purchasedKey)
     }
 
     /// 영수증 확인 결과를 적는다.
