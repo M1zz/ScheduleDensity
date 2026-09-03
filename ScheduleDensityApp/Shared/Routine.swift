@@ -24,6 +24,19 @@ final class Routine {
     var sortIndex: Int = 0
     var createdAt: Date = Date()
 
+
+    // MARK: - 함께 쓰는 것인가 (→ TodoSharing.swift)
+    //
+    // 할 일에만 걸려 있던 규칙을 계획·루틴에도 넓혔다. 맥('무지개 공방')이 잠긴 채
+    // 만든 계획·루틴은 여기서 false로 실려 오고, 아이폰은 그것을 안 그린다.
+    // ⚠️ 맥의 같은 이름 파일과 **규칙이 똑같아야 한다.** 한쪽만 고치면 한쪽에서만 보인다.
+
+    /// 상대 기기에도 보여도 되는가.
+    var isShared: Bool = true
+
+    /// 이것이 난 자리(앱 설치본). 감출 것을 고르려면 누가 만들었는지를 알아야 한다.
+    var originInstallID: String = ""
+
     // Planning fields
     var executionNotes: String = ""
     var premortemFailScenario: String = ""

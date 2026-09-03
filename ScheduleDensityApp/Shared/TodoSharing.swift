@@ -34,6 +34,20 @@
 import Foundation
 import SwiftData
 
+/// **함께 쓰는지를 스스로 말할 수 있는 것.**
+///
+/// 할 일에만 걸려 있던 규칙을 계획 블록·루틴까지 넓히면서 세 모델이 같은 두 칸을 갖게
+/// 됐다. 규칙을 세 번 쓰면 언젠가 한 벌만 고쳐져 어긋나므로 하나로 묶는다.
+/// ⚠️ 맥('무지개 공방')의 같은 이름 파일과 규칙이 **글자까지 같아야** 한다.
+protocol SharedRecord: AnyObject {
+    var isShared: Bool { get set }
+    var originInstallID: String { get set }
+}
+
+extension BacklogItem: SharedRecord {}
+extension PlanBlock: SharedRecord {}
+extension Routine: SharedRecord {}
+
 enum TodoSharing {
 
     /// 이 설치본의 이름. 기기를 가리키는 것이 아니라 **이 앱이 깔린 자리**를 가리킨다.
@@ -51,7 +65,7 @@ enum TodoSharing {
     /// 이 줄을 이 기기에서 만들었는가.
     /// 이름이 비어 있으면(이 기능이 생기기 전에 적은 줄) 내 것으로 본다 —
     /// 쓰던 사람의 줄이 갑자기 남의 것이 되어 사라지면 안 된다.
-    static func isMine(_ item: BacklogItem) -> Bool {
+    static func isMine(_ item: some SharedRecord) -> Bool {
         item.originInstallID.isEmpty || item.originInstallID == installID
     }
 
@@ -59,12 +73,12 @@ enum TodoSharing {
     ///
     /// 감추는 것은 **남이 잠긴 채로 적어 둔 줄** 하나뿐이다.
     /// 내 줄은 잠겨 있어도 내 화면에서는 그대로 보인다.
-    static func isVisible(_ item: BacklogItem) -> Bool {
+    static func isVisible(_ item: some SharedRecord) -> Bool {
         item.isShared || isMine(item)
     }
 
     /// 새로 적는 줄에 지금 상태를 새긴다.
-    static func stamp(_ item: BacklogItem) {
+    static func stamp(_ item: some SharedRecord) {
         item.originInstallID = installID
         item.isShared = TodoAccess.canSync
     }

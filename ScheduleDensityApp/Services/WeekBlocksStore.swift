@@ -184,7 +184,9 @@ final class WeekBlocksStore {
         guard let container else { return [] }
         let key = Self.dayKey(for: date)
         let context = ModelContext(container)
-        let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
+        // 잠긴 맥에서 만든 것은 세지도 그리지도 않는다 (→ TodoSharing.swift).
+        let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
+            .filter(TodoSharing.isVisible)
         return Set(blocks.filter { Self.matches($0, key: key) }.map(\.title))
     }
 
@@ -241,8 +243,12 @@ final class WeekBlocksStore {
         let key = Self.dayKey(for: date)
         let context = ModelContext(container)
 
-        let allRoutines = (try? context.fetch(FetchDescriptor<Routine>())) ?? []
-        let allBlocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
+        // ⚠️ 잠긴 맥에서 만든 계획·루틴은 여기서 걸러진다. 하루를 그리는 입력이
+        //    전부 이 두 줄에서 나오므로, 이 자리 하나면 화면 어디로도 안 샌다.
+        let allRoutines = ((try? context.fetch(FetchDescriptor<Routine>())) ?? [])
+            .filter(TodoSharing.isVisible)
+        let allBlocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
+            .filter(TodoSharing.isVisible)
         let occurrences = (try? context.fetch(FetchDescriptor<RoutineOccurrence>())) ?? []
         let placements = (try? context.fetch(FetchDescriptor<QuotaPlacement>())) ?? []
 
@@ -299,8 +305,13 @@ final class WeekBlocksStore {
     func mirrorCounts() -> (routines: Int, blocks: Int) {
         guard let container else { return (0, 0) }
         let context = ModelContext(container)
-        return ((try? context.fetchCount(FetchDescriptor<Routine>())) ?? 0,
-                (try? context.fetchCount(FetchDescriptor<PlanBlock>())) ?? 0)
+        // 세는 것도 보이는 것만 센다 — 화면에 안 나오는데 숫자만 올라가면
+        // "왜 안 보이지"가 된다. (fetchCount로는 못 거르므로 fetch해서 센다.)
+        let routines = ((try? context.fetch(FetchDescriptor<Routine>())) ?? [])
+            .filter(TodoSharing.isVisible).count
+        let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
+            .filter(TodoSharing.isVisible).count
+        return (routines, blocks)
     }
 
     func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
@@ -310,8 +321,10 @@ final class WeekBlocksStore {
         }
         let context = ModelContext(container)
 
-        let routines = (try? context.fetch(FetchDescriptor<Routine>())) ?? []
-        let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
+        let routines = ((try? context.fetch(FetchDescriptor<Routine>())) ?? [])
+            .filter(TodoSharing.isVisible)
+        let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
+            .filter(TodoSharing.isVisible)
 
         // 어디서 비는지 한 줄로 판별하기 위한 계측:
         //  - 0/0 이면 미러가 아직 안 내려왔거나(첫 동기화 대기) CloudKit 환경/계정이 다른 것.

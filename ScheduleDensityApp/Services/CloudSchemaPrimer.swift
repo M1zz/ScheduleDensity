@@ -65,6 +65,8 @@ enum CloudSchemaPrimer {
         block.reviewedAt = now
         // 맥의 캘린더 가져오기가 더한 칸. 아이폰은 안 쓰지만 스키마는 함께 쓴다.
         block.calendarEventID = "schema-sample-event"
+        block.isShared = true
+        block.originInstallID = "schema-sample-install"
 
         for model in [category as any PersistentModel, item, block] {
             context.insert(model)
