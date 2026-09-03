@@ -13,7 +13,9 @@ struct EventManagementView: View {
 
     @State private var searchText = ""
     @State private var sortOption: SortOption = .startDate
-    @State private var showingDeleteAllAlert = false
+    /// 지우기 직전에 세우는 물음. 스와이프와 전체 삭제가 같은 자리를 쓴다
+    /// (→ EventDeletion.swift).
+    @State private var deletionRequest: EventDeletionRequest?
     @State private var refreshTrigger = UUID()
 
     enum SortOption: String, CaseIterable {
@@ -123,9 +125,7 @@ struct EventManagementView: View {
 
                             Spacer()
 
-                            Button(action: {
-                                showingDeleteAllAlert = true
-                            }) {
+                            Button(action: deleteAllEvents) {
                                 HStack(spacing: 4) {
                                     Image(systemName: "trash")
                                     Text("전체 삭제")
@@ -149,14 +149,7 @@ struct EventManagementView: View {
                     }
                 }
             }
-            .alert("전체 삭제", isPresented: $showingDeleteAllAlert) {
-                Button("취소", role: .cancel) { }
-                Button("삭제", role: .destructive) {
-                    deleteAllEvents()
-                }
-            } message: {
-                Text("모든 일정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")
-            }
+            .confirmsEventDeletion($deletionRequest)
         }
     }
 
@@ -207,22 +200,28 @@ struct EventManagementView: View {
         return events
     }
 
+    /// 밀어서 지우기. **밀었다고 바로 지우지 않는다** — 되돌릴 수 없는 일이고,
+    /// iCloud 것까지 함께 없어지므로 무엇이 없어지는지 먼저 말한다.
     private func deleteEvent(_ event: Event) {
-        withAnimation {
-            viewModel.deleteEvent(event)
-            // 리스트 즉시 새로고침
-            refreshTrigger = UUID()
+        deletionRequest = EventDeletionRequest(
+            title: "'\(event.title)' 삭제",
+            plan: viewModel.deletionPlan(for: event)
+        ) {
+            let result = await viewModel.deleteEvent(event)
+            if case .success = result { withAnimation { refreshTrigger = UUID() } }
+            return result
         }
     }
 
     private func deleteAllEvents() {
         let events = viewModel.fetchEvents()
-        withAnimation {
-            for event in events {
-                viewModel.deleteEvent(event)
-            }
-            // 리스트 즉시 새로고침
-            refreshTrigger = UUID()
+        deletionRequest = EventDeletionRequest(
+            title: "일정 \(events.count)개 삭제",
+            plan: viewModel.deletionPlan(for: events)
+        ) {
+            let result = await viewModel.deleteAllEvents()
+            if case .success = result { withAnimation { refreshTrigger = UUID() } }
+            return result
         }
     }
 }

@@ -38,6 +38,8 @@ struct TimelineDensityView: View {
     @State private var pendingEditEvent: Event?
     /// 보기 시트를 닫고 나서 단계를 적으러 갈 일정.
     @State private var pendingSplitEvent: Event?
+    /// 지우기 직전에 세우는 물음 (→ EventDeletion.swift).
+    @State private var deletionRequest: EventDeletionRequest?
 
     // 인사이트 설정 (UserDefaults에 저장)
     @AppStorage("showInsightCards") private var showInsightCards = false
@@ -574,6 +576,7 @@ struct TimelineDensityView: View {
                 .background(Color(.systemGroupedBackground))
             }
         }
+        .confirmsEventDeletion($deletionRequest)
     }
 
     private func formattedDate(_ date: Date) -> String {
@@ -606,9 +609,16 @@ struct TimelineDensityView: View {
         return weekday == 1 || weekday == 7
     }
 
+    /// 밀어서 지우기. 무엇이 없어지는지 먼저 묻는다 (→ EventDeletion.swift).
     private func deleteEvent(_ event: Event) {
-        viewModel.deleteEvent(event)
-        refreshData()
+        deletionRequest = EventDeletionRequest(
+            title: "'\(event.title)' 삭제",
+            plan: viewModel.deletionPlan(for: event)
+        ) {
+            let result = await viewModel.deleteEvent(event)
+            if case .success = result { refreshData() }
+            return result
+        }
     }
 
     private func showToastMessage(_ message: String) {
@@ -1011,7 +1021,7 @@ struct GridCell: View {
     let onDragStart: () -> Void
     let onDelete: () -> Void
 
-    @State private var showDeleteAlert = false
+    @State private var deletionRequest: EventDeletionRequest?
 
     // 꾹 누르는 동안의 되먹임 — 테두리가 차오르고 진동이 같이 세진다.
     /// 이만큼 누르고 있어야 잡힌다. 테두리·진동·제스처가 모두 이 값을 쓴다.
@@ -1078,7 +1088,14 @@ struct GridCell: View {
 
                 // 전체 일정 삭제
                 Button(role: .destructive, action: {
-                    showDeleteAlert = true
+                    deletionRequest = EventDeletionRequest(
+                        title: "'\(event.title)' 삭제",
+                        plan: viewModel.deletionPlan(for: event)
+                    ) {
+                        let result = await viewModel.deleteEvent(event)
+                        if case .success = result { onDelete() }
+                        return result
+                    }
                 }) {
                     Label("전체 일정 삭제", systemImage: "trash")
                 }
@@ -1114,19 +1131,7 @@ struct GridCell: View {
                 PressHaptics.shared.stop()
             }
         }
-        .alert("일정 삭제", isPresented: $showDeleteAlert) {
-            Button("취소", role: .cancel) { }
-            Button("삭제", role: .destructive) {
-                if let event = event {
-                    viewModel.deleteEvent(event)
-                    onDelete()
-                }
-            }
-        } message: {
-            if let event = event {
-                Text("'\(event.title)' 일정을 전체 삭제하시겠습니까?")
-            }
-        }
+        .confirmsEventDeletion($deletionRequest)
     }
 
     /// 칸 안쪽 — 배경, 선택 표시, 일정 블록.

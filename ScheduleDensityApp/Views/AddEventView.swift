@@ -23,7 +23,7 @@ struct AddEventView: View {
     @State private var endDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     @State private var hoursPerDay: Double = 2.0
     @State private var periodAnalysis: PeriodAnalysis? = nil
-    @State private var showingDeleteAlert = false
+    @State private var deletionRequest: EventDeletionRequest?
     @State private var selectedWeekdays: Set<Int> = [2, 3, 4, 5, 6]  // 기본값: 월~금 선택
     @State private var useAdvancedPattern: Bool = false  // 5×7 그리드 패턴 사용 여부
     @State private var weeklyPattern: [Bool] = Array(repeating: false, count: 35)  // 5주×7일 패턴
@@ -464,9 +464,7 @@ struct AddEventView: View {
                 // 삭제 버튼 (수정 모드일 때만 표시)
                 if eventToEdit != nil {
                     Section {
-                        Button(role: .destructive, action: {
-                            showingDeleteAlert = true
-                        }) {
+                        Button(role: .destructive, action: deleteEvent) {
                             HStack {
                                 Spacer()
                                 Text("일정 삭제")
@@ -530,14 +528,7 @@ struct AddEventView: View {
                     .foregroundColor(canSave ? nil : .secondary)
                 }
             }
-            .alert("일정 삭제", isPresented: $showingDeleteAlert) {
-                Button("삭제", role: .destructive) {
-                    deleteEvent()
-                }
-                Button("취소", role: .cancel) { }
-            } message: {
-                Text("이 일정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")
-            }
+            .confirmsEventDeletion($deletionRequest)
             }
         }
     }
@@ -584,9 +575,17 @@ struct AddEventView: View {
 
     private func deleteEvent() {
         guard let event = eventToEdit else { return }
-        viewModel.deleteEvent(event)
-        viewModel.eventToEdit = nil  // 삭제 완료 후 초기화
-        dismiss()
+        deletionRequest = EventDeletionRequest(
+            title: "'\(event.title)' 삭제",
+            plan: viewModel.deletionPlan(for: event)
+        ) {
+            let result = await viewModel.deleteEvent(event)
+            if case .success = result {
+                viewModel.eventToEdit = nil  // 삭제 완료 후 초기화
+                dismiss()
+            }
+            return result
+        }
     }
 
 

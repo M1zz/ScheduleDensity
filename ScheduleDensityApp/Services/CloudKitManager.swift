@@ -126,6 +126,35 @@ class CloudKitManager {
         }
     }
 
+    /// 위 것을 async 로 감싼다. **로컬을 지우기 전에 저쪽이 끝난 것을 확인해야** 해서 필요하다.
+    ///
+    /// ⚠️ 이미 없는 레코드(`unknownItem`)는 성공으로 친다. 다른 기기에서 먼저 지운 것을
+    ///    실패로 읽으면, 이쪽에서는 영영 못 지우는 줄만 남는다.
+    func deleteEvent(recordName: String) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            deleteEvent(recordName: recordName) { result in
+                switch result {
+                case .success:
+                    continuation.resume()
+                case .failure(let error):
+                    if let ckError = error as? CKError, ckError.code == .unknownItem {
+                        print("✅ [CloudKit] 이미 없는 레코드다: \(recordName)")
+                        continuation.resume()
+                    } else {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+
+    /// 전체 삭제를 async 로 감싼 것.
+    func deleteAllEvents() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            deleteAllEvents { continuation.resume(with: $0) }
+        }
+    }
+
     // 여러 Event를 배치로 CloudKit에 저장
     func saveEvents(_ events: [Event], progress: @escaping (Int, Int) -> Void, completion: @escaping (Result<Void, Error>) -> Void) {
         let database = container.privateCloudDatabase

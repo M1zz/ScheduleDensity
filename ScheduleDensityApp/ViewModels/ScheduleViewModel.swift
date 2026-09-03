@@ -119,6 +119,19 @@ struct DayInsight {
     var slackHours: Double { max(0, capacityHours - totalHours) }
 }
 
+/// 일정을 못 지운 이유. 사람이 읽을 말은 화면이 아니라 여기서 낸다.
+enum EventDeletionError: LocalizedError {
+    case noStore
+    case cloudUnreachable
+
+    var errorDescription: String? {
+        switch self {
+        case .noStore:          return "저장소를 열지 못했습니다."
+        case .cloudUnreachable: return "iCloud 에 닿지 못했습니다."
+        }
+    }
+}
+
 @Observable
 class ScheduleViewModel {
     var showingAddEvent = false
@@ -392,40 +405,6 @@ class ScheduleViewModel {
         }
     }
 
-    // CloudKit에서 개별 이벤트 삭제
-    private func deleteEventFromCloudKit(_ event: Event) {
-        // 동기화가 비활성화되어 있으면 CloudKit 삭제 안함
-        guard SyncSettingsManager.shared.isSyncEnabled else {
-            print("⏭️ [ViewModel] Sync disabled, skipping CloudKit delete")
-            return
-        }
-
-        // iCloud 사용 불가능하면 CloudKit 삭제 안함
-        guard CloudKitManager.shared.isAvailable else {
-            print("⏭️ [ViewModel] iCloud not available, skipping CloudKit delete")
-            return
-        }
-
-        // recordName이 없으면 CloudKit에 저장된 적이 없음
-        guard let recordName = event.cloudKitRecordName else {
-            print("⏭️ [ViewModel] No CloudKit record for event \"\(event.title)\", skipping delete")
-            return
-        }
-
-        print("🗑️ [ViewModel] Deleting event from CloudKit: \(recordName)")
-
-        CloudKitManager.shared.deleteEvent(recordName: recordName) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    print("✅ [ViewModel] Event deleted from CloudKit: \(recordName)")
-                case .failure(let error):
-                    print("❌ [ViewModel] CloudKit delete failed: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-
     func addEvent(_ event: Event) {
         guard let context = modelContext else {
             print("⚠️ [ViewModel] addEvent 실패: modelContext가 nil")
@@ -446,23 +425,60 @@ class ScheduleViewModel {
         }
     }
 
-    func deleteEvent(_ event: Event) {
+    /// 지금 이 일정을 지우면 무슨 일이 벌어지는가. 확인 문구가 이 값으로 갈린다
+    /// (→ EventDeletion.swift).
+    func deletionPlan(for event: Event) -> EventDeletion {
+        guard event.cloudKitRecordName != nil else { return .localOnly }
+        guard SyncSettingsManager.shared.isSyncEnabled else { return .syncOff }
+        guard CloudKitManager.shared.isAvailable else { return .unreachable }
+        return .bothSides
+    }
+
+    /// 여러 개를 한꺼번에 지울 때의 계획. **하나라도 못 지우면 전부 막는다** —
+    /// 절반만 지워지면 무엇이 남았는지 아무도 모른다.
+    func deletionPlan(for events: [Event]) -> EventDeletion {
+        if events.contains(where: { deletionPlan(for: $0).isAllowed == false }) { return .unreachable }
+        if !SyncSettingsManager.shared.isSyncEnabled { return .syncOff }
+        return events.contains { $0.cloudKitRecordName != nil } ? .bothSides : .localOnly
+    }
+
+    /// 일정을 지운다. **iCloud 것을 먼저 지우고, 그게 끝난 뒤에 이 기기 것을 지운다.**
+    ///
+    /// 순서가 이 함수의 전부다. 로컬을 먼저 지우면 저쪽 삭제가 실패했을 때 무엇을
+    /// 지우려 했는지조차 안 남고(recordName 이 그 줄과 함께 사라진다), 그 레코드는
+    /// 다음 동기화 때 조용히 되돌아온다. 지웠는데 다시 나타나는 것은 삭제가 아니다.
+    @discardableResult
+    func deleteEvent(_ event: Event) async -> Result<Void, Error> {
         guard let context = modelContext else {
             print("⚠️ [ViewModel] deleteEvent 실패: modelContext가 nil")
-            return
+            return .failure(EventDeletionError.noStore)
         }
 
-        // CloudKit에서 먼저 삭제 (삭제 전에 recordName이 필요하므로)
-        deleteEventFromCloudKit(event)
+        let plan = deletionPlan(for: event)
+        guard plan.isAllowed else {
+            print("⛔️ [ViewModel] iCloud 에 닿지 못해 삭제를 멈춘다: \"\(event.title)\"")
+            return .failure(EventDeletionError.cloudUnreachable)
+        }
 
-        // 로컬에서 삭제
+        if case .bothSides = plan, let recordName = event.cloudKitRecordName {
+            do {
+                try await CloudKitManager.shared.deleteEvent(recordName: recordName)
+            } catch {
+                print("❌ [ViewModel] CloudKit 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription)")
+                return .failure(error)
+            }
+        }
+
         context.delete(event)
         do {
             try context.save()
             print("🗑️ [ViewModel] 이벤트 삭제됨: \"\(event.title)\"")
         } catch {
             print("❌ [ViewModel] 이벤트 삭제 실패: \(error)")
+            return .failure(error)
         }
+        dataRefreshTrigger = UUID()
+        return .success(())
     }
 
     func updateEvent(_ event: Event) {
@@ -1782,34 +1798,47 @@ class ScheduleViewModel {
         dataRefreshTrigger = UUID()
     }
 
-    func deleteAllEvents() {
+    /// 전부 지운다. 개별 삭제와 같은 순서다 — **iCloud 를 먼저 비우고, 그 다음 이 기기.**
+    /// 저쪽을 못 비우면 이쪽도 건드리지 않는다.
+    @discardableResult
+    func deleteAllEvents() async -> Result<Void, Error> {
         print("🗑️ [ViewModel] 모든 이벤트 삭제 시작")
         guard let context = modelContext else {
             print("⚠️ [ViewModel] deleteAllEvents 실패: modelContext가 nil")
-            return
+            return .failure(EventDeletionError.noStore)
         }
 
         let events = fetchEvents()
         let eventCount = events.count
         print("📊 [ViewModel] 삭제할 이벤트: \(eventCount)개")
 
-        // 각 이벤트를 CloudKit과 로컬에서 모두 삭제
-        for event in events {
-            // CloudKit에서 먼저 삭제
-            deleteEventFromCloudKit(event)
-
-            // 로컬에서 삭제
-            context.delete(event)
+        let plan = deletionPlan(for: events)
+        guard plan.isAllowed else {
+            print("⛔️ [ViewModel] iCloud 에 닿지 못해 전체 삭제를 멈춘다")
+            return .failure(EventDeletionError.cloudUnreachable)
         }
+
+        if case .bothSides = plan {
+            do {
+                try await CloudKitManager.shared.deleteAllEvents()
+            } catch {
+                print("❌ [ViewModel] CloudKit 전체 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription)")
+                return .failure(error)
+            }
+        }
+
+        for event in events { context.delete(event) }
 
         do {
             try context.save()
             print("✅ [ViewModel] 모든 이벤트(\(eventCount)개) 삭제 완료")
         } catch {
             print("❌ [ViewModel] 이벤트 삭제 실패: \(error)")
+            return .failure(error)
         }
 
         // 데이터 새로고침 트리거
         dataRefreshTrigger = UUID()
+        return .success(())
     }
 }

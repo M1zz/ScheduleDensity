@@ -24,6 +24,15 @@ final class PlanBlock {
 
     var createdAt: Date = Date()
 
+    /// 맥('무지개 공방')의 캘린더 가져오기가 쓰는 칸 (→ 맥의 CalendarImport.swift).
+    ///
+    /// ⚠️ **아이폰은 이 값을 쓰지 않는다. 그래도 모델에 둔다.** 두 앱이 같은
+    ///    `CD_PlanBlock` 레코드 타입 하나를 나눠 쓰기 때문이다. 한쪽에만 있는 칸은
+    ///    스키마를 어긋나게 만들고, 이 저장소가 한 번 크게 데인 자리가 바로 그것이다
+    ///    (모르는 필드 하나가 미러링 초기화를 통째로 실패시켜 동기화가 조용히 멈췄다).
+    ///    맥이 이 칸을 만들면 아이폰도 알고는 있어야 한다.
+    var calendarEventID: String? = nil
+
     // Review (populated after the day passes)
     var reviewStatusRaw: String? = nil
     var reviewNote: String? = nil

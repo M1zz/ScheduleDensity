@@ -53,7 +53,9 @@ struct SettingsView: View {
     @State private var isAnalyzingBalance = false
     @State private var showingCalendarImport = false
     @State private var showingAddSampleAlert = false
-    @State private var showingDeleteAllAlert = false
+    /// 지우기 직전에 세우는 물음. 문구도 순서도 다른 화면과 같은 자리에서 낸다
+    /// (→ EventDeletion.swift).
+    @State private var deletionRequest: EventDeletionRequest?
     /// 유료로 가른 곁다리들 (→ ProEntitlement.swift). 잠겨 있으면 페이월을 낸다.
     @State private var purchases = PurchaseManager.shared
     @State private var paywallFeature: ProFeature?
@@ -287,7 +289,11 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     Button(action: {
-                        showingDeleteAllAlert = true
+                        let events = viewModel.fetchEvents()
+                        deletionRequest = EventDeletionRequest(
+                            title: "일정 \(events.count)개 삭제",
+                            plan: viewModel.deletionPlan(for: events)
+                        ) { await viewModel.deleteAllEvents() }
                     }) {
                         HStack {
                             Image(systemName: "trash.fill")
@@ -1009,14 +1015,7 @@ struct SettingsView: View {
         } message: {
             Text("5개의 샘플 일정을 추가하시겠습니까?\n(프로젝트 A, B, 출장, 교육 프로그램, 컨퍼런스)")
         }
-        .alert("모든 일정 삭제", isPresented: $showingDeleteAllAlert) {
-            Button("삭제", role: .destructive) {
-                viewModel.deleteAllEvents()
-            }
-            Button("취소", role: .cancel) { }
-        } message: {
-            Text("모든 일정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.")
-        }
+        .confirmsEventDeletion($deletionRequest)
     }
 
     private func saveSettings() {

@@ -4,6 +4,22 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] 일정 삭제 — 묻고 나서, 클라우드까지 (2026-09-03)
+      전에는 스와이프 두 곳이 **묻지도 않고 지웠고**, iCloud 삭제는 실패해도 조용했다.
+      `deleteEventFromCloudKit`이 동기화 꺼짐·iCloud 못 닿음·recordName 없음 세 경우에
+      말없이 건너뛰는데, 로컬 삭제는 그와 무관하게 진행됐다 → 좀비 레코드가 남아
+      다음 동기화에 되살아난다.
+      - `EventDeletion.swift` 신설. 무슨 일이 벌어지는지(`bothSides`/`localOnly`/
+        `syncOff`/`unreachable`)와 문구, `.confirmsEventDeletion` 모디파이어를 한 곳에
+      - `ScheduleViewModel.deleteEvent`를 async 로. **iCloud 먼저, 이 기기는 그 다음.**
+        저쪽이 실패하면 로컬도 안 지운다 — 순서가 이 함수의 전부다
+      - `unreachable`이면 아예 막는다. 지워도 되살아나는 것은 삭제가 아니다
+      - `CKError.unknownItem`은 성공으로 친다. 다른 기기가 먼저 지운 것을 실패로 읽으면
+        이쪽에서는 영영 못 지우는 줄이 남는다
+      - 지우는 자리 여섯 곳(관리 스와이프·하루 스와이프·길게 누르기·편집 화면·
+        관리 전체삭제·설정 전체삭제)이 전부 같은 물음을 쓴다
+      - `TodoEventBridge.clearRainbow`만 안 묻는다. 할 일 쪽에서 이미 답한 뒤라 잔소리다
+
 - [x] 죽은 잠금 게이트 걷어내기 (2026-09-03) — `TodoAccess.canEdit` 폐기
       0a03eec가 canEdit을 항상 참으로 바꿔 두고 "지우는 것은 한 번에 하라"고 남긴 것을 지운다.
       - TodoView·TodoDetailView·DoneTodosView·TodoShareIntake의 `if canEdit` 40여 곳 제거.

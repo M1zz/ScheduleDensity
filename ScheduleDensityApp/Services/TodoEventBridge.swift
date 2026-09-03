@@ -168,10 +168,16 @@ final class TodoEventBridge {
     }
 
     /// 데드라인을 지우면 그어 둔 줄도 같이 지운다. 할 일을 지울 때도 이걸 쓴다.
+    ///
+    /// ⚠️ 여기서는 따로 묻지 않는다. 사람은 이미 할 일 쪽에서 지우겠다고 답했고,
+    ///    그 답에 딸려 오는 줄이라 한 번 더 묻는 것은 잔소리다. 다만 **iCloud 에서도
+    ///    지워지는 것은 같다** — 삭제는 한 곳을 지난다 (→ ScheduleViewModel.deleteEvent).
     func clearRainbow(for item: BacklogItem) {
         guard let schedule, let event = event(for: item) else { return }
-        schedule.deleteEvent(event)
-        NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
+        Task { @MainActor in
+            await schedule.deleteEvent(event)
+            NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
+        }
     }
 
     /// 할 일 제목을 고치면 무지개에 그어 둔 줄의 이름도 따라간다.
