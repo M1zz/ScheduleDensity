@@ -334,6 +334,20 @@ struct ScheduleDensityApp: App {
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
+            // 앱을 연 날을 적고, 켜 두셨으면 그 숫자를 허브에 갱신한다.
+            // **안 켜 두었으면 한 바이트도 안 나간다** (→ UsageReporting.swift).
+            .task {
+                UsageDiary.markToday()
+                guard UsageReporting.isEnabled else { return }
+                let context = todoContainer.mainContext
+                let todos = (try? context.fetch(FetchDescriptor<BacklogItem>())) ?? []
+                let categories = (try? context.fetch(FetchDescriptor<BacklogCategory>())) ?? []
+                UsageReporting.reportIfAllowed(
+                    UsageStats.make(todos: todos,
+                                    categories: categories,
+                                    engagement: (LeeoEngagement.shared.launchCount,
+                                                 LeeoEngagement.shared.daysSinceInstall)))
+            }
             // 할 일을 스토어 밖에 한 벌 더 떠 둔다 (→ TodoArchive.swift).
             // 스토어가 빈 채로 열렸으면 떠 둔 것으로 되돌린다 — 이 기기에만 있는
             // 유일본이라 스토어가 한 번 비면 되찾을 데가 없다.

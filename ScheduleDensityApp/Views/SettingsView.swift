@@ -31,6 +31,7 @@ struct SettingsView: View {
     @State private var tipsResetDone = false
     @State private var showingEventManagement = false
     @State private var showingStatistics = false
+    @State private var showingUsageStats = false
     @State private var showingDeleteiCloudAlert = false
 
     // MARK: 동기화 진단
@@ -187,6 +188,30 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
+
+                    // ⚠️ 사용 통계는 **무료다.** 이 화면 안에 '개발자에게 보낼까요'를
+                    //    묻는 줄이 있는데, 그걸 페이월 뒤에 두면 돈을 낸 사람에게만
+                    //    동의를 묻는 꼴이 된다. 동의는 파는 것이 아니다.
+                    Button(action: { showingUsageStats = true }) {
+                        HStack {
+                            Image(systemName: "flame")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("사용 통계")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("꾸준함, 쪼개기 습관, 완주율, 어디에 시간이 갔나")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
 
                     Button(action: {
                         // 잠긴 자리는 아무 일도 안 일어나게 두지 않는다 —
@@ -966,6 +991,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingEventManagement) {
             EventManagementView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingUsageStats) {
+            UsageStatsView()
         }
         .sheet(isPresented: $showingStatistics) {
             StatisticsView(viewModel: viewModel)

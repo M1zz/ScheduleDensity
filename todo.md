@@ -4,6 +4,22 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] 사용 통계 — 앱 안에서 보고, 켜야만 나간다 (2026-09-03)
+      "왜 사용 데이터 수집해서 통계로 안 보내?" → **안 하고 있던 게 아니라 안 하겠다고
+      써 붙여 둔 상태였다** (privacy.html: "수집하거나 전송하지 않습니다").
+      그리고 LeeoKit 에 `Usage/LeeoUsageReporter`·`LeeoUsageStatsView` 가 이미 있는데
+      이 앱만 안 붙이고 있었다(`registerLaunch()` 만 부르고 report 는 안 했다).
+      - `UsageDiary` — 앱을 연 **날짜만** App Group 에 적는다. 연속 일수·최근 30일
+      - `UsageStats` — 꾸준함 / 쪼개기 습관 / 완주율 / 어디에 시간이 갔나
+        `metrics` 는 **숫자만** 낸다. 분류 이름조차 안 보낸다(직접 지은 이름이라 사생활)
+      - `UsageReporting` — 동의 스위치. **기본 꺼짐.** 끄면 적어 둔 날짜도 함께 버린다
+      - `UsageStatsView` — 설정 > 사용 통계. **무료다** — 안에 동의 토글이 있는데
+        페이월 뒤에 두면 돈 낸 사람에게만 동의를 묻는 꼴이 된다
+      - privacy.html 6항 신설, 최종 업데이트 2026-09-03
+      - ⚠️ App Store Connect 개인정보 라벨도 같이 고쳐야 한다 (선택적 사용 데이터)
+      - ⚠️ CloudKit Dashboard 에 UsageSnapshot / UsageEvent 레코드 타입을
+        Production 에 배포해야 실제로 쌓인다
+
 - [x] 이름을 '무지개 Pro'로 (2026-09-03) — 설정·페이월·위젯 잠금 문구·Products.storekit
       ⚠️ App Store Connect 의 앱 내 구입 **표시 이름도 같이 바꿔야** 실제 결제 시트와
          앱 안의 말이 일치한다. 코드만으로는 안 된다.
