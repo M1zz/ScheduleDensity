@@ -18,6 +18,8 @@ import SwiftData
 import TipKit
 
 struct TodoDetailView: View {
+    /// 지우기 직전에 세우는 물음 (→ TodoDeletion.swift).
+    @State private var deletionRequest: TodoDeletionRequest?
     /// 100%에 해당하는 최상위 할 일.
     let root: BacklogItem
 
@@ -158,6 +160,7 @@ struct TodoDetailView: View {
         }
         .navigationTitle(root.title)
         .navigationBarTitleDisplayMode(.inline)
+        .confirmsTodoDeletion($deletionRequest)
         // 단계를 또 쪼개는 자리는 **그 단계의 상세 화면**이다. 같은 화면이 한 층 아래로
         // 다시 열리므로, 세 번째 층도 네 번째 층도 같은 손짓으로 이어진다.
         .navigationDestination(item: $pushedStep) { step in
@@ -657,8 +660,10 @@ struct TodoDetailView: View {
                 setPeriod(start: Date(), end: Date.endOfThisWeek)
             }
             whenChip("안 정함", isOn: !hasPeriod) {
-                TodoEventBridge.shared.clearRainbow(for: root)
-                hasPeriod = false
+                Task {
+                    await TodoEventBridge.shared.clearRainbow(for: root)
+                    hasPeriod = false
+                }
             }
             Spacer(minLength: 0)
         }
@@ -682,8 +687,10 @@ struct TodoDetailView: View {
             Spacer()
             if hasPeriod {
                 Button("빼기") {
-                    TodoEventBridge.shared.clearRainbow(for: root)
-                    hasPeriod = false
+                    Task {
+                        await TodoEventBridge.shared.clearRainbow(for: root)
+                        hasPeriod = false
+                    }
                 }
                 .font(.subheadline)
             } else {
@@ -1125,18 +1132,20 @@ struct TodoDetailView: View {
         }
     }
 
+    /// 단계를 지운다. 목록에서 지우는 것과 **같은 물음, 같은 순서**를 지난다
+    /// (→ TodoDeletion.swift). 전에는 여기서만 무지개 줄을 안 지웠다.
     private func remove(_ item: BacklogItem) {
         let tree = self.tree
-        let parent = tree.parent(of: item)
-        let victims = Set(tree.subtree(of: item).map(\.dragToken))
-        withAnimation {
-            for node in tree.subtree(of: item) { context.delete(node) }
-            if let parent {
-                // 시간은 남은 단계들의 합이라 저절로 줄어든다. 완료 상태만 다시 굴려 준다.
-                let updated = TodoTree(allItems.filter { !victims.contains($0.dragToken) })
-                updated.rollUp(from: parent)
-            }
-            save()
+        deletionRequest = TodoDeletionRequest(
+            title: "'\(item.title)' 삭제",
+            message: TodoDeletion.message(for: item, tree: tree, hasRainbowLine: false)
+        ) {
+            let result = await TodoDeletion.delete(item,
+                                                   tree: tree,
+                                                   allItems: allItems,
+                                                   context: context)
+            if case .success = result { TodoWidgetSync.refresh(context: context) }
+            return result
         }
     }
 

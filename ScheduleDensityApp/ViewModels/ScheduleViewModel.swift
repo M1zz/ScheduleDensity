@@ -430,7 +430,12 @@ class ScheduleViewModel {
     func deletionPlan(for event: Event) -> EventDeletion {
         guard event.cloudKitRecordName != nil else { return .localOnly }
         guard SyncSettingsManager.shared.isSyncEnabled else { return .syncOff }
-        guard CloudKitManager.shared.isAvailable else { return .unreachable }
+        guard CloudKitManager.shared.isAvailable else {
+            // 켠 직후에는 계정 확인이 아직 안 끝나 여기로 떨어질 수 있다.
+            // 다시 물어 두면 사람이 한 번 더 눌렀을 때는 통과한다.
+            CloudKitManager.shared.checkAccountStatus()
+            return .unreachable
+        }
         return .bothSides
     }
 

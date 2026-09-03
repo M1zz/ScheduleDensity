@@ -15,6 +15,8 @@ import SwiftUI
 import SwiftData
 
 struct DoneTodosView: View {
+    /// 지우기 직전에 세우는 물음 (→ TodoDeletion.swift).
+    @State private var deletionRequest: TodoDeletionRequest?
     let weekStart: Date
 
     @Environment(\.modelContext) private var context
@@ -52,6 +54,7 @@ struct DoneTodosView: View {
         .listStyle(.insetGrouped)
         .navigationTitle("완료한 것")
         .navigationBarTitleDisplayMode(.inline)
+        .confirmsTodoDeletion($deletionRequest)
     }
 
     private func row(_ item: BacklogItem) -> some View {
@@ -89,14 +92,23 @@ struct DoneTodosView: View {
         }
     }
 
+    /// 끝낸 것을 지운다. 목록에서 지우는 것과 같은 물음을 지난다
+    /// (→ TodoDeletion.swift). 전에는 여기서만 무지개 줄을 안 지웠다.
     private func delete(at offsets: IndexSet) {
+        guard let index = offsets.first else { return }
         let tree = TodoTree(allItems)
-        let targets = done
-        for index in offsets {
-            // 할 일이 사라지면 그 안의 단계도 함께 사라진다.
-            for node in tree.subtree(of: targets[index]) { context.delete(node) }
+        let item = done[index]
+        deletionRequest = TodoDeletionRequest(
+            title: "'\(item.title)' 삭제",
+            message: TodoDeletion.message(for: item, tree: tree, hasRainbowLine: false)
+        ) {
+            let result = await TodoDeletion.delete(item,
+                                                   tree: tree,
+                                                   allItems: allItems,
+                                                   context: context)
+            if case .success = result { TodoWidgetSync.refresh(context: context) }
+            return result
         }
-        save()
     }
 
     private func save() {

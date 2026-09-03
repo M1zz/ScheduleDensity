@@ -62,6 +62,7 @@
 		8C481777010B7DB840761A77 /* DensityChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487173E8267E76CC3E7ECAB7 /* DensityChartView.swift */; };
 		8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CFB5D8A2281DBA1DBC8ABB /* TodoDetailView.swift */; };
 		8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094038A30FE0C5205D38B208 /* TodoEventBridge.swift */; };
+		8F4252EBC0246EBBC967E3B5 /* TodoDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B9E11A1412D10BA1E0617A /* TodoDeletion.swift */; };
 		8FADD23CE3778B0B1FEFF630 /* RainbowWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEB91B4FD6D2CC7AA5218EDE /* RainbowWidget.swift */; };
 		90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */; };
 		92EFC5ACD3632528956606B8 /* ColorHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCA231C8EF9417E46288EC6 /* ColorHex.swift */; };
@@ -144,6 +145,7 @@
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSchemaPrimer.swift; sourceTree = "<group>"; };
+		21B9E11A1412D10BA1E0617A /* TodoDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoDeletion.swift; sourceTree = "<group>"; };
 		21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitAdvisor.swift; sourceTree = "<group>"; };
 		2941CBDEC91A603C6B1B3F52 /* ScheduleDensityApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ScheduleDensityApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A25397A90AF67293DBF60A2 /* FragmentMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentMark.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@
 				B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */,
 				E38C8AF31ACA72741BF8046B /* StatisticsView.swift */,
 				AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */,
+				21B9E11A1412D10BA1E0617A /* TodoDeletion.swift */,
 				88CFB5D8A2281DBA1DBC8ABB /* TodoDetailView.swift */,
 				6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */,
 				910FBBD73ECA9E9527512FE8 /* TodoView.swift */,
@@ -659,6 +662,7 @@
 				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
 				CE5BCD25D19C6102CB9668AC /* TodoAccess.swift in Sources */,
 				51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */,
+				8F4252EBC0246EBBC967E3B5 /* TodoDeletion.swift in Sources */,
 				8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */,
 				8EF6A3F88DC451E9C685ED91 /* TodoEventBridge.swift in Sources */,
 				9B43E50F4245366DA515CE89 /* TodoShareInbox.swift in Sources */,

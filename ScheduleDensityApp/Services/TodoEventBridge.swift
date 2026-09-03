@@ -171,13 +171,20 @@ final class TodoEventBridge {
     ///
     /// ⚠️ 여기서는 따로 묻지 않는다. 사람은 이미 할 일 쪽에서 지우겠다고 답했고,
     ///    그 답에 딸려 오는 줄이라 한 번 더 묻는 것은 잔소리다. 다만 **iCloud 에서도
-    ///    지워지는 것은 같다** — 삭제는 한 곳을 지난다 (→ ScheduleViewModel.deleteEvent).
-    func clearRainbow(for item: BacklogItem) {
-        guard let schedule, let event = event(for: item) else { return }
-        Task { @MainActor in
-            await schedule.deleteEvent(event)
+    ///    지워지는 것은 같고**, 못 지웠으면 그 사실이 그대로 올라간다 —
+    ///    조용히 삼키면 지운 줄 알았던 것이 무지개에 남는다
+    ///    (→ ScheduleViewModel.deleteEvent, TodoDeletion.swift).
+    ///
+    /// 그을 줄이 애초에 없으면 성공이다. 지울 것이 없는 것과 못 지운 것은 다르다.
+    @MainActor
+    @discardableResult
+    func clearRainbow(for item: BacklogItem) async -> Result<Void, Error> {
+        guard let schedule, let event = event(for: item) else { return .success(()) }
+        let result = await schedule.deleteEvent(event)
+        if case .success = result {
             NotificationCenter.default.post(name: .todoPeriodDidChange, object: nil)
         }
+        return result
     }
 
     /// 할 일 제목을 고치면 무지개에 그어 둔 줄의 이름도 따라간다.

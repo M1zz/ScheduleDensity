@@ -47,6 +47,8 @@ struct TodoView: View {
     @State private var pickedDeadline = Date()
     /// 무지개에는 걸려 있는데 아직 할 일로 안 가져온 일들 (이번 주에 걸친 것만).
     @State private var rainbowPending: [Event] = []
+    /// 지우기 직전에 세우는 물음 (→ TodoDeletion.swift).
+    @State private var deletionRequest: TodoDeletionRequest?
     /// 무지개에서 가져와 단계를 적으러 갈 할 일.
     @State private var pushedTodo: BacklogItem?
     /// 지금 무지개에 그어져 있는 기간 (할 일 dragToken → 시작일·끝나는 날).
@@ -197,6 +199,7 @@ struct TodoView: View {
         .sheet(isPresented: $showingLedger) {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
+        .confirmsTodoDeletion($deletionRequest)
         .paywall(for: .ledger, isPresented: $showingLedgerPaywall)
         .paywall(for: .editing, isPresented: $editingPaywall)
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
@@ -1140,8 +1143,10 @@ struct TodoView: View {
         }
         if periods[item.dragToken] != nil {
             Button {
-                TodoEventBridge.shared.clearRainbow(for: item)
-                refreshPeriods()
+                Task {
+                    await TodoEventBridge.shared.clearRainbow(for: item)
+                    refreshPeriods()
+                }
             } label: {
                 Label("무지개에서 빼기", systemImage: "rainbow")
             }
@@ -1178,8 +1183,7 @@ struct TodoView: View {
             }
         }
         Button(role: .destructive) {
-            context.delete(item)
-            save()
+            askToDelete(item, tree: tree)
         } label: {
             Label("삭제", systemImage: "trash")
         }
@@ -1247,15 +1251,34 @@ struct TodoView: View {
         }
     }
 
-    /// 할 일을 지우면 그 안의 단계도 함께 지운다.
+    /// 할 일을 지운다. **미는 것도 메뉴에서 누르는 것도 같은 물음을 지난다** —
+    /// 한쪽만 조용히 지우면 어느 손짓이 되돌릴 수 없는 것인지 알 수 없게 된다.
     private func delete(_ items: [BacklogItem], at offsets: IndexSet, tree: TodoTree) {
-        for index in offsets {
-            // 할 일이 사라지면 그 일 때문에 그어 둔 무지개 줄도 남을 이유가 없다.
-            TodoEventBridge.shared.clearRainbow(for: items[index])
-            for node in tree.subtree(of: items[index]) { context.delete(node) }
+        guard let index = offsets.first else { return }
+        askToDelete(items[index], tree: tree)
+    }
+
+    /// 무엇이 함께 없어지는지 세어서 묻고, 답하면 지운다 (→ TodoDeletion.swift).
+    private func askToDelete(_ item: BacklogItem, tree: TodoTree) {
+        deletionRequest = TodoDeletionRequest(
+            title: "'\(item.title)' 삭제",
+            message: TodoDeletion.message(for: item,
+                                          tree: tree,
+                                          hasRainbowLine: periods[item.dragToken] != nil)
+        ) {
+            let result = await TodoDeletion.delete(item,
+                                                   tree: tree,
+                                                   allItems: allItems,
+                                                   context: context)
+            if case .success = result {
+                withAnimation {
+                    refreshPeriods()
+                    refreshRainbowPending()
+                }
+                syncWidget()
+            }
+            return result
         }
-        refreshPeriods()
-        save()
     }
 
     private func save() {
