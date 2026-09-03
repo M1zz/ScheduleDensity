@@ -353,7 +353,17 @@ struct ScheduleDensityApp: App {
             }
             // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
-            .task { await PurchaseManager.shared.refresh() }
+            .task {
+                await PurchaseManager.shared.refresh()
+                // ⚠️ `.onChange` 만으로는 모자란다. 다른 기기에서 샀거나, 지웠다 다시
+                //    깔았거나, 개발 빌드라면 앱이 **이미 열린 채로 뜨므로** 전환이
+                //    일어나지 않는다. 그러면 잠겨 있을 때 적어 둔 줄들이 영영
+                //    도장을 못 받아 맥에서 안 보인다 (→ TodoSharing.swift).
+                //    비어 있으면 아무 일도 안 하므로 켤 때마다 불러도 된다.
+                if PurchaseManager.shared.isUnlocked {
+                    TodoSharing.openMyItems(in: todoContainer.mainContext)
+                }
+            }
             // 값을 치르면 이 기기에서 적어 둔 것이 상대에게도 보이게 열린다
             // (→ TodoSharing.swift). 그때부터 올라가는 게 아니라 이미 올라가 있던 것이
             // 그제서야 보이는 것이라 기다림이 없다.

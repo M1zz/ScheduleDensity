@@ -76,7 +76,7 @@ struct RainbowWidgetView: View {
         if entry.isLocked {
             // 잠금 화면의 한 줄·동그라미 자리에는 세로로 쌓은 안내가 안 들어간다.
             if family == .accessoryInline {
-                Text("🔒 무지개 — 모두 열기")
+                Text("🔒 무지개 Pro")
             } else if family == .accessoryCircular {
                 Image(systemName: "lock.fill")
                     .accessibilityLabel("무지개 위젯이 잠겨 있습니다")

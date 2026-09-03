@@ -83,7 +83,7 @@ struct SettingsView: View {
 
     /// 무료인가 열려 있는가. 한 단어로 먼저 답한다.
     private var entitlementTitle: String {
-        purchases.isUnlocked ? "모두 열림" : "무료 버전"
+        purchases.isUnlocked ? "무지개 Pro" : "무료 버전"
     }
 
     /// 그래서 지금 무엇을 쓰고 있는가. 잠긴 쪽에서도 **본체는 다 쓴다**는 말을 먼저 한다 —
@@ -136,7 +136,7 @@ struct SettingsView: View {
                                     .foregroundColor(.accentColor)
                                     .frame(width: 24)
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("모두 열기")
+                                    Text("무지개 Pro")
                                         .font(.headline)
                                         .foregroundColor(.primary)
                                     Text(lockedFeatureList)

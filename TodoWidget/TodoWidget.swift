@@ -88,7 +88,7 @@ struct TodoWidgetView: View {
         if entry.isLocked {
             // 잠금 화면의 한 줄짜리 자리에는 세로로 쌓은 안내가 안 들어간다.
             if family == .accessoryInline {
-                Text("🔒 할 일 — 모두 열기")
+                Text("🔒 할 일 — 무지개 Pro")
             } else {
                 WidgetLockedView(name: "할 일")
             }

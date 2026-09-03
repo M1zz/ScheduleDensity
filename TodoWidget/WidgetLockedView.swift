@@ -24,7 +24,7 @@ struct WidgetLockedView: View {
             Text(name)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
-            Text("앱의 설정에서 ‘모두 열기’")
+            Text("앱의 설정에서 ‘무지개 Pro’")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -32,6 +32,6 @@ struct WidgetLockedView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(name) 위젯이 잠겨 있습니다. 앱의 설정에서 모두 열기를 사면 열립니다.")
+        .accessibilityLabel("\(name) 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다.")
     }
 }

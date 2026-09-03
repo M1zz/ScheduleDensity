@@ -9,12 +9,12 @@
       "localizations" : [
         {
           "description" : "홈·잠금 화면 위젯, 캘린더에서 가져오기, 일정 공유, 일정 통계, 회수 장부를 엽니다. 한 번 사면 끝입니다.",
-          "displayName" : "모두 열기",
+          "displayName" : "무지개 Pro",
           "locale" : "ko_KR"
         }
       ],
       "productID" : "com.example.ScheduleDensityApp.pro",
-      "referenceName" : "모두 열기",
+      "referenceName" : "무지개 Pro",
       "type" : "NonConsumable"
     }
   ],

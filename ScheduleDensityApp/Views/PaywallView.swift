@@ -1,7 +1,7 @@
 //
 //  PaywallView.swift
 //
-//  '모두 열기'를 사는 자리.
+//  '무지개 Pro'를 사는 자리.
 //
 //  화면이 먼저 하는 말은 **무엇이 무료인가**다. 잠긴 것부터 늘어놓으면 앱이 인질처럼 보이고,
 //  실제로도 이 앱의 본체는 잠겨 있지 않다 — 무지개도, 쪼개기도, 두 질문도, 단계 순서도
@@ -64,7 +64,7 @@ struct PaywallView: View {
                     Text("전에 산 적이 있다면 여기서 되찾습니다.")
                 }
             }
-            .navigationTitle("모두 열기")
+            .navigationTitle("무지개 Pro")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -158,6 +158,6 @@ struct ProLockBadge: View {
             .padding(.horizontal, 6)
             .padding(.vertical, 3)
             .background(Capsule().fill(Color.secondary.opacity(0.15)))
-            .accessibilityLabel("잠김, 모두 열기 필요")
+            .accessibilityLabel("잠김, 무지개 Pro 필요")
     }
 }
