@@ -4,6 +4,38 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] 유예(grandfather) 폐기 — 열림/잠김의 조건은 '샀는가' 하나 (2026-09-03)
+      무료였던 앱이 유료가 된 것뿐이다. '쓰던 사람인가'라는 두 번째 질문을 없앤다.
+      - 그 질문의 자격을 **로컬 데이터 개수**로 추측했는데, 할 일 스토어가 CloudKit
+        미러(`WeekBlocksStore.sharedContainer`)라 동기화 타이밍이 결제 여부를 흔들었다.
+        판정은 한 번뿐이고 도장을 먼저 찍어서, 한 번 어긋나면 되돌릴 길도 없었다
+      - `ProEntitlement`: `grandfatheredKey`·`grandfatherCheckedKey`·
+        `grandfathersExistingUsers`·`grandfatherIfNeeded`·`isGrandfathered` 삭제.
+        `isUnlocked`는 `pro.purchased` 한 줄만 본다
+      - `PurchaseManager.grandfatherIfNeeded` 삭제
+      - `ScheduleDensityApp.grandfatherExistingUserIfNeeded` 삭제,
+        `.task`는 `refresh()` 하나만 부른다
+      - `SettingsView`: '쓰던 분이라…' 문구 삭제
+      - ⚠️ **이미 1.1.0을 켜서 유예를 받은 사람은 이 업데이트로 잠긴다.** 알고 버린 것이다
+      - 리베이스로 '파는 것은 건너가기다'(0a03eec) 위에 얹었다. 그쪽이 `sellsEditing`을
+        폐기하고 `ProEntitlement.sellsSync`로 옮겼으므로, 유예 폐기는 그 위에서 그대로 선다
+
+- [x] 잠금의 진실을 한 벌로 합침 (2026-09-03) — "적기는 되는데 설정은 '무료 버전'"
+      증상: 실시간으로 App Group을 읽는 쪽(`TodoAccess.canEdit`, 위젯 3종)은 열려 있는데
+      캐시를 읽는 쪽(설정 라벨·일정 통계·캘린더 가져오기·공유 탭·회수 장부)만 잠긴 채였다.
+      원인: `PurchaseManager.isUnlocked`가 싱글턴 생성 때 한 번 읽고 캐시하는 저장 프로퍼티였다.
+      유예(grandfather)는 앱이 뜬 **뒤** `.task`에서 켜지고, 캐시를 고치는 `apply`는
+      `refresh()`의 `Transaction.currentEntitlements` 조회가 끝나야 불린다.
+      그 조회가 늦으면(망이 느리거나 App Store에 못 닿으면) 그 실행 내내 캐시만 낡은 채 남는다.
+      - `PurchaseManager.isUnlocked`를 계산 프로퍼티로 — `ProEntitlement.isUnlocked`를 그대로 비춘다.
+        `access(keyPath:)`로 관찰을 걸고, 값이 실제로 바뀔 때만 `withMutation`으로 알린다
+      - `mutatingEntitlement(_:)` 신설: App Group의 한 줄을 고치는 일은 전부 여기를 지난다.
+        위젯 새로 그리기도 여기로 모았다
+      - `PurchaseManager.grandfatherIfNeeded(hasExistingData:)` 신설.
+        `ScheduleDensityApp`이 `ProEntitlement`를 직접 부르지 않고 이쪽을 거친다 —
+        직접 부르면 화면에 알려 줄 사람이 없어 그 어긋남이 그대로 돌아온다
+      - `ProEntitlement`의 두 쓰기 함수에 "PurchaseManager만 부른다" 경고 주석
+
 - [x] '적기' 판매 개시 — `TodoAccess.sellsEditing` = true (2026-09-02, 1.1.0)
       - 이번 버전부터 실제로 판다. 안 산 기기는 읽기 전용, 잠기는 것 6가지
       - 유예(`grandfathersExistingUsers = true`)와 반드시 함께 켜져 있어야 한다 —
