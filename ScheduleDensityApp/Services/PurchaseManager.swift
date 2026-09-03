@@ -21,7 +21,19 @@ final class PurchaseManager {
     static let shared = PurchaseManager()
 
     /// 지금 열려 있는가. 화면은 전부 이 값만 본다.
-    private(set) var isUnlocked: Bool = ProEntitlement.isUnlocked
+    ///
+    /// ⚠️ 값을 여기 따로 들고 있지 않는다. 근거는 App Group에 적힌 한 줄뿐이고,
+    ///    이것은 그것을 그대로 비추기만 한다.
+    ///
+    ///    전에는 켤 때 한 번 읽어 캐시했다. 그 캐시는 `apply`에서만 고쳐지는데,
+    ///    `apply`는 `refresh()`의 StoreKit 조회가 끝나야 불린다. 조회가 늦으면
+    ///    캐시만 낡은 채 남는다 — 실시간 값을 읽는 적기·위젯은 열려 있는데,
+    ///    캐시를 읽는 설정 화면은 '무료 버전'이라고 말했다.
+    ///    진실이 두 벌이면 언젠가 반드시 갈라진다. 그래서 한 벌만 둔다.
+    var isUnlocked: Bool {
+        access(keyPath: \.isUnlocked)
+        return ProEntitlement.isUnlocked
+    }
 
     /// App Store에서 받아온 상품. 못 받아오면 값을 못 보여주므로 구매 버튼을 막는다.
     private(set) var product: Product?
@@ -119,10 +131,20 @@ final class PurchaseManager {
     // MARK: -
 
     private func apply(owned: Bool) {
-        ProEntitlement.setPurchased(owned)
-        let unlocked = ProEntitlement.isUnlocked
-        guard unlocked != isUnlocked else { return }
-        isUnlocked = unlocked
+        mutatingEntitlement { ProEntitlement.setPurchased(owned) }
+    }
+
+    /// App Group의 한 줄을 바꾸는 일은 **전부 여기를 지난다.**
+    ///
+    /// `isUnlocked`가 계산 프로퍼티라 저장 프로퍼티처럼 저절로 알려지지 않는다.
+    /// 밖에서 그 한 줄을 직접 고치면 화면은 낡은 말을 계속 하게 되므로,
+    /// 고치는 자리를 하나로 모아 여기서 알린다.
+    private func mutatingEntitlement(_ change: () -> Void) {
+        let before = ProEntitlement.isUnlocked
+        change()
+        guard ProEntitlement.isUnlocked != before else { return }
+        // 값은 이미 바뀐 뒤다. 괄호 안에서 더 할 일은 없고, 바뀌었다고 알리기만 한다.
+        withMutation(keyPath: \.isUnlocked) { }
         // 위젯은 App Group의 한 줄만 읽는다. 바뀌었으면 다시 그리라고 알린다.
         WidgetCenter.shared.reloadAllTimelines()
     }
