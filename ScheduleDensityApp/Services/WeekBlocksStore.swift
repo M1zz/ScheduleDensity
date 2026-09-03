@@ -188,118 +188,20 @@ final class WeekBlocksStore {
         return Set(blocks.filter { Self.matches($0, key: key) }.map(\.title))
     }
 
-    /// **오늘 계획을 기간에 맞춘다.** 사람이 누르는 자리는 상세의 시작일·끝나는 날 하나뿐이고,
-    /// 계획 블록은 그 날짜를 따라오는 그림자다 (→ `TodoWhen`).
-    ///
-    /// ⚠️ 자동으로 **지우는** 것이 위험한 자리다. 맥에서 손으로 만든 블록까지 제목이 같다는
-    ///    이유로 지우면, 사람이 아무것도 안 눌렀는데 계획이 사라진다. 그래서 **이 앱이
-    ///    올려 둔 것만** 기억해 두고(아래 `autoAssignedKey`), 그중 기간에서 빠진 것만 내린다.
-    ///    맥에서 만든 블록은 이 목록에 없으므로 끝까지 건드리지 않는다.
-    ///
-    /// - Parameter wanted: 오늘 계획에 있어야 할 (제목, 시간)들.
-    func syncToday(_ wanted: [(title: String, hours: Double)]) {
-        guard container != nil else { return }
-        let wantedTitles = Set(wanted.map { $0.title.trimmingCharacters(in: .whitespacesAndNewlines) }
-                                    .filter { !$0.isEmpty })
-        let mine = Self.autoAssignedTitles()
-
-        // 기간에서 빠진 것 내리기 — 이 앱이 올린 것만.
-        for title in mine.subtracting(wantedTitles) { unassign(title: title) }
-
-        // 기간에 새로 들어온 것 올리기. 이미 같은 제목의 블록이 있으면 assign이 알아서 넘어간다.
-        let already = titlesAssigned()
-        for entry in wanted {
-            let title = entry.title.trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !title.isEmpty, !already.contains(title) else { continue }
-            assign(title: title, durationHours: entry.hours)
-        }
-        Self.setAutoAssignedTitles(wantedTitles)
-    }
-
-    /// 이 앱이 오늘 계획에 올려 둔 제목들. 날이 바뀌면 빈 집합에서 다시 시작한다 —
-    /// 어제 올린 것은 어제 계획이지, 오늘 내릴 대상이 아니다.
-    private static func autoAssignedTitles() -> Set<String> {
-        let defaults = UserDefaults.standard
-        guard defaults.string(forKey: autoAssignedDayKey) == todayKey() else { return [] }
-        return Set(defaults.stringArray(forKey: autoAssignedKey) ?? [])
-    }
-
-    private static func setAutoAssignedTitles(_ titles: Set<String>) {
-        let defaults = UserDefaults.standard
-        defaults.set(todayKey(), forKey: autoAssignedDayKey)
-        defaults.set(Array(titles), forKey: autoAssignedKey)
-    }
-
-    private static let autoAssignedKey = "weekBlocks.autoAssignedToday"
-    private static let autoAssignedDayKey = "weekBlocks.autoAssignedDay"
-
-    private static func todayKey() -> String {
-        let cal = Calendar.current
-        let c = cal.dateComponents([.year, .month, .day], from: Date())
-        return "\(c.year ?? 0)-\(c.month ?? 0)-\(c.day ?? 0)"
-    }
-
-    /// 할 일을 그 날짜의 계획 블록으로 배정한다. 이미 있으면 아무것도 하지 않고 true.
-    @discardableResult
-    func assign(title: String, durationHours: Double, to date: Date = Date()) -> Bool {
-        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !title.isEmpty else { return false }
-        guard let container else {
-            print("⛔️ [WeekBlocks] 컨테이너 없음 — 배정 실패. 사유: \(lastErrorDescription ?? "알 수 없음")")
-            return false
-        }
-
-        let key = Self.dayKey(for: date)
-        let context = ModelContext(container)
-        let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
-        if blocks.contains(where: { Self.matches($0, key: key) && $0.title == title }) {
-            print("ℹ️ [WeekBlocks] 이미 배정됨: \(title)")
-            return true
-        }
-
-        context.insert(PlanBlock(
-            day: DayOfWeek(rawValue: key.day) ?? .mon,
-            timeBand: Self.timeBand(for: date),
-            durationHours: max(0, durationHours),
-            title: title,
-            successCriteria: "",
-            deliverable: "",
-            weekStartDate: key.weekStart,
-            concreteVerified: false
-        ))
-
-        do {
-            try context.save()
-        } catch {
-            print("⚠️ [WeekBlocks] 배정 저장 실패: \(error)")
-            return false
-        }
-        print("✅ [WeekBlocks] 배정: \(title) → \(key.day)요일(월=0)")
-        NotificationCenter.default.post(name: .weekBlocksPlanDidChange, object: nil)
-        return true
-    }
-
-    /// 그 날짜의 같은 제목 블록을 지운다(배정 취소).
-    @discardableResult
-    func unassign(title: String, from date: Date = Date()) -> Bool {
-        guard let container else { return false }
-        let key = Self.dayKey(for: date)
-        let context = ModelContext(container)
-        let blocks = (try? context.fetch(FetchDescriptor<PlanBlock>())) ?? []
-        let victims = blocks.filter { Self.matches($0, key: key) && $0.title == title }
-        guard !victims.isEmpty else { return false }
-
-        for block in victims { context.delete(block) }
-        do {
-            try context.save()
-        } catch {
-            print("⚠️ [WeekBlocks] 배정 취소 저장 실패: \(error)")
-            return false
-        }
-        print("🗑️ [WeekBlocks] 배정 취소: \(title) (\(victims.count)개)")
-        NotificationCenter.default.post(name: .weekBlocksPlanDidChange, object: nil)
-        return true
-    }
+    // MARK: - 쓰지 않는다
+    //
+    // **이 앱은 맥의 계획표에 아무것도 올리지 않는다.** 여기 있던 assign/unassign/
+    // syncToday 를 걷어냈다. 이미 아무도 안 부르는 죽은 코드였지만, 남겨 두면
+    // "그때는 이렇게 했었지" 하고 다시 불리는 자리가 된다.
+    //
+    // 폰에서 적은 것은 맥의 **할 일 목록(BacklogItem)에만** 들어간다. 그것이 언제
+    // 어느 칸에 놓일지는 맥에서 사람이 정한다 — 마감이 오늘이라는 사실과 오늘 하기로
+    // 했다는 약속은 다른 일이고, 앱이 앞의 것을 뒤의 것으로 바꿔 적으면 사람은
+    // 약속한 적이 없는데 계획표에 약속이 서 있게 된다 (→ 이 파일 머리말).
+    //
+    // ⚠️ 다시 열더라도 제목으로 맞추지 말 것. PlanBlock 에 할 일의 dragToken 같은
+    //    안정적인 열쇠가 실린 뒤에 연다. 제목으로 맞추는 한 어떤 쓰기도 맥에서 사람이
+    //    손으로 만든 블록을 건드릴 수 있다.
 
     // MARK: - 날짜 열쇠
 
@@ -309,17 +211,6 @@ final class WeekBlocksStore {
         cal.firstWeekday = 2
         let weekday = cal.component(.weekday, from: date)   // 1=일 … 7=토
         return (date.weekStart(), (weekday + 5) % 7)        // 월=0 … 일=6
-    }
-
-    /// 배정 시각이 속한 시간대. 맥앱 `timeBand(for:)`와 같은 경계를 쓴다.
-    private static func timeBand(for date: Date) -> TimeBand {
-        let hour = Calendar.current.component(.hour, from: date)
-        switch hour {
-        case 6..<12:  return .morning
-        case 12..<18: return .afternoon
-        case 18..<23: return .evening
-        default:      return .night
-        }
     }
 
     private static func matches(_ block: PlanBlock, key: (weekStart: Date, day: Int)) -> Bool {
