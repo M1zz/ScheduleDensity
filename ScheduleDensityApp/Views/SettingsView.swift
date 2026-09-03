@@ -88,9 +88,7 @@ struct SettingsView: View {
     /// 이 앱은 무료로도 온전히 돌아가고, 그 사실을 감추면 안 사는 사람이 지운다.
     private var entitlementNote: String {
         if purchases.isUnlocked {
-            return ProEntitlement.isGrandfathered
-                ? "쓰던 분이라 곁다리까지 전부 열려 있습니다."
-                : "한 번 사서 곁다리까지 전부 열려 있습니다."
+            return "한 번 사서 곁다리까지 전부 열려 있습니다."
         }
         return "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 \(ProFeature.sold.count)가지가 잠겨 있습니다."
     }

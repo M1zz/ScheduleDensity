@@ -92,46 +92,37 @@ enum ProEntitlement {
     static let appGroupID = "group.com.devkoan.ScheduleDensity"
 
     private static let purchasedKey = "pro.purchased"
-    private static let grandfatheredKey = "pro.grandfathered"
-    private static let grandfatherCheckedKey = "pro.grandfatherChecked"
 
     private static var defaults: UserDefaults {
         UserDefaults(suiteName: appGroupID) ?? .standard
     }
 
     /// 이 기능들을 써도 되는가.
+    ///
+    /// 근거는 **App Store 영수증 하나뿐이다.** 산 사람은 열리고, 안 산 사람은 잠긴다.
+    /// 여기 다른 조건을 더하지 않는다 — 전에 '쓰던 사람은 열어 둔다'는 유예가 있었는데,
+    /// 그걸 판단하려고 로컬 데이터 개수를 셌고, 그 스토어가 CloudKit 미러라
+    /// **동기화 타이밍이 결제 여부를 흔들었다.** 조건이 둘이 되는 순간 그렇게 된다.
     static var isUnlocked: Bool {
-        defaults.bool(forKey: purchasedKey) || defaults.bool(forKey: grandfatheredKey)
+        defaults.bool(forKey: purchasedKey)
     }
 
-    /// 산 게 아니라 원래 쓰던 사람이라 열려 있는 상태.
-    static var isGrandfathered: Bool {
-        defaults.bool(forKey: grandfatheredKey) && !defaults.bool(forKey: purchasedKey)
-    }
-
-    /// 영수증 확인 결과를 적는다. 앱만 부른다.
+    /// 영수증 확인 결과를 적는다.
+    ///
+    /// ⚠️ `PurchaseManager`만 부른다. 여기 적힌 한 줄이 곧 열림/잠김이고,
+    ///    화면은 그것을 비추는 `PurchaseManager.isUnlocked`를 본다. 밖에서 직접
+    ///    고치면 화면에 알려 줄 사람이 없어 설정만 낡은 말을 하게 된다.
     static func setPurchased(_ value: Bool) {
         defaults.set(value, forKey: purchasedKey)
     }
 
-    // MARK: - 원래 쓰던 사람은 그대로 둔다
+    // MARK: - 유예는 없다
     //
-    // 이 다섯 가지는 1.0.9까지 **무료로 배포돼 있었다.** 업데이트 한 번으로 쓰던 기능이
-    // 잠기면 그건 값을 받는 게 아니라 뺏는 것이다. 그래서 이 버전을 처음 켤 때
-    // 이미 데이터가 있는 기기는 영구히 열어 둔다. 새로 받는 사람부터 값을 받는다.
+    // 1.0.9까지 무료였고 1.1.0부터 판다. 전에는 '쓰던 사람은 그대로 열어 둔다'는 유예를
+    // 두고, 그 자격을 **로컬에 데이터가 있는가**로 추측했다. 그 추측이 문제였다 —
+    // 할 일 스토어는 CloudKit 미러라 개수가 언제 0을 벗어나는지가 동기화에 달려 있어서,
+    // 같은 사람이 실행할 때마다 다른 답이 나올 수 있었다. 게다가 판정은 한 번만 하고
+    // 도장을 찍어 버려서, 한 번 어긋나면 되돌릴 길이 없었다.
     //
-    // ⚠️ 이 유예를 원하지 않으면 `grandfathersExistingUsers`를 false로 두면 된다.
-    //    딱 이 한 줄이 그 정책 전부다.
-
-    static let grandfathersExistingUsers = true
-
-    /// 이 버전 첫 실행 때 딱 한 번. `hasExistingData`는 '이 앱을 이미 쓰고 있었는가' —
-    /// 일정이든 할 일이든 하나라도 적혀 있으면 참이다.
-    static func grandfatherIfNeeded(hasExistingData: Bool) {
-        guard grandfathersExistingUsers else { return }
-        guard !defaults.bool(forKey: grandfatherCheckedKey) else { return }
-        defaults.set(true, forKey: grandfatherCheckedKey)
-        guard hasExistingData else { return }
-        defaults.set(true, forKey: grandfatheredKey)
-    }
+    // 무료였던 앱이 유료가 된 것뿐이다. 열림/잠김의 조건은 하나면 된다 — **샀는가.**
 }

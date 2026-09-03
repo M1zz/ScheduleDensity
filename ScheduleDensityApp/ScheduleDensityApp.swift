@@ -351,12 +351,9 @@ struct ScheduleDensityApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
                 selectedTab = .todo
             }
-            // 열림/잠김의 근거는 언제나 App Store 영수증이다. App Group에 적어 둔 한 줄은
+            // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
-            .task {
-                grandfatherExistingUserIfNeeded()
-                await PurchaseManager.shared.refresh()
-            }
+            .task { await PurchaseManager.shared.refresh() }
             // 값을 치르면 이 기기에서 적어 둔 것이 상대에게도 보이게 열린다
             // (→ TodoSharing.swift). 그때부터 올라가는 게 아니라 이미 올라가 있던 것이
             // 그제서야 보이는 것이라 기다림이 없다.
@@ -391,16 +388,6 @@ struct ScheduleDensityApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
-    }
-
-    /// 이 다섯 가지는 1.0.9까지 무료로 배포돼 있었다. 업데이트 한 번으로 쓰던 기능이
-    /// 잠기면 값을 받는 게 아니라 뺏는 것이므로, **이 버전을 처음 켤 때 이미 적어 둔 것이
-    /// 있는 기기는 영구히 열어 둔다.** 새로 받는 사람부터 값을 받는다.
-    /// 정책을 끄려면 `ProEntitlement.grandfathersExistingUsers`를 false로 두면 된다.
-    private func grandfatherExistingUserIfNeeded() {
-        let hasEvents = (try? sharedModelContainer.mainContext.fetchCount(FetchDescriptor<Event>())) ?? 0 > 0
-        let hasTodos = (try? todoContainer.mainContext.fetchCount(FetchDescriptor<BacklogItem>())) ?? 0 > 0
-        ProEntitlement.grandfatherIfNeeded(hasExistingData: hasEvents || hasTodos)
     }
 
     /// 이미 추가해 둔 제어센터 버튼이 죽은 채 남지 않게 켤 때마다 다시 등록한다.
