@@ -42,23 +42,23 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .editing:        return "맥과 함께 쓰기"
-        case .widget:         return "홈·잠금 화면 위젯"
-        case .calendarImport: return "캘린더에서 가져오기"
-        case .scheduleShare:  return "일정 공유"
-        case .statistics:     return "일정 통계"
-        case .ledger:         return "회수 장부"
+        case .editing:        return String(localized: "맥과 함께 쓰기")
+        case .widget:         return String(localized: "홈·잠금 화면 위젯")
+        case .calendarImport: return String(localized: "캘린더에서 가져오기")
+        case .scheduleShare:  return String(localized: "일정 공유")
+        case .statistics:     return String(localized: "일정 통계")
+        case .ledger:         return String(localized: "회수 장부")
         }
     }
 
     var note: String {
         switch self {
-        case .editing:        return "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다."
-        case .widget:         return "지금 할 단계와 무지개를 앱을 안 열고도 봅니다."
-        case .calendarImport: return "시스템 캘린더의 일정을 무지개로 들여옵니다."
-        case .scheduleShare:  return "내 일정을 읽기 전용으로 나눠 봅니다."
-        case .statistics:     return "쌓인 일정을 통째로 들여다봅니다."
-        case .ledger:         return "이번 주에 무엇을 되찾았는지 셉니다."
+        case .editing:        return String(localized: "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다.")
+        case .widget:         return String(localized: "지금 할 단계와 무지개를 앱을 안 열고도 봅니다.")
+        case .calendarImport: return String(localized: "시스템 캘린더의 일정을 무지개로 들여옵니다.")
+        case .scheduleShare:  return String(localized: "내 일정을 읽기 전용으로 나눠 봅니다.")
+        case .statistics:     return String(localized: "쌓인 일정을 통째로 들여다봅니다.")
+        case .ledger:         return String(localized: "이번 주에 무엇을 되찾았는지 셉니다.")
         }
     }
 

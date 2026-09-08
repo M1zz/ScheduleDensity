@@ -264,10 +264,10 @@ struct TodoTree {
         let total = leafCount(of: item)
         guard total > 0 else { return nil }
         if item.stepOrder == .free {
-            return "\(total)개 중 \(doneLeafCount(of: item))개 끝"
+            return String(localized: "\(total)개 중 \(doneLeafCount(of: item))개 끝")
         }
         guard let number = currentStepNumber(of: item) else { return nil }
-        return "\(total)단계 중 \(number)번째"
+        return String(localized: "\(total)단계 중 \(number)번째")
     }
 
     // MARK: - 변경 (호출한 쪽에서 context.save())

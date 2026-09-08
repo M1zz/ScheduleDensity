@@ -99,7 +99,7 @@ struct DoneTodosView: View {
         let tree = TodoTree(allItems)
         let item = done[index]
         deletionRequest = TodoDeletionRequest(
-            title: "'\(item.title)' 삭제",
+            title: String(localized: "'\(item.title)' 삭제"),
             message: TodoDeletion.message(for: item, tree: tree, hasRainbowLine: false)
         ) {
             let result = await TodoDeletion.delete(item,

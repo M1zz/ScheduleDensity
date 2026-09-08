@@ -240,9 +240,9 @@ struct RainbowOnboardingOverlay: View {
 
     private var headline: String {
         switch step {
-        case .intro: return "무지개는 꾹 눌러서 그려요"
-        case .pressStart: return "시작하는 날을 꾹"
-        case .pressEnd: return "끝나는 날을 한 번 더 꾹"
+        case .intro: return String(localized: "무지개는 꾹 눌러서 그려요")
+        case .pressStart: return String(localized: "시작하는 날을 꾹")
+        case .pressEnd: return String(localized: "끝나는 날을 한 번 더 꾹")
         case .idle, .filling, .done: return ""
         }
     }
@@ -250,11 +250,11 @@ struct RainbowOnboardingOverlay: View {
     private var message: String {
         switch step {
         case .intro:
-            return "위에서 아래로 날짜가 흐르고, 가로 칸은 그날 한꺼번에 굴리는 일의 개수예요.\n빈 칸을 꾹 눌러 시작하는 날과 끝나는 날을 집으면 세로로 이어진 네모 하나가 만들어집니다. 한 번 같이 해볼까요?"
+            return String(localized: "위에서 아래로 날짜가 흐르고, 가로 칸은 그날 한꺼번에 굴리는 일의 개수예요.\n빈 칸을 꾹 눌러 시작하는 날과 끝나는 날을 집으면 세로로 이어진 네모 하나가 만들어집니다. 한 번 같이 해볼까요?")
         case .pressStart:
-            return "하얗게 표시된 빈 칸을 꾹 눌러 보세요. 테두리가 한 바퀴 다 차면 그 날이 시작하는 날로 잡힙니다."
+            return String(localized: "하얗게 표시된 빈 칸을 꾹 눌러 보세요. 테두리가 한 바퀴 다 차면 그 날이 시작하는 날로 잡힙니다.")
         case .pressEnd:
-            return "같은 세로줄에서 끝나는 날을 다시 꾹 누르면 두 날 사이가 네모로 이어지고, 일정을 적는 창이 열려요."
+            return String(localized: "같은 세로줄에서 끝나는 날을 다시 꾹 누르면 두 날 사이가 네모로 이어지고, 일정을 적는 창이 열려요.")
         case .idle, .filling, .done:
             return ""
         }
@@ -311,26 +311,26 @@ enum AddEventGuideStep: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .title: return "무슨 일인지 적어요"
-        case .period: return "언제부터 언제까지인지"
-        case .activeDays: return "그중 실제로 시간 쓰는 날"
-        case .hours: return "그 날 하루에 몇 시간"
-        case .save: return "다 됐어요"
+        case .title: return String(localized: "무슨 일인지 적어요")
+        case .period: return String(localized: "언제부터 언제까지인지")
+        case .activeDays: return String(localized: "그중 실제로 시간 쓰는 날")
+        case .hours: return String(localized: "그 날 하루에 몇 시간")
+        case .save: return String(localized: "다 됐어요")
         }
     }
 
     var message: String {
         switch self {
         case .title:
-            return "나중에 무지개에서 이 칸을 눌렀을 때 알아볼 수 있게, 한 줄로 적어주세요."
+            return String(localized: "나중에 무지개에서 이 칸을 눌렀을 때 알아볼 수 있게, 한 줄로 적어주세요.")
         case .period:
-            return "아까 꾹 눌러 집은 두 날이 들어와 있어요. 끝나는 날은 반드시 있어야 합니다 — 끝을 안 정하면 그 일은 영영 안 끝나요."
+            return String(localized: "아까 꾹 눌러 집은 두 날이 들어와 있어요. 끝나는 날은 반드시 있어야 합니다 — 끝을 안 정하면 그 일은 영영 안 끝나요.")
         case .activeDays:
-            return "기간 전부가 아니라, 그 안에서 진짜로 손을 대는 요일만 고르세요.\n스터디가 화요일에만 모인다면 화요일만 고르면 됩니다. 나머지 날은 '아직 안 끝난 일'로 옅게 남아요."
+            return String(localized: "기간 전부가 아니라, 그 안에서 진짜로 손을 대는 요일만 고르세요.\n스터디가 화요일에만 모인다면 화요일만 고르면 됩니다. 나머지 날은 '아직 안 끝난 일'로 옅게 남아요.")
         case .hours:
-            return "고른 날 하루에 들어가는 시간이에요. 이 숫자가 그날이 얼마나 차는지를 정합니다."
+            return String(localized: "고른 날 하루에 들어가는 시간이에요. 이 숫자가 그날이 얼마나 차는지를 정합니다.")
         case .save:
-            return "오른쪽 위 '추가'를 누르면 무지개에 한 줄이 그어집니다."
+            return String(localized: "오른쪽 위 '추가'를 누르면 무지개에 한 줄이 그어집니다.")
         }
     }
 }

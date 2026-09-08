@@ -581,8 +581,10 @@ struct TimelineDensityView: View {
 
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 M월 d일 (E)"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMdE", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
@@ -592,14 +594,18 @@ struct TimelineDensityView: View {
 
     private func monthDay(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
     private func weekday(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "E"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
@@ -612,7 +618,7 @@ struct TimelineDensityView: View {
     /// 밀어서 지우기. 무엇이 없어지는지 먼저 묻는다 (→ EventDeletion.swift).
     private func deleteEvent(_ event: Event) {
         deletionRequest = EventDeletionRequest(
-            title: "'\(event.title)' 삭제",
+            title: String(localized: "'\(event.title)' 삭제"),
             plan: viewModel.deletionPlan(for: event)
         ) {
             let result = await viewModel.deleteEvent(event)
@@ -842,7 +848,7 @@ struct TimelineDensityView: View {
             draggedDates = [normalizedDate]
 
             // 토스트 메시지 표시
-            showToastMessage("종료일을 꾹 눌러주세요")
+            showToastMessage(String(localized: "종료일을 꾹 눌러주세요"))
         } else if let startDate = dragStartDate, draggedLane == lane {
             // 두 번째 롱프레스 (같은 레인): 종료 지점 설정
             let normalizedStartDate = calendar.startOfDay(for: startDate)
@@ -991,14 +997,18 @@ struct DateRow: View {
 
     private func monthDay(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
     private func weekday(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "E"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 }
@@ -1089,7 +1099,7 @@ struct GridCell: View {
                 // 전체 일정 삭제
                 Button(role: .destructive, action: {
                     deletionRequest = EventDeletionRequest(
-                        title: "'\(event.title)' 삭제",
+                        title: String(localized: "'\(event.title)' 삭제"),
                         plan: viewModel.deletionPlan(for: event)
                     ) {
                         let result = await viewModel.deleteEvent(event)
@@ -1336,14 +1346,18 @@ struct TimelineDayRow: View {
 
     private func monthDay(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
     private func weekday(from date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "E"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
@@ -1389,8 +1403,10 @@ struct EventListCard: View {
 
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M/d"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 }
@@ -1595,16 +1611,16 @@ struct EventQuickLookView: View {
 
                 // 정보 행들
                 VStack(spacing: 12) {
-                    infoRow(icon: "calendar", label: "기간",
+                    infoRow(icon: "calendar", label: String(localized: "기간"),
                             value: event.isInfinite
-                            ? "\(formatDate(event.startDate)) ~ 무기한"
+                            ? String(localized: "\(formatDate(event.startDate)) ~ 무기한")
                             : "\(formatDate(event.startDate)) ~ \(formatDate(event.endDate))")
-                    infoRow(icon: "clock", label: "하루 시간",
-                            value: String(format: "%.1f시간", event.hoursPerDay))
-                    infoRow(icon: "repeat", label: "요일", value: weekdaysText)
-                    infoRow(icon: "exclamationmark.circle", label: "중요도",
+                    infoRow(icon: "clock", label: String(localized: "하루 시간"),
+                            value: String(format: String(localized: "%.1f시간"), event.hoursPerDay))
+                    infoRow(icon: "repeat", label: String(localized: "요일"), value: weekdaysText)
+                    infoRow(icon: "exclamationmark.circle", label: String(localized: "중요도"),
                             value: event.importance.displayName)
-                    infoRow(icon: "checklist", label: "할 일", value: todoText)
+                    infoRow(icon: "checklist", label: String(localized: "할 일"), value: todoText)
                 }
                 .padding()
                 .background(Color(.systemGray6))
@@ -1654,9 +1670,9 @@ struct EventQuickLookView: View {
 
     /// 이어진 할 일이 어디까지 갔는지 한 줄로. 아직 없으면 그렇다고 말한다.
     private var todoText: String {
-        guard linkedTodo != nil else { return "아직 안 쪼갬" }
-        guard let progress = todoProgress, progress.total > 0 else { return "단계 없음" }
-        return "\(progress.total)단계 중 \(progress.done)단계 완료"
+        guard linkedTodo != nil else { return String(localized: "아직 안 쪼갬") }
+        guard let progress = todoProgress, progress.total > 0 else { return String(localized: "단계 없음") }
+        return String(localized: "\(progress.total)단계 중 \(progress.done)단계 완료")
     }
 
     private func loadLinkedTodo() {
@@ -1675,10 +1691,11 @@ struct EventQuickLookView: View {
     }
 
     private var weekdaysText: String {
-        if event.weeklyPattern != nil { return "맞춤 패턴" }
-        guard let days = event.selectedWeekdays, !days.isEmpty, days.count < 7 else { return "매일" }
-        let labels = ["", "일", "월", "화", "수", "목", "금", "토"]
-        return days.sorted().compactMap { $0 >= 1 && $0 <= 7 ? labels[$0] : nil }.joined(separator: "·")
+        if event.weeklyPattern != nil { return String(localized: "맞춤 패턴") }
+        guard let days = event.selectedWeekdays, !days.isEmpty, days.count < 7 else { return String(localized: "매일") }
+        let labels = Calendar.current.shortWeekdaySymbols
+        return days.sorted().compactMap { $0 >= 1 && $0 <= labels.count ? labels[$0 - 1] : nil }
+            .joined(separator: "·")
     }
 
     private func infoRow(icon: String, label: String, value: String) -> some View {
@@ -1699,7 +1716,9 @@ struct EventQuickLookView: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.M.d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMd", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 }
@@ -1954,7 +1973,7 @@ struct FreestDayCard: View {
                 // 잡힌 시간이 아니라 **남은 여유**를 적는다.
                 // '가장 한가한 날'이라고만 적어 두면 다음에 할 일이 그리로 간다.
                 // 여유는 메울 구멍이 아니라 지킬 자산이다 (→ LoadLevel).
-                Label(String(format: "%.1fh 여유", insight.slackHours), systemImage: "leaf")
+                Label(String(format: String(localized: "%.1fh 여유"), insight.slackHours), systemImage: "leaf")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -1972,8 +1991,10 @@ struct FreestDayCard: View {
 
     private var dateString: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M/d (E)"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MdE", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: insight.date)
     }
 }
@@ -2024,8 +2045,10 @@ struct BusiestDayCard: View {
 
     private var dateString: String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M/d (E)"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MdE", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: insight.date)
     }
 }

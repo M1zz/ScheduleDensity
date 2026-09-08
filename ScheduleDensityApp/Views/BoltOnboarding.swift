@@ -149,8 +149,8 @@ struct BoltHintRow: View {
 /// 번개가 무슨 뜻이고 어떻게 쓰는지 — 안내 줄의 '자세히'에서, 그리고 설정에서
 /// (→ MeaningPage.swift). 덮어 씌우는 대신 **밀어 넣는다.**
 struct BoltMeaningView: View {
-    var eyebrow: String = "할 일 목록의 번개"
-    var buttonTitle: String = "알겠어요"
+    var eyebrow: String = String(localized: "할 일 목록의 번개")
+    var buttonTitle: String = String(localized: "알겠어요")
     /// 밀어 넣은 화면에서는 뒤로 가기가 이미 있으므로 아래 버튼을 뺀다.
     var showsDoneButton: Bool = true
     var onDone: () -> Void
@@ -158,10 +158,10 @@ struct BoltMeaningView: View {
     var body: some View {
         MeaningPage(
             eyebrow: eyebrow,
-            title: "번개는\n‘지금 바로’ 라는 뜻",
+            title: String(localized: "번개는\n‘지금 바로’ 라는 뜻"),
             accent: TodoView.nowGreen,
             paragraphs: paragraphs,
-            footnote: "번개를 붙인다고 마감이나 걸린 시간이 바뀌지는 않아요. 어디에 서는지만 달라집니다.",
+            footnote: String(localized: "번개를 붙인다고 마감이나 걸린 시간이 바뀌지는 않아요. 어디에 서는지만 달라집니다."),
             buttonTitle: buttonTitle,
             showsDoneButton: showsDoneButton,
             diagram: { diagram },
@@ -210,9 +210,9 @@ struct BoltMeaningView: View {
 
             // 붙인 줄이 올라가 서는 자리.
             VStack(spacing: 6) {
-                laneRow("우유 사 오기", marked: true)
-                laneRow("자료 모아 펼치기", marked: true)
-                laneRow("보고서 초안 쓰기", marked: false)
+                laneRow(String(localized: "우유 사 오기"), marked: true)
+                laneRow(String(localized: "자료 모아 펼치기"), marked: true)
+                laneRow(String(localized: "보고서 초안 쓰기"), marked: false)
             }
         }
         .frame(maxWidth: 320)
@@ -244,18 +244,18 @@ struct BoltMeaningView: View {
         [
             MeaningParagraph(
                 icon: "bolt.fill",
-                heading: "앱의 짐작이 아니라 내가 하는 말",
-                body: "번개는 ‘이건 준비 없이 바로 된다’고 내가 직접 붙이는 표시입니다. 5분 열두 번은 한 시간이 아니라서, 짬에 집을 수 있는 일은 따로 표시해 두어야 흘러가지 않아요."
+                heading: String(localized: "앱의 짐작이 아니라 내가 하는 말"),
+                body: String(localized: "번개는 ‘이건 준비 없이 바로 된다’고 내가 직접 붙이는 표시입니다. 5분 열두 번은 한 시간이 아니라서, 짬에 집을 수 있는 일은 따로 표시해 두어야 흘러가지 않아요.")
             ),
             MeaningParagraph(
                 icon: "hand.draw",
-                heading: "붙이고 거두는 건 오른쪽으로 밀기",
-                body: "할 일 줄을 오른쪽으로 밀면 번개가 나옵니다. 붙인 줄을 다시 밀면 회색 번개가 나오고, 누르면 거둬집니다. 단계로 쪼갠 일이면 지금 할 단계에 붙어요."
+                heading: String(localized: "붙이고 거두는 건 오른쪽으로 밀기"),
+                body: String(localized: "할 일 줄을 오른쪽으로 밀면 번개가 나옵니다. 붙인 줄을 다시 밀면 회색 번개가 나오고, 누르면 거둬집니다. 단계로 쪼갠 일이면 지금 할 단계에 붙어요.")
             ),
             MeaningParagraph(
                 icon: "arrow.up.to.line",
-                heading: "표시한 줄은 맨 위로",
-                body: "번개를 붙인 줄은 차례와 상관없이 목록 맨 위 연두 칸에 섭니다. 짬이 났을 때 목록을 훑지 않고 맨 위만 봐도 되도록요."
+                heading: String(localized: "표시한 줄은 맨 위로"),
+                body: String(localized: "번개를 붙인 줄은 차례와 상관없이 목록 맨 위 연두 칸에 섭니다. 짬이 났을 때 목록을 훑지 않고 맨 위만 봐도 되도록요.")
             )
         ]
     }

@@ -94,7 +94,7 @@ struct UsageStats {
         stats.hoursByCategory = byCategory
             .filter { $0.value > 0 }
             .map { id, hours in
-                CategoryHours(name: names[id]?.name ?? "미분류",
+                CategoryHours(name: names[id]?.name ?? String(localized: "미분류"),
                               hours: hours,
                               colorName: names[id]?.colorName ?? "gray")
             }

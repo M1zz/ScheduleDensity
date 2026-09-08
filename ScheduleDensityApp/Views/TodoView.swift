@@ -14,9 +14,17 @@ import CoreData  // NSPersistentStoreRemoteChange (맥에서 온 계획 변경 �
 
 struct TodoView: View {
     private enum Tab: String, CaseIterable, Identifiable {
-        case mine = "내 할 일"
-        case family = "공유"
+        case mine
+        case family
         var id: String { rawValue }
+
+        /// 화면에 서는 글자. id 로 쓰는 rawValue 와 갈라 둔다 — 언어가 바뀌어도 id 는 그대로다.
+        var label: String {
+            switch self {
+            case .mine:   return String(localized: "내 할 일")
+            case .family: return String(localized: "공유")
+            }
+        }
     }
 
     @Environment(\.modelContext) private var context
@@ -259,7 +267,7 @@ struct TodoView: View {
         if showsFamilyTab {
             Picker("목록", selection: $tab) {
                 ForEach(Tab.allCases) { t in
-                    Text(t.rawValue).tag(t)
+                    Text(t.label).tag(t)
                 }
             }
             .pickerStyle(.segmented)
@@ -587,16 +595,16 @@ struct TodoView: View {
         } else {
             HStack(spacing: 14) {
                 if !marked.isEmpty {
-                    countChip("bolt.fill", marked.count, "바로 하면 되는 일", Self.nowGreen)
+                    countChip("bolt.fill", marked.count, String(localized: "바로 하면 되는 일"), Self.nowGreen)
                 }
                 if !errands.isEmpty {
-                    countChip("circle.dashed", errands.count, "그냥 하면 되는 것", .secondary)
+                    countChip("circle.dashed", errands.count, String(localized: "그냥 하면 되는 것"), .secondary)
                 }
                 if !items.isEmpty {
-                    countChip("clock", items.count, "시간 잡은 일", .secondary)
+                    countChip("clock", items.count, String(localized: "시간 잡은 일"), .secondary)
                 }
                 if !done.isEmpty {
-                    countChip("checkmark", done.count, "완료", .secondary)
+                    countChip("checkmark", done.count, String(localized: "완료"), .secondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -1033,12 +1041,14 @@ struct TodoView: View {
 
     private func shortDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
     private func hourText(_ hours: Double) -> String {
-        hours == hours.rounded() ? String(format: "%.0f시간", hours) : String(format: "%.1f시간", hours)
+        hours == hours.rounded() ? String(format: String(localized: "%.0f시간"), hours) : String(format: String(localized: "%.1f시간"), hours)
     }
 
     // MARK: - 데드라인 묻기
@@ -1051,13 +1061,13 @@ struct TodoView: View {
 
     private static let deadlineChoiceRows: [[DeadlineChoice]] = [
         [
-            DeadlineChoice(label: "오늘", date: { Calendar.current.startOfDay(for: Date()) }),
-            DeadlineChoice(label: "내일", date: { Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date() }),
-            DeadlineChoice(label: "이번 주", date: { Date.endOfThisWeek })
+            DeadlineChoice(label: String(localized: "오늘"), date: { Calendar.current.startOfDay(for: Date()) }),
+            DeadlineChoice(label: String(localized: "내일"), date: { Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date() }),
+            DeadlineChoice(label: String(localized: "이번 주"), date: { Date.endOfThisWeek })
         ],
         [
-            DeadlineChoice(label: "2주 뒤", date: { Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date() }),
-            DeadlineChoice(label: "한 달 뒤", date: { Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date() })
+            DeadlineChoice(label: String(localized: "2주 뒤"), date: { Calendar.current.date(byAdding: .day, value: 14, to: Date()) ?? Date() }),
+            DeadlineChoice(label: String(localized: "한 달 뒤"), date: { Calendar.current.date(byAdding: .month, value: 1, to: Date()) ?? Date() })
         ]
     ]
 
@@ -1261,7 +1271,7 @@ struct TodoView: View {
     /// 무엇이 함께 없어지는지 세어서 묻고, 답하면 지운다 (→ TodoDeletion.swift).
     private func askToDelete(_ item: BacklogItem, tree: TodoTree) {
         deletionRequest = TodoDeletionRequest(
-            title: "'\(item.title)' 삭제",
+            title: String(localized: "'\(item.title)' 삭제"),
             message: TodoDeletion.message(for: item,
                                           tree: tree,
                                           hasRainbowLine: periods[item.dragToken] != nil)
@@ -1505,7 +1515,7 @@ struct TodoRow: View {
         if hasSteps, let phrase = tree.stepProgressPhrase(of: item) {
             text = "\(item.title), \(phrase), \(displayTitle)"
         }
-        if advice.isFragment { text += ", 5분에 집을 수 있음" }
+        if advice.isFragment { text += String(localized: ", 5분에 집을 수 있음") }
         return text
     }
 
@@ -1516,7 +1526,7 @@ struct TodoRow: View {
                                            from: calendar.startOfDay(for: Date()),
                                            to: calendar.startOfDay(for: deadline)).day ?? 0
         // 지난 날짜는 여기서 세지 않는다 — 그건 '밀림' 배지가 이미 말했다.
-        let text = days <= 0 ? "오늘까지" : "D-\(days)"
+        let text = days <= 0 ? String(localized: "오늘까지") : "D-\(days)"
         // 사흘 안쪽이면 색으로 먼저 말한다.
         let tint: Color = days <= 0 ? .red : (days <= 3 ? .orange : .secondary)
         return Text(text)

@@ -74,7 +74,7 @@ enum CloudSchemaPrimer {
         do {
             try context.save()
         } catch {
-            return Report(created: 0, deleted: 0, note: "표본을 못 만들었습니다: \(error)")
+            return Report(created: 0, deleted: 0, note: String(localized: "표본을 못 만들었습니다: \(error.localizedDescription)"))
         }
 
         // 내보내기가 돌 시간을 준다. 이 사이에 서버에 칸이 생긴다.
@@ -91,11 +91,11 @@ enum CloudSchemaPrimer {
         let sent = CloudSyncLog.shared.exporting
         let note: String
         if let sent, sent.succeeded {
-            note = "올라갔습니다. 이제 콘솔에서 Development → Production 배포."
+            note = String(localized: "올라갔습니다. 이제 콘솔에서 Development → Production 배포.")
         } else if let sent, let why = sent.error {
-            note = "내보내기가 실패했습니다 — \(why)"
+            note = String(localized: "내보내기가 실패했습니다 — \(why)")
         } else {
-            note = "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요."
+            note = String(localized: "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요.")
         }
         return Report(created: 3, deleted: deleted, note: note)
     }

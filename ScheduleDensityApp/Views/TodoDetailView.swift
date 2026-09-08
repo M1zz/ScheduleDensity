@@ -376,7 +376,7 @@ struct TodoDetailView: View {
         let hours = tree.hasChildren(root) ? tree.totalHours(of: root) : root.durationHours
         return HStack(spacing: 6) {
             chip(icon: "clock",
-                 text: hours <= 0 ? "시간 안 잡음" : formatDuration(hours),
+                 text: hours <= 0 ? String(localized: "시간 안 잡음") : formatDuration(hours),
                  tint: .secondary,
                  dim: hours <= 0)
             if !isSubStep {
@@ -388,7 +388,7 @@ struct TodoDetailView: View {
             if let category = category(of: root) {
                 chip(icon: category.iconName, text: category.name, tint: category.displayColor, dim: false)
             } else {
-                chip(icon: "tag", text: "미분류", tint: .secondary, dim: true)
+                chip(icon: "tag", text: String(localized: "미분류"), tint: .secondary, dim: true)
             }
             Spacer(minLength: 0)
         }
@@ -398,15 +398,15 @@ struct TodoDetailView: View {
     /// (→ `TodoWhen`). 날짜 두 개는 시트에서 본다.
     private var periodChipText: String {
         switch currentWhen {
-        case .backlog: return "날짜 없음"
-        case .overdue: return "밀림"
-        case .today: return "오늘"
+        case .backlog: return String(localized: "날짜 없음")
+        case .overdue: return String(localized: "밀림")
+        case .today: return String(localized: "오늘")
         case .thisWeek, .later:
             let calendar = Calendar.current
             let left = calendar.dateComponents([.day],
                                                from: calendar.startOfDay(for: Date()),
                                                to: calendar.startOfDay(for: periodEnd)).day ?? 0
-            return left <= 0 ? "오늘까지" : "D-\(left)"
+            return left <= 0 ? String(localized: "오늘까지") : "D-\(left)"
         }
     }
 
@@ -529,7 +529,7 @@ struct TodoDetailView: View {
                     HStack {
                         Text("소요시간")
                         Spacer()
-                        Text(root.durationHours <= 0 ? "안 잡음" : formatDuration(root.durationHours))
+                        Text(root.durationHours <= 0 ? String(localized: "안 잡음") : formatDuration(root.durationHours))
                             .monospacedDigit()
                             .foregroundStyle(root.durationHours <= 0 ? Color.teal : Color.secondary)
                     }
@@ -652,14 +652,14 @@ struct TodoDetailView: View {
         // 자주 쓰는 두 답은 버튼 하나로. 날짜를 두 번 굴려 오늘을 고르게 하면
         // '오늘 할 일'이라고 적는 데 손이 넷 든다.
         HStack(spacing: 8) {
-            whenChip("오늘", isOn: currentWhen == .today) {
+            whenChip(String(localized: "오늘"), isOn: currentWhen == .today) {
                 setPeriod(start: Date(), end: Date())
             }
-            whenChip("이번 주", isOn: currentWhen == .thisWeek) {
+            whenChip(String(localized: "이번 주"), isOn: currentWhen == .thisWeek) {
                 // 이번 주 일요일까지. 끝나는 날이 이 일이 언제 일인지를 정한다 (→ TodoWhen).
                 setPeriod(start: Date(), end: Date.endOfThisWeek)
             }
-            whenChip("안 정함", isOn: !hasPeriod) {
+            whenChip(String(localized: "안 정함"), isOn: !hasPeriod) {
                 Task {
                     await TodoEventBridge.shared.clearRainbow(for: root)
                     hasPeriod = false
@@ -681,7 +681,7 @@ struct TodoDetailView: View {
         HStack {
             Image(systemName: "rainbow")
                 .foregroundStyle(.tint)
-            Text(hasPeriod ? periodSummary : "아직 무지개에 없어요")
+            Text(hasPeriod ? periodSummary : String(localized: "아직 무지개에 없어요"))
                 .font(.subheadline)
                 .foregroundStyle(hasPeriod ? .secondary : .tertiary)
             Spacer()
@@ -707,11 +707,11 @@ struct TodoDetailView: View {
 
     private var whenSummary: String {
         switch currentWhen {
-        case .backlog: return "백로그"
-        case .today: return "오늘"
-        case .thisWeek: return "이번 주"
-        case .later: return "다음 주 뒤"
-        case .overdue: return "밀림"
+        case .backlog: return String(localized: "백로그")
+        case .today: return String(localized: "오늘")
+        case .thisWeek: return String(localized: "이번 주")
+        case .later: return String(localized: "다음 주 뒤")
+        case .overdue: return String(localized: "밀림")
         }
     }
 
@@ -752,7 +752,7 @@ struct TodoDetailView: View {
         let left = calendar.dateComponents([.day],
                                            from: calendar.startOfDay(for: Date()),
                                            to: calendar.startOfDay(for: periodEnd)).day ?? 0
-        return left <= 0 ? "무지개에 \(days)일 · 오늘까지" : "무지개에 \(days)일 · D-\(left)"
+        return left <= 0 ? String(localized: "무지개에 \(days)일 · 오늘까지") : String(localized: "무지개에 \(days)일 · D-\(left)")
     }
 
     /// 날짜를 고치면 그 즉시 무지개에 반영한다. 아직 안 그은 일은 '긋기'를 눌러야 생긴다 —
@@ -829,14 +829,14 @@ struct TodoDetailView: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         helperNote(icon: "bolt.fill", tint: TodoView.nowGreen,
-                                   title: "5분에 집을 수 있는 마디를 하나는 두세요",
-                                   body: "2번(펼치기)과 4번(마무리)이 대개 그렇습니다. 짬이 났을 때 집을 게 하나도 없으면, 그 일은 큰 시간이 날 때까지 아무 일도 안 일어납니다.")
+                                   title: String(localized: "5분에 집을 수 있는 마디를 하나는 두세요"),
+                                   body: String(localized: "2번(펼치기)과 4번(마무리)이 대개 그렇습니다. 짬이 났을 때 집을 게 하나도 없으면, 그 일은 큰 시간이 날 때까지 아무 일도 안 일어납니다."))
                         helperNote(icon: "clock", tint: .secondary,
-                                   title: "한 마디는 한 자리에서 닫히는 크기로",
-                                   body: "두 시간을 넘기면 하다 말게 됩니다. 넘을 것 같으면 그 마디를 다시 쪼개세요 — 단계를 길게 누르면 그 단계만 따로 쪼갤 수 있습니다.")
+                                   title: String(localized: "한 마디는 한 자리에서 닫히는 크기로"),
+                                   body: String(localized: "두 시간을 넘기면 하다 말게 됩니다. 넘을 것 같으면 그 마디를 다시 쪼개세요 — 단계를 길게 누르면 그 단계만 따로 쪼갤 수 있습니다."))
                         helperNote(icon: "pencil", tint: .accentColor,
-                                   title: "그대로 옮겨 적지는 마세요",
-                                   body: "이 네 줄을 한 번에 넣어주는 버튼이 있었는데, 남의 일에 맞춘 이름 넷을 지우고 고치는 게 처음부터 적는 것보다 오래 걸렸습니다. 순서만 빌리고 이름은 내 말로 적으세요.")
+                                   title: String(localized: "그대로 옮겨 적지는 마세요"),
+                                   body: String(localized: "이 네 줄을 한 번에 넣어주는 버튼이 있었는데, 남의 일에 맞춘 이름 넷을 지우고 고치는 게 처음부터 적는 것보다 오래 걸렸습니다. 순서만 빌리고 이름은 내 말로 적으세요."))
                     }
                 }
                 .padding(20)
@@ -1137,7 +1137,7 @@ struct TodoDetailView: View {
     private func remove(_ item: BacklogItem) {
         let tree = self.tree
         deletionRequest = TodoDeletionRequest(
-            title: "'\(item.title)' 삭제",
+            title: String(localized: "'\(item.title)' 삭제"),
             message: TodoDeletion.message(for: item, tree: tree, hasRainbowLine: false)
         ) {
             let result = await TodoDeletion.delete(item,

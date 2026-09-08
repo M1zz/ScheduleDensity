@@ -104,12 +104,12 @@ struct DayTimeAnalysisView: View {
             }
 
             HStack(spacing: 0) {
-                stat("차 있는 시간", formatHours(day.occupiedHours), tint: .primary)
+                stat(String(localized: "차 있는 시간"), formatHours(day.occupiedHours), tint: .primary)
                 statDivider
-                stat("남는 시간", formatHours(day.freeHours),
+                stat(String(localized: "남는 시간"), formatHours(day.freeHours),
                      tint: day.freeHours < 1 ? .orange : .secondary)
                 statDivider
-                stat("가동률", "\(Int((day.load * 100).rounded()))%", tint: loadColor)
+                stat(String(localized: "가동률"), "\(Int((day.load * 100).rounded()))%", tint: loadColor)
             }
             .padding(.vertical, 12)
             .background(
@@ -394,15 +394,19 @@ struct DayTimeAnalysisView: View {
 
     private func formatDateFull(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 
     private func formatWeekday(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEEE", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 }
@@ -476,7 +480,7 @@ fileprivate func formatHours(_ hours: Double) -> String {
     let total = Int((hours * 60).rounded())
     let h = total / 60
     let m = total % 60
-    if h == 0 { return "\(m)분" }
-    if m == 0 { return "\(h)시간" }
-    return "\(h)시간 \(m)분"
+    if h == 0 { return String(localized: "\(m)분") }
+    if m == 0 { return String(localized: "\(h)시간") }
+    return String(localized: "\(h)시간 \(m)분")
 }

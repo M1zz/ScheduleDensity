@@ -17,11 +17,11 @@ struct RainbowMeaningView: View {
 
     var body: some View {
         MeaningPage(
-            eyebrow: event == nil ? "무지개 읽는 법" : "방금 그은 한 줄",
-            title: "이 한 줄이\n말하고 있는 것",
+            eyebrow: event == nil ? String(localized: "무지개 읽는 법") : String(localized: "방금 그은 한 줄"),
+            title: String(localized: "이 한 줄이\n말하고 있는 것"),
             accent: accent,
             paragraphs: paragraphs,
-            footnote: "칸을 탭하면 내용을 보고, 꾹 누르면 고치거나 지울 수 있어요.",
+            footnote: String(localized: "칸을 탭하면 내용을 보고, 꾹 누르면 고치거나 지울 수 있어요."),
             diagram: { diagram },
             onDone: onDone
         )
@@ -96,7 +96,9 @@ struct RainbowMeaningView: View {
 
     private func dayLabel(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
@@ -106,18 +108,18 @@ struct RainbowMeaningView: View {
         [
             MeaningParagraph(
                 icon: "arrow.up.and.down",
-                heading: "세로로 이어진 길이",
-                body: "이 일에 매여 있는 기간입니다. 손을 대지 않는 날도 아직 끝나지 않았다면 여전히 나를 붙잡고 있어요. 그 무게가 보이라고 끝까지 이어 칠합니다."
+                heading: String(localized: "세로로 이어진 길이"),
+                body: String(localized: "이 일에 매여 있는 기간입니다. 손을 대지 않는 날도 아직 끝나지 않았다면 여전히 나를 붙잡고 있어요. 그 무게가 보이라고 끝까지 이어 칠합니다.")
             ),
             MeaningParagraph(
                 icon: "square.fill.on.square.fill",
-                heading: "진한 칸과 옅은 칸",
-                body: "진한 칸은 실제로 시간을 쓰는 날, 옅은 칸은 매여만 있는 날입니다. 스터디가 화요일에만 모여도 끝나는 날까지 계속 옅게 이어지는 이유예요."
+                heading: String(localized: "진한 칸과 옅은 칸"),
+                body: String(localized: "진한 칸은 실제로 시간을 쓰는 날, 옅은 칸은 매여만 있는 날입니다. 스터디가 화요일에만 모여도 끝나는 날까지 계속 옅게 이어지는 이유예요.")
             ),
             MeaningParagraph(
                 icon: "arrow.left.and.right",
-                heading: "가로로 늘어선 칸 수",
-                body: "그날 한꺼번에 굴리고 있는 일의 개수입니다. 일곱 칸이 다 차 가면 하나만 어긋나도 그 날 전체가 밀려요."
+                heading: String(localized: "가로로 늘어선 칸 수"),
+                body: String(localized: "그날 한꺼번에 굴리고 있는 일의 개수입니다. 일곱 칸이 다 차 가면 하나만 어긋나도 그 날 전체가 밀려요.")
             )
         ]
     }

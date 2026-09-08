@@ -89,10 +89,10 @@ enum LoadLevel {
 
     var text: String {
         switch self {
-        case .easy:   return "여유 있어요"
-        case .normal: return "보통이에요"
-        case .tight:  return "빠듯해요"
-        case .over:   return "넘쳤어요"
+        case .easy:   return String(localized: "여유 있어요")
+        case .normal: return String(localized: "보통이에요")
+        case .tight:  return String(localized: "빠듯해요")
+        case .over:   return String(localized: "넘쳤어요")
         }
     }
 }
@@ -126,8 +126,8 @@ enum EventDeletionError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noStore:          return "저장소를 열지 못했습니다."
-        case .cloudUnreachable: return "iCloud 에 닿지 못했습니다."
+        case .noStore:          return String(localized: "저장소를 열지 못했습니다.")
+        case .cloudUnreachable: return String(localized: "iCloud 에 닿지 못했습니다.")
         }
     }
 }
@@ -355,9 +355,12 @@ class ScheduleViewModel {
             return ""
         }
 
+        // ⚠️ 로케일을 못 박지 않는다. 예전에 ko_KR 로 고정돼 있어서 영어로 쓰는 분에게도
+        //    "9월 3일"이 나왔다. 형식은 템플릿(MMMd)으로만 말하고, 실제 글자 순서와
+        //    낱말은 기기 언어가 정하게 둔다.
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M월 d일"
+        formatter.locale = Locale.autoupdatingCurrent
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
 
         return "\(formatter.string(from: currentWeekStart)) - \(formatter.string(from: weekEnd))"
     }
@@ -907,7 +910,9 @@ class ScheduleViewModel {
                 let cells = event.actualCellCount()
                 let weekdaysStr = formatWeekdays(event.selectedWeekdays)
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "M/d"
+                // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+                dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                            locale: .autoupdatingCurrent)
                 let startStr = dateFormatter.string(from: event.startDate)
                 let endStr = dateFormatter.string(from: event.endDate)
                 print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
@@ -923,7 +928,9 @@ class ScheduleViewModel {
             let cells = event.actualCellCount()
             let weekdaysStr = formatWeekdays(event.selectedWeekdays)
             let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "M/d"
+            // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+            dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                        locale: .autoupdatingCurrent)
             let startStr = dateFormatter.string(from: event.startDate)
             let endStr = dateFormatter.string(from: event.endDate)
             print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
@@ -1021,7 +1028,9 @@ class ScheduleViewModel {
                         let cells = event.actualCellCount()
                         let weekdaysStr = formatWeekdays(event.selectedWeekdays)
                         let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "M/d"
+                        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+                        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                                    locale: .autoupdatingCurrent)
                         let startStr = dateFormatter.string(from: event.startDate)
                         let endStr = dateFormatter.string(from: event.endDate)
                         print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
@@ -1138,7 +1147,9 @@ class ScheduleViewModel {
                 let cells = event.actualCellCount()
                 let weekdaysStr = formatWeekdays(event.selectedWeekdays)
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "M/d"
+                // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+                dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                            locale: .autoupdatingCurrent)
                 let startStr = dateFormatter.string(from: event.startDate)
                 let endStr = dateFormatter.string(from: event.endDate)
                 print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
@@ -1245,10 +1256,11 @@ class ScheduleViewModel {
     // 요일 배열을 문자열로 포맷 (예: "월,수,금" 또는 "모든 요일")
     private func formatWeekdays(_ weekdays: [Int]?) -> String {
         guard let weekdays = weekdays, !weekdays.isEmpty else {
-            return "모든 요일"
+            return String(localized: "모든 요일")
         }
 
-        let weekdayNames = ["일", "월", "화", "수", "목", "금", "토"]
+        // 요일 이름은 손으로 적지 않는다 — 달력이 기기 언어로 이미 들고 있다.
+        let weekdayNames = Calendar.current.shortWeekdaySymbols
         let sortedWeekdays = weekdays.sorted()
         let names = sortedWeekdays.compactMap { weekday -> String? in
             guard weekday >= 1 && weekday <= 7 else { return nil }
@@ -1727,7 +1739,9 @@ class ScheduleViewModel {
 
         // 기존 샘플 데이터가 있으면 중복 추가 방지
         let existingEvents = fetchEvents()
-        let sampleTitles = ["프로젝트 A", "프로젝트 B", "출장", "교육 프로그램", "컨퍼런스"]
+        let sampleTitles = [String(localized: "프로젝트 A"), String(localized: "프로젝트 B"),
+                            String(localized: "출장"), String(localized: "교육 프로그램"),
+                            String(localized: "컨퍼런스")]
         let existingSampleEvents = existingEvents.filter { sampleTitles.contains($0.title) }
 
         if !existingSampleEvents.isEmpty {
@@ -1741,7 +1755,7 @@ class ScheduleViewModel {
         // 샘플 이벤트 1: 프로젝트 A (오늘부터 10일간)
         guard let projectAEnd = calendar.date(byAdding: .day, value: 10, to: today) else { return }
         let projectA = Event(
-            title: "프로젝트 A",
+            title: String(localized: "프로젝트 A"),
             startDate: today,
             endDate: projectAEnd,
             color: "#FF3B30",
@@ -1753,7 +1767,7 @@ class ScheduleViewModel {
         guard let projectBStart = calendar.date(byAdding: .day, value: 5, to: today),
               let projectBEnd = calendar.date(byAdding: .day, value: 17, to: today) else { return }
         let projectB = Event(
-            title: "프로젝트 B",
+            title: String(localized: "프로젝트 B"),
             startDate: projectBStart,
             endDate: projectBEnd,
             color: "#FF9500",
@@ -1765,7 +1779,7 @@ class ScheduleViewModel {
         guard let tripStart = calendar.date(byAdding: .day, value: 7, to: today),
               let tripEnd = calendar.date(byAdding: .day, value: 10, to: today) else { return }
         let trip = Event(
-            title: "출장",
+            title: String(localized: "출장"),
             startDate: tripStart,
             endDate: tripEnd,
             color: "#FFCC00",
@@ -1777,7 +1791,7 @@ class ScheduleViewModel {
         guard let trainingStart = calendar.date(byAdding: .day, value: 15, to: today),
               let trainingEnd = calendar.date(byAdding: .day, value: 20, to: today) else { return }
         let training = Event(
-            title: "교육 프로그램",
+            title: String(localized: "교육 프로그램"),
             startDate: trainingStart,
             endDate: trainingEnd,
             color: "#34C759",
@@ -1789,7 +1803,7 @@ class ScheduleViewModel {
         guard let confStart = calendar.date(byAdding: .day, value: 18, to: today),
               let confEnd = calendar.date(byAdding: .day, value: 22, to: today) else { return }
         let conference = Event(
-            title: "컨퍼런스",
+            title: String(localized: "컨퍼런스"),
             startDate: confStart,
             endDate: confEnd,
             color: "#007AFF",

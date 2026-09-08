@@ -90,7 +90,7 @@ struct FragmentWidgetView: View {
                 Image(systemName: "lock.fill")
                     .accessibilityLabel("번개 위젯이 잠겨 있습니다")
             } else {
-                WidgetLockedView(name: "번개")
+                WidgetLockedView(name: String(localized: "번개"))
             }
         } else {
             unlocked
@@ -140,8 +140,8 @@ private struct FragmentCircularView: View {
                 .monospacedDigit()
         }
         .widgetAccessibility(snapshot.fragmentCount > 0
-            ? "지금 5분에 집을 수 있는 단계 \(snapshot.fragmentCount)개"
-            : "지금 집을 조각 없음")
+            ? String(localized: "지금 5분에 집을 수 있는 단계 \(snapshot.fragmentCount)개")
+            : String(localized: "지금 집을 조각 없음"))
     }
 }
 
@@ -273,15 +273,15 @@ private struct FragmentLine: View {
 // MARK: - 접근성
 
 private func fragmentAccessibilityLabel(_ snapshot: TodoWidgetSnapshot, limit: Int) -> String {
-    guard !snapshot.hasNoFragments else { return "지금 집을 조각 없음" }
+    guard !snapshot.hasNoFragments else { return String(localized: "지금 집을 조각 없음") }
     let titles = snapshot.fragments.prefix(limit).map { fragment -> String in
         var text = fragment.title
-        if let parent = fragment.parentTitle { text += ", \(parent)의 단계" }
-        if fragment.minutes > 0 { text += ", \(fragment.minutes)분" }
-        if fragment.isMarked { text += ", 직접 표시함" }
+        if let parent = fragment.parentTitle { text += String(localized: ", \(parent)의 단계") }
+        if fragment.minutes > 0 { text += String(localized: ", \(fragment.minutes)분") }
+        if fragment.isMarked { text += String(localized: ", 직접 표시함") }
         return text
     }
-    return "5분에 집을 수 있는 단계 \(snapshot.fragmentCount)개. " + titles.joined(separator: ", ")
+    return String(localized: "5분에 집을 수 있는 단계 \(snapshot.fragmentCount)개. ") + titles.joined(separator: ", ")
 }
 
 private extension View {

@@ -185,6 +185,6 @@ struct WeekLedgerView: View {
     }
 
     private func formatMinutes(_ minutes: Int) -> String {
-        minutes <= 0 ? "0분" : formatDuration(Double(minutes) / 60.0)
+        minutes <= 0 ? String(localized: "0분") : formatDuration(Double(minutes) / 60.0)
     }
 }

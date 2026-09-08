@@ -19,9 +19,18 @@ struct EventManagementView: View {
     @State private var refreshTrigger = UUID()
 
     enum SortOption: String, CaseIterable {
-        case startDate = "시작일"
-        case title = "제목"
-        case duration = "기간"
+        case startDate
+        case title
+        case duration
+
+        /// 화면에 서는 글자 (rawValue 는 값으로만 둔다 → 번역할 자리를 만든다).
+        var label: String {
+            switch self {
+            case .startDate: return String(localized: "시작일")
+            case .title:     return String(localized: "제목")
+            case .duration:  return String(localized: "기간")
+            }
+        }
 
         var icon: String {
             switch self {
@@ -70,7 +79,7 @@ struct EventManagementView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: option.icon)
                                     .font(.system(size: 12))
-                                Text(option.rawValue)
+                                Text(option.label)
                                     .font(.system(size: 13))
                             }
                             .padding(.horizontal, 12)
@@ -204,7 +213,7 @@ struct EventManagementView: View {
     /// iCloud 것까지 함께 없어지므로 무엇이 없어지는지 먼저 말한다.
     private func deleteEvent(_ event: Event) {
         deletionRequest = EventDeletionRequest(
-            title: "'\(event.title)' 삭제",
+            title: String(localized: "'\(event.title)' 삭제"),
             plan: viewModel.deletionPlan(for: event)
         ) {
             let result = await viewModel.deleteEvent(event)
@@ -216,7 +225,7 @@ struct EventManagementView: View {
     private func deleteAllEvents() {
         let events = viewModel.fetchEvents()
         deletionRequest = EventDeletionRequest(
-            title: "일정 \(events.count)개 삭제",
+            title: String(localized: "일정 \(events.count)개 삭제"),
             plan: viewModel.deletionPlan(for: events)
         ) {
             let result = await viewModel.deleteAllEvents()
@@ -276,7 +285,7 @@ struct EventManagementRow: View {
                     HStack(spacing: 4) {
                         Image(systemName: "hourglass")
                             .font(.system(size: 12))
-                        Text(String(format: "%.1f시간/일", event.hoursPerDay))
+                        Text(String(format: String(localized: "%.1f시간/일"), event.hoursPerDay))
                             .font(.system(size: 13))
                     }
                     .foregroundColor(.orange)
@@ -315,7 +324,9 @@ struct EventManagementRow: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMd", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 
@@ -323,17 +334,17 @@ struct EventManagementRow: View {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.day], from: event.startDate, to: event.endDate)
         if let days = components.day {
-            return "\(days + 1)일"
+            return String(localized: "\(days + 1)일")
         }
-        return "1일"
+        return String(localized: "1일")
     }
 
     private func weekdayText(_ weekdays: [Int]) -> String {
-        let names = ["일", "월", "화", "수", "목", "금", "토"]
-        let sorted = weekdays.sorted()
-        let text = sorted.map { weekdays in
-            names[weekdays % 7]
-        }.joined(separator: ", ")
-        return text
+        // selectedWeekdays 는 Calendar 규칙(1=일 … 7=토)이다.
+        // ⚠️ 전에 `names[weekday % 7]` 로 세어서 한 칸씩 밀려 있었다 — 일요일이 '월'로 나왔다.
+        let names = Calendar.current.shortWeekdaySymbols
+        return weekdays.sorted()
+            .compactMap { $0 >= 1 && $0 <= names.count ? names[$0 - 1] : nil }
+            .joined(separator: ", ")
     }
 }

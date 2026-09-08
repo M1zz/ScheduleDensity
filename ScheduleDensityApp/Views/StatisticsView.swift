@@ -74,21 +74,21 @@ struct StatisticsView: View {
             ], spacing: 12) {
                 StatCard(
                     icon: "calendar",
-                    title: "전체 일정",
+                    title: String(localized: "전체 일정"),
                     value: "\(statistics.totalEvents)",
                     color: .blue
                 )
 
                 StatCard(
                     icon: "play.circle.fill",
-                    title: "진행 중",
+                    title: String(localized: "진행 중"),
                     value: "\(statistics.activeEvents)",
                     color: .green
                 )
 
                 StatCard(
                     icon: "checkmark.circle.fill",
-                    title: "완료됨",
+                    title: String(localized: "완료됨"),
                     value: "\(statistics.completedEvents)",
                     color: .gray
                 )
@@ -97,7 +97,7 @@ struct StatisticsView: View {
                 if statistics.infiniteEvents > 0 {
                     StatCard(
                         icon: "repeat",
-                        title: "끝 없는 예전 일정",
+                        title: String(localized: "끝 없는 예전 일정"),
                         value: "\(statistics.infiniteEvents)",
                         color: .purple
                     )
@@ -151,7 +151,7 @@ struct StatisticsView: View {
                     Label("총 일정 시간", systemImage: "clock.fill")
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(String(format: "%.1f시간", statistics.totalHours))
+                    Text(String(format: String(localized: "%.1f시간"), statistics.totalHours))
                         .fontWeight(.semibold)
                 }
 
@@ -161,7 +161,7 @@ struct StatisticsView: View {
                     Label("일정당 평균", systemImage: "clock")
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(String(format: "%.1f시간", statistics.averageHoursPerEvent))
+                    Text(String(format: String(localized: "%.1f시간"), statistics.averageHoursPerEvent))
                         .fontWeight(.semibold)
                 }
 
@@ -171,7 +171,7 @@ struct StatisticsView: View {
                     Label("하루 평균", systemImage: "calendar.badge.clock")
                         .foregroundColor(.secondary)
                     Spacer()
-                    Text(String(format: "%.1f시간", statistics.averageHoursPerDay))
+                    Text(String(format: String(localized: "%.1f시간"), statistics.averageHoursPerDay))
                         .fontWeight(.semibold)
                 }
             }
@@ -212,7 +212,7 @@ struct StatisticsView: View {
                         Text("총 소요시간")
                             .foregroundColor(.secondary)
                         Spacer()
-                        Text(String(format: "%.1f시간", statistics.busiestDateHours))
+                        Text(String(format: String(localized: "%.1f시간"), statistics.busiestDateHours))
                             .fontWeight(.bold)
                             .foregroundColor(.red)
                     }
@@ -390,22 +390,18 @@ struct StatisticsView: View {
 
     private func formatDateFull(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy년 M월 d일 (E)"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMdE", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 
     private func weekdayName(_ weekday: Int) -> String {
-        switch weekday {
-        case 1: return "일"
-        case 2: return "월"
-        case 3: return "화"
-        case 4: return "수"
-        case 5: return "목"
-        case 6: return "금"
-        case 7: return "토"
-        default: return ""
-        }
+        // 요일 이름은 손으로 적지 않는다 — 달력이 기기 언어로 이미 들고 있다.
+        let names = Calendar.current.weekdaySymbols
+        guard weekday >= 1 && weekday <= names.count else { return "" }
+        return names[weekday - 1]
     }
 
     private func isWeekend(_ weekday: Int) -> Bool {

@@ -16,9 +16,9 @@ enum EventImportance: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .high: return "상"
-        case .medium: return "중"
-        case .low: return "하"
+        case .high: return String(localized: "상")
+        case .medium: return String(localized: "중")
+        case .low: return String(localized: "하")
         }
     }
 

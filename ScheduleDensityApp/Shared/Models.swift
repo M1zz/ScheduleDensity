@@ -4,14 +4,17 @@ enum DayOfWeek: Int, Codable, CaseIterable, Identifiable {
     case mon = 0, tue, wed, thu, fri, sat, sun
     var id: Int { rawValue }
 
+    /// 달력이 기기 언어로 들고 있는 요일 이름을 그대로 쓴다 (0=월 … 6=일).
+    private var calendarIndex: Int { self == .sun ? 0 : rawValue + 1 }
+
     var shortLabel: String {
-        switch self {
-        case .mon: "월"; case .tue: "화"; case .wed: "수"
-        case .thu: "목"; case .fri: "금"; case .sat: "토"
-        case .sun: "일"
-        }
+        let names = Calendar.current.shortWeekdaySymbols
+        return calendarIndex < names.count ? names[calendarIndex] : ""
     }
-    var longLabel: String { shortLabel + "요일" }
+    var longLabel: String {
+        let names = Calendar.current.weekdaySymbols
+        return calendarIndex < names.count ? names[calendarIndex] : shortLabel
+    }
 }
 
 enum TimeBand: String, Codable, CaseIterable, Identifiable {
@@ -23,19 +26,19 @@ enum TimeBand: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .morning: "아침 (06–12시)"
-        case .afternoon: "오후 (12–18시)"
-        case .evening: "저녁 (18–23시)"
-        case .night: "심야 (23시 이후)"
+        case .morning: String(localized: "아침 (06–12시)")
+        case .afternoon: String(localized: "오후 (12–18시)")
+        case .evening: String(localized: "저녁 (18–23시)")
+        case .night: String(localized: "심야 (23시 이후)")
         }
     }
 
     var shortLabel: String {
         switch self {
-        case .morning: "아침"
-        case .afternoon: "오후"
-        case .evening: "저녁"
-        case .night: "심야"
+        case .morning: String(localized: "아침")
+        case .afternoon: String(localized: "오후")
+        case .evening: String(localized: "저녁")
+        case .night: String(localized: "심야")
         }
     }
 }
@@ -47,8 +50,8 @@ enum RoutineKind: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .fixed: "고정 시간대"
-        case .quota: "주간 쿼터 (시간 유연)"
+        case .fixed: String(localized: "고정 시간대")
+        case .quota: String(localized: "주간 쿼터 (시간 유연)")
         }
     }
 }
@@ -61,9 +64,9 @@ enum ReviewStatus: String, Codable, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .done: "달성"
-        case .partial: "부분 달성"
-        case .skipped: "건너뜀"
+        case .done: String(localized: "달성")
+        case .partial: String(localized: "부분 달성")
+        case .skipped: String(localized: "건너뜀")
         }
     }
 
@@ -113,7 +116,7 @@ func formatDuration(_ hours: Double) -> String {
     let total = Int((hours * 60).rounded())
     let h = total / 60
     let m = total % 60
-    if h > 0 && m > 0 { return "\(h)시간 \(m)분" }
-    if h > 0 { return "\(h)시간" }
-    return "\(m)분"
+    if h > 0 && m > 0 { return String(localized: "\(h)시간 \(m)분") }
+    if h > 0 { return String(localized: "\(h)시간") }
+    return String(localized: "\(m)분")
 }

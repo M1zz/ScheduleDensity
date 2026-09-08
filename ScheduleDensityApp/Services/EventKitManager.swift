@@ -40,7 +40,7 @@ final class EventKitManager {
         if isAuthorized {
             fetchAvailableCalendars()
         } else {
-            errorMessage = "캘린더 접근 권한이 거부되었습니다"
+            errorMessage = String(localized: "캘린더 접근 권한이 거부되었습니다")
         }
     }
 
@@ -118,7 +118,7 @@ final class EventKitManager {
 
         // 4. Event 생성
         return Event(
-            title: ekEvent.title ?? "제목 없음",
+            title: ekEvent.title ?? String(localized: "제목 없음"),
             startDate: startDate,
             endDate: endDate,
             hoursPerDay: hoursPerDay,

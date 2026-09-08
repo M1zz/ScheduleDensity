@@ -174,7 +174,7 @@ private struct SharedEventRow: View {
                 .frame(width: 12, height: 12)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(event.title.isEmpty ? "(제목 없음)" : event.title)
+                Text(event.title.isEmpty ? String(localized: "(제목 없음)") : event.title)
                     .font(.body)
                 Text(dateRangeText)
                     .font(.caption)
@@ -183,7 +183,7 @@ private struct SharedEventRow: View {
 
             Spacer()
 
-            Text(String(format: "%.1f시간/일", event.hoursPerDay))
+            Text(String(format: String(localized: "%.1f시간/일"), event.hoursPerDay))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
@@ -192,11 +192,13 @@ private struct SharedEventRow: View {
 
     private var dateRangeText: String {
         let f = DateFormatter()
-        f.locale = Locale(identifier: "ko_KR")
-        f.dateFormat = "M월 d일"
+        f.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        f.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
+                                                    locale: .autoupdatingCurrent)
         let start = f.string(from: event.startDate)
         if event.isInfinite {
-            return "\(start)부터 계속"
+            return String(localized: "\(start)부터 계속")
         }
         let end = f.string(from: event.endDate)
         return start == end ? start : "\(start) ~ \(end)"

@@ -1,0 +1,16 @@
+{
+  "sourceLanguage": "ko",
+  "strings": {
+    "CFBundleDisplayName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To-Do"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

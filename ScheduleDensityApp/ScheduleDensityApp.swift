@@ -77,9 +77,19 @@ enum AppTab: Hashable {
 /// CloudKit이 안 붙으면 조용히 로컬 전용으로 떨어지는데, 그 사실이 화면 어디에도 없으면
 /// "맥이랑 할 일이 다른데?"의 원인을 찾을 길이 없다. 설정 > 동기화 진단이 이 값을 읽는다.
 enum TodoStoreMode: String {
-    case cloud = "iCloud 동기화 중"
-    case localOnly = "이 기기에만 저장 중"
-    case memory = "임시 저장 (앱을 끄면 사라짐)"
+    case cloud
+    case localOnly
+    case memory
+
+    /// 화면에 서는 글자. ⚠️ 예전에는 rawValue 가 곧 한국어 문장이었는데,
+    /// 그러면 번역할 자리가 없다 — 값과 글자를 갈라 둔다.
+    var label: String {
+        switch self {
+        case .cloud:     return String(localized: "iCloud 동기화 중")
+        case .localOnly: return String(localized: "이 기기에만 저장 중")
+        case .memory:    return String(localized: "임시 저장 (앱을 끄면 사라짐)")
+        }
+    }
 }
 
 enum CloudDiagnostics {

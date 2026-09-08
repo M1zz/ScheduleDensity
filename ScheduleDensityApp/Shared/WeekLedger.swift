@@ -39,8 +39,8 @@ enum ReclaimKind: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var name: String {
         switch self {
-        case .fragment: return "조각으로"
-        case .block:    return "블록으로"
+        case .fragment: return String(localized: "조각으로")
+        case .block:    return String(localized: "블록으로")
         }
     }
 
@@ -55,9 +55,9 @@ enum ReclaimKind: String, Codable, CaseIterable, Identifiable, Sendable {
     var note: String {
         switch self {
         case .fragment:
-            return "새 일을 시작하기엔 전환 비용에 다 먹힙니다. 다음 일의 계획을 적어 두는 데 쓰세요."
+            return String(localized: "새 일을 시작하기엔 전환 비용에 다 먹힙니다. 다음 일의 계획을 적어 두는 데 쓰세요.")
         case .block:
-            return "여기서만 새 일이 시작됩니다. 미리 정해 둔 블록 대기열의 맨 위를 집으세요."
+            return String(localized: "여기서만 새 일이 시작됩니다. 미리 정해 둔 블록 대기열의 맨 위를 집으세요.")
         }
     }
 

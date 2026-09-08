@@ -90,7 +90,7 @@ struct TodoWidgetView: View {
             if family == .accessoryInline {
                 Text("🔒 할 일 — 무지개 Pro")
             } else {
-                WidgetLockedView(name: "할 일")
+                WidgetLockedView(name: String(localized: "할 일"))
             }
         } else {
             unlocked
@@ -265,20 +265,20 @@ private extension TodoWidgetSnapshot.Item {
 // MARK: - 접근성
 
 private func listAccessibilityLabel(_ snapshot: TodoWidgetSnapshot, limit: Int) -> String {
-    guard !snapshot.isEmpty else { return "남은 할 일 없음" }
+    guard !snapshot.isEmpty else { return String(localized: "남은 할 일 없음") }
     let titles = snapshot.items.prefix(limit).map { item in
         var text = item.title
         if let step = item.stepTitle {
             if let index = item.stepIndex, let count = item.stepCount {
-                text += ", \(count)단계 중 \(index)번째, 지금 \(step)"
+                text += String(localized: ", \(count)단계 중 \(index)번째, 지금 \(step)")
             } else {
-                text += ", 지금 \(step)"
+                text += String(localized: ", 지금 \(step)")
             }
         }
-        if item.isFragment { text += ", 5분에 집을 수 있음" }
-        return item.isToday ? "\(text), 오늘" : text
+        if item.isFragment { text += String(localized: ", 5분에 집을 수 있음") }
+        return item.isToday ? String(localized: "\(text), 오늘") : text
     }
-    return "할 일. " + titles.joined(separator: ", ")
+    return String(localized: "할 일. ") + titles.joined(separator: ", ")
 }
 
 private extension View {

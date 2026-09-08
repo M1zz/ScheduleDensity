@@ -153,6 +153,27 @@ docs/                GitHub Pages (소개 · 개인정보 · 릴리즈 노트)
 > App Group entitlement가 붙으면 SwiftData 기본 저장 위치가 옮겨가서,
 > 이미 배포된 사용자의 스토어를 못 찾고 데이터가 사라진 것처럼 보인다. 빼지 말 것.
 
+## 언어
+
+한국어(원문)와 영어. 문구는 타겟마다 **String Catalog 한 파일**에 모여 있다.
+
+| 파일 | 무엇 |
+|---|---|
+| `ScheduleDensityApp/Localizable.xcstrings` | 앱 화면 문구 |
+| `TodoWidget/Localizable.xcstrings` | 위젯 문구 |
+| `TodoShare/Localizable.xcstrings` | 공유 시트 문구 |
+| `*/InfoPlist.xcstrings` | 앱·익스텐션 이름, 캘린더 권한 설명 |
+
+- 원문 언어는 `ko`. 키가 곧 한국어 문장이라 **ko 쪽 값은 따로 두지 않는다** — 키가 그대로 뜬다.
+- SwiftUI 리터럴(`Text("…")`)은 저절로 잡히지만, **String 자리에 놓인 문구는
+  `String(localized:)` 로 감싸야** 카탈로그에 들어온다. 안 감싸면 빌드는 되고 영어만 안 나온다.
+- 날짜 형식은 손으로 적지 않는다. `DateFormatter.dateFormat(fromTemplate:options:locale:)` 로
+  템플릿(`MMMd`, `yMMMdE` …)만 말하고, 요일 이름은 `Calendar.current.shortWeekdaySymbols` 에서 읽는다.
+- `TodoSplitAdvisor` 와 `Routine` 의 **낱말 사전은 번역 대상이 아니다.** 화면에 안 나오고
+  사용자가 적은 글자와 맞대 보는 데만 쓰이므로, 한국어와 영어 낱말이 한 배열에 함께 산다.
+- 언어를 늘릴 때 고칠 곳: 위 카탈로그 + `deploy.env` 의 `LOCALES` + `docs/RELEASE_NOTES.md` +
+  **App Store Connect ▸ 앱 정보 ▸ 현지화**(사람이 웹에서 한다. 여기 없으면 릴리즈노트가 안 올라간다).
+
 ## 문의
 
 leeo@kakao.com

@@ -106,9 +106,9 @@ struct CalendarImportView: View {
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                featureRow(icon: "checkmark.circle.fill", text: "선택한 캘린더에서만 가져오기")
-                featureRow(icon: "calendar", text: "향후 3개월 일정 자동 분석")
-                featureRow(icon: "repeat", text: "반복 일정 자동 변환")
+                featureRow(icon: "checkmark.circle.fill", text: String(localized: "선택한 캘린더에서만 가져오기"))
+                featureRow(icon: "calendar", text: String(localized: "향후 3개월 일정 자동 분석"))
+                featureRow(icon: "repeat", text: String(localized: "반복 일정 자동 변환"))
             }
             .padding()
             .background(Color.gray.opacity(0.1))
@@ -293,7 +293,7 @@ struct CalendarImportView: View {
     private func loadEventsFromCalendars() {
         Task {
             isLoading = true
-            loadingMessage = "캘린더에서 일정을 가져오는 중..."
+            loadingMessage = String(localized: "캘린더에서 일정을 가져오는 중...")
 
             // 약간의 지연으로 UI 업데이트 보장
             try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
@@ -304,7 +304,7 @@ struct CalendarImportView: View {
 
             fetchedEvents = eventKitManager.fetchEvents(from: selected)
 
-            loadingMessage = "\(fetchedEvents.count)개 일정 발견!\n변환 중..."
+            loadingMessage = String(localized: "\(fetchedEvents.count)개 일정 발견!\n변환 중...")
             try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초
 
             // EKEvent를 Event로 변환하고 고유 ID 생성
@@ -319,11 +319,11 @@ struct CalendarImportView: View {
             selectedEvents = Set(transformedEvents.map { $0.id })
 
             if transformedEvents.isEmpty {
-                loadingMessage = "일정을 찾을 수 없습니다"
+                loadingMessage = String(localized: "일정을 찾을 수 없습니다")
                 try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초
                 isLoading = false
             } else {
-                loadingMessage = "완료!"
+                loadingMessage = String(localized: "완료!")
                 try? await Task.sleep(nanoseconds: 500_000_000) // 0.5초
                 isLoading = false
                 showEventPreview = true
@@ -425,7 +425,7 @@ struct CalendarImportView: View {
 
                     HStack(spacing: 12) {
                         Label(formatDateRange(event), systemImage: "calendar")
-                        Label(String(format: "%.1f시간", event.hoursPerDay), systemImage: "clock")
+                        Label(String(format: String(localized: "%.1f시간"), event.hoursPerDay), systemImage: "clock")
                     }
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -464,7 +464,7 @@ struct CalendarImportView: View {
     private func importSelectedEvents() {
         Task {
             isLoading = true
-            loadingMessage = "일정을 추가하는 중..."
+            loadingMessage = String(localized: "일정을 추가하는 중...")
 
             let eventsToImport = transformedEvents.filter {
                 selectedEvents.contains($0.id)
@@ -476,11 +476,11 @@ struct CalendarImportView: View {
             for (index, item) in eventsToImport.enumerated() {
                 viewModel.addEvent(item.event)
                 if eventsToImport.count > 5 && index % 5 == 0 {
-                    loadingMessage = "일정 추가 중... (\(index + 1)/\(eventsToImport.count))"
+                    loadingMessage = String(localized: "일정 추가 중... (\(index + 1)/\(eventsToImport.count))")
                 }
             }
 
-            loadingMessage = "완료!"
+            loadingMessage = String(localized: "완료!")
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5초
 
             isLoading = false
@@ -504,8 +504,10 @@ struct CalendarImportView: View {
 
     private func formatDateRange(_ event: Event) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
 
         let start = formatter.string(from: event.startDate)
         let end = formatter.string(from: event.endDate)
@@ -518,7 +520,8 @@ struct CalendarImportView: View {
     }
 
     private func formatWeekdays(_ weekdays: [Int]) -> String {
-        let names = ["일", "월", "화", "수", "목", "금", "토"]
-        return weekdays.sorted().map { names[$0 - 1] }.joined(separator: ", ")
+        let names = Calendar.current.shortWeekdaySymbols
+        return weekdays.sorted().compactMap { $0 >= 1 && $0 <= names.count ? names[$0 - 1] : nil }
+            .joined(separator: ", ")
     }
 }

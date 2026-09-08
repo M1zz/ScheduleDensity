@@ -291,7 +291,7 @@ struct AddEventView: View {
                                             Text("\(formatDateShort(slot.startDate)) ~ \(formatDateShort(slot.endDate))")
                                                 .fontWeight(.medium)
                                             Spacer()
-                                            Text(String(format: "%.0f점", slot.score))
+                                            Text(String(format: String(localized: "%.0f점"), slot.score))
                                                 .font(.caption)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 2)
@@ -304,12 +304,12 @@ struct AddEventView: View {
                                             // 고를 때 봐야 하는 숫자는 '지금 얼마나 비었나'가 아니라
                                             // '넣고 나면 얼마나 차나'다. 80%를 넘기면 예상 못한 일
                                             // 하나에 그 날이 무너진다 (→ LoadLevel).
-                                            Label("넣으면 \(Int((slot.projectedUtilization * 100).rounded()))%",
+                                            Label(String(localized: "넣으면 \(Int((slot.projectedUtilization * 100).rounded()))%"),
                                                   systemImage: "speedometer")
                                                 .font(.caption)
                                                 .foregroundColor(utilizationColor(slot.projectedUtilization))
 
-                                            Label(String(format: "%.1fh 여유", max(0, slot.availableHours - hoursPerDay)),
+                                            Label(String(format: String(localized: "%.1fh 여유"), max(0, slot.availableHours - hoursPerDay)),
                                                   systemImage: "leaf")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
@@ -390,7 +390,7 @@ struct AddEventView: View {
                                     .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : analysis.maxHoursPerDay > 8 ? .orange : .green)
                                 Text("하루 최대 소요시간")
                                 Spacer()
-                                Text(String(format: "%.1f시간", analysis.maxHoursPerDay))
+                                Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
                                     .fontWeight(.semibold)
                                     .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : .primary)
                             }
@@ -405,7 +405,7 @@ struct AddEventView: View {
                                     VStack(alignment: .trailing, spacing: 2) {
                                         Text(formatDate(busiestDateByHours))
                                             .fontWeight(.semibold)
-                                        Text(String(format: "%.1f시간", analysis.maxHoursPerDay))
+                                        Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                     }
@@ -576,7 +576,7 @@ struct AddEventView: View {
     private func deleteEvent() {
         guard let event = eventToEdit else { return }
         deletionRequest = EventDeletionRequest(
-            title: "'\(event.title)' 삭제",
+            title: String(localized: "'\(event.title)' 삭제"),
             plan: viewModel.deletionPlan(for: event)
         ) {
             let result = await viewModel.deleteEvent(event)
@@ -733,7 +733,7 @@ struct AddEventView: View {
                         Text("이 일정에 들어가는 시간")
                             .font(.subheadline)
                         Spacer()
-                        Text(String(format: "%.1f시간", Double(activeDayCount) * hoursPerDay))
+                        Text(String(format: String(localized: "%.1f시간"), Double(activeDayCount) * hoursPerDay))
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .monospacedDigit()
@@ -823,8 +823,8 @@ struct AddEventView: View {
     /// 30분 단위라 소수점이 필요할 때만 붙인다. (2시간 / 1.5시간)
     private func hourText(_ hours: Double) -> String {
         hours == hours.rounded()
-            ? String(format: "%.0f시간", hours)
-            : String(format: "%.1f시간", hours)
+            ? String(format: String(localized: "%.0f시간"), hours)
+            : String(format: String(localized: "%.1f시간"), hours)
     }
 
     // MARK: - 기간 vs 실제로 시간 쓰는 날
@@ -879,44 +879,35 @@ struct AddEventView: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일 (E)"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMdE", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 
     private func formatDateShort(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M월 d일"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 
     // 요일 전체 이름 (1=일, 2=월, ...)
     private func weekdayName(_ weekday: Int) -> String {
-        switch weekday {
-        case 1: return "일"
-        case 2: return "월"
-        case 3: return "화"
-        case 4: return "수"
-        case 5: return "목"
-        case 6: return "금"
-        case 7: return "토"
-        default: return ""
-        }
+        // 요일 이름은 손으로 적지 않는다 — 달력이 기기 언어로 이미 들고 있다.
+        let names = Calendar.current.weekdaySymbols
+        guard weekday >= 1 && weekday <= names.count else { return "" }
+        return names[weekday - 1]
     }
 
     // 요일 짧은 이름
     private func weekdayShortName(_ weekday: Int) -> String {
-        switch weekday {
-        case 1: return "Sun"
-        case 2: return "Mon"
-        case 3: return "Tue"
-        case 4: return "Wed"
-        case 5: return "Thu"
-        case 6: return "Fri"
-        case 7: return "Sat"
-        default: return ""
-        }
+        let names = Calendar.current.shortWeekdaySymbols
+        guard weekday >= 1 && weekday <= names.count else { return "" }
+        return names[weekday - 1]
     }
 
     // 중요도 아이콘
@@ -940,11 +931,11 @@ struct AddEventView: View {
     private func importanceDescription(_ importance: EventImportance) -> String {
         switch importance {
         case .high:
-            return "높음 - 가능한 한 빠른 날짜에 배치됩니다"
+            return String(localized: "높음 - 가능한 한 빠른 날짜에 배치됩니다")
         case .medium:
-            return "보통 - 균형잡힌 날짜에 배치됩니다"
+            return String(localized: "보통 - 균형잡힌 날짜에 배치됩니다")
         case .low:
-            return "낮음 - 여유로운 날짜에 배치됩니다"
+            return String(localized: "낮음 - 여유로운 날짜에 배치됩니다")
         }
     }
 

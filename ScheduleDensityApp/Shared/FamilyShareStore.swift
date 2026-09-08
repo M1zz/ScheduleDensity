@@ -207,7 +207,7 @@ final class FamilyShareStore {
             }
 
             let share = CKShare(recordZoneID: zoneID)
-            share[CKShare.SystemFieldKey.title] = "공유 할 일" as CKRecordValue
+            share[CKShare.SystemFieldKey.title] = String(localized: "공유 할 일") as CKRecordValue
             // 링크만 있으면 누구나 참여해 읽고 쓸 수 있게 한다.
             share.publicPermission = .readWrite
             let saved = try await container.privateCloudDatabase.save(share)
@@ -274,15 +274,15 @@ final class FamilyShareStore {
             switch ck.code {
             case .notAuthenticated:
                 iCloudAvailable = false
-                errorMessage = "iCloud에 로그인하면 할 일 공유를 쓸 수 있습니다."
+                errorMessage = String(localized: "iCloud에 로그인하면 할 일 공유를 쓸 수 있습니다.")
                 return
             case .networkUnavailable, .networkFailure:
-                errorMessage = "네트워크 연결을 확인해주세요."
+                errorMessage = String(localized: "네트워크 연결을 확인해주세요.")
                 return
             default:
                 break
             }
         }
-        errorMessage = "동기화 오류: \(error.localizedDescription)"
+        errorMessage = String(localized: "동기화 오류: \(error.localizedDescription)")
     }
 }

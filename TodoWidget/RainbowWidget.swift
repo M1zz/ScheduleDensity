@@ -81,7 +81,7 @@ struct RainbowWidgetView: View {
                 Image(systemName: "lock.fill")
                     .accessibilityLabel("무지개 위젯이 잠겨 있습니다")
             } else {
-                WidgetLockedView(name: "무지개")
+                WidgetLockedView(name: String(localized: "무지개"))
             }
         } else {
             unlocked
@@ -211,7 +211,9 @@ private struct RainbowDayRow: View {
 
     private var dayLabel: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: day.date)
     }
 }
@@ -288,11 +290,11 @@ private struct RainbowRectangularView: View {
 
 /// 15분 단위까지만. 위젯에서는 소수점이 길어지면 줄이 밀린다.
 private func formatHours(_ hours: Double) -> String {
-    if hours <= 0 { return "0분" }
-    if hours < 1 { return "\(Int((hours * 60).rounded()))분" }
+    if hours <= 0 { return String(localized: "0분") }
+    if hours < 1 { return String(localized: "\(Int((hours * 60).rounded()))분") }
     return hours == hours.rounded()
-        ? String(format: "%.0f시간", hours)
-        : String(format: "%.1f시간", hours)
+        ? String(format: String(localized: "%.0f시간"), hours)
+        : String(format: String(localized: "%.1f시간"), hours)
 }
 
 /// 하루가 80%를 넘으면 예상 못한 일 하나에 그 날이 무너진다 (→ LoadLevel).

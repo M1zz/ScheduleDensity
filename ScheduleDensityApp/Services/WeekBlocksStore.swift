@@ -111,7 +111,7 @@ final class WeekBlocksStore {
     init() {
         self.container = Self.sharedContainer
         if self.container == nil {
-            self.lastErrorDescription = CloudDiagnostics.todoStoreError ?? "컨테이너 생성 실패"
+            self.lastErrorDescription = CloudDiagnostics.todoStoreError ?? String(localized: "컨테이너 생성 실패")
             print("⚠️ [WeekBlocks] 컨테이너 없음 — 계획도 할 일도 읽지 못한다")
         }
     }

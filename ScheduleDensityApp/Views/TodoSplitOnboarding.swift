@@ -42,23 +42,23 @@ enum SplitGuideStep: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .intro:     return "덩어리를 쪼개 볼까요"
-        case .writeStep: return "첫 단계를 한 줄"
-        case .period:    return "언제부터 언제까지"
-        case .header:    return "지금 할 단계가 맨 위에"
+        case .intro:     return String(localized: "덩어리를 쪼개 볼까요")
+        case .writeStep: return String(localized: "첫 단계를 한 줄")
+        case .period:    return String(localized: "언제부터 언제까지")
+        case .header:    return String(localized: "지금 할 단계가 맨 위에")
         }
     }
 
     var message: String {
         switch self {
         case .intro:
-            return "‘보고서 쓰기’ 같은 덩어리는 손이 안 나갑니다. 어디서 시작할지가 안 정해져 있어서예요.\n일이 굴러가는 순서대로 몇 줄 쪼개 두면, 짬이 났을 때 집을 게 생깁니다."
+            return String(localized: "‘보고서 쓰기’ 같은 덩어리는 손이 안 나갑니다. 어디서 시작할지가 안 정해져 있어서예요.\n일이 굴러가는 순서대로 몇 줄 쪼개 두면, 짬이 났을 때 집을 게 생깁니다.")
         case .writeStep:
-            return "하얗게 표시된 빈 줄에 첫 단계를 적고 엔터를 쳐 보세요. 엔터를 치면 그 줄이 확정되고 빈 줄이 다시 옵니다.\n막막하면 아래 ‘쪼개기 도우미’에 일이 굴러가는 순서가 있어요. 보고 내 말로 옮겨 적으면 됩니다."
+            return String(localized: "하얗게 표시된 빈 줄에 첫 단계를 적고 엔터를 쳐 보세요. 엔터를 치면 그 줄이 확정되고 빈 줄이 다시 옵니다.\n막막하면 아래 ‘쪼개기 도우미’에 일이 굴러가는 순서가 있어요. 보고 내 말로 옮겨 적으면 됩니다.")
         case .period:
-            return "맨 위 카드를 눌러 이 일이 언제부터 언제까지인지 정해 주세요.\n정하면 그 기간이 무지개에 한 줄로 그어집니다 — 끝나는 날까지 계속 나를 붙잡고 있는 시간이니까요."
+            return String(localized: "맨 위 카드를 눌러 이 일이 언제부터 언제까지인지 정해 주세요.\n정하면 그 기간이 무지개에 한 줄로 그어집니다 — 끝나는 날까지 계속 나를 붙잡고 있는 시간이니까요.")
         case .header:
-            return "맨 위에는 지금 할 단계 하나만 섭니다. 그게 지금 손대야 하는 일이에요.\n나머지는 아래 목록에서 순서대로 기다립니다."
+            return String(localized: "맨 위에는 지금 할 단계 하나만 섭니다. 그게 지금 손대야 하는 일이에요.\n나머지는 아래 목록에서 순서대로 기다립니다.")
         }
     }
 }
@@ -71,11 +71,11 @@ struct SplitMeaningView: View {
 
     var body: some View {
         MeaningPage(
-            eyebrow: "방금 쪼갠 일",
-            title: "왜 이렇게까지\n쪼개나면",
+            eyebrow: String(localized: "방금 쪼갠 일"),
+            title: String(localized: "왜 이렇게까지\n쪼개나면"),
             accent: .accentColor,
             paragraphs: paragraphs,
-            footnote: "단계는 언제든 다시 적고, 순서도 바꿀 수 있어요.",
+            footnote: String(localized: "단계는 언제든 다시 적고, 순서도 바꿀 수 있어요."),
             diagram: { diagram },
             onDone: onDone
         )
@@ -122,7 +122,7 @@ struct SplitMeaningView: View {
     }
 
     private var sampleSteps: [String] {
-        ["무엇을 쓸지 정하기", "자료 모아 펼치기", "초안 쓰기", "오탈자 훑기"]
+        [String(localized: "무엇을 쓸지 정하기"), String(localized: "자료 모아 펼치기"), String(localized: "초안 쓰기"), String(localized: "오탈자 훑기")]
     }
 
 
@@ -130,18 +130,18 @@ struct SplitMeaningView: View {
         [
             MeaningParagraph(
                 icon: "square.split.2x2",
-                heading: "5분 열두 번은 한 시간이 아니다",
-                body: "조각 시간은 총량으로 환산되지 않습니다. 그래서 ‘짬이 나면 바로 집을 수 있는 단계’가 따로 있어야 해요. 그게 없으면 하루에 생긴 조각은 전부 흘러갑니다."
+                heading: String(localized: "5분 열두 번은 한 시간이 아니다"),
+                body: String(localized: "조각 시간은 총량으로 환산되지 않습니다. 그래서 ‘짬이 나면 바로 집을 수 있는 단계’가 따로 있어야 해요. 그게 없으면 하루에 생긴 조각은 전부 흘러갑니다.")
             ),
             MeaningParagraph(
                 icon: "rainbow",
-                heading: "기간은 무지개에 남는다",
-                body: "언제부터 언제까지인지 정해 두면 그 기간이 무지개에 한 줄로 그어집니다. 오늘 손을 안 대는 날도, 끝나지 않았다면 여전히 나를 붙잡고 있으니까요."
+                heading: String(localized: "기간은 무지개에 남는다"),
+                body: String(localized: "언제부터 언제까지인지 정해 두면 그 기간이 무지개에 한 줄로 그어집니다. 오늘 손을 안 대는 날도, 끝나지 않았다면 여전히 나를 붙잡고 있으니까요.")
             ),
             MeaningParagraph(
                 icon: "checkmark.circle",
-                heading: "단계는 ‘닫히는’ 크기로",
-                body: "끝내지 못하고 넘어간 일은 다음 시간까지 따라와 흐립니다. 한 자리에서 닫히는 크기로 잘라 두면, 넘어갈 때 머리에 남는 게 없어요."
+                heading: String(localized: "단계는 ‘닫히는’ 크기로"),
+                body: String(localized: "끝내지 못하고 넘어간 일은 다음 시간까지 따라와 흐립니다. 한 자리에서 닫히는 크기로 잘라 두면, 넘어갈 때 머리에 남는 게 없어요.")
             )
         ]
     }

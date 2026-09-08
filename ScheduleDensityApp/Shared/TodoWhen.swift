@@ -66,8 +66,8 @@ enum TodoWhen: Int, Comparable {
     /// 목록에 있다는 것이 이미 그 뜻이라, 배지를 달면 모든 줄에 배지가 생긴다.
     var badge: String? {
         switch self {
-        case .overdue: return "밀림"
-        case .today: return "오늘"
+        case .overdue: return String(localized: "밀림")
+        case .today: return String(localized: "오늘")
         case .thisWeek, .later, .backlog: return nil
         }
     }

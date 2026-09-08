@@ -40,13 +40,13 @@ enum EventDeletion {
     var message: String {
         switch self {
         case .bothSides:
-            return "이 기기와 iCloud 양쪽에서 지웁니다. 되돌릴 수 없습니다."
+            return String(localized: "이 기기와 iCloud 양쪽에서 지웁니다. 되돌릴 수 없습니다.")
         case .localOnly:
-            return "이 기기에서 지웁니다. iCloud 에는 올라간 적이 없습니다. 되돌릴 수 없습니다."
+            return String(localized: "이 기기에서 지웁니다. iCloud 에는 올라간 적이 없습니다. 되돌릴 수 없습니다.")
         case .syncOff:
-            return "이 기기에서 지웁니다. 되돌릴 수 없습니다.\n\n동기화를 꺼 두셔서 iCloud 에 올라가 있는 것은 그대로 남습니다. 나중에 동기화를 켜면 다시 내려올 수 있습니다."
+            return String(localized: "이 기기에서 지웁니다. 되돌릴 수 없습니다.\n\n동기화를 꺼 두셔서 iCloud 에 올라가 있는 것은 그대로 남습니다. 나중에 동기화를 켜면 다시 내려올 수 있습니다.")
         case .unreachable:
-            return "지금 iCloud 에 닿지 못해 지울 수 없습니다.\n\n이 기기에서만 지우면 iCloud 에 남은 것이 나중에 다시 내려옵니다. 연결을 확인하고 다시 시도해 주세요."
+            return String(localized: "지금 iCloud 에 닿지 못해 지울 수 없습니다.\n\n이 기기에서만 지우면 iCloud 에 남은 것이 나중에 다시 내려옵니다. 연결을 확인하고 다시 시도해 주세요.")
         }
     }
 }
@@ -78,7 +78,7 @@ private struct EventDeletionConfirm: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .alert(request?.title ?? "일정 삭제",
+            .alert(request?.title ?? String(localized: "일정 삭제"),
                    isPresented: Binding(get: { request != nil },
                                         set: { if !$0 { request = nil } }),
                    presenting: request) { asked in

@@ -112,18 +112,18 @@ final class PurchaseManager {
                     apply(owned: true)
                 } else {
                     // 서명이 안 맞는 영수증. 열어주지 않는다.
-                    failureMessage = "구매를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요."
+                    failureMessage = String(localized: "구매를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.")
                 }
             case .pending:
                 // 승인 대기(가족 공유의 '구매 요청' 등). 실패가 아니므로 그렇게 말한다.
-                failureMessage = "승인을 기다리는 중입니다. 승인되면 자동으로 열립니다."
+                failureMessage = String(localized: "승인을 기다리는 중입니다. 승인되면 자동으로 열립니다.")
             case .userCancelled:
                 break
             @unknown default:
                 break
             }
         } catch {
-            failureMessage = "구매하지 못했습니다: \(error.localizedDescription)"
+            failureMessage = String(localized: "구매하지 못했습니다: \(error.localizedDescription)")
         }
     }
 
@@ -137,7 +137,7 @@ final class PurchaseManager {
         try? await AppStore.sync()
         await refresh()
         if !isUnlocked {
-            failureMessage = "이 Apple 계정에서 구매한 기록을 찾지 못했습니다."
+            failureMessage = String(localized: "이 Apple 계정에서 구매한 기록을 찾지 못했습니다.")
         }
     }
 

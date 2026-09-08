@@ -60,9 +60,9 @@ enum TodoDeletion {
     @MainActor
     static func message(for item: BacklogItem, tree: TodoTree, hasRainbowLine: Bool) -> String {
         let steps = max(tree.subtree(of: item).count - 1, 0)
-        var lines = ["되돌릴 수 없습니다."]
-        if steps > 0 { lines.insert("이 안의 단계 \(steps)개도 함께 지웁니다.", at: 0) }
-        if hasRainbowLine { lines.append("무지개에 그어 둔 줄도 함께 없어집니다.") }
+        var lines = [String(localized: "되돌릴 수 없습니다.")]
+        if steps > 0 { lines.insert(String(localized: "이 안의 단계 \(steps)개도 함께 지웁니다."), at: 0) }
+        if hasRainbowLine { lines.append(String(localized: "무지개에 그어 둔 줄도 함께 없어집니다.")) }
         return lines.joined(separator: "\n")
     }
 }
@@ -89,7 +89,7 @@ private struct TodoDeletionConfirm: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .alert(request?.title ?? "할 일 삭제",
+            .alert(request?.title ?? String(localized: "할 일 삭제"),
                    isPresented: Binding(get: { request != nil },
                                         set: { if !$0 { request = nil } }),
                    presenting: request) { asked in

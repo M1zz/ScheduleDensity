@@ -15,7 +15,7 @@ class CloudKitManager {
 
     var isAvailable: Bool = false
     var accountStatus: CKAccountStatus = .couldNotDetermine
-    var statusMessage: String = "확인 중..."
+    var statusMessage: String = String(localized: "확인 중...")
 
     // 앱 전체가 쓰는 메인 컨테이너로 통일 (Mac WeekBlocks·공유·할 일과 동일).
     // 과거 기본 컨테이너(iCloud.com.example.ScheduleDensityApp)는 placeholder 도메인이라 폐기.
@@ -34,22 +34,22 @@ class CloudKitManager {
                 switch status {
                 case .available:
                     self?.isAvailable = true
-                    self?.statusMessage = "사용 가능"
+                    self?.statusMessage = String(localized: "사용 가능")
                 case .noAccount:
                     self?.isAvailable = false
-                    self?.statusMessage = "Apple ID 미로그인"
+                    self?.statusMessage = String(localized: "Apple ID 미로그인")
                 case .restricted:
                     self?.isAvailable = false
-                    self?.statusMessage = "제한됨"
+                    self?.statusMessage = String(localized: "제한됨")
                 case .couldNotDetermine:
                     self?.isAvailable = false
-                    self?.statusMessage = "확인 불가"
+                    self?.statusMessage = String(localized: "확인 불가")
                 case .temporarilyUnavailable:
                     self?.isAvailable = false
-                    self?.statusMessage = "일시적으로 사용 불가"
+                    self?.statusMessage = String(localized: "일시적으로 사용 불가")
                 @unknown default:
                     self?.isAvailable = false
-                    self?.statusMessage = "알 수 없음"
+                    self?.statusMessage = String(localized: "알 수 없음")
                 }
             }
         }

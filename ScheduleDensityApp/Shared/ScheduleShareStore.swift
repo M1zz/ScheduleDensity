@@ -128,7 +128,7 @@ final class ScheduleShareStore {
 
             for zone in zones where zone.zoneID.zoneName == Self.zoneName {
                 var events: [SharedEvent] = []
-                var personName = "공유한 사람"
+                var personName = String(localized: "공유한 사람")
                 var token: CKServerChangeToken? = nil
                 do {
                     while true {
@@ -184,7 +184,7 @@ final class ScheduleShareStore {
             let status = try await container.accountStatus()
             iCloudAvailable = (status == .available)
             guard iCloudAvailable else {
-                errorMessage = "iCloud에 로그인하면 일정을 공유할 수 있습니다."
+                errorMessage = String(localized: "iCloud에 로그인하면 일정을 공유할 수 있습니다.")
                 return
             }
 
@@ -279,7 +279,7 @@ final class ScheduleShareStore {
             }
 
             let share = CKShare(recordZoneID: myZoneID)
-            share[CKShare.SystemFieldKey.title] = "내 일정" as CKRecordValue
+            share[CKShare.SystemFieldKey.title] = String(localized: "내 일정") as CKRecordValue
             // 링크를 받은 사람은 읽기만 가능(내 일정을 남이 못 고치게).
             share.publicPermission = .readOnly
             let saved = try await privateDB.save(share)
@@ -341,15 +341,15 @@ final class ScheduleShareStore {
             switch ck.code {
             case .notAuthenticated:
                 iCloudAvailable = false
-                errorMessage = "iCloud에 로그인하면 일정을 공유할 수 있습니다."
+                errorMessage = String(localized: "iCloud에 로그인하면 일정을 공유할 수 있습니다.")
                 return
             case .networkUnavailable, .networkFailure:
-                errorMessage = "네트워크 연결을 확인해주세요."
+                errorMessage = String(localized: "네트워크 연결을 확인해주세요.")
                 return
             default:
                 break
             }
         }
-        errorMessage = "동기화 오류: \(error.localizedDescription)"
+        errorMessage = String(localized: "동기화 오류: \(error.localizedDescription)")
     }
 }

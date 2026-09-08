@@ -43,11 +43,11 @@ class SyncSettingsManager {
 
     var lastSyncDateString: String {
         guard let date = lastSyncDate else {
-            return "동기화된 적 없음"
+            return String(localized: "동기화된 적 없음")
         }
 
         let formatter = RelativeDateTimeFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = Locale.autoupdatingCurrent
         formatter.unitsStyle = .full
         return formatter.localizedString(for: date, relativeTo: Date())
     }

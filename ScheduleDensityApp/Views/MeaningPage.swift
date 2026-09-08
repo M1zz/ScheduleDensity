@@ -31,7 +31,7 @@ struct MeaningPage<Diagram: View>: View {
     let paragraphs: [MeaningParagraph]
     /// 버튼 위 한 줄 덧붙임. 없으면 비운다.
     var footnote: String? = nil
-    var buttonTitle: String = "알겠어요"
+    var buttonTitle: String = String(localized: "알겠어요")
     /// 아래 버튼을 다는지. 밀어 넣은 화면(뒤로 가기가 이미 있는 자리)에서는 뺀다 —
     /// 같은 일을 하는 문이 두 개면 어느 쪽이 진짜인지 매번 고르게 된다.
     var showsDoneButton: Bool = true

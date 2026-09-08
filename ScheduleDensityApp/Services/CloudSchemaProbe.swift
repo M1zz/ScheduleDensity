@@ -151,11 +151,11 @@ enum CloudSchemaProbe {
         case .zoneNotFound, .userDeletedZone:
             return .noZone
         case .notAuthenticated:
-            return .failed("iCloud 로그인 안 됨")
+            return .failed(String(localized: "iCloud 로그인 안 됨"))
         case .networkUnavailable, .networkFailure, .serviceUnavailable, .requestRateLimited:
-            return .failed("네트워크")
+            return .failed(String(localized: "네트워크"))
         case .permissionFailure:
-            return .failed("권한 없음")
+            return .failed(String(localized: "권한 없음"))
         default:
             return .failed("CKError \(ckError.code.rawValue): \(ckError.localizedDescription)")
         }

@@ -85,9 +85,9 @@ final class CloudSyncLog {
         }
         let detail = tally.sorted { $0.value > $1.value }
             .prefix(3)
-            .map { "· \($0.key) (\($0.value)건)" }
+            .map { String(localized: "· \($0.key) (\($0.value)건)") }
             .joined(separator: "\n")
-        return "부분 실패 \(partials.count)건\n" + (detail.isEmpty ? "· 사유 없음" : detail)
+        return String(localized: "부분 실패 \(partials.count)건\n") + (detail.isEmpty ? String(localized: "· 사유 없음") : detail)
     }
 
     /// CKError 하나를 한 줄로. 서버가 붙여 준 설명이 있으면 그게 제일 쓸모 있다.

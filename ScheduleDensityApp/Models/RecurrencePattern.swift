@@ -30,27 +30,21 @@ enum RecurrencePattern: String, Codable {
     func description(daysOfWeek: [Int]?) -> String {
         switch self {
         case .daily:
-            return "매일"
+            return String(localized: "매일")
         case .weekly:
-            guard let days = daysOfWeek else { return "매주" }
+            guard let days = daysOfWeek else { return String(localized: "매주") }
             let dayNames = days.sorted().map { weekdayName(for: $0) }
             return dayNames.joined(separator: ", ")
         case .custom:
-            return "사용자 지정"
+            return String(localized: "사용자 지정")
         }
     }
 
     private func weekdayName(for weekday: Int) -> String {
-        switch weekday {
-        case 1: return "일"
-        case 2: return "월"
-        case 3: return "화"
-        case 4: return "수"
-        case 5: return "목"
-        case 6: return "금"
-        case 7: return "토"
-        default: return ""
-        }
+        // 요일 이름은 손으로 적지 않는다 — 달력이 기기 언어로 이미 들고 있다.
+        let names = Calendar.current.weekdaySymbols
+        guard weekday >= 1 && weekday <= names.count else { return "" }
+        return names[weekday - 1]
     }
 
     // 미리 정의된 요일 패턴들

@@ -34,8 +34,8 @@ enum StepOrder: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .sequential: return "순서대로"
-        case .free:       return "아무거나"
+        case .sequential: return String(localized: "순서대로")
+        case .free:       return String(localized: "아무거나")
         }
     }
 
@@ -49,8 +49,8 @@ enum StepOrder: String, CaseIterable {
     /// 이 스위치가 무엇을 바꾸는지 한 줄로. 고르는 자리에 붙는다.
     var note: String {
         switch self {
-        case .sequential: return "앞 단계가 끝나야 다음이 옵니다."
-        case .free:       return "서로 기다리지 않습니다. 남은 것 중 5분에 집을 수 있는 것부터 세웁니다."
+        case .sequential: return String(localized: "앞 단계가 끝나야 다음이 옵니다.")
+        case .free:       return String(localized: "서로 기다리지 않습니다. 남은 것 중 5분에 집을 수 있는 것부터 세웁니다.")
         }
     }
 }

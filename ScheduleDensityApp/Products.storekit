@@ -1,35 +1,40 @@
 {
-  "identifier" : "A1B2C3D4-0000-4000-8000-000000000001",
-  "nonRenewingSubscriptions" : [],
-  "products" : [
+  "identifier": "A1B2C3D4-0000-4000-8000-000000000001",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "4900",
-      "familyShareable" : true,
-      "internalID" : "A1B2C3D4-0000-4000-8000-000000000002",
-      "localizations" : [
+      "displayPrice": "4900",
+      "familyShareable": true,
+      "internalID": "A1B2C3D4-0000-4000-8000-000000000002",
+      "localizations": [
         {
-          "description" : "홈·잠금 화면 위젯, 캘린더에서 가져오기, 일정 공유, 일정 통계, 회수 장부를 엽니다. 한 번 사면 끝입니다.",
-          "displayName" : "무지개 Pro",
-          "locale" : "ko_KR"
+          "description": "홈·잠금 화면 위젯, 캘린더에서 가져오기, 일정 공유, 일정 통계, 회수 장부를 엽니다. 한 번 사면 끝입니다.",
+          "displayName": "무지개 Pro",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "Opens Home and Lock Screen widgets, Calendar import, event sharing, event stats, and the Ledger. Buy it once and you're done.",
+          "displayName": "Rainbow Pro",
+          "locale": "en_US"
         }
       ],
-      "productID" : "com.example.ScheduleDensityApp.pro",
-      "referenceName" : "무지개 Pro",
-      "type" : "NonConsumable"
+      "productID": "com.example.ScheduleDensityApp.pro",
+      "referenceName": "무지개 Pro",
+      "type": "NonConsumable"
     }
   ],
-  "settings" : {
-    "_applicationInternalID" : "0",
-    "_developerTeamID" : "QGAQ3AY3R3",
-    "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 0,
-    "_locale" : "ko_KR",
-    "_storefront" : "KOR",
-    "_storeKitErrors" : []
+  "settings": {
+    "_applicationInternalID": "0",
+    "_developerTeamID": "QGAQ3AY3R3",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 0,
+    "_locale": "ko_KR",
+    "_storefront": "KOR",
+    "_storeKitErrors": []
   },
-  "subscriptionGroups" : [],
-  "version" : {
-    "major" : 3,
-    "minor" : 0
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
   }
 }

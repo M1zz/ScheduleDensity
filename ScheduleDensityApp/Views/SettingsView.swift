@@ -36,8 +36,8 @@ struct SettingsView: View {
 
     // MARK: 동기화 진단
     // "맥이랑 할 일이 다른데?"를 화면에서 바로 판별하려고 둔 값들.
-    @State private var accountStatusText = "확인 중…"
-    @State private var userRecordName = "확인 중…"
+    @State private var accountStatusText = String(localized: "확인 중…")
+    @State private var userRecordName = String(localized: "확인 중…")
     @State private var mirrorRoutines = 0
     @State private var mirrorBlocks = 0
     @State private var todoCount = 0
@@ -84,16 +84,16 @@ struct SettingsView: View {
 
     /// 무료인가 열려 있는가. 한 단어로 먼저 답한다.
     private var entitlementTitle: String {
-        purchases.isUnlocked ? "무지개 Pro" : "무료 버전"
+        purchases.isUnlocked ? String(localized: "무지개 Pro") : String(localized: "무료 버전")
     }
 
     /// 그래서 지금 무엇을 쓰고 있는가. 잠긴 쪽에서도 **본체는 다 쓴다**는 말을 먼저 한다 —
     /// 이 앱은 무료로도 온전히 돌아가고, 그 사실을 감추면 안 사는 사람이 지운다.
     private var entitlementNote: String {
         if purchases.isUnlocked {
-            return "한 번 사서 곁다리까지 전부 열려 있습니다."
+            return String(localized: "한 번 사서 곁다리까지 전부 열려 있습니다.")
         }
-        return "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 \(ProFeature.sold.count)가지가 잠겨 있습니다."
+        return String(localized: "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 \(ProFeature.sold.count)가지가 잠겨 있습니다.")
     }
 
     /// 값을 받고 여는 것들의 이름.
@@ -316,7 +316,7 @@ struct SettingsView: View {
                     Button(action: {
                         let events = viewModel.fetchEvents()
                         deletionRequest = EventDeletionRequest(
-                            title: "일정 \(events.count)개 삭제",
+                            title: String(localized: "일정 \(events.count)개 삭제"),
                             plan: viewModel.deletionPlan(for: events)
                         ) { await viewModel.deleteAllEvents() }
                     }) {
@@ -696,7 +696,7 @@ struct SettingsView: View {
                     HStack {
                         Text("할 일 저장 위치")
                         Spacer()
-                        Text(CloudDiagnostics.todoStoreMode.rawValue)
+                        Text(CloudDiagnostics.todoStoreMode.label)
                             .foregroundColor(CloudDiagnostics.todoStoreMode == .cloud ? .secondary : .red)
                     }
                     if let error = CloudDiagnostics.todoStoreError {
@@ -739,9 +739,9 @@ struct SettingsView: View {
                     //    아래는 원문 에러와 필드 이름이라 읽을 사람이 다르다.
                     #if DEBUG
                     // 엔진이 직접 남긴 결과. 결과 숫자만으로는 '왜'를 알 수 없다.
-                    syncEventRow("준비", CloudSyncLog.shared.setup)
-                    syncEventRow("받기", CloudSyncLog.shared.importing)
-                    syncEventRow("보내기", CloudSyncLog.shared.exporting)
+                    syncEventRow(String(localized: "준비"), CloudSyncLog.shared.setup)
+                    syncEventRow(String(localized: "받기"), CloudSyncLog.shared.importing)
+                    syncEventRow(String(localized: "보내기"), CloudSyncLog.shared.exporting)
 
                     Button {
                         Task { await probeSchema() }
@@ -855,7 +855,7 @@ struct SettingsView: View {
                         HStack {
                             Text("평균 수면시간")
                             Spacer()
-                            Text(String(format: "%.1f시간", sleepHours))
+                            Text(String(format: String(localized: "%.1f시간"), sleepHours))
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -902,7 +902,7 @@ struct SettingsView: View {
                 Section {
                     // 덮어 씌우는 대신 밀어 넣는다. 설정 안의 다른 문들과 같은 손짓이다.
                     NavigationLink {
-                        BoltMeaningView(eyebrow: "할 일 목록의 번개",
+                        BoltMeaningView(eyebrow: String(localized: "할 일 목록의 번개"),
                                         showsDoneButton: false) { }
                     } label: {
                         HStack(spacing: 8) {
@@ -1070,15 +1070,15 @@ struct SettingsView: View {
     private func startBackupToiCloud() {
         guard cloudKitManager.isAvailable else {
             isSyncEnabled = false
-            syncAlertTitle = "백업 실패"
-            syncAlertMessage = "iCloud를 사용할 수 없습니다."
+            syncAlertTitle = String(localized: "백업 실패")
+            syncAlertMessage = String(localized: "iCloud를 사용할 수 없습니다.")
             showingSyncAlert = true
             return
         }
 
         isSyncing = true
         syncProgress = 0.0
-        syncProgressText = "백업 시작 중..."
+        syncProgressText = String(localized: "백업 시작 중...")
 
         // 현재 로컬 데이터 가져오기
         let events = viewModel.fetchEvents()
@@ -1096,21 +1096,21 @@ struct SettingsView: View {
                         syncSettings.isSyncEnabled = true
                         syncSettings.updateLastSyncDate()
                         isSyncing = false
-                        syncAlertTitle = "백업 완료"
-                        syncAlertMessage = "백업할 일정이 없습니다.\niCloud 데이터가 비워졌습니다."
+                        syncAlertTitle = String(localized: "백업 완료")
+                        syncAlertMessage = String(localized: "백업할 일정이 없습니다.\niCloud 데이터가 비워졌습니다.")
                         showingSyncAlert = true
                         return
                     }
 
                     // 2단계: 로컬 데이터를 iCloud에 업로드
-                    syncProgressText = "\(events.count)개 일정 백업 중..."
+                    syncProgressText = String(localized: "\(events.count)개 일정 백업 중...")
                     print("📤 [SettingsView] Uploading \(events.count) events to iCloud...")
 
                     // CloudKit에 저장
                     cloudKitManager.saveEvents(events, progress: { saved, total in
                         DispatchQueue.main.async {
                             syncProgress = Double(saved) / Double(total)
-                            syncProgressText = "\(saved)/\(total)개 백업 중..."
+                            syncProgressText = String(localized: "\(saved)/\(total)개 백업 중...")
                         }
                     }) { result in
                         DispatchQueue.main.async {
@@ -1121,16 +1121,16 @@ struct SettingsView: View {
                                 syncSettings.isSyncEnabled = true
                                 syncSettings.updateLastSyncDate()
                                 syncProgress = 1.0
-                                syncProgressText = "백업 완료"
+                                syncProgressText = String(localized: "백업 완료")
 
-                                syncAlertTitle = "백업 성공"
-                                syncAlertMessage = "\(events.count)개의 일정이 iCloud에 백업되었습니다.\niCloud 데이터가 로컬과 동기화되었습니다."
+                                syncAlertTitle = String(localized: "백업 성공")
+                                syncAlertMessage = String(localized: "\(events.count)개의 일정이 iCloud에 백업되었습니다.\niCloud 데이터가 로컬과 동기화되었습니다.")
                                 showingSyncAlert = true
 
                             case .failure(let error):
                                 isSyncEnabled = false
-                                syncAlertTitle = "백업 실패"
-                                syncAlertMessage = "오류: \(error.localizedDescription)"
+                                syncAlertTitle = String(localized: "백업 실패")
+                                syncAlertMessage = String(localized: "오류: \(error.localizedDescription)")
                                 showingSyncAlert = true
                             }
                         }
@@ -1139,8 +1139,8 @@ struct SettingsView: View {
                 case .failure(let error):
                     isSyncing = false
                     isSyncEnabled = false
-                    syncAlertTitle = "백업 실패"
-                    syncAlertMessage = "iCloud 데이터 삭제 실패: \(error.localizedDescription)"
+                    syncAlertTitle = String(localized: "백업 실패")
+                    syncAlertMessage = String(localized: "iCloud 데이터 삭제 실패: \(error.localizedDescription)")
                     showingSyncAlert = true
                 }
             }
@@ -1154,7 +1154,7 @@ struct SettingsView: View {
         }
 
         isSyncing = true
-        syncProgressText = "백업 데이터 삭제 중..."
+        syncProgressText = String(localized: "백업 데이터 삭제 중...")
 
         // CloudKit의 모든 데이터 삭제
         cloudKitManager.deleteAllEvents { result in
@@ -1164,13 +1164,13 @@ struct SettingsView: View {
 
                 switch result {
                 case .success:
-                    syncAlertTitle = "동기화 해제"
-                    syncAlertMessage = "iCloud 백업이 해제되었습니다. 로컬 데이터는 유지됩니다."
+                    syncAlertTitle = String(localized: "동기화 해제")
+                    syncAlertMessage = String(localized: "iCloud 백업이 해제되었습니다. 로컬 데이터는 유지됩니다.")
                     showingSyncAlert = true
 
                 case .failure(let error):
-                    syncAlertTitle = "해제 실패"
-                    syncAlertMessage = "오류: \(error.localizedDescription)"
+                    syncAlertTitle = String(localized: "해제 실패")
+                    syncAlertMessage = String(localized: "오류: \(error.localizedDescription)")
                     showingSyncAlert = true
                 }
             }
@@ -1181,15 +1181,15 @@ struct SettingsView: View {
 
     private func manualBackupToiCloud() {
         guard cloudKitManager.isAvailable else {
-            syncAlertTitle = "백업 실패"
-            syncAlertMessage = "iCloud를 사용할 수 없습니다."
+            syncAlertTitle = String(localized: "백업 실패")
+            syncAlertMessage = String(localized: "iCloud를 사용할 수 없습니다.")
             showingSyncAlert = true
             return
         }
 
         isSyncing = true
         syncProgress = 0.0
-        syncProgressText = "백업 시작 중..."
+        syncProgressText = String(localized: "백업 시작 중...")
 
         // 현재 로컬 데이터 가져오기
         let events = viewModel.fetchEvents()
@@ -1205,22 +1205,22 @@ struct SettingsView: View {
                     guard !events.isEmpty else {
                         // 로컬 데이터가 없으면 iCloud도 비워진 상태로 완료
                         isSyncing = false
-                        syncAlertTitle = "백업 완료"
-                        syncAlertMessage = "로컬에 일정이 없습니다.\niCloud 데이터가 비워졌습니다."
+                        syncAlertTitle = String(localized: "백업 완료")
+                        syncAlertMessage = String(localized: "로컬에 일정이 없습니다.\niCloud 데이터가 비워졌습니다.")
                         showingSyncAlert = true
                         syncSettings.updateLastSyncDate()
                         return
                     }
 
                     // 2단계: 로컬 데이터를 iCloud에 업로드
-                    syncProgressText = "\(events.count)개 일정 백업 중..."
+                    syncProgressText = String(localized: "\(events.count)개 일정 백업 중...")
                     print("📤 [SettingsView] Manual backup: Uploading \(events.count) events to iCloud...")
 
                     // CloudKit에 저장
                     cloudKitManager.saveEvents(events, progress: { saved, total in
                         DispatchQueue.main.async {
                             syncProgress = Double(saved) / Double(total)
-                            syncProgressText = "\(saved)/\(total)개 백업 중..."
+                            syncProgressText = String(localized: "\(saved)/\(total)개 백업 중...")
                         }
                     }) { result in
                         DispatchQueue.main.async {
@@ -1230,15 +1230,15 @@ struct SettingsView: View {
                             case .success:
                                 syncSettings.updateLastSyncDate()
                                 syncProgress = 1.0
-                                syncProgressText = "백업 완료"
+                                syncProgressText = String(localized: "백업 완료")
 
-                                syncAlertTitle = "백업 성공"
-                                syncAlertMessage = "\(events.count)개의 일정이 iCloud에 백업되었습니다."
+                                syncAlertTitle = String(localized: "백업 성공")
+                                syncAlertMessage = String(localized: "\(events.count)개의 일정이 iCloud에 백업되었습니다.")
                                 showingSyncAlert = true
 
                             case .failure(let error):
-                                syncAlertTitle = "백업 실패"
-                                syncAlertMessage = "오류: \(error.localizedDescription)"
+                                syncAlertTitle = String(localized: "백업 실패")
+                                syncAlertMessage = String(localized: "오류: \(error.localizedDescription)")
                                 showingSyncAlert = true
                             }
                         }
@@ -1246,8 +1246,8 @@ struct SettingsView: View {
 
                 case .failure(let error):
                     isSyncing = false
-                    syncAlertTitle = "백업 실패"
-                    syncAlertMessage = "iCloud 데이터 삭제 실패: \(error.localizedDescription)"
+                    syncAlertTitle = String(localized: "백업 실패")
+                    syncAlertMessage = String(localized: "iCloud 데이터 삭제 실패: \(error.localizedDescription)")
                     showingSyncAlert = true
                 }
             }
@@ -1258,14 +1258,14 @@ struct SettingsView: View {
 
     private func deleteiCloudData() {
         guard cloudKitManager.isAvailable else {
-            syncAlertTitle = "삭제 실패"
-            syncAlertMessage = "iCloud를 사용할 수 없습니다."
+            syncAlertTitle = String(localized: "삭제 실패")
+            syncAlertMessage = String(localized: "iCloud를 사용할 수 없습니다.")
             showingSyncAlert = true
             return
         }
 
         isSyncing = true
-        syncProgressText = "iCloud 데이터 삭제 중..."
+        syncProgressText = String(localized: "iCloud 데이터 삭제 중...")
 
         // CloudKit의 모든 데이터 삭제
         cloudKitManager.deleteAllEvents { result in
@@ -1278,13 +1278,13 @@ struct SettingsView: View {
                     syncSettings.isSyncEnabled = false
                     isSyncEnabled = false
 
-                    syncAlertTitle = "삭제 완료"
-                    syncAlertMessage = "iCloud에 백업된 모든 일정 데이터가 삭제되었습니다.\n로컬 데이터는 유지됩니다.\n\n동기화가 자동으로 해제되었습니다."
+                    syncAlertTitle = String(localized: "삭제 완료")
+                    syncAlertMessage = String(localized: "iCloud에 백업된 모든 일정 데이터가 삭제되었습니다.\n로컬 데이터는 유지됩니다.\n\n동기화가 자동으로 해제되었습니다.")
                     showingSyncAlert = true
 
                 case .failure(let error):
-                    syncAlertTitle = "삭제 실패"
-                    syncAlertMessage = "오류: \(error.localizedDescription)"
+                    syncAlertTitle = String(localized: "삭제 실패")
+                    syncAlertMessage = String(localized: "오류: \(error.localizedDescription)")
                     showingSyncAlert = true
                 }
             }
@@ -1295,21 +1295,21 @@ struct SettingsView: View {
 
     private func restoreFromiCloud() {
         guard cloudKitManager.isAvailable else {
-            syncAlertTitle = "복원 실패"
-            syncAlertMessage = "iCloud를 사용할 수 없습니다."
+            syncAlertTitle = String(localized: "복원 실패")
+            syncAlertMessage = String(localized: "iCloud를 사용할 수 없습니다.")
             showingSyncAlert = true
             return
         }
 
         isSyncing = true
         syncProgress = 0.0
-        syncProgressText = "복원 시작 중..."
+        syncProgressText = String(localized: "복원 시작 중...")
 
         // CloudKit에서 데이터 가져오기
         cloudKitManager.restoreEvents(progress: { restored, total in
             DispatchQueue.main.async {
                 syncProgress = Double(restored) / Double(total)
-                syncProgressText = "\(restored)/\(total)개 복원 중..."
+                syncProgressText = String(localized: "\(restored)/\(total)개 복원 중...")
             }
         }) { result in
             DispatchQueue.main.async {
@@ -1318,8 +1318,8 @@ struct SettingsView: View {
                 switch result {
                 case .success(let events):
                     if events.isEmpty {
-                        syncAlertTitle = "복원 완료"
-                        syncAlertMessage = "iCloud에 백업된 일정이 없습니다."
+                        syncAlertTitle = String(localized: "복원 완료")
+                        syncAlertMessage = String(localized: "iCloud에 백업된 일정이 없습니다.")
                         showingSyncAlert = true
                         return
                     }
@@ -1353,7 +1353,7 @@ struct SettingsView: View {
                     }
 
                     syncProgress = 1.0
-                    syncProgressText = "복원 완료"
+                    syncProgressText = String(localized: "복원 완료")
 
                     // 복원 성공 시 동기화 토글 자동으로 켜기
                     syncSettings.isSyncEnabled = true
@@ -1364,13 +1364,13 @@ struct SettingsView: View {
                     viewModel.dataRefreshTrigger = UUID()
                     print("🔄 [SettingsView] Triggering UI refresh after restore")
 
-                    syncAlertTitle = "복원 성공"
-                    syncAlertMessage = "\(events.count)개의 일정이 iCloud에서 복원되었습니다.\n로컬 데이터가 iCloud와 동기화되었습니다."
+                    syncAlertTitle = String(localized: "복원 성공")
+                    syncAlertMessage = String(localized: "\(events.count)개의 일정이 iCloud에서 복원되었습니다.\n로컬 데이터가 iCloud와 동기화되었습니다.")
                     showingSyncAlert = true
 
                 case .failure(let error):
-                    syncAlertTitle = "복원 실패"
-                    syncAlertMessage = "오류: \(error.localizedDescription)"
+                    syncAlertTitle = String(localized: "복원 실패")
+                    syncAlertMessage = String(localized: "오류: \(error.localizedDescription)")
                     showingSyncAlert = true
                 }
             }
@@ -1392,8 +1392,8 @@ struct SettingsView: View {
                 balanceSuggestions = suggestions
 
                 if suggestions.isEmpty {
-                    syncAlertTitle = "분산 분석 완료"
-                    syncAlertMessage = "일정이 이미 균형잡혀 있습니다.\n재배치가 필요한 일정이 없습니다."
+                    syncAlertTitle = String(localized: "분산 분석 완료")
+                    syncAlertMessage = String(localized: "일정이 이미 균형잡혀 있습니다.\n재배치가 필요한 일정이 없습니다.")
                     showingSyncAlert = true
                 }
             }
@@ -1404,15 +1404,17 @@ struct SettingsView: View {
         viewModel.applyScheduleBalancing(suggestions: balanceSuggestions)
         balanceSuggestions = [:]
 
-        syncAlertTitle = "분산 완료"
-        syncAlertMessage = "일정이 성공적으로 재배치되었습니다."
+        syncAlertTitle = String(localized: "분산 완료")
+        syncAlertMessage = String(localized: "일정이 성공적으로 재배치되었습니다.")
         showingSyncAlert = true
     }
 
     private func formatDateShort(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "M/d"
-        formatter.locale = Locale(identifier: "ko_KR")
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
+        formatter.locale = Locale.autoupdatingCurrent
         return formatter.string(from: date)
     }
 }
@@ -1450,7 +1452,7 @@ extension SettingsView {
     @MainActor
     func primeSchema() async {
         guard let container = CloudDiagnostics.todoContainer else {
-            primeNote = "스토어가 없습니다."
+            primeNote = String(localized: "스토어가 없습니다.")
             return
         }
         isPrimingSchema = true
@@ -1485,21 +1487,21 @@ extension SettingsView {
         let container = CKContainer(identifier: WeekBlocksStore.containerID)
         do {
             switch try await container.accountStatus() {
-            case .available: accountStatusText = "로그인됨"
-            case .noAccount: accountStatusText = "로그인 안 됨"
-            case .restricted: accountStatusText = "제한됨"
-            case .couldNotDetermine: accountStatusText = "확인 불가"
-            case .temporarilyUnavailable: accountStatusText = "일시적으로 사용 불가"
-            @unknown default: accountStatusText = "알 수 없음"
+            case .available: accountStatusText = String(localized: "로그인됨")
+            case .noAccount: accountStatusText = String(localized: "로그인 안 됨")
+            case .restricted: accountStatusText = String(localized: "제한됨")
+            case .couldNotDetermine: accountStatusText = String(localized: "확인 불가")
+            case .temporarilyUnavailable: accountStatusText = String(localized: "일시적으로 사용 불가")
+            @unknown default: accountStatusText = String(localized: "알 수 없음")
             }
         } catch {
-            accountStatusText = "확인 실패"
+            accountStatusText = String(localized: "확인 실패")
         }
         do {
             let id = try await container.userRecordID()
             userRecordName = id.recordName
         } catch {
-            userRecordName = "가져오지 못함"
+            userRecordName = String(localized: "가져오지 못함")
         }
     }
 }

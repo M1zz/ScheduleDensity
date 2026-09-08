@@ -32,6 +32,6 @@ enum TodoAccess {
     }
 
     /// 안내에 쓰는 말. 화면마다 따로 쓰면 문구가 갈라진다.
-    static let lockedTitle = "여기서 적은 것은 아직 맥에 안 갑니다"
-    static let lockedNote = "적는 데는 아무 지장이 없습니다. 맥에서 적은 것도 계속 내려옵니다. 열면 지금까지 적어 둔 것까지 함께 보입니다."
+    static let lockedTitle = String(localized: "여기서 적은 것은 아직 맥에 안 갑니다")
+    static let lockedNote = String(localized: "적는 데는 아무 지장이 없습니다. 맥에서 적은 것도 계속 내려옵니다. 열면 지금까지 적어 둔 것까지 함께 보입니다.")
 }

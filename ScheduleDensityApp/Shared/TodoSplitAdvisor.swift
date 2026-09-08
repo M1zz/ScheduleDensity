@@ -42,9 +42,9 @@ enum ChunkKind: String {
 
     var label: String {
         switch self {
-        case .fragment: return "조각"
-        case .short:    return "짧은 덩어리"
-        case .block:    return "덩어리"
+        case .fragment: return String(localized: "조각")
+        case .short:    return String(localized: "짧은 덩어리")
+        case .block:    return String(localized: "덩어리")
         }
     }
 
@@ -70,8 +70,8 @@ enum FragmentQuestion: String, CaseIterable, Identifiable {
     /// 화면에 그대로 나가는 물음.
     var text: String {
         switch self {
-        case .start:   return "시동 없이 바로 시작되나요?"
-        case .closing: return "5분 안에 끝까지 가나요?"
+        case .start:   return String(localized: "시동 없이 바로 시작되나요?")
+        case .closing: return String(localized: "5분 안에 끝까지 가나요?")
         }
     }
 
@@ -79,9 +79,9 @@ enum FragmentQuestion: String, CaseIterable, Identifiable {
     var why: String {
         switch self {
         case .start:
-            return "맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다."
+            return String(localized: "맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다.")
         case .closing:
-            return "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다."
+            return String(localized: "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다.")
         }
     }
 
@@ -164,11 +164,11 @@ struct StepAdvice {
     var verdict: String {
         switch kind {
         case .fragment:
-            return "조각입니다. 5분이 나면 이걸 집으면 됩니다."
+            return String(localized: "조각입니다. 5분이 나면 이걸 집으면 됩니다.")
         case .short:
-            return "짧은 덩어리입니다. 앉아야 하지만 한 자리에서 끝납니다."
+            return String(localized: "짧은 덩어리입니다. 앉아야 하지만 한 자리에서 끝납니다.")
         case .block:
-            return "덩어리입니다. 지켜 둔 시간에 두세요."
+            return String(localized: "덩어리입니다. 지켜 둔 시간에 두세요.")
         }
     }
 }
@@ -201,12 +201,23 @@ enum TodoSplitAdvisor {
 
     // 제목에서 성질을 읽어내는 낱말들. 완벽한 분류가 목적이 아니라,
     // 사용자가 스스로 알아채도록 건드리는 게 목적이다.
+    //
+    // ⚠️ 이 목록은 **번역하지 않는다.** 한국어와 영어 낱말이 한 배열에 함께 산다 —
+    //    사전은 화면에 안 나오고, 사용자가 적은 글자와 맞대 보는 데만 쓰인다.
+    //    한국어로 적는 분과 영어로 적는 분이 같은 앱을 쓰므로 둘 다 들고 있어야 한다.
+    //    영어 낱말은 `normalize`가 공백을 지우고 소문자로 내린 뒤 **부분 일치**로 걸린다.
+    //    그래서 짧은 토막("run"→"brunch", "edit"→"credit")은 일부러 뺐다.
 
     /// 시동 비용이 큰 일 — 조각에 넣으면 시동만 걸다 끝난다.
     static let blockWords = [
         "쓰기", "작성", "글", "원고", "구현", "코딩", "개발", "설계", "리팩터", "리팩토링",
         "디자인", "기획", "전략", "분석", "조사", "학습", "공부", "이해", "정리하기",
-        "녹화", "편집", "만들기", "제작", "번역", "논문", "발표자료", "기능"
+        "녹화", "편집", "만들기", "제작", "번역", "논문", "발표자료", "기능",
+        "write", "writing", "draft", "essay", "manuscript", "chapter", "outline",
+        "implement", "coding", "develop", "refactor", "architect", "design",
+        "planning", "strategy", "analyz", "analys", "research", "study", "learn",
+        "editing", "proofread", "recording", "produce", "translat", "thesis",
+        "paper", "slide", "deck", "prototype"
     ]
 
     /// 결과가 정해져 있어 바로 닫히는 일.
@@ -214,29 +225,44 @@ enum TodoSplitAdvisor {
         "보내기", "발송", "제출", "발행", "업로드", "공유하기", "답장", "회신", "승인",
         "예약", "확인", "체크", "결제", "신청", "등록", "캡처", "메모", "적기", "기록",
         "복습", "암기", "카드", "고르기", "선택", "전화", "문자", "주문",
-        "올리기", "게시", "포스팅", "모아두기", "챙기기"
+        "올리기", "게시", "포스팅", "모아두기", "챙기기",
+        "send", "submit", "publish", "upload", "reply", "respond", "approve",
+        "booking", "confirm", "rsvp", "email", "message", "call",
+        "pay", "apply", "register", "signup", "renew",
+        "capture", "note", "jot", "memoriz", "flashcard", "order",
+        "post", "collect", "gather", "print", "scan"
     ]
 
     /// 몸으로 하는 일 — 조각으로도 실제로 축적된다 (VILPA).
     static let bodyWords = [
         "운동", "스트레칭", "걷기", "산책", "계단", "달리기", "러닝", "요가", "청소",
-        "설거지", "빨래", "정리정돈", "환기"
+        "설거지", "빨래", "정리정돈", "환기",
+        "workout", "exercise", "stretch", "walk", "stroll", "stairs",
+        "running", "jog", "yoga", "gym", "swim", "cycle", "hike",
+        "clean", "dishes", "laundry", "tidy", "vacuum"
     ]
 
     /// 탐색이 필요해 조각 안에서 닫히지 않는 일.
     static let decisionWords = [
-        "정하기", "결정", "고민", "검토", "판단", "선정", "구상", "아이디어 내기"
+        "정하기", "결정", "고민", "검토", "판단", "선정", "구상", "아이디어 내기",
+        "decide", "decision", "figure out", "choose", "judge", "evaluate",
+        "review", "compare", "brainstorm", "ideate", "prioriti", "narrow down"
     ]
 
     /// 일이 아니라 조각이 새는 곳.
     static let drainWords = [
-        "sns", "유튜브", "인스타", "피드", "쇼츠", "릴스", "스크롤", "웹서핑", "눈팅"
+        "sns", "유튜브", "인스타", "피드", "쇼츠", "릴스", "스크롤", "웹서핑", "눈팅",
+        "youtube", "instagram", "tiktok", "twitter", "reddit",
+        "shorts", "reels", "scroll", "browsing", "surfing"
     ]
 
     /// 끝을 닫는 마감 동작 — 마지막 단계에 이게 있으면 잔여물이 남지 않는다.
     static let closingWords = [
         "보내기", "발송", "제출", "발행", "업로드", "공유하기", "배포", "커밋", "머지",
-        "마무리", "제출하기", "회신", "답장", "결제", "청구", "올리기", "게시", "포스팅"
+        "마무리", "제출하기", "회신", "답장", "결제", "청구", "올리기", "게시", "포스팅",
+        "send", "submit", "publish", "upload", "deploy", "commit", "merge",
+        "finalize", "wrap up", "reply", "respond", "pay", "invoice",
+        "post", "ship", "release", "hand off", "sign off"
     ]
 
     // MARK: 단계 하나 판정
@@ -261,43 +287,43 @@ enum TodoSplitAdvisor {
         // 질문 하나 — 시동 없이 바로 시작할 수 있는가.
         var start: StepAdvice.Answer = {
             if looksDecision {
-                return .init(isYes: false, reason: "안 정한 것이 먼저 막고 있습니다.")
+                return .init(isYes: false, reason: String(localized: "안 정한 것이 먼저 막고 있습니다."))
             }
             if looksBlock {
-                return .init(isYes: false, reason: "어디까지 했는지 다시 읽어 와야 시작됩니다.")
+                return .init(isYes: false, reason: String(localized: "어디까지 했는지 다시 읽어 와야 시작됩니다."))
             }
             if looksBody {
-                return .init(isYes: true, reason: "몸으로 하는 일이라 시동이 없습니다.")
+                return .init(isYes: true, reason: String(localized: "몸으로 하는 일이라 시동이 없습니다."))
             }
             if looksFragment || looksClosing {
-                return .init(isYes: true, reason: "할 것이 정해져 있어 바로 손이 갑니다.")
+                return .init(isYes: true, reason: String(localized: "할 것이 정해져 있어 바로 손이 갑니다."))
             }
-            return .init(isYes: true, reason: "앞에서 막고 있는 것이 안 보입니다.")
+            return .init(isYes: true, reason: String(localized: "앞에서 막고 있는 것이 안 보입니다."))
         }()
 
         // 질문 둘 — 조각 안에서 완전히 끝나는가.
         var closing: StepAdvice.Answer = {
             // 몸으로 하는 일만은 나눠 해도 쌓인다 (VILPA). 크기로 자르지 않는다.
             if looksBody {
-                return .init(isYes: true, reason: "몸으로 하는 일은 나눠 해도 쌓입니다.")
+                return .init(isYes: true, reason: String(localized: "몸으로 하는 일은 나눠 해도 쌓입니다."))
             }
             if looksDrain {
-                return .init(isYes: false, reason: "끝이 정해져 있지 않아 안 닫힙니다.")
+                return .init(isYes: false, reason: String(localized: "끝이 정해져 있지 않아 안 닫힙니다."))
             }
             if durationHours >= tooBigHours {
-                return .init(isYes: false, reason: "\(formatHours(durationHours))짜리입니다. 한 자리에서도 안 닫힙니다.")
+                return .init(isYes: false, reason: String(localized: "\(formatHours(durationHours))짜리입니다. 한 자리에서도 안 닫힙니다."))
             }
             if durationHours > fragmentMaxHours {
-                return .init(isYes: false, reason: "\(formatHours(durationHours))짜리라 조각에 안 들어갑니다.")
+                return .init(isYes: false, reason: String(localized: "\(formatHours(durationHours))짜리라 조각에 안 들어갑니다."))
             }
             if looksBlock {
-                return .init(isYes: false, reason: "짧게 잡아 두어도 여기서 끝나지는 않습니다.")
+                return .init(isYes: false, reason: String(localized: "짧게 잡아 두어도 여기서 끝나지는 않습니다."))
             }
             if looksDecision {
-                return .init(isYes: false, reason: "뭘 할지 고르는 동안 조각이 끝납니다.")
+                return .init(isYes: false, reason: String(localized: "뭘 할지 고르는 동안 조각이 끝납니다."))
             }
             if looksClosing || looksFragment {
-                return .init(isYes: true, reason: "끝이 정해져 있어 여기서 닫힙니다.")
+                return .init(isYes: true, reason: String(localized: "끝이 정해져 있어 여기서 닫힙니다."))
             }
             // ⚠️ 시간을 안 적은 줄은 **모른다**. 예전에는 여기서 '예'라고 답했는데,
             //    그러면 방금 적은 줄이 전부 조각(⚡︎)으로 떴다 — 적자마자 아무 근거 없이
@@ -309,17 +335,17 @@ enum TodoSplitAdvisor {
             //    위의 `looksClosing || looksFragment`가 먼저 걸러 가고(전화·주문·예약·챙기기…),
             //    그래도 아니면 시간을 15분으로 적어 두면 바로 조각이 된다.
             if durationHours <= 0 {
-                return .init(isYes: false, reason: "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다.")
+                return .init(isYes: false, reason: String(localized: "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다."))
             }
-            return .init(isYes: true, reason: "\(formatHours(durationHours))짜리라 조각 안에 들어갑니다.")
+            return .init(isYes: true, reason: String(localized: "\(formatHours(durationHours))짜리라 조각 안에 들어갑니다."))
         }()
 
         // 사용자가 답한 것이 있으면 그 자리만 갈아 끼운다.
         if let yes = pick.start {
-            start = .init(isYes: yes, reason: "직접 정한 답입니다.", isUserSet: true)
+            start = .init(isYes: yes, reason: String(localized: "직접 정한 답입니다."), isUserSet: true)
         }
         if let yes = pick.closing {
-            closing = .init(isYes: yes, reason: "직접 정한 답입니다.", isUserSet: true)
+            closing = .init(isYes: yes, reason: String(localized: "직접 정한 답입니다."), isUserSet: true)
         }
 
         let kind = self.kind(start: start, closing: closing, durationHours: durationHours)
@@ -370,22 +396,22 @@ enum TodoSplitAdvisor {
         if pick.isSet { return nil }
 
         if looksDrain {
-            return .init(message: "이건 할 일이 아니라 조각이 새어 나가는 곳입니다. 단계로 두면 진행률만 부풉니다.",
-                         source: "배수구")
+            return .init(message: String(localized: "이건 할 일이 아니라 조각이 새어 나가는 곳입니다. 단계로 두면 진행률만 부풉니다."),
+                         source: String(localized: "배수구"))
         }
         // 시동 비용이 큰 일을 조각 시간에 욱여넣은 경우.
         if looksBlock && durationHours <= fragmentMaxHours {
-            return .init(message: "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요.",
+            return .init(message: String(localized: "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요."),
                          source: "Mark 2008")
         }
         // 아직 안 정해진 일은 조각 안에서 닫히지 않는다.
         if looksDecision && durationHours < blockMinHours {
-            return .init(message: "뭘 할지 고르는 동안 조각이 끝납니다. 결정은 덩어리에서 하고, 정해진 것만 조각 단계로 보내세요.",
-                         source: "판정 기준 3")
+            return .init(message: String(localized: "뭘 할지 고르는 동안 조각이 끝납니다. 결정은 덩어리에서 하고, 정해진 것만 조각 단계로 보내세요."),
+                         source: String(localized: "판정 기준 3"))
         }
         // 한 자리에서 안 닫히는 크기.
         if durationHours >= tooBigHours {
-            return .init(message: "한 번에 못 끝내는 크기입니다. 끝이 닫히도록 더 쪼개지 않으면 '하다 만 상태'가 다음 시간까지 따라옵니다.",
+            return .init(message: String(localized: "한 번에 못 끝내는 크기입니다. 끝이 닫히도록 더 쪼개지 않으면 '하다 만 상태'가 다음 시간까지 따라옵니다."),
                          source: "Leroy 2009")
         }
         return nil
@@ -394,10 +420,10 @@ enum TodoSplitAdvisor {
     /// 조언 문장에 넣을 시간 표기. (화면의 formatDuration과 달리 로직 파일 안에서 쓴다)
     private static func formatHours(_ hours: Double) -> String {
         let minutes = Int((max(0, hours) * 60).rounded())
-        if minutes < 60 { return "\(minutes)분" }
+        if minutes < 60 { return String(localized: "\(minutes)분") }
         let h = minutes / 60
         let m = minutes % 60
-        return m == 0 ? "\(h)시간" : "\(h)시간 \(m)분"
+        return m == 0 ? String(localized: "\(h)시간") : String(localized: "\(h)시간 \(m)분")
     }
 
     // MARK: 구성 전체 판정
@@ -416,8 +442,8 @@ enum TodoSplitAdvisor {
             return [SplitHint(
                 code: "before-split",
                 tone: .info,
-                title: "쪼개기 전에 한 가지",
-                detail: "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다.",
+                title: String(localized: "쪼개기 전에 한 가지"),
+                detail: String(localized: "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다."),
                 source: "Schulte 2014 · Whillans 2020")]
         }
 
@@ -429,8 +455,8 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "no-fragment",
                 tone: .caution,
-                title: "5분이 생겼을 때 집을 단계가 없습니다",
-                detail: "모든 단계가 자리를 잡아야 하는 크기입니다. 자료 모아두기·한 줄 메모처럼 조각에서 닫히는 단계를 하나 만들어두면, 흘려보내던 틈이 이 할 일에 쓰입니다.",
+                title: String(localized: "5분이 생겼을 때 집을 단계가 없습니다"),
+                detail: String(localized: "모든 단계가 자리를 잡아야 하는 크기입니다. 자료 모아두기·한 줄 메모처럼 조각에서 닫히는 단계를 하나 만들어두면, 흘려보내던 틈이 이 할 일에 쓰입니다."),
                 source: "Whillans 2020"))
         }
 
@@ -439,8 +465,8 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "no-closing",
                 tone: .caution,
-                title: "마지막을 닫는 단계가 없습니다",
-                detail: "'보내기·발행하기·제출하기'처럼 끝을 닫는 단계를 마지막에 두세요. 90% 끝난 일의 마지막 10%는 조각의 가장 좋은 용도이고, 닫아두면 그 뒤의 덩어리 시간까지 깨끗해집니다.",
+                title: String(localized: "마지막을 닫는 단계가 없습니다"),
+                detail: String(localized: "'보내기·발행하기·제출하기'처럼 끝을 닫는 단계를 마지막에 두세요. 90% 끝난 일의 마지막 10%는 조각의 가장 좋은 용도이고, 닫아두면 그 뒤의 덩어리 시간까지 깨끗해집니다."),
                 source: "Leroy 2009"))
         }
 
@@ -450,10 +476,10 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "too-big",
                 tone: .caution,
-                title: "‘\(first.title)’은(는) 한 번에 안 끝납니다",
+                title: String(localized: "‘\(first.title)’은(는) 한 번에 안 끝납니다"),
                 detail: tooBig.count > 1
-                    ? "\(tooBig.count)개 단계가 2시간을 넘습니다. 끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다."
-                    : "끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다.",
+                    ? String(localized: "\(tooBig.count)개 단계가 2시간을 넘습니다. 끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다.")
+                    : String(localized: "끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다."),
                 source: "Leroy 2009"))
         }
 
@@ -463,8 +489,8 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "startup-cost",
                 tone: .caution,
-                title: "짧게 잡힌 덩어리 작업이 \(startupIssues.count)개 있습니다",
-                detail: "글쓰기·구현·설계처럼 맥락을 다시 불러와야 하는 일은 조각 크기로 잡아두면 시동만 걸다 끝납니다. 시간을 늘리거나, 그 앞에 '준비' 조각 단계를 따로 두세요.",
+                title: String(localized: "짧게 잡힌 덩어리 작업이 \(startupIssues.count)개 있습니다"),
+                detail: String(localized: "글쓰기·구현·설계처럼 맥락을 다시 불러와야 하는 일은 조각 크기로 잡아두면 시동만 걸다 끝납니다. 시간을 늘리거나, 그 앞에 '준비' 조각 단계를 따로 두세요."),
                 source: "Mark 2008"))
         }
 
@@ -475,9 +501,9 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "decision-late",
                 tone: .caution,
-                title: "결정이 작업 뒤에 있습니다",
-                detail: "‘\(steps[decisionIndex].title)’이(가) ‘\(steps[workIndex].title)’보다 뒤입니다. 정해지지 않은 채 시작한 작업은 조각에서도 덩어리에서도 닫히지 않습니다. 결정 단계를 앞으로 옮기세요.",
-                source: "판정 기준 3"))
+                title: String(localized: "결정이 작업 뒤에 있습니다"),
+                detail: String(localized: "‘\(steps[decisionIndex].title)’이(가) ‘\(steps[workIndex].title)’보다 뒤입니다. 정해지지 않은 채 시작한 작업은 조각에서도 덩어리에서도 닫히지 않습니다. 결정 단계를 앞으로 옮기세요."),
+                source: String(localized: "판정 기준 3")))
         }
 
         // 6. 잘 쪼갠 경우엔 그렇다고 말해준다.
@@ -486,8 +512,8 @@ enum TodoSplitAdvisor {
             result.append(SplitHint(
                 code: "well-split",
                 tone: .good,
-                title: "조각과 덩어리가 나뉘어 있습니다",
-                detail: "조각에서 집을 수 있는 단계가 \(fragmentCount)개, 지킨 시간에 할 단계가 \(advices.count - fragmentCount)개입니다. 5분이 생기면 조각 단계를, 확보한 시간에는 덩어리 단계를 하시면 됩니다.",
+                title: String(localized: "조각과 덩어리가 나뉘어 있습니다"),
+                detail: String(localized: "조각에서 집을 수 있는 단계가 \(fragmentCount)개, 지킨 시간에 할 단계가 \(advices.count - fragmentCount)개입니다. 5분이 생기면 조각 단계를, 확보한 시간에는 덩어리 단계를 하시면 됩니다."),
                 source: nil))
         }
 
@@ -505,16 +531,16 @@ enum TodoSplitAdvisor {
     /// 일이 굴러가는 순서대로다 — 정하고 → 펼치고 → 몰입해서 → 바로.
     static func template(for rootTitle: String) -> [TemplateStep] {
         let name = rootTitle.trimmingCharacters(in: .whitespaces)
-        let subject = name.isEmpty ? "이 일" : name
+        let subject = name.isEmpty ? String(localized: "이 일") : name
         return [
-            TemplateStep(title: "무엇을 할지 정하기",
-                         note: "안 정해진 게 남아 있으면 아래 단계가 전부 안 열립니다."),
-            TemplateStep(title: "필요한 것 모아두기",
-                         note: "링크·자료를 펼쳐만 둡니다. 본 작업의 시동 비용을 여기서 미리 냅니다."),
-            TemplateStep(title: "\(subject) 실제로 하기",
-                         note: "끊기면 다시 올라와야 합니다. 방해 없는 시간에 두세요."),
-            TemplateStep(title: "마무리해서 보내기",
-                         note: "끝을 닫는 단계. 짬이 나면 바로 집을 수 있습니다."),
+            TemplateStep(title: String(localized: "무엇을 할지 정하기"),
+                         note: String(localized: "안 정해진 게 남아 있으면 아래 단계가 전부 안 열립니다.")),
+            TemplateStep(title: String(localized: "필요한 것 모아두기"),
+                         note: String(localized: "링크·자료를 펼쳐만 둡니다. 본 작업의 시동 비용을 여기서 미리 냅니다.")),
+            TemplateStep(title: String(localized: "\(subject) 실제로 하기"),
+                         note: String(localized: "끊기면 다시 올라와야 합니다. 방해 없는 시간에 두세요.")),
+            TemplateStep(title: String(localized: "마무리해서 보내기"),
+                         note: String(localized: "끝을 닫는 단계. 짬이 나면 바로 집을 수 있습니다.")),
         ]
     }
 

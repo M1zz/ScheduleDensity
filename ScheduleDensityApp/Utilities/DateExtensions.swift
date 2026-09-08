@@ -80,17 +80,19 @@ extension Date {
     // 날짜 포맷팅
     func formatted(_ format: String) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.locale = Locale.autoupdatingCurrent
         formatter.dateFormat = format
         return formatter.string(from: self)
     }
     
-    // 주차 표시 (예: "3월 1주차")
+    // 주차 표시 (예: "3월 1주차", "Mar, week 1")
     var weekDescription: String {
-        let month = formatted("M월")
+        // 달 이름은 형식을 손으로 적지 않는다 — 템플릿만 말하고 로케일이 낱말을 고른다.
+        let month = formatted(DateFormatter.dateFormat(fromTemplate: "MMM", options: 0,
+                                                       locale: .autoupdatingCurrent) ?? "MMM")
         let calendar = Calendar.current
         let weekOfMonth = calendar.component(.weekOfMonth, from: self)
-        return "\(month) \(weekOfMonth)주차"
+        return String(localized: "\(month) \(weekOfMonth)주차")
     }
 }
 

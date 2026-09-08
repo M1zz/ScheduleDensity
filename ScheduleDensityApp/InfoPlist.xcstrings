@@ -1,0 +1,26 @@
+{
+  "sourceLanguage": "ko",
+  "strings": {
+    "CFBundleDisplayName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rainbow of Desire"
+          }
+        }
+      }
+    },
+    "NSCalendarsUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reads your calendar events so it can measure how full your days are. The data stays on this device and is never sent anywhere."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -1,0 +1,776 @@
+{
+  "sourceLanguage": "ko",
+  "strings": {
+    "%@ 실제로 하기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actually do %@"
+          }
+        }
+      }
+    },
+    "%@짜리라 조각 안에 들어갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's %@, so it fits inside a fragment."
+          }
+        }
+      }
+    },
+    "%@짜리라 조각에 안 들어갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's %@, so it won't fit in a fragment."
+          }
+        }
+      }
+    },
+    "%@짜리입니다. 한 자리에서도 안 닫힙니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's %@. Even one sitting won't close it."
+          }
+        }
+      }
+    },
+    "%lld개 단계가 2시간을 넘습니다. 끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld steps run past two hours. Split them down to a size that closes. A half-done step drags your attention into the next hour."
+          }
+        }
+      }
+    },
+    "%lld분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
+    "%lld시간": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld h"
+          }
+        }
+      }
+    },
+    "%lld시간 %lld분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lldh %lldm"
+          }
+        }
+      }
+    },
+    "'보내기·발행하기·제출하기'처럼 끝을 닫는 단계를 마지막에 두세요. 90% 끝난 일의 마지막 10%는 조각의 가장 좋은 용도이고, 닫아두면 그 뒤의 덩어리 시간까지 깨끗해집니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Put a closing step last — send it, publish it, submit it. The final 10% of a job that's 90% done is the best possible use of a fragment, and closing it leaves the block of time after it clean."
+          }
+        }
+      }
+    },
+    "5분 안에 끝까지 가나요?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Does it run all the way through in five minutes?"
+          }
+        }
+      }
+    },
+    "5분이 생겼을 때 집을 단계가 없습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No step here can be picked up in a five-minute gap"
+          }
+        }
+      }
+    },
+    "‘%@’은(는) 한 번에 안 끝납니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "'%@' won't finish in one go"
+          }
+        }
+      }
+    },
+    "‘%@’이(가) ‘%@’보다 뒤입니다. 정해지지 않은 채 시작한 작업은 조각에서도 덩어리에서도 닫히지 않습니다. 결정 단계를 앞으로 옮기세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "'%@' comes after '%@'. Work started before the decision is made won't close in a fragment or in a block. Move the decision earlier."
+          }
+        }
+      }
+    },
+    "건너뜀": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipped"
+          }
+        }
+      }
+    },
+    "결정이 작업 뒤에 있습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A decision sits behind the work"
+          }
+        }
+      }
+    },
+    "고정 시간대": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fixed hours"
+          }
+        }
+      }
+    },
+    "글쓰기·구현·설계처럼 맥락을 다시 불러와야 하는 일은 조각 크기로 잡아두면 시동만 걸다 끝납니다. 시간을 늘리거나, 그 앞에 '준비' 조각 단계를 따로 두세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing, building, designing — work that needs its context reloaded spends a fragment-sized slot warming up and nothing more. Give it more time, or put a small setup step in front of it."
+          }
+        }
+      }
+    },
+    "끊기면 다시 올라와야 합니다. 방해 없는 시간에 두세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If it breaks, you have to climb back up. Give it undisturbed time."
+          }
+        }
+      }
+    },
+    "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unfinished work leaves residue that eats into the next block of time."
+          }
+        }
+      }
+    },
+    "끝을 닫는 단계. 짬이 나면 바로 집을 수 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The step that closes the end. Take it whenever a gap opens."
+          }
+        }
+      }
+    },
+    "끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split it further, down to a size that closes. A half-done step drags your attention into the next hour."
+          }
+        }
+      }
+    },
+    "끝이 정해져 있어 여기서 닫힙니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The end is fixed, so it closes here."
+          }
+        }
+      }
+    },
+    "끝이 정해져 있지 않아 안 닫힙니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's no fixed end, so it never closes."
+          }
+        }
+      }
+    },
+    "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It takes 23 minutes on average just to get back into it. In a fragment you'd only be warming up — give it more time, or put it in a block."
+          }
+        }
+      }
+    },
+    "달성": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Met"
+          }
+        }
+      }
+    },
+    "덩어리": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Block"
+          }
+        }
+      }
+    },
+    "덩어리입니다. 지켜 둔 시간에 두세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a block. Give it time you've set aside."
+          }
+        }
+      }
+    },
+    "링크·자료를 펼쳐만 둡니다. 본 작업의 시동 비용을 여기서 미리 냅니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Just open the links and files. You pay the real work's warm-up cost here."
+          }
+        }
+      }
+    },
+    "마무리해서 보내기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrap it up and send it"
+          }
+        }
+      }
+    },
+    "마지막을 닫는 단계가 없습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's no step that closes the end"
+          }
+        }
+      }
+    },
+    "맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Work that needs its context reloaded spends the whole fragment warming up."
+          }
+        }
+      }
+    },
+    "모든 단계가 자리를 잡아야 하는 크기입니다. 자료 모아두기·한 줄 메모처럼 조각에서 닫히는 단계를 하나 만들어두면, 흘려보내던 틈이 이 할 일에 쓰입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every step here needs you to sit down for it. Add one step that closes in a fragment — gathering links, a one-line note — and the gaps you used to let slip start going into this job."
+          }
+        }
+      }
+    },
+    "몸으로 하는 일은 나눠 해도 쌓입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Physical work adds up even when it's split."
+          }
+        }
+      }
+    },
+    "몸으로 하는 일이라 시동이 없습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's physical, so there's no warm-up."
+          }
+        }
+      }
+    },
+    "무엇을 할지 정하기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decide what to do"
+          }
+        }
+      }
+    },
+    "뭘 할지 고르는 동안 조각이 끝납니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gap is gone before you finish choosing."
+          }
+        }
+      }
+    },
+    "뭘 할지 고르는 동안 조각이 끝납니다. 결정은 덩어리에서 하고, 정해진 것만 조각 단계로 보내세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gap is gone before you finish choosing. Make decisions in a block, and send only the settled work to fragment steps."
+          }
+        }
+      }
+    },
+    "배수구": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "the drain"
+          }
+        }
+      }
+    },
+    "부분 달성": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partly met"
+          }
+        }
+      }
+    },
+    "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No time is written down, so there's no telling yet whether it closes in five minutes."
+          }
+        }
+      }
+    },
+    "시동 없이 바로 시작되나요?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Does it start with no warm-up?"
+          }
+        }
+      }
+    },
+    "심야": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Late night"
+          }
+        }
+      }
+    },
+    "심야 (23시 이후)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Late night (after 11 PM)"
+          }
+        }
+      }
+    },
+    "아침": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning"
+          }
+        }
+      }
+    },
+    "아침 (06–12시)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning (6 AM–12 PM)"
+          }
+        }
+      }
+    },
+    "안 정한 것이 먼저 막고 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something undecided is blocking it first."
+          }
+        }
+      }
+    },
+    "안 정해진 게 남아 있으면 아래 단계가 전부 안 열립니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If anything is left undecided, none of the steps below will open."
+          }
+        }
+      }
+    },
+    "앞에서 막고 있는 것이 안 보입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing seems to be blocking it."
+          }
+        }
+      }
+    },
+    "어디까지 했는지 다시 읽어 와야 시작됩니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have to reload where you left off before you can start."
+          }
+        }
+      }
+    },
+    "오후": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afternoon"
+          }
+        }
+      }
+    },
+    "오후 (12–18시)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afternoon (12–6 PM)"
+          }
+        }
+      }
+    },
+    "이 일": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "this job"
+          }
+        }
+      }
+    },
+    "이 페이지에서 가져왔습니다. 이름은 고쳐 쓸 수 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brought in from this page. You can rename it."
+          }
+        }
+      }
+    },
+    "이건 할 일이 아니라 조각이 새어 나가는 곳입니다. 단계로 두면 진행률만 부풉니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This isn't work — it's where your fragments leak away. Kept as a step, it only inflates your progress bar."
+          }
+        }
+      }
+    },
+    "저녁": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evening"
+          }
+        }
+      }
+    },
+    "저녁 (18–23시)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evening (6–11 PM)"
+          }
+        }
+      }
+    },
+    "조각": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fragment"
+          }
+        }
+      }
+    },
+    "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fragments of time don't add up into a total. Twelve five-minute gaps are not sixty minutes. So it's better to separate, from the start, the steps you can take when five minutes open up from the steps that need time you've held."
+          }
+        }
+      }
+    },
+    "조각과 덩어리가 나뉘어 있습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fragments and blocks are separated"
+          }
+        }
+      }
+    },
+    "조각에서 집을 수 있는 단계가 %lld개, 지킨 시간에 할 단계가 %lld개입니다. 5분이 생기면 조각 단계를, 확보한 시간에는 덩어리 단계를 하시면 됩니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld steps can be picked up in a fragment; %lld need time you've set aside. When five minutes open up, take a fragment; when you've held time, take a block."
+          }
+        }
+      }
+    },
+    "조각입니다. 5분이 나면 이걸 집으면 됩니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a fragment. When five minutes open up, take it."
+          }
+        }
+      }
+    },
+    "주간 쿼터 (시간 유연)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly quota (flexible hours)"
+          }
+        }
+      }
+    },
+    "직접 정한 답입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You answered this yourself."
+          }
+        }
+      }
+    },
+    "짧게 잡아 두어도 여기서 끝나지는 않습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Even with a short time set, it won't end here."
+          }
+        }
+      }
+    },
+    "짧게 잡힌 덩어리 작업이 %lld개 있습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld block-sized jobs have been given too little time"
+          }
+        }
+      }
+    },
+    "짧은 덩어리": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Short block"
+          }
+        }
+      }
+    },
+    "짧은 덩어리입니다. 앉아야 하지만 한 자리에서 끝납니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a short block. You have to sit down, but one sitting finishes it."
+          }
+        }
+      }
+    },
+    "쪼개기 전에 한 가지": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One thing before you split"
+          }
+        }
+      }
+    },
+    "추가": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "취소": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "판정 기준 3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rule 3"
+          }
+        }
+      }
+    },
+    "필요한 것 모아두기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gather what you'll need"
+          }
+        }
+      }
+    },
+    "한 번에 못 끝내는 크기입니다. 끝이 닫히도록 더 쪼개지 않으면 '하다 만 상태'가 다음 시간까지 따라옵니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is too big to finish in one go. Unless you split it down to something that closes, the half-done state follows you into the next hour."
+          }
+        }
+      }
+    },
+    "할 것이 정해져 있어 바로 손이 갑니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What to do is already settled, so you can start."
+          }
+        }
+      }
+    },
+    "할 일": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To-Do"
+          }
+        }
+      }
+    },
+    "할 일로": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To-Do"
+          }
+        }
+      }
+    },
+    "할 일을 저장하지 못했습니다. 앱을 한 번 열고 다시 시도해 주세요.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The to-do couldn't be saved. Open the app once and try again."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

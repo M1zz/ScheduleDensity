@@ -52,11 +52,11 @@ struct UsageStatsView: View {
 
     private var steadinessSection: some View {
         Section {
-            bigRow(title: "연속으로 여신 날",
+            bigRow(title: String(localized: "연속으로 여신 날"),
                    value: "\(stats.streakDays)일",
-                   note: stats.streakDays >= 2 ? "끊기지 않고 이어지는 중입니다." : "오늘부터 셉니다.")
-            row("최근 30일 중", "\(stats.activeDaysLast30)일")
-            row("쓰신 지", "\(stats.daysSinceInstall)일째")
+                   note: stats.streakDays >= 2 ? String(localized: "끊기지 않고 이어지는 중입니다.") : String(localized: "오늘부터 셉니다."))
+            row(String(localized: "최근 30일 중"), String(localized: "\(stats.activeDaysLast30)일"))
+            row(String(localized: "쓰신 지"), String(localized: "\(stats.daysSinceInstall)일째"))
         } header: {
             Text("꾸준함")
         } footer: {
@@ -72,11 +72,11 @@ struct UsageStatsView: View {
                 Text("아직 셀 것이 없습니다. 할 일을 몇 개 적으시면 여기가 채워집니다.")
                     .foregroundStyle(.secondary)
             } else {
-                bigRow(title: "쪼개신 할 일",
-                       value: "\(stats.splitCount)개",
-                       note: "적으신 \(stats.todoCount)개 중 \(percent(stats.splitRate))입니다.")
+                bigRow(title: String(localized: "쪼개신 할 일"),
+                       value: String(localized: "\(stats.splitCount)개"),
+                       note: String(localized: "적으신 \(stats.todoCount)개 중 \(percent(stats.splitRate))입니다."))
                 if stats.splitCount > 0 {
-                    row("쪼개실 때 평균", String(format: "%.1f단계", stats.averageSteps))
+                    row(String(localized: "쪼개실 때 평균"), String(format: String(localized: "%.1f단계"), stats.averageSteps))
                 }
             }
         } header: {
@@ -92,11 +92,11 @@ struct UsageStatsView: View {
                 Text("아직 셀 것이 없습니다.")
                     .foregroundStyle(.secondary)
             } else {
-                bigRow(title: "끝내신 비율",
+                bigRow(title: String(localized: "끝내신 비율"),
                        value: percent(stats.completedRate),
                        note: nil)
-                if let split = stats.splitCompletedRate { row("쪼갠 것", percent(split)) }
-                if let plain = stats.plainCompletedRate { row("안 쪼갠 것", percent(plain)) }
+                if let split = stats.splitCompletedRate { row(String(localized: "쪼갠 것"), percent(split)) }
+                if let plain = stats.plainCompletedRate { row(String(localized: "안 쪼갠 것"), percent(plain)) }
             }
         } header: {
             Text("완주율")
@@ -132,7 +132,7 @@ struct UsageStatsView: View {
                     }
                     .padding(.vertical, 2)
                 }
-                row("모두 합쳐", hours(stats.totalHours))
+                row(String(localized: "모두 합쳐"), hours(stats.totalHours))
             }
         } header: {
             Text("어디에 시간이 갔나")
@@ -216,7 +216,7 @@ struct UsageStatsView: View {
     }
 
     private func hours(_ value: Double) -> String {
-        value < 10 ? String(format: "%.1f시간", value) : "\(Int(value.rounded()))시간"
+        value < 10 ? String(format: String(localized: "%.1f시간"), value) : String(localized: "\(Int(value.rounded()))시간")
     }
 
     private func color(named name: String) -> Color {

@@ -330,13 +330,13 @@ private struct CategoryEditSheet: View {
     /// 색 동그라미는 소리로 안 읽힌다. 이름을 우리말로 적어준다.
     private func colorLabel(_ name: String) -> String {
         switch name {
-        case "red":    return "빨강"
-        case "orange": return "주황"
-        case "yellow": return "노랑"
-        case "green":  return "초록"
-        case "blue":   return "파랑"
-        case "indigo": return "남색"
-        case "purple": return "보라"
+        case "red":    return String(localized: "빨강")
+        case "orange": return String(localized: "주황")
+        case "yellow": return String(localized: "노랑")
+        case "green":  return String(localized: "초록")
+        case "blue":   return String(localized: "파랑")
+        case "indigo": return String(localized: "남색")
+        case "purple": return String(localized: "보라")
         default:       return name
         }
     }
@@ -392,10 +392,10 @@ private struct CategoryItemsView: View {
                             .foregroundStyle(.secondary)
                     }
                 } else {
-                    section("이번 주", items: thisWeek)
-                    section("지난 주에서 넘어온 것", items: carried)
-                    section("다음 주 이후", items: later)
-                    section("완료", items: done)
+                    section(String(localized: "이번 주"), items: thisWeek)
+                    section(String(localized: "지난 주에서 넘어온 것"), items: carried)
+                    section(String(localized: "다음 주 이후"), items: later)
+                    section(String(localized: "완료"), items: done)
 
                     Section {
                         HStack {
@@ -470,22 +470,24 @@ private struct CategoryItemsView: View {
     /// 완료한 것은 언제 끝냈는지, 남은 것은 어느 주의 것인지. 숫자가 커진 이유가 대개 이 둘이다.
     private func trailingText(_ item: BacklogItem) -> String {
         if item.isCompleted, let at = item.completedAt {
-            return shortDate(at) + " 완료"
+            return shortDate(at) + String(localized: " 완료")
         }
-        if item.isCompleted { return "완료" }
-        return shortDate(item.weekStartDate) + " 주"
+        if item.isCompleted { return String(localized: "완료") }
+        return shortDate(item.weekStartDate) + String(localized: " 주")
     }
 
     private func accessibilityLabel(_ item: BacklogItem, parentTitle: String?) -> String {
         var text = item.title
-        if let parentTitle { text = "\(parentTitle)의 단계, " + text }
+        if let parentTitle { text = String(localized: "\(parentTitle)의 단계, ") + text }
         return text + ", " + trailingText(item)
     }
 
     private func shortDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "M/d"
+        formatter.locale = Locale.autoupdatingCurrent
+        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
+        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
+                                                    locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
 }
