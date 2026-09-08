@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rainbow of Desire — Privacy Policy</title>
+<meta name="description" content="What Rainbow of Desire (iOS) handles, where it is stored, and what it never does." />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/privacy.html" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/privacy.html" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<main class="wrap">
+
+<p style="padding-top:28px"><a href="index.html">Back to Rainbow of Desire</a> &nbsp;·&nbsp; <a href="../privacy.html">한국어</a></p>
+
+<header style="padding:8px 0 28px">
+  <h1 style="font-size:34px; text-align:left; margin:0 0 8px">Privacy Policy</h1>
+  <p class="muted" style="margin:0">Rainbow of Desire (iOS) · Last updated: September 3, 2026</p>
+</header>
+
+<section style="border-top:1px solid var(--line); padding-top:28px">
+  <p>Rainbow of Desire (the app) is a local-first app with no server of its own. This document explains what the app handles, where it stores it, and what it does not do.</p>
+  <div class="note">
+    In short. The app does not collect or transmit personal information on its own. What you write stays on your device and in your own private iCloud database. The developer cannot reach that data. Anonymous usage statistics are sent <strong>only if you turn them on yourself in Settings</strong>, and they are off by default.
+  </div>
+</section>
+
+<section>
+  <h2>1. What is not collected</h2>
+  <p class="lead">The app does not collect any of the following.</p>
+  <ul class="plain">
+    <li>Account or contact details such as your name, email address, or phone number</li>
+    <li>Location</li>
+    <li>Advertising identifiers or tracking data</li>
+    <li>Usage analytics (except the anonymous statistics in section 6, if you turn them on)</li>
+    <li>Other data on your device, such as contacts, photos, or calendars</li>
+  </ul>
+  <p>There is no sign-up and no login.</p>
+</section>
+
+<section>
+  <h2>2. What you write</h2>
+  <p class="lead">To do its job, the app stores what you type on your device.</p>
+  <ul class="plain">
+    <li>Events (title, color, span, repeating weekdays, hours per day, importance)</li>
+    <li>To-dos and their steps (title, how it was judged, estimated time, whether it is finished, order)</li>
+    <li>To-do categories (name, color, symbol)</li>
+    <li>Anything shared in from another app (the title and the judgment you picked)</li>
+  </ul>
+  <p>This data is used only to run the app. It is never sent to the developer or given to anyone else.</p>
+</section>
+
+<section>
+  <h2>3. Where it is stored</h2>
+  <p>Everything is stored on your device through Apple&rsquo;s SwiftData. If you are signed in to iCloud, it is stored in your own private iCloud database (container iCloud.com.devkoan.ScheduleDensity) and syncs automatically between devices on the same iCloud account.</p>
+  <p>Storage and transfer through iCloud are governed by Apple&rsquo;s privacy policy. The developer cannot reach your private iCloud database.</p>
+  <p>The list shown in Home and Lock Screen widgets is written separately into an app group area on the device. That file never leaves the device. Anything shared in from another app also waits briefly in the same area until the app picks it up.</p>
+</section>
+
+<section>
+  <h2>4. When you share with someone</h2>
+  <p>If you use sharing, whoever receives the invite link you created can see that list or those events. You alone decide what is shared and with whom, and when you stop sharing they can no longer see it.</p>
+  <p>Anyone holding an invite link can join, so send it only to the people you mean to include. Sharing uses Apple&rsquo;s CloudKit sharing as-is; the developer does not hold your data in between.</p>
+</section>
+
+<section>
+  <h2>5. When you send feedback</h2>
+  <p>If you send a question or feedback to the developer from Settings, what you wrote at that moment and your app version are sent to an iCloud container the developer runs (iCloud.com.Ysoup.FeedbackHub). It is used only to answer you and to fix the app.</p>
+  <p>This happens only when you tap send yourself. Nothing is sent automatically while you use the app. If you write by email, that address is used only to reply.</p>
+</section>
+
+<section>
+  <h2>6. Anonymous usage statistics (optional, off by default)</h2>
+  <p>If you turn on <strong>Also send anonymously to the developer</strong> under Settings &gt; Usage stats, <strong>numbers only</strong> about how you use the app are sent to an iCloud container the developer runs (iCloud.com.Ysoup.FeedbackHub). This is <strong>off by default</strong>, and nothing is sent unless you turn it on.</p>
+  <p class="lead">What is sent</p>
+  <ul class="plain">
+    <li>Days opened in a row, days opened in the last 30, number of launches, days since install</li>
+    <li>Number of to-dos, number split into steps, average number of steps when splitting</li>
+    <li>Finish rates (including split and unsplit counted separately)</li>
+    <li>Number of categories, total hours written down, share held by the largest category</li>
+    <li>App version, OS version, device kind (iOS/macOS), language setting</li>
+  </ul>
+  <p class="lead">What is not sent</p>
+  <ul class="plain">
+    <li><strong>Every word you wrote</strong> — to-do titles, event names, category names</li>
+    <li>The dates and times of your events</li>
+    <li>Your name, email, Apple Account, device identifier, advertising identifier, or location</li>
+  </ul>
+  <p>Who sent it is distinguished only by a random number (UUID) created when the app was installed. That number is not tied to an Apple Account or a device identifier, cannot be matched against any other app or service, and disappears when you delete the app. Sending happens no more than once or twice a day.</p>
+  <p>You can turn it off at any time under Settings &gt; Usage stats. Sending stops immediately, and the record of which days you opened the app, kept on the device, is deleted along with it. If you want anonymous figures that were already sent to be deleted, write to the email address below.</p>
+</section>
+
+<section>
+  <h2>7. Keeping and deleting</h2>
+  <p class="lead">Data is kept until you delete it or remove the app.</p>
+  <ul class="plain">
+    <li>You can delete individual items inside the app.</li>
+    <li>Deleting the app removes the data stored on that device.</li>
+    <li>Data synced to iCloud can be managed or deleted on your device under Settings, Apple Account, iCloud, Manage Storage.</li>
+    <li>If you want feedback you sent to be deleted, write to the email address below.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. Children&rsquo;s privacy</h2>
+  <p>The app is not directed at children, and it does not knowingly collect any personal information from children.</p>
+</section>
+
+<section>
+  <h2>9. Changes to this policy</h2>
+  <p>This policy may be updated as the law or the app changes. If something important changes, it will be announced on this page and the last-updated date above will be revised.</p>
+</section>
+
+<section>
+  <h2>10. Contact</h2>
+  <p>For questions or requests about privacy, please get in touch.</p>
+  <p>Email: <a href="mailto:leeo@kakao.com">leeo@kakao.com</a></p>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 Rainbow Workshop</div>
+  <div class="fam">Rainbow of Desire (iOS) · Rainbow Workshop (macOS)</div>
+</footer>
+
+</body>
+</html>

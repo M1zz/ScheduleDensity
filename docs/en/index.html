@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rainbow of Desire — a week planner with 5-minute steps</title>
+<meta name="description" content="An iOS app where the color deepens as your events overlap. See how full the week is, and split your to-dos so there is always something you can pick up in five minutes. Guide, FAQ, privacy, contact." />
+<meta property="og:title" content="Rainbow of Desire" />
+<meta property="og:description" content="See at a glance how heavy the week is, and always have a step you can pick up in five minutes." />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a></p>
+
+<header class="hero" style="padding-top:32px">
+  <span class="badge">iOS app</span>
+  <h1>Rainbow of Desire</h1>
+  <p class="tagline">The color deepens as your events overlap. See at a glance how heavy this week is, and start with whatever you can actually pick up right now.</p>
+</header>
+
+<main class="wrap">
+
+<section>
+  <h2><span class="dot" style="background:var(--red)"></span>Rainbow — see the density, not the entries</h2>
+  <p class="lead">A calendar tells you whether something is scheduled. This shows you how much of it is stacked on top of itself.</p>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">🌈</span>
+      <h3>Darker where it overlaps</h3>
+      <p>The more that piles onto the same days, the deeper the cells go. Scrolling alone shows you which week is too much.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">📅</span>
+      <h3>The span, not just the day</h3>
+      <p>Set a start and an end, and the line runs the whole way. Days you actually work are dark; the rest stay pale — because unfinished work still holds you.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔍</span>
+      <h3>Where there is room</h3>
+      <p>It suggests the days that still have room left after the new event goes in — not simply the emptiest ones.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>To-Do — split it until something fits in five minutes</h2>
+  <p class="lead">A list that never shrinks is usually not laziness. It is that something is still in the way before you can touch it.</p>
+
+  <p>Break a large job into steps. Each step is then sorted by two questions, and two only.</p>
+
+  <table class="attrs">
+    <tr><td class="k" style="color:var(--green)">Question one</td><td class="v">Does it start with no warm-up? If you have to reload where you left off, a five-minute gap is spent warming up and nothing else.</td></tr>
+    <tr><td class="k" style="color:var(--indigo)">Question two</td><td class="v">Does it run all the way through in five minutes? Work you leave half done follows you into the next hour.</td></tr>
+  </table>
+
+  <p><b>Only a step that answers yes to both is a fragment</b> — something to take when five minutes open up. Everything else is a block, and belongs in time you have set aside. The app answers first, from the words and the time you wrote; you only step in when it is wrong.</p>
+
+  <h3 class="sub">Why it is cut this way</h3>
+  <ul class="plain">
+    <li>Twelve five-minute gaps are not an hour. Fragments of time do not add up into a total — switching costs eat the difference — so the steps that fit in a gap have to be marked apart from the start.</li>
+    <li>Getting back into deep work takes about twenty-three minutes on average. The cost is not the interruption itself but rebuilding the context.</li>
+    <li>Starting takes more force than continuing. The further the first move is from your hand, the longer it is put off.</li>
+    <li>Physical work is the exception — it still adds up when it is split, so it is not cut by size.</li>
+  </ul>
+
+  <h3 class="sub">Order, decided once per group</h3>
+  <p>Steps either wait for each other or they do not, and you decide that once for the whole group rather than wiring up dependencies one by one. <b>In order</b> stands the first unfinished step; <b>Any order</b> stands whichever fragment you could pick up now. Drag a step with a long press to move it among its siblings.</p>
+
+  <h3 class="sub">The Bolt</h3>
+  <p>Swipe a row to the right to add a Bolt — your own mark saying this one is ready right now. A bolted row jumps the queue and stands at the top, so when a gap opens you only have to look up there instead of scanning the list. Swipe again to take the mark back.</p>
+
+  <h3 class="sub">Also</h3>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">📲</span>
+      <h3>Home and Lock Screen widgets</h3>
+      <p>Three of them — To-Do, Bolt, and Rainbow. The Bolt widget lists only what you could pick up in five minutes right now.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔗</span>
+      <h3>Add from anywhere</h3>
+      <p>Share from another app and this one appears in the sheet. A small window is all it takes to turn it into a to-do.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🖥</span>
+      <h3>Follows you to the Mac</h3>
+      <p>Rainbow Workshop, the macOS app, uses the same iCloud account. Write on one side and it shows up on the other.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--purple)"></span>Sharing</h2>
+  <p class="lead">Send a link only to the people who need it.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Events (read-only)</h3>
+      <p>Send an invite link and the other person can see your events. They cannot change them.</p>
+    </div>
+    <div class="card">
+      <h3>To-dos (together)</h3>
+      <p>You and the people you invite read and write one shared list. This has nothing to do with Apple Family Sharing.</p>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:16px">Anyone holding an invite link can join, so send it only to the people you mean to include. Sharing needs an iCloud sign-in.</p>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--blue)"></span>Getting started</h2>
+  <ol class="steps">
+    <li><b>Draw an event</b><span>Press and hold an empty cell for the start day, then again for the end day. Give it a title, the weekdays you actually work on it, and the hours per day.</span></li>
+    <li><b>Write a to-do</b><span>Type on the blank line and press Return. That is the whole thing.</span></li>
+    <li><b>Split what is large</b><span>Open the row and write the steps in the order the work rolls. The app tells you which are fragments and which are blocks.</span></li>
+    <li><b>Take a fragment when five minutes open up</b><span>Whatever is ready right now stands at the top of the list. You do not have to read the rest.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--yellow)"></span>Questions people ask</h2>
+
+  <details>
+    <summary>Do I have to sign in to iCloud?</summary>
+    <p>Not to use it on your own — everything is stored on the device. You need iCloud to sync with another device or with the Mac app, and to use sharing.</p>
+  </details>
+
+  <details>
+    <summary>Is the app in my language?</summary>
+    <p>Korean and English. The app follows your device language. To set it for this app alone, go to iOS Settings, find Rainbow of Desire, and choose Language.</p>
+  </details>
+
+  <details>
+    <summary>What if the app judges a step wrong?</summary>
+    <p>Swipe that step to the left and answer the two questions yourself. Your answer outranks the app&rsquo;s guess and it stays that way. The app reads the words you wrote, so it is often wrong about someone else&rsquo;s work — that is expected.</p>
+  </details>
+
+  <details>
+    <summary>Why does a to-do with no time on it never become a fragment?</summary>
+    <p>Because nothing there says it closes in five minutes, and this list is only worth anything if what stands in it is genuinely ready. Write a time — fifteen minutes, say — and it will be sorted properly.</p>
+  </details>
+
+  <details>
+    <summary>Can I check things off in the widget?</summary>
+    <p>Not yet — the widgets are read-only. Tap one and the to-do screen opens straight away.</p>
+  </details>
+
+  <details>
+    <summary>What costs money?</summary>
+    <p>The heart of the app is free: the Rainbow, splitting to-dos, the two questions, and step order. Rainbow Pro is a single purchase, not a subscription, and it opens six extras — using it alongside the Mac, Home and Lock Screen widgets, importing from Calendar, sharing events, event stats, and the Ledger.</p>
+  </details>
+
+  <details>
+    <summary>Do I need to buy the Mac app separately?</summary>
+    <p>Rainbow Workshop is a separate macOS app. On the same iCloud account, to-dos and weekly plans carry across on their own.</p>
+  </details>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>Privacy</h2>
+  <p class="lead">There is no server. What you write stays on your device and in your own iCloud.</p>
+  <div class="note">
+    No advertising identifiers, no analytics, no location. No sign-up either.
+    The details are in the <a href="privacy.html">privacy policy</a>.
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--indigo)"></span>What changed</h2>
+  <p class="lead">Every version is written down.</p>
+  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Read the release notes</a></p>
+</section>
+
+<section>
+  <div class="contact">
+    <h2 style="margin-bottom:6px">Support</h2>
+    <p class="lead" style="margin-bottom:0">If something gets in your way or looks wrong, please say so. There is a contact item inside the app&rsquo;s Settings too.</p>
+    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 Rainbow Workshop</div>
+  <div class="fam">Rainbow of Desire (iOS) · Rainbow Workshop (macOS)</div>
+  <div class="fam"><a href="privacy.html">Privacy Policy</a> · <a href="../index.html">한국어</a></div>
+</footer>
+</body>
+</html>
