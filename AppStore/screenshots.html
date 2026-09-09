@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>App Store screenshots — en-US</title>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   App Store screenshots (English) for "Rainbow of Desire".
+
+   Authoring size: 430 x 932 CSS px  ->  rendered at deviceScaleFactor 3
+   = 1290 x 2796 px, the 6.9" iPhone size Apple accepts for every iPhone.
+
+   The phone screen inside each frame is authored at real iOS point
+   sizes (393 x 852 = iPhone 16 Pro) and scaled down, so paddings,
+   type sizes and the 40pt rainbow grid match the app 1:1.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+  --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+  --now:#2BA84A;               /* TodoView.nowGreen  hue .26 sat .72 br .66 */
+  --ink:#1c1c1e; --sub:#6b6b70; --tert:#a1a1a6;
+  --sep:#e5e5ea; --gray6:#f2f2f7; --gray5:#e5e5ea;
+  --scale:0.80;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background:#8a8a8e;
+  font-family:-apple-system, "SF Pro Text", "Helvetica Neue", Inter, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── artboard ─────────────────────────────────────────────── */
+.shot {
+  width:430px; height:932px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center;
+}
+.shot::after {                      /* soft rainbow wash at the bottom */
+  content:""; position:absolute; inset:auto 0 0 0; height:340px;
+  background:linear-gradient(180deg, transparent, var(--wash));
+  opacity:.55; pointer-events:none;
+}
+.cap { padding:52px 38px 0; text-align:center; z-index:2; }
+.cap h1 {
+  font-size:36px; line-height:1.12; letter-spacing:-0.025em; font-weight:800;
+  color:var(--capink);
+}
+.cap p {
+  margin-top:14px; font-size:17px; line-height:1.42; font-weight:500;
+  color:var(--capsub); letter-spacing:-0.01em;
+}
+.cap .kicker {
+  display:inline-block; margin-bottom:14px; font-size:12px; font-weight:700;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--kick);
+}
+
+/* ── device ───────────────────────────────────────────────── */
+.phone {
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:337px; padding:11px; border-radius:50px;
+  background:linear-gradient(160deg,#3a3a3f,#111114 30%,#141418 70%,#45454b);
+  box-shadow:0 30px 64px rgba(0,0,0,.32), 0 6px 18px rgba(0,0,0,.20);
+}
+.phone .clip {
+  width:315px; height:682px; overflow:hidden; border-radius:40px;
+  background:#fff; position:relative;
+}
+.screen {
+  width:393px; height:852px; transform:scale(var(--scale));
+  transform-origin:top left; position:relative;
+  display:flex; flex-direction:column;
+  font-size:17px; color:var(--ink); background:#fff;
+}
+
+/* ── iOS chrome ───────────────────────────────────────────── */
+.statusbar {
+  height:59px; flex:none; display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 32px 9px; font-size:15px; font-weight:600; letter-spacing:-0.01em;
+}
+.statusbar .icons { display:flex; align-items:center; gap:6px; }
+.navbar {
+  height:44px; flex:none; display:flex; align-items:center; justify-content:center;
+  padding:0 16px; position:relative; font-size:17px; font-weight:600;
+  letter-spacing:-0.02em; background:#fff;
+}
+.navbar .lead  { position:absolute; left:16px; color:var(--blue); font-weight:400; display:flex; align-items:center; gap:3px; }
+.navbar .trail { position:absolute; right:16px; color:var(--blue); display:flex; align-items:center; gap:18px; }
+.hairline { height:.5px; background:var(--sep); flex:none; }
+
+.tabbar {
+  height:83px; flex:none; display:flex; padding-top:8px;
+  background:rgba(249,249,249,.94); border-top:.5px solid var(--sep);
+  backdrop-filter:blur(20px);
+}
+.tabbar .tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  font-size:10px; font-weight:500; color:#999a9e;
+}
+.tabbar .tab.on { color:var(--blue); }
+.homebar {
+  position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+  width:140px; height:5px; border-radius:3px; background:#0c0c0e; opacity:.85;
+}
+.body { flex:1; overflow:hidden; position:relative; }
+svg { display:block; }
+</style>
+</head>
+<body>
+<div id="sheets"></div>
+<style>
+/* ── 1. rainbow density grid ──────────────────────────────── */
+.grid { padding-left:31px; }
+.gridhead { display:flex; align-items:center; padding:8px 0; background:#fff; }
+.gridhead .datecol { width:50px; text-align:center; font-size:10px; font-weight:700; color:var(--sub); }
+.gridhead .lane { width:40px; text-align:center; font-size:12px; font-weight:700; color:var(--sub); }
+.vrule { width:.5px; align-self:stretch; background:var(--sep); }
+.drow { display:flex; align-items:stretch; background:#fff; }
+.drow .datecol {
+  width:50px; padding:2px 6px 2px 0; display:flex; flex-direction:column;
+  align-items:flex-end; justify-content:center; gap:1px;
+}
+.drow .md { font-size:11px; font-weight:600; letter-spacing:-0.02em; }
+.drow .wd { font-size:9px; color:var(--sub); }
+.drow.today .datecol { background:rgba(0,122,255,.10); }
+.drow.today .md { color:var(--blue); font-weight:700; }
+.drow .wd.we { color:var(--red); }
+.cell { width:40px; height:40px; padding:2px; background:var(--gray6); }
+.drow.today .cell { background:rgba(0,122,255,.05); }
+.cell > div { width:100%; height:100%; }
+.blk { border:1.5px solid rgba(255,255,255,.6); }
+.blk.mid { border-width:0 1.5px; border-color:rgba(255,255,255,.4); }
+.pill { position:absolute; }
+.todaytag {
+  position:absolute; left:10px; font-size:9px; font-weight:700; color:#fff;
+  background:var(--blue); padding:1px 5px; border-radius:5px; letter-spacing:.02em;
+}
+.fab {
+  position:absolute; right:18px; bottom:148px; width:56px; height:56px; border-radius:28px;
+  background:var(--blue); display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 18px rgba(0,122,255,.38);
+}
+.legend {
+  position:absolute; left:0; right:0; bottom:83px; padding:9px 16px;
+  background:rgba(255,255,255,.92); border-top:.5px solid var(--sep);
+  display:flex; align-items:center; gap:10px; font-size:11px; color:var(--sub);
+  backdrop-filter:blur(12px);
+}
+.legend .sw { width:13px; height:13px; border-radius:3px; }
+
+/* ── 2. to-do list ────────────────────────────────────────── */
+.list { background:var(--gray6); height:100%; overflow:hidden; }
+.sechead {
+  padding:18px 20px 6px; font-size:13px; font-weight:400; color:var(--sub);
+  letter-spacing:-0.01em;
+}
+.card { margin:0 16px; border-radius:11px; overflow:hidden; background:#fff; }
+.row {
+  display:flex; align-items:center; gap:12px; padding:11px 14px; min-height:47px;
+  border-bottom:.5px solid var(--sep); background:#fff;
+}
+.row:last-child { border-bottom:none; }
+.row.marked { background:rgba(43,168,74,.16); }
+.row.errand { background:rgba(107,107,112,.07); }
+.row .txt { flex:1; min-width:0; }
+.row .parent { font-size:11px; color:var(--tert); margin-bottom:2px; letter-spacing:-0.01em; }
+.row .title { font-size:16px; letter-spacing:-0.02em; line-height:1.25; }
+.row .title.done { color:var(--sub); text-decoration:line-through; }
+.chev { color:#c4c4c8; flex:none; }
+.badge {
+  font-size:11px; font-weight:600; padding:2px 7px; border-radius:99px;
+  letter-spacing:-0.01em; white-space:nowrap;
+}
+.badge.today { color:#fff; background:var(--blue); }
+.badge.due   { color:var(--orange); background:rgba(255,149,0,.14); }
+.badge.bolt  { color:var(--now); background:rgba(43,168,74,.16); display:inline-flex; align-items:center; gap:3px; }
+.dot { width:10px; height:10px; border-radius:50%; flex:none; }
+.footchips { display:flex; gap:14px; padding:10px 22px 0; font-size:13px; color:var(--sub); }
+.footchips .chip { display:flex; align-items:center; gap:3px; font-weight:600; }
+.addrow { display:flex; align-items:center; gap:12px; padding:12px 14px; background:rgba(107,107,112,.07); }
+.caret { width:2px; height:20px; background:var(--blue); }
+
+/* ── 3. two questions sheet ───────────────────────────────── */
+.sheet {
+  position:absolute; left:0; right:0; bottom:0; top:64px;
+  background:var(--gray6); border-radius:14px 14px 0 0; overflow:hidden;
+  box-shadow:0 -1px 0 rgba(0,0,0,.06);
+}
+.grabber { width:36px; height:5px; border-radius:3px; background:#c9c9ce; margin:6px auto 0; }
+.qcard { margin:0 16px 14px; background:#fff; border-radius:11px; padding:16px; }
+.qtext { font-size:15px; font-weight:600; letter-spacing:-0.02em; line-height:1.3; }
+.qwhy { margin-top:6px; font-size:12px; color:var(--sub); line-height:1.42; }
+.qsrc { font-size:11px; color:var(--tert); margin-top:4px; }
+.seg {
+  margin-top:12px; display:flex; padding:2px; background:var(--gray5);
+  border-radius:9px; gap:2px;
+}
+.seg span {
+  flex:1; text-align:center; padding:6px 0; font-size:13px; font-weight:600;
+  border-radius:7px; color:var(--ink); letter-spacing:-0.01em;
+}
+.seg span.on { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+.verdict {
+  margin:0 16px 16px; padding:15px 16px; border-radius:11px;
+  background:rgba(43,168,74,.13); border:1px solid rgba(43,168,74,.26);
+}
+.verdict .vt { display:flex; align-items:center; gap:7px; font-size:15px; font-weight:700; color:var(--now); letter-spacing:-0.02em; }
+.verdict .vs { margin-top:5px; font-size:13px; color:#3d6f4a; line-height:1.4; }
+
+/* ── 4. steps detail ──────────────────────────────────────── */
+.hero { padding:16px 20px 12px; background:#fff; }
+.hero .htitle { font-size:22px; font-weight:700; letter-spacing:-0.03em; line-height:1.2; }
+.hero .hmeta { margin-top:7px; display:flex; align-items:center; gap:9px; font-size:13px; color:var(--sub); }
+.progbar { height:6px; border-radius:3px; background:var(--gray5); margin-top:12px; overflow:hidden; }
+.progbar i { display:block; height:100%; background:var(--blue); border-radius:3px; }
+.steprow { display:flex; align-items:center; gap:12px; padding:11px 14px; border-bottom:.5px solid var(--sep); }
+.steprow:last-child { border-bottom:none; }
+.steprow .st { flex:1; min-width:0; }
+.steprow .sname { font-size:16px; letter-spacing:-0.02em; }
+.steprow .sname.done { color:var(--sub); text-decoration:line-through; }
+.steprow .sreason { font-size:12px; color:var(--sub); margin-top:3px; line-height:1.35; }
+.steprow .hrs { font-size:13px; color:var(--sub); font-variant-numeric:tabular-nums; }
+.switchrow {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 14px; border-bottom:.5px solid var(--sep);
+}
+.segsmall { display:flex; padding:2px; background:var(--gray5); border-radius:8px; gap:2px; }
+.segsmall { flex:none; }
+.segsmall span { padding:4px 10px; font-size:12px; font-weight:600; border-radius:6px; white-space:nowrap; }
+.segsmall span.on { background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+.sumrow {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 14px; font-size:15px; background:#fff;
+}
+.sumrow b { font-size:17px; letter-spacing:-0.02em; }
+
+/* ── 5. widgets on the Home / Lock Screen ─────────────────── */
+.homewall {
+  height:100%; position:relative; overflow:hidden;
+  background:
+    radial-gradient(120% 80% at 18% 8%, #4a4e8f 0%, transparent 55%),
+    radial-gradient(110% 70% at 88% 26%, #8f4a70 0%, transparent 52%),
+    radial-gradient(130% 90% at 50% 100%, #23324f 0%, transparent 60%),
+    linear-gradient(170deg,#1b1d33,#101120 60%,#0b0b14);
+}
+.wgrid { padding:26px 26px 0; display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.wg {
+  border-radius:22px; padding:13px 14px; color:#fff; overflow:hidden;
+  background:rgba(255,255,255,.13); backdrop-filter:blur(24px);
+  border:.5px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 26px rgba(0,0,0,.30);
+}
+.wg.wide { grid-column:1 / -1; }
+.wg .wt { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.02em; opacity:.82; }
+.wg .wmain { margin-top:9px; font-size:15px; font-weight:600; line-height:1.25; letter-spacing:-0.02em; }
+.wg .wsub { margin-top:5px; font-size:12px; opacity:.72; line-height:1.35; }
+.wg .wline { display:flex; align-items:center; gap:7px; margin-top:8px; font-size:13px; letter-spacing:-0.01em; }
+.wg .mins { margin-left:auto; font-size:11px; opacity:.66; font-variant-numeric:tabular-nums; }
+.wgridmini { display:flex; gap:3px; margin-top:10px; }
+.wgridmini .col { display:flex; flex-direction:column; gap:3px; }
+.wgridmini .c { width:9px; height:9px; border-radius:2px; background:rgba(255,255,255,.16); }
+.lockband {
+  margin:30px 26px 0; padding:15px 16px; border-radius:20px;
+  background:rgba(255,255,255,.15); border:.5px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(24px); color:#fff;
+}
+.lockclock { text-align:center; color:#fff; padding:6px 0 0; }
+.lockclock .d { font-size:14px; font-weight:600; opacity:.8; letter-spacing:.01em; }
+.lockclock .t { font-size:74px; font-weight:600; letter-spacing:-0.03em; line-height:1.05; }
+.dial { width:52px; height:52px; flex:none; position:relative; }
+.dial .dv {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; line-height:1;
+}
+.dial .dn { font-size:17px; font-weight:700; }
+.dial .dl { font-size:8px; opacity:.7; margin-top:1px; }
+
+/* ── 6. what's free ───────────────────────────────────────── */
+.pricewrap { padding:20px 18px; background:var(--gray6); height:100%; }
+.freecard {
+  border-radius:16px; padding:18px; background:#fff;
+  border:1.5px solid rgba(43,168,74,.32);
+}
+.freecard .tag {
+  display:inline-block; font-size:11px; font-weight:800; letter-spacing:.07em;
+  color:var(--now); background:rgba(43,168,74,.14); padding:3px 9px; border-radius:99px;
+}
+.freecard h3 { font-size:19px; font-weight:700; margin-top:11px; letter-spacing:-0.03em; }
+.fline { display:flex; align-items:flex-start; gap:9px; margin-top:12px; font-size:14px; line-height:1.35; letter-spacing:-0.01em; }
+.fline .k { font-weight:600; }
+.fline .v { color:var(--sub); font-size:12.5px; margin-top:1px; }
+.procard { margin-top:16px; border-radius:16px; padding:18px; background:#fff; border:1px solid var(--sep); }
+.procard .tag2 {
+  display:inline-block; font-size:11px; font-weight:800; letter-spacing:.07em;
+  color:var(--blue); background:rgba(0,122,255,.12); padding:3px 9px; border-radius:99px;
+}
+.pgrid { display:grid; grid-template-columns:1fr 1fr; gap:9px 12px; margin-top:13px; }
+.pgrid div { display:flex; align-items:center; gap:7px; font-size:13px; color:var(--ink); letter-spacing:-0.01em; }
+.buybtn {
+  margin-top:16px; height:48px; border-radius:13px; background:var(--blue); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600;
+  letter-spacing:-0.02em;
+}
+.oncebadge { text-align:center; font-size:12px; color:var(--sub); margin-top:9px; }
+</style>
+<script>
+/* ── icons (SF-Symbol-alikes, 24x24 box) ───────────────────── */
+const P = {
+  bolt:   '<path d="M13.4 1.8 4.2 13.6a.5.5 0 0 0 .4.8h4.6l-1 7.4a.4.4 0 0 0 .74.3l9.1-11.9a.5.5 0 0 0-.4-.8h-4.5l1-7.3a.4.4 0 0 0-.74-.3z"/>',
+  gear:   '<path d="M19.14 12.94a7.1 7.1 0 0 0 .05-.94 7.1 7.1 0 0 0-.05-.94l2-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39 1a7 7 0 0 0-1.62-.94l-.36-2.54A.48.48 0 0 0 13.9 2h-3.8a.48.48 0 0 0-.47.41l-.36 2.54a7.3 7.3 0 0 0-1.62.94l-2.39-1a.48.48 0 0 0-.59.22L2.75 8.43a.48.48 0 0 0 .12.61l2 1.58a7.1 7.1 0 0 0 0 1.88l-2 1.58a.49.49 0 0 0-.12.61l1.92 3.32a.49.49 0 0 0 .59.22l2.39-1a7 7 0 0 0 1.62.94l.36 2.54a.48.48 0 0 0 .47.41h3.8a.48.48 0 0 0 .47-.41l.36-2.54a7 7 0 0 0 1.62-.94l2.39 1a.49.49 0 0 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61zM12 15.6A3.6 3.6 0 1 1 15.6 12 3.6 3.6 0 0 1 12 15.6z"/>',
+  plus:   '<path d="M12 4.6v14.8M4.6 12h14.8" stroke-width="2.3" stroke-linecap="round" fill="none"/>',
+  chevL:  '<path d="M15 5.5 8.5 12 15 18.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  chev:   '<path d="M9 5.5 15.5 12 9 18.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  check:  '<path d="M4.5 12.7 9.6 17.8 19.6 6.6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  checkFill:'<circle cx="12" cy="12" r="10"/><path d="M7.4 12.4 10.6 15.6 16.6 8.8" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+  circle: '<circle cx="12" cy="12" r="9.4" stroke-width="1.7" fill="none"/>',
+  dashed: '<circle cx="12" cy="12" r="9.4" stroke-width="1.7" fill="none" stroke-dasharray="2.6 3.2" stroke-linecap="round"/>',
+  clock:  '<circle cx="12" cy="12" r="9.4" stroke-width="1.7" fill="none"/><path d="M12 6.6V12l3.9 2.3" stroke-width="1.7" stroke-linecap="round" fill="none"/>',
+  list:   '<path d="M3.2 6.4 4.8 8 7.6 4.7M3.2 15.4 4.8 17 7.6 13.7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M10.6 6.4h10.2M10.6 15.4h10.2" stroke-width="1.8" stroke-linecap="round" fill="none"/>',
+  cal:    '<rect x="3" y="5" width="18" height="16" rx="3.2" stroke-width="1.7" fill="none"/><path d="M3 10h18M8 3v4M16 3v4" stroke-width="1.7" stroke-linecap="round" fill="none"/>',
+  share:  '<path d="M12 15.5V3.6M8.3 7.3 12 3.6l3.7 3.7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M5.6 11.4v7.4a1.6 1.6 0 0 0 1.6 1.6h9.6a1.6 1.6 0 0 0 1.6-1.6v-7.4" stroke-width="1.8" stroke-linecap="round" fill="none"/>',
+  chart:  '<path d="M4 20V11M10 20V4.6M16 20v-6.4M22 20H2" stroke-width="1.9" stroke-linecap="round" fill="none"/>',
+  lock:   '<rect x="4.6" y="10.4" width="14.8" height="10.6" rx="3" stroke-width="1.7" fill="none"/><path d="M8.2 10.4V7.8a3.8 3.8 0 0 1 7.6 0v2.6" stroke-width="1.7" stroke-linecap="round" fill="none"/>',
+};
+function ico(n, s, c, mode) {
+  const stroke = (mode === 'f') ? 'none' : c;
+  const fill   = (mode === 'f') ? c : 'none';
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}">${P[n]}</svg>`;
+}
+/** rainbow arcs — the app's tab symbol. */
+function rainbowIco(s, c) {
+  const cols = c ? [c,c,c] : ['#FF3B30','#FFCC00','#34C759'];
+  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+    <path d="M2.6 19a9.4 9.4 0 0 1 18.8 0" stroke="${cols[0]}" stroke-width="2.4"/>
+    <path d="M6.2 19a5.8 5.8 0 0 1 11.6 0"  stroke="${cols[1]}" stroke-width="2.4"/>
+    <path d="M9.8 19a2.2 2.2 0 0 1 4.4 0"   stroke="${cols[2]}" stroke-width="2.4"/></svg>`;
+}
+/** the step donut — one slice per step, filled ones in blue. */
+function donut(done, total, size, ringColor) {
+  const R = 8.4, C = 2 * Math.PI * R, span = C / total, gap = Math.min(2.0, span * 0.18);
+  let s = '';
+  for (let i = 0; i < total; i++) {
+    const col = i < done ? (ringColor || '#007AFF') : 'rgba(120,120,128,.26)';
+    s += `<circle cx="12" cy="12" r="${R}" fill="none" stroke="${col}" stroke-width="3"
+           stroke-dasharray="${span - gap} ${C - span + gap}" stroke-dashoffset="${-i * span}"/>`;
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="transform:rotate(-90deg)">${s}</svg>`;
+}
+const statusbar = (dark) => {
+  const c = dark ? '#fff' : '#000';
+  return `<div class="statusbar" style="color:${c}">
+    <span>9:41</span>
+    <span class="icons">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="${c}"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="${c}"><path d="M8 11.4 6 9a2.8 2.8 0 0 1 4 0zM8 6.2a6 6 0 0 0-4.3 1.8L2.3 6.6a8 8 0 0 1 11.4 0l-1.4 1.4A6 6 0 0 0 8 6.2zM8 2.4a9.8 9.8 0 0 0-7 2.9L-.4 3.9a11.8 11.8 0 0 1 16.8 0L15 5.3a9.8 9.8 0 0 0-7-2.9z"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.2" stroke="${c}" stroke-opacity=".4"/><rect x="2" y="2" width="15.5" height="8" rx="2" fill="${c}"/><path d="M23 4.2v3.6a2 2 0 0 0 0-3.6z" fill="${c}" fill-opacity=".5"/></svg>
+    </span></div>`;
+};
+const tabbar = (active) => `
+  <div class="tabbar">
+    <div class="tab ${active === 'todo' ? 'on' : ''}">${ico('list', 25, active === 'todo' ? '#007AFF' : '#999a9e')}<span>To-Do</span></div>
+    <div class="tab ${active === 'rainbow' ? 'on' : ''}">${rainbowIco(25, active === 'rainbow' ? '#007AFF' : '#999a9e')}<span>Rainbow</span></div>
+  </div>`;
+
+/** one artboard: caption on top, device below, bleeding off the bottom edge. */
+function shot(o) {
+  return `<div class="shot" style="background:${o.bg}; --wash:${o.wash};
+            --capink:${o.ink}; --capsub:${o.sub}; --kick:${o.kick}">
+      <div class="cap">
+        <span class="kicker">${o.kicker}</span>
+        <h1>${o.head}</h1>
+        <p>${o.sub2}</p>
+      </div>
+      <div class="phone" style="top:${o.top}px"><div class="clip"><div class="screen">${o.screen}</div></div></div>
+    </div>`;
+}
+</script>
+<script>
+/* ═══ 1. THE RAINBOW — density grid ════════════════════════════
+   Faithful to TimelineDensityView: 50pt date column, seven 40x40
+   lane cells, lane colors from RainbowPalette, start/end cells at
+   full opacity, middle days at .65, and the pale .20 span fill that
+   runs on to the deadline (SpanFillBlock).                        */
+const LANE = ['#FF3B30','#FF9500','#FFCC00','#34C759','#007AFF','#5856D6','#AF52DE'];
+const TODAY_ROW = 2, ROWS = 18;
+const EV = [
+  {lane:0, s:0,  e:6,  w:[0,1,3,5,6]},
+  {lane:1, s:2,  e:9,  w:[2,3,4,7,8,9]},
+  {lane:2, s:1,  e:1,  w:[1]},
+  {lane:2, s:8,  e:13, w:[8,9,11,13]},
+  {lane:3, s:4,  e:17, w:[4,5,6,10,11,12,16,17]},
+  {lane:4, s:6,  e:8,  w:[6,7,8]},
+  {lane:5, s:0,  e:2,  w:[0,2]},
+  {lane:5, s:12, e:15, w:[12,13,14,15]},
+  {lane:6, s:9,  e:17, w:[9,10,14,15,17]},
+];
+const WD = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function gridCell(row, lane) {
+  const ev = EV.find(e => e.lane === lane && row >= e.s && row <= e.e);
+  if (!ev) return '<div class="cell"><div></div></div>';
+  const isStart = row === ev.s, isEnd = row === ev.e;
+  const tl = isStart ? '4px' : '0', bl = isEnd ? '4px' : '0';
+  const radius = `${tl} ${tl} ${bl} ${bl}`;
+  if (ev.w.includes(row)) {
+    const op = (isStart || isEnd) ? 1 : 0.65;
+    const cls = (isStart || isEnd) ? 'blk' : 'blk mid';
+    return `<div class="cell"><div class="${cls}" style="background:${LANE[lane]};opacity:${op};border-radius:${radius}"></div></div>`;
+  }
+  return `<div class="cell"><div style="background:${LANE[lane]};opacity:.20;border-radius:${radius}"></div></div>`;
+}
+function rainbowScreen() {
+  const base = new Date(2026, 2, 2);            // Mon, Mar 2
+  let rows = '';
+  for (let r = 0; r < ROWS; r++) {
+    const d = new Date(base.getTime() + r * 864e5);
+    const dow = (d.getDay() + 6) % 7;           // 0 = Monday
+    const weekend = dow >= 5;
+    let cells = '';
+    for (let l = 0; l < 7; l++) cells += gridCell(r, l);
+    rows += `<div class="drow${r === TODAY_ROW ? ' today' : ''}">
+        <div class="datecol">
+          <span class="md">${d.getMonth() + 1}/${d.getDate()}</span>
+          <span class="wd${weekend ? ' we' : ''}">${WD[dow]}</span>
+        </div><div class="vrule"></div>${cells}
+      </div><div class="hairline"></div>`;
+  }
+  let head = '';
+  for (let l = 1; l <= 7; l++) head += `<div class="lane">${l}</div>`;
+  return `${statusbar()}
+    <div class="navbar">Schedule Density
+      <span class="trail">${ico('gear', 21, '#007AFF')}</span></div>
+    <div class="hairline"></div>
+    <div class="body">
+      <div class="grid">
+        <div class="gridhead"><div class="datecol">DATE</div><div class="vrule"></div>${head}</div>
+        <div class="hairline"></div>${rows}
+      </div>
+      <div class="legend">
+        <span class="sw" style="background:#5856D6"></span><span>Working day</span>
+        <span class="sw" style="background:#5856D6;opacity:.2"></span><span>Held until the deadline</span>
+      </div>
+      <div class="fab">${ico('plus', 26, '#fff')}</div>
+    </div>
+    ${tabbar('rainbow')}<div class="homebar"></div>`;
+}
+
+/* ═══ 2. THE LIST — what you can start right now ═══════════════ */
+function todoScreen() {
+  const boltCircle = `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
+      ${ico('circle', 23, '#2BA84A')}
+      <span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`;
+  const donutBolt = (d, t) => `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
+      ${donut(d, t, 23)}<span style="position:absolute">${ico('bolt', 10, '#2BA84A', 'f')}</span></span>`;
+  const row = (icon, parent, title, tail, cls) => `
+    <div class="row ${cls || ''}">${icon}
+      <div class="txt">${parent ? `<div class="parent">${parent}</div>` : ''}
+        <div class="title">${title}</div></div>
+      ${tail || ''}${ico('chev', 15, '#c4c4c8')}</div>`;
+
+  return `${statusbar()}
+    <div class="navbar">This Week&rsquo;s To-Dos
+      <span class="trail">${ico('share', 19, '#007AFF')}${ico('plus', 20, '#007AFF')}</span></div>
+    <div class="hairline"></div>
+    <div class="body"><div class="list">
+      <div class="sechead">Pick any of these up right now &mdash; they don&rsquo;t wait their turn.</div>
+      <div class="card">
+        ${row(boltCircle, 'Tax return', 'Photograph the receipts', '', 'marked')}
+        ${row(boltCircle, '', 'Text Dana back about Friday', '', 'marked')}
+        ${row(donutBolt(1, 4), 'Q3 report', 'Open last quarter&rsquo;s file',
+              '<span class="badge due">Fri</span>', 'marked')}
+        ${row(ico('dashed', 23, '#8e8e93'), '', 'Renew the library books', '', 'errand')}
+        ${row(ico('dashed', 23, '#8e8e93'), '', 'Water the plants', '', 'errand')}
+        ${row(donut(3, 5, 23), 'Kitchen shelf', 'Sand the cut edges',
+              '<span class="badge today">Today</span><span class="dot" style="background:#FF9500"></span>')}
+        ${row(ico('circle', 23, '#8e8e93'), '', 'Plan the trip to Busan',
+              '<span class="badge due">Mar 14</span>')}
+        ${row(donut(0, 3, 23), 'Portfolio site', 'List the projects to include', '')}
+      </div>
+      <div class="footchips">
+        <span class="chip" style="color:#2BA84A">${ico('bolt', 12, '#2BA84A', 'f')}3</span>
+        <span class="chip">${ico('dashed', 12, '#6b6b70')}2</span>
+        <span class="chip">${ico('clock', 12, '#6b6b70')}3</span>
+        <span class="chip">${ico('check', 12, '#6b6b70')}2</span>
+      </div>
+      <div class="sechead">Done &middot; 2</div>
+      <div class="card">
+        <div class="row">${ico('checkFill', 23, '#34C759', 'f')}
+          <div class="txt"><div class="title done">Book the dentist</div></div></div>
+        <div class="row">${ico('checkFill', 23, '#34C759', 'f')}
+          <div class="txt"><div class="parent">Kitchen shelf</div>
+            <div class="title done">Measure the alcove</div></div></div>
+      </div>
+    </div></div>
+    ${tabbar('todo')}<div class="homebar"></div>`;
+}
+</script>
+<script>
+/* ═══ 3. THE TWO QUESTIONS ═════════════════════════════════════
+   FragmentQuestionRows: the app answers first, you only flip what
+   it got wrong. Wording follows TodoSplitAdvisor's question text,
+   why-line and citation.                                          */
+function questionsScreen() {
+  const seg = (yes) => `<div class="seg">
+      <span class="${yes ? 'on' : ''}">Yes</span><span class="${yes ? '' : 'on'}">No</span></div>`;
+  const q = (t, why, src, yes) => `<div class="qcard">
+      <div class="qtext">${t}</div>
+      <div class="qwhy">${why}</div>
+      <div class="qsrc">${src}</div>${seg(yes)}</div>`;
+
+  return `${statusbar()}
+    <div class="navbar">Q3 report<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
+    <div class="hairline"></div>
+    <div class="body" style="background:#fff">
+      <div class="hero">
+        <div class="htitle">Q3 report</div>
+        <div class="hmeta">${ico('clock', 13, '#6b6b70')} 3 h 20 m total
+          <span style="opacity:.4">&middot;</span> 1 of 5 steps done</div>
+        <div class="progbar"><i style="width:20%"></i></div>
+      </div>
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.28)"></div>
+      <div class="sheet">
+        <div class="grabber"></div>
+        <div class="navbar" style="background:transparent">Step
+          <span class="trail" style="font-weight:600">Done</span></div>
+        <div class="qcard" style="padding:14px 16px">
+          <div style="font-size:17px;font-weight:600;letter-spacing:-.02em">Open last quarter&rsquo;s file</div>
+          <div style="margin-top:5px;font-size:13px;color:var(--sub)">Takes about 5 minutes</div>
+        </div>
+        <div class="sechead" style="padding:2px 20px 8px;text-transform:uppercase;font-size:12px;font-weight:600;letter-spacing:.04em">Can you pick this up in five minutes?</div>
+        ${q('Can you start it without a warm-up?',
+            'A step that makes you re-read the context spends the whole gap just getting going.',
+            'Mark 2008', true)}
+        ${q('Does it finish inside five minutes?',
+            'Work you leave open turns into residue and eats into the next block of time.',
+            'Leroy 2009', true)}
+        <div class="verdict">
+          <div class="vt">${ico('bolt', 15, '#2BA84A', 'f')} Both yes &mdash; this is a five-minute piece.</div>
+          <div class="vs">It moves to the top of the list and stops waiting its turn.</div>
+        </div>
+        <div style="padding:0 20px;font-size:12px;color:var(--sub);line-height:1.45">
+          The app answers both questions for you when you write the step down.
+          You only flip the ones it got wrong.</div>
+        <div style="padding:16px 20px 0;font-size:15px;color:var(--blue)">Go back to the app&rsquo;s answer</div>
+      </div>
+    </div>`;
+}
+
+/* ═══ 4. STEPS — time adds up from the bottom ══════════════════ */
+function stepsScreen() {
+  const boltPill = `<span class="badge bolt">${ico('bolt', 9, '#2BA84A', 'f')}5-min pick</span>`;
+  const step = (icon, name, extra, hrs, done) => `
+    <div class="steprow">${icon}
+      <div class="st"><div class="sname${done ? ' done' : ''}">${name}</div>
+        ${extra ? `<div class="sreason">${extra}</div>` : ''}</div>
+      <span class="hrs">${hrs}</span></div>`;
+
+  return `${statusbar()}
+    <div class="navbar"><span class="lead">${ico('chevL', 17, '#007AFF')}To-Dos</span></div>
+    <div class="hairline"></div>
+    <div class="body" style="background:var(--gray6)"><div style="height:100%;overflow:hidden">
+      <div class="hero">
+        <div class="htitle">Q3 report</div>
+        <div class="hmeta">${ico('clock', 13, '#6b6b70')} 3 h 20 m total
+          <span style="opacity:.4">&middot;</span> 1 of 5 steps done</div>
+        <div class="progbar"><i style="width:20%"></i></div>
+      </div>
+      <div class="sechead">Steps</div>
+      <div class="card">
+        <div class="switchrow">
+          <span style="font-size:15px;letter-spacing:-.02em">Do the steps wait<br>for each other?</span>
+          <div class="segsmall"><span>In order</span><span class="on">Any order</span></div>
+        </div>
+        ${step(ico('checkFill', 23, '#34C759', 'f'), 'Pull the March numbers', '', '30 m', true)}
+        ${step(`<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">${ico('circle', 23, '#2BA84A')}<span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`,
+               `Open last quarter&rsquo;s file ${boltPill}`, '', '5 m')}
+        ${step(ico('circle', 23, '#8e8e93'), 'Draft the intro section',
+               'Needs a run-up &mdash; you have to re-read last quarter first.', '1 h 30 m')}
+        ${step(ico('circle', 23, '#8e8e93'), 'Chart the regional split',
+               'Runs past five minutes, so it needs a block you set aside.', '1 h')}
+        ${step(`<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">${ico('circle', 23, '#2BA84A')}<span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`,
+               `Send it to Mina ${boltPill}`, '', '5 m')}
+      </div>
+      <div class="sechead">Time is summed from the steps, never typed in at the top.</div>
+      <div class="card"><div class="sumrow"><span>Q3 report</span><b>3 h 20 m</b></div></div>
+      <div class="sechead">Press and hold a step to drag it into a new order.</div>
+    </div></div>
+    ${tabbar('todo')}<div class="homebar"></div>`;
+}
+</script>
+<script>
+/* ═══ 5. WIDGETS — Home Screen & Lock Screen ═══════════════════ */
+function widgetScreen() {
+  const wline = (t, m) => `<div class="wline">${ico('bolt', 12, '#8CF0A6', 'f')}<span>${t}</span><span class="mins">${m}</span></div>`;
+
+  // seven days x four lanes, the same palette the grid uses
+  const ON = [[0,0],[0,1],[0,3],[1,0],[1,1],[2,1],[2,2],[2,3],[3,0],[3,2],
+              [4,0],[4,2],[4,3],[5,2],[5,3],[6,1],[6,3]];
+  let mini = '';
+  for (let c = 0; c < 7; c++) {
+    let col = '';
+    for (let r = 0; r < 4; r++) {
+      const on = ON.some(([x, y]) => x === c && y === r);
+      // one lane, one colour — the same rule the grid follows
+      col += `<div class="c" style="${on ? `background:${LANE[r * 2]};opacity:.95` : ''}"></div>`;
+    }
+    mini += `<div class="col">${col}</div>`;
+  }
+  const RAINBOW_GRAD = 'linear-gradient(150deg,#FF3B30,#FF9500 24%,#FFCC00 40%,#34C759 56%,#007AFF 72%,#5856D6 86%,#AF52DE)';
+  const appicon = (grad, label) => `<div style="text-align:center;width:60px">
+      <div style="width:60px;height:60px;border-radius:15px;background:${grad};box-shadow:0 4px 12px rgba(0,0,0,.32)"></div>
+      <div style="margin-top:6px;font-size:11px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)">${label}</div></div>`;
+  const iconRow = (icons) => `<div style="display:flex;justify-content:space-between;padding:0 26px;margin-top:22px">
+      ${icons.map(([g, l]) => appicon(g, l)).join('')}</div>`;
+
+  return `<div class="body"><div class="homewall">
+      ${statusbar(true)}
+      <div class="wgrid" style="padding-top:14px">
+        <div class="wg wide">
+          <div class="wt">${ico('bolt', 12, '#8CF0A6', 'f')} FIVE MINUTES &mdash; 3 TO PICK UP</div>
+          ${wline('Photograph the receipts', '5 m')}
+          ${wline('Open last quarter&rsquo;s file', '5 m')}
+          ${wline('Text Dana back about Friday', '2 m')}
+        </div>
+
+        <div class="wg">
+          <div class="wt">${rainbowIco(13)} RAINBOW</div>
+          <div class="wmain">Today &middot; 3 running</div>
+          <div class="wsub">4 h held &middot; 46% full</div>
+          <div class="wgridmini">${mini}</div>
+        </div>
+
+        <div class="wg">
+          <div class="wt">${ico('list', 12, '#fff')} TO-DO</div>
+          <div class="wsub" style="margin-top:9px;opacity:.6">Q3 report</div>
+          <div class="wmain" style="margin-top:2px">Open last quarter&rsquo;s file</div>
+          <div class="wline" style="opacity:.72;font-size:12px">
+            ${donut(1, 4, 14, '#fff')} step 2 of 4 &middot; 5 more</div>
+        </div>
+      </div>
+
+      ${iconRow([[RAINBOW_GRAD, 'Rainbow'],
+                 ['linear-gradient(150deg,#4d9bff,#1553c4)', 'Calendar'],
+                 ['linear-gradient(150deg,#fdfbef,#f2e9c8)', 'Notes'],
+                 ['linear-gradient(150deg,#ff5f6d,#c9184a)', 'Health']])}
+      ${iconRow([['linear-gradient(150deg,#3ddc84,#0f9d58)', 'Messages'],
+                 ['linear-gradient(150deg,#8e8e93,#48484a)', 'Settings'],
+                 ['linear-gradient(150deg,#ffd60a,#ff9f0a)', 'Photos'],
+                 ['linear-gradient(150deg,#5e5ce6,#3634a3)', 'Podcasts']])}
+      ${iconRow([['linear-gradient(150deg,#ff375f,#c9184a)', 'Music'],
+                 ['linear-gradient(150deg,#64d2ff,#0a84ff)', 'Weather'],
+                 ['linear-gradient(150deg,#a2845e,#6b4f34)', 'Files'],
+                 ['linear-gradient(150deg,#30d158,#149c3d)', 'Maps']])}
+
+      <div style="position:absolute;left:0;right:0;bottom:112px;display:flex;justify-content:center;gap:7px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#fff"></span>
+        <span style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
+      </div>
+
+      <div style="position:absolute;left:12px;right:12px;bottom:22px;border-radius:30px;
+                  background:rgba(255,255,255,.14);backdrop-filter:blur(24px);
+                  border:.5px solid rgba(255,255,255,.14);padding:12px 0;
+                  display:flex;justify-content:space-around">
+        ${['linear-gradient(150deg,#3ddc84,#0f9d58)','linear-gradient(150deg,#4d9bff,#1553c4)',
+           'linear-gradient(150deg,#ff9f0a,#e8590c)','linear-gradient(150deg,#5ac8fa,#0a84ff)']
+          .map(g => `<div style="width:56px;height:56px;border-radius:14px;background:${g};box-shadow:0 4px 12px rgba(0,0,0,.3)"></div>`).join('')}
+      </div>
+      <div class="homebar" style="background:#fff;opacity:.9"></div>
+    </div></div>`;
+}
+
+/* ═══ 6. WHAT'S FREE ═══════════════════════════════════════════ */
+function priceScreen() {
+  const f = (k, v) => `<div class="fline">${ico('check', 15, '#2BA84A')}
+      <div><span class="k">${k}</span><div class="v">${v}</div></div></div>`;
+  const p = (icon, t) => `<div>${icon}<span>${t}</span></div>`;
+
+  return `${statusbar()}
+    <div class="navbar">Unlock Everything<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
+    <div class="hairline"></div>
+    <div class="body"><div class="pricewrap">
+      <div class="freecard">
+        <span class="tag">FREE, ALWAYS</span>
+        <h3>Everything the app is actually for</h3>
+        ${f('The rainbow', 'See how densely the weeks ahead are stacked.')}
+        ${f('Splitting tasks into steps', 'Cut a task down to a size you can put a hand on.')}
+        ${f('The two questions', 'The app decides what is a five-minute piece, and says why.')}
+        ${f('Step order', 'Say once whether the steps wait for each other.')}
+      </div>
+      <div class="procard">
+        <span class="tag2">ONE PURCHASE</span>
+        <h3 style="font-size:19px;font-weight:700;margin-top:11px;letter-spacing:-0.03em">Five extras, if you want them</h3>
+        <div class="pgrid">
+          ${p(ico('bolt', 15, '#007AFF', 'f'), 'Home &amp; Lock widgets')}
+          ${p(ico('cal', 15, '#007AFF'), 'Import from Calendar')}
+          ${p(ico('share', 15, '#007AFF'), 'Share a schedule')}
+          ${p(ico('chart', 15, '#007AFF'), 'Schedule statistics')}
+          ${p(ico('clock', 15, '#007AFF'), 'Recovered-time ledger')}
+        </div>
+        <div class="buybtn">Unlock Everything</div>
+        <div class="oncebadge">One-time purchase &middot; no subscription</div>
+      </div>
+    </div></div>
+    ${tabbar('todo')}<div class="homebar"></div>`;
+}
+
+/* ═══ render the six artboards ═════════════════════════════════ */
+document.getElementById('sheets').innerHTML = [
+  shot({ kicker:'The rainbow', top:232,
+    head:'See the week<br>before it lands',
+    sub2:'Every plan takes a lane. The more they overlap, the deeper the color runs.',
+    bg:'linear-gradient(175deg,#f2f6ff 0%,#dfe8ff 100%)', wash:'rgba(0,122,255,.20)',
+    ink:'#101534', sub:'#4b5578', kick:'#007AFF', screen:rainbowScreen() }),
+
+  shot({ kicker:'The list', top:232,
+    head:'Start with what<br>you can start',
+    sub2:'Steps you can pick up right now sit at the top &mdash; they never wait their turn.',
+    bg:'linear-gradient(175deg,#f1fbf3 0%,#d9f2e0 100%)', wash:'rgba(43,168,74,.20)',
+    ink:'#0d2a17', sub:'#3f6a4e', kick:'#2BA84A', screen:todoScreen() }),
+
+  shot({ kicker:'The two questions', top:232,
+    head:'Two questions,<br>and it&rsquo;s settled',
+    sub2:'Can you start it cold? Does it close in five minutes? Both yes, and it&rsquo;s a piece.',
+    bg:'linear-gradient(175deg,#fff8ee 0%,#ffe9cf 100%)', wash:'rgba(255,149,0,.22)',
+    ink:'#3a2205', sub:'#7a5720', kick:'#E07800', screen:questionsScreen() }),
+
+  shot({ kicker:'Steps', top:232,
+    head:'Break it down.<br>Time adds itself up.',
+    sub2:'Hours live on the steps. A task&rsquo;s total is only ever the sum of its parts.',
+    bg:'linear-gradient(175deg,#f3f2ff 0%,#e0deff 100%)', wash:'rgba(88,86,214,.22)',
+    ink:'#16123d', sub:'#4d4a86', kick:'#5856D6', screen:stepsScreen() }),
+
+  shot({ kicker:'Widgets', top:232,
+    head:'Got five minutes?<br>Here&rsquo;s what fits.',
+    sub2:'On the Home and Lock Screen, the Bolt widget shows only what you can pick up now.',
+    bg:'linear-gradient(175deg,#1a1d33 0%,#0a0b14 100%)', wash:'rgba(140,240,166,.14)',
+    ink:'#ffffff', sub:'#a9adcb', kick:'#8CF0A6', screen:widgetScreen() }),
+
+  shot({ kicker:'Pricing', top:232,
+    head:'The heart of it<br>is free',
+    sub2:'The rainbow, the splitting, the two questions. One optional purchase adds the extras.',
+    bg:'linear-gradient(175deg,#f7f8fb 0%,#e8ebf2 100%)', wash:'rgba(52,199,89,.16)',
+    ink:'#14171f', sub:'#575d6b', kick:'#34C759', screen:priceScreen() }),
+].join('');
+</script>
+</body>
+</html>
