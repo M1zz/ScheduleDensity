@@ -29,29 +29,39 @@ async function loadPlaywright() {
 const { chromium } = await loadPlaywright();
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const outDir = path.join(here, 'en-US');
 const NAMES = [
   '01-rainbow', '02-list', '03-two-questions',
   '04-steps', '05-widgets', '06-free',
 ];
-
-fs.mkdirSync(outDir, { recursive: true });
+// One artboard set per App Store localisation. The Korean set uses the app's
+// own strings; the English one needs the app localised before it can ship
+// (see README). Rendering Korean needs a Hangul font on the box —
+// `apt-get install fonts-noto-cjk`.
+const LOCALES = [
+  { lang: 'en', dir: 'en-US' },
+  { lang: 'ko', dir: 'ko' },
+];
 
 const browser = await chromium.launch();
-const page = await browser.newPage({
-  viewport: { width: 430, height: 932 },
-  deviceScaleFactor: 3,
-});
-await page.goto('file://' + path.join(here, 'screenshots.html'));
-await page.waitForTimeout(400);
+for (const { lang, dir } of LOCALES) {
+  const outDir = path.join(here, dir);
+  fs.mkdirSync(outDir, { recursive: true });
 
-const shots = await page.locator('.shot').all();
-if (shots.length !== NAMES.length) {
-  throw new Error(`expected ${NAMES.length} artboards, found ${shots.length}`);
-}
-for (const [i, shot] of shots.entries()) {
-  const file = path.join(outDir, `${NAMES[i]}.png`);
-  await shot.screenshot({ path: file });
-  console.log(`${NAMES[i]}.png`);
+  const page = await browser.newPage({
+    viewport: { width: 430, height: 932 },
+    deviceScaleFactor: 3,
+  });
+  await page.goto(`file://${path.join(here, 'screenshots.html')}?lang=${lang}`);
+  await page.waitForTimeout(400);
+
+  const shots = await page.locator('.shot').all();
+  if (shots.length !== NAMES.length) {
+    throw new Error(`${lang}: expected ${NAMES.length} artboards, found ${shots.length}`);
+  }
+  for (const [i, shot] of shots.entries()) {
+    await shot.screenshot({ path: path.join(outDir, `${NAMES[i]}.png`) });
+    console.log(`${dir}/${NAMES[i]}.png`);
+  }
+  await page.close();
 }
 await browser.close();

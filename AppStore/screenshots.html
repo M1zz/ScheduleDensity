@@ -29,6 +29,20 @@ body {
   font-family:-apple-system, "SF Pro Text", "Helvetica Neue", Inter, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing:antialiased;
 }
+/* Korean set: Apple SD Gothic Neo on device, Noto Sans CJK KR when rendering
+   here (apt install fonts-noto-cjk). Hangul needs a touch more leading and
+   less negative tracking than the Latin set. */
+body.ko, body.ko .screen {
+  font-family:-apple-system, "Apple SD Gothic Neo", "Pretendard",
+              "Noto Sans CJK KR", "Noto Sans KR", sans-serif;
+}
+body.ko, body.ko .screen { word-break:keep-all; }
+/* Hangul sets taller than Latin at the same size, so the Korean caption
+   needs its own metrics to clear the device below it. */
+body.ko .cap    { padding-top:42px; }
+body.ko .cap h1 { letter-spacing:-0.02em; line-height:1.2; }
+body.ko .cap p  { line-height:1.45; }
+body.ko .row .title, body.ko .steprow .sname { line-height:1.35; }
 
 /* ── artboard ─────────────────────────────────────────────── */
 .shot {
@@ -357,8 +371,8 @@ const statusbar = (dark) => {
 };
 const tabbar = (active) => `
   <div class="tabbar">
-    <div class="tab ${active === 'todo' ? 'on' : ''}">${ico('list', 25, active === 'todo' ? '#007AFF' : '#999a9e')}<span>To-Do</span></div>
-    <div class="tab ${active === 'rainbow' ? 'on' : ''}">${rainbowIco(25, active === 'rainbow' ? '#007AFF' : '#999a9e')}<span>Rainbow</span></div>
+    <div class="tab ${active === 'todo' ? 'on' : ''}">${ico('list', 25, active === 'todo' ? '#007AFF' : '#999a9e')}<span>${S.tabs.todo}</span></div>
+    <div class="tab ${active === 'rainbow' ? 'on' : ''}">${rainbowIco(25, active === 'rainbow' ? '#007AFF' : '#999a9e')}<span>${S.tabs.rainbow}</span></div>
   </div>`;
 
 /** one artboard: caption on top, device below, bleeding off the bottom edge. */
@@ -373,6 +387,218 @@ function shot(o) {
       <div class="phone" style="top:${o.top}px"><div class="clip"><div class="screen">${o.screen}</div></div></div>
     </div>`;
 }
+</script>
+<script>
+/* ═══ copy ════════════════════════════════════════════════════
+   Both sets live here so a layout fix never lands in one language
+   only. The Korean strings are the app's own — TimelineDensityView,
+   TodoView, TodoDetailView, TodoSplitAdvisor, FragmentMark. The
+   English ones are their translation, and only exist on screen once
+   the app itself is localised (see README).
+   ───────────────────────────────────────────────────────────── */
+const STRINGS = {
+en: {
+  tabs: { todo:'To-Do', rainbow:'Rainbow' },
+  grid: {
+    title:'Schedule Density', date:'DATE',
+    wd:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    day:(m,d) => `${m}/${d}`,
+    work:'Working day', span:'Held until the deadline',
+  },
+  list: {
+    title:'This Week&rsquo;s To-Dos',
+    lede:'Pick any of these up right now &mdash; they don&rsquo;t wait their turn.',
+    rows:[
+      ['bolt',  'Tax return',      'Photograph the receipts',      ''],
+      ['bolt',  '',                'Text Dana back about Friday',  ''],
+      ['donut', 'Q3 report',       'Open last quarter&rsquo;s file','due:Fri'],
+      ['idle',  '',                'Renew the library books',      ''],
+      ['idle',  '',                'Water the plants',             ''],
+      ['step',  'Kitchen shelf',   'Sand the cut edges',           'today'],
+      ['plain', '',                'Plan the trip to Busan',       'due:Mar 14'],
+      ['step0', 'Portfolio site',  'List the projects to include', ''],
+    ],
+    todayBadge:'Today',
+    doneHead:'Done &middot; 2',
+    done:[['', 'Book the dentist'], ['Kitchen shelf', 'Measure the alcove']],
+  },
+  q: {
+    task:'Q3 report', sheet:'Step', done:'Done',
+    step:'Open last quarter&rsquo;s file', dur:'Takes about 5 minutes',
+    head:'Can you pick this up in five minutes?',
+    yes:'Yes', no:'No',
+    one:['Can you start it without a warm-up?',
+         'A step that makes you re-read the context spends the whole gap just getting going.',
+         'Mark 2008'],
+    two:['Does it finish inside five minutes?',
+         'Work you leave open turns into residue and eats into the next block of time.',
+         'Leroy 2009'],
+    verdict:'Both yes &mdash; this is a five-minute piece.',
+    verdictSub:'It moves to the top of the list and stops waiting its turn.',
+    note:'The app answers both questions for you when you write the step down. You only flip the ones it got wrong.',
+    revert:'Go back to the app&rsquo;s answer',
+  },
+  steps: {
+    back:'To-Dos', task:'Q3 report',
+    meta:['3 h 20 m total', '1 of 5 steps done'],
+    head:'Steps', order:'Do the steps wait<br>for each other?',
+    inOrder:'In order', anyOrder:'Any order', pick:'5-min pick',
+    rows:[
+      ['done', 'Pull the March numbers', '', '30 m'],
+      ['bolt', 'Open last quarter&rsquo;s file', '', '5 m'],
+      ['idle', 'Draft the intro section',
+       'Needs a run-up &mdash; you have to re-read last quarter first.', '1 h 30 m'],
+      ['idle', 'Chart the regional split',
+       'Runs past five minutes, so it needs a block you set aside.', '1 h'],
+      ['bolt', 'Send it to Mina', '', '5 m'],
+    ],
+    sumNote:'Time is summed from the steps, never typed in at the top.',
+    total:'3 h 20 m',
+    dragNote:'Press and hold a step to drag it into a new order.',
+  },
+  wg: {
+    bolt:'FIVE MINUTES &mdash; 3 TO PICK UP',
+    lines:[['Photograph the receipts','5 m'],
+           ['Open last quarter&rsquo;s file','5 m'],
+           ['Text Dana back about Friday','2 m']],
+    rainbow:'RAINBOW', today:'Today &middot; 3 running', load:'4 h held &middot; 46% full',
+    todo:'TO-DO', parent:'Q3 report', step:'Open last quarter&rsquo;s file',
+    progress:'step 2 of 4 &middot; 5 more',
+    apps:[['Rainbow','Calendar','Notes','Health'],
+          ['Messages','Settings','Photos','Podcasts'],
+          ['Music','Weather','Files','Maps']],
+  },
+  price: {
+    title:'Unlock Everything',
+    freeTag:'FREE, ALWAYS', freeHead:'Everything the app is actually for',
+    free:[['The rainbow', 'See how densely the weeks ahead are stacked.'],
+          ['Splitting tasks into steps', 'Cut a task down to a size you can put a hand on.'],
+          ['The two questions', 'The app decides what is a five-minute piece, and says why.'],
+          ['Step order', 'Say once whether the steps wait for each other.']],
+    proTag:'ONE PURCHASE', proHead:'Five extras, if you want them',
+    pro:['Home &amp; Lock widgets','Import from Calendar','Share a schedule',
+         'Schedule statistics','Recovered-time ledger'],
+    buy:'Unlock Everything', once:'One-time purchase &middot; no subscription',
+  },
+  shots:[
+    ['The rainbow', 'See the week<br>before it lands',
+     'Every plan takes a lane. The more they overlap, the deeper the color runs.'],
+    ['The list', 'Start with what<br>you can start',
+     'Steps you can pick up right now sit at the top &mdash; they never wait their turn.'],
+    ['The two questions', 'Two questions,<br>and it&rsquo;s settled',
+     'Can you start it cold? Does it close in five minutes? Both yes, and it&rsquo;s a piece.'],
+    ['Steps', 'Break it down.<br>Time adds itself up.',
+     'Hours live on the steps. A task&rsquo;s total is only ever the sum of its parts.'],
+    ['Widgets', 'Got five minutes?<br>Here&rsquo;s what fits.',
+     'On the Home and Lock Screen, the Bolt widget shows only what you can pick up now.'],
+    ['Pricing', 'The heart of it<br>is free',
+     'The rainbow, the splitting, the two questions. One optional purchase adds the extras.'],
+  ],
+},
+
+ko: {
+  tabs: { todo:'할 일', rainbow:'무지개' },
+  grid: {
+    title:'일정 밀도', date:'날짜',
+    wd:['월','화','수','목','금','토','일'],
+    day:(m,d) => `${m}/${d}`,
+    work:'하는 날', span:'종료일까지 이어짐',
+  },
+  list: {
+    title:'이번 주 할 일',
+    lede:'지금 집으면 되는 것들 &mdash; 차례를 기다리지 않습니다.',
+    rows:[
+      ['bolt',  '연말정산',        '영수증 사진 찍기',        ''],
+      ['bolt',  '',                '다나에게 금요일 답장',    ''],
+      ['donut', '3분기 보고서',    '지난 분기 파일 열기',     'due:금'],
+      ['idle',  '',                '도서관 책 연장',          ''],
+      ['idle',  '',                '화분에 물 주기',          ''],
+      ['step',  '주방 선반',       '자른 면 사포질',          'today'],
+      ['plain', '',                '부산 여행 계획',          'due:3/14'],
+      ['step0', '포트폴리오 사이트','넣을 작업 고르기',        ''],
+    ],
+    todayBadge:'오늘',
+    doneHead:'완료 · 2개',
+    done:[['', '치과 예약하기'], ['주방 선반', '벽 치수 재기']],
+  },
+  q: {
+    task:'3분기 보고서', sheet:'단계', done:'완료',
+    step:'지난 분기 파일 열기', dur:'소요시간 5분',
+    head:'이걸 5분에 집어도 되나',
+    yes:'예', no:'아니오',
+    one:['시동 없이 바로 시작되나요?',
+         '맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다.',
+         'Mark 2008'],
+    two:['5분 안에 끝까지 가나요?',
+         '끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다.',
+         'Leroy 2009'],
+    verdict:'둘 다 예 &mdash; 조각입니다.',
+    verdictSub:'목록 맨 위로 올라가고, 차례를 기다리지 않습니다.',
+    note:'적을 때 앱이 두 질문에 먼저 답해 둡니다. 틀렸을 때만 뒤집으면 됩니다.',
+    revert:'앱 판정으로 되돌리기',
+  },
+  steps: {
+    back:'할 일', task:'3분기 보고서',
+    meta:['모두 3시간 20분', '5단계 중 1개 완료'],
+    head:'세부 단계', order:'단계가 서로를<br>기다리나요?',
+    inOrder:'순서대로', anyOrder:'아무거나', pick:'5분에 집기',
+    rows:[
+      ['done', '3월 숫자 뽑기', '', '30분'],
+      ['bolt', '지난 분기 파일 열기', '', '5분'],
+      ['idle', '머리말 쓰기',
+       '지난 분기를 다시 읽어 와야 해서 시동이 필요합니다.', '1시간 30분'],
+      ['idle', '지역별 그래프 그리기',
+       '5분을 넘어서 지켜 둔 시간이 필요합니다.', '1시간'],
+      ['bolt', '미나에게 보내기', '', '5분'],
+    ],
+    sumNote:'시간은 아래에서 위로 쌓입니다. 위에서 적지 않습니다.',
+    total:'3시간 20분',
+    dragNote:'길게 눌러 끌면 순서가 바뀝니다.',
+  },
+  wg: {
+    bolt:'번개 — 5분이면 3개',
+    lines:[['영수증 사진 찍기','5분'],
+           ['지난 분기 파일 열기','5분'],
+           ['다나에게 금요일 답장','2분']],
+    rainbow:'무지개', today:'오늘 3개 · 4시간', load:'46% 차 있음',
+    todo:'할 일', parent:'3분기 보고서', step:'지난 분기 파일 열기',
+    progress:'2/4단계 · 5개 더',
+    apps:[['무지개','캘린더','메모','건강'],
+          ['메시지','설정','사진','팟캐스트'],
+          ['음악','날씨','파일','지도']],
+  },
+  price: {
+    title:'모두 열기',
+    freeTag:'언제나 무료', freeHead:'이 앱이 하는 일의 본체',
+    free:[['무지개', '앞으로 몇 주가 얼마나 차 있는지 봅니다.'],
+          ['할 일 쪼개기', '손댈 수 있는 크기가 될 때까지 단계로 자릅니다.'],
+          ['두 질문', '무엇이 조각인지 앱이 먼저 답하고, 이유를 말합니다.'],
+          ['단계 순서', '묶음마다 한 번, 서로 기다리는지 정합니다.']],
+    proTag:'모두 열기', proHead:'곁다리 다섯',
+    pro:['홈·잠금 위젯','캘린더에서 가져오기','일정 공유',
+         '일정 통계','회수 장부'],
+    buy:'모두 열기', once:'비소모성 · 평생 1회 구매',
+  },
+  shots:[
+    ['무지개', '이번 주가<br>얼마나 빡빡한지',
+     '일정마다 한 줄씩. 겹칠수록 색이 진해집니다.'],
+    ['할 일', '지금 집을 수 있는<br>것부터',
+     '바로 하면 되는 일이 맨 위에 섭니다.<br>차례를 안 기다립니다.'],
+    ['두 질문', '물음 둘이면<br>갈립니다',
+     '시동 없이 시작되나? 5분에 끝나나?<br>둘 다 &lsquo;예&rsquo;면 조각입니다.'],
+    ['단계', '쪼개면<br>시간이 쌓입니다',
+     '시간은 단계에 붙습니다.<br>할 일의 총량은 단계들의 합입니다.'],
+    ['위젯', '5분 났을 때<br>집을 것',
+     '홈·잠금 화면에서, 지금 집을 수 있는 것만 세웁니다.'],
+    ['무료와 유료', '본체는<br>값을 받지 않습니다',
+     '무지개, 쪼개기, 두 질문.<br>값을 받는 건 곁다리 다섯뿐입니다.'],
+  ],
+},
+};
+
+const LANG = new URLSearchParams(location.search).get('lang') || 'en';
+const S = STRINGS[LANG];
+document.body.classList.add(LANG);
 </script>
 <script>
 /* ═══ 1. THE RAINBOW — density grid ════════════════════════════
@@ -393,7 +619,6 @@ const EV = [
   {lane:5, s:12, e:15, w:[12,13,14,15]},
   {lane:6, s:9,  e:17, w:[9,10,14,15,17]},
 ];
-const WD = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 function gridCell(row, lane) {
   const ev = EV.find(e => e.lane === lane && row >= e.s && row <= e.e);
   if (!ev) return '<div class="cell"><div></div></div>';
@@ -408,6 +633,7 @@ function gridCell(row, lane) {
   return `<div class="cell"><div style="background:${LANE[lane]};opacity:.20;border-radius:${radius}"></div></div>`;
 }
 function rainbowScreen() {
+  const G = S.grid;
   const base = new Date(2026, 2, 2);            // Mon, Mar 2
   let rows = '';
   for (let r = 0; r < ROWS; r++) {
@@ -418,170 +644,161 @@ function rainbowScreen() {
     for (let l = 0; l < 7; l++) cells += gridCell(r, l);
     rows += `<div class="drow${r === TODAY_ROW ? ' today' : ''}">
         <div class="datecol">
-          <span class="md">${d.getMonth() + 1}/${d.getDate()}</span>
-          <span class="wd${weekend ? ' we' : ''}">${WD[dow]}</span>
+          <span class="md">${G.day(d.getMonth() + 1, d.getDate())}</span>
+          <span class="wd${weekend ? ' we' : ''}">${G.wd[dow]}</span>
         </div><div class="vrule"></div>${cells}
       </div><div class="hairline"></div>`;
   }
   let head = '';
   for (let l = 1; l <= 7; l++) head += `<div class="lane">${l}</div>`;
   return `${statusbar()}
-    <div class="navbar">Schedule Density
+    <div class="navbar">${G.title}
       <span class="trail">${ico('gear', 21, '#007AFF')}</span></div>
     <div class="hairline"></div>
     <div class="body">
       <div class="grid">
-        <div class="gridhead"><div class="datecol">DATE</div><div class="vrule"></div>${head}</div>
+        <div class="gridhead"><div class="datecol">${G.date}</div><div class="vrule"></div>${head}</div>
         <div class="hairline"></div>${rows}
       </div>
       <div class="legend">
-        <span class="sw" style="background:#5856D6"></span><span>Working day</span>
-        <span class="sw" style="background:#5856D6;opacity:.2"></span><span>Held until the deadline</span>
+        <span class="sw" style="background:#5856D6"></span><span>${G.work}</span>
+        <span class="sw" style="background:#5856D6;opacity:.2"></span><span>${G.span}</span>
       </div>
       <div class="fab">${ico('plus', 26, '#fff')}</div>
     </div>
     ${tabbar('rainbow')}<div class="homebar"></div>`;
 }
 
+/* ═══ shared row furniture ════════════════════════════════════ */
+const boltCircle = () => `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
+    ${ico('circle', 23, '#2BA84A')}<span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`;
+const donutBolt = (d, t) => `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
+    ${donut(d, t, 23)}<span style="position:absolute">${ico('bolt', 10, '#2BA84A', 'f')}</span></span>`;
+
 /* ═══ 2. THE LIST — what you can start right now ═══════════════ */
 function todoScreen() {
-  const boltCircle = `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
-      ${ico('circle', 23, '#2BA84A')}
-      <span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`;
-  const donutBolt = (d, t) => `<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">
-      ${donut(d, t, 23)}<span style="position:absolute">${ico('bolt', 10, '#2BA84A', 'f')}</span></span>`;
-  const row = (icon, parent, title, tail, cls) => `
-    <div class="row ${cls || ''}">${icon}
+  const L = S.list;
+  const MARK = {
+    bolt:  () => [boltCircle(), 'marked'],
+    donut: () => [donutBolt(1, 4), 'marked'],
+    idle:  () => [ico('dashed', 23, '#8e8e93'), 'errand'],
+    step:  () => [donut(3, 5, 23), ''],
+    step0: () => [donut(0, 3, 23), ''],
+    plain: () => [ico('circle', 23, '#8e8e93'), ''],
+  };
+  const rows = L.rows.map(([kind, parent, title, tail]) => {
+    const [icon, cls] = MARK[kind]();
+    let badges = '';
+    if (tail === 'today') badges = `<span class="badge today">${L.todayBadge}</span>
+        <span class="dot" style="background:#FF9500"></span>`;
+    else if (tail.startsWith('due:')) badges = `<span class="badge due">${tail.slice(4)}</span>`;
+    return `<div class="row ${cls}">${icon}
+        <div class="txt">${parent ? `<div class="parent">${parent}</div>` : ''}
+          <div class="title">${title}</div></div>
+        ${badges}${ico('chev', 15, '#c4c4c8')}</div>`;
+  }).join('');
+  const done = L.done.map(([parent, title]) => `
+    <div class="row">${ico('checkFill', 23, '#34C759', 'f')}
       <div class="txt">${parent ? `<div class="parent">${parent}</div>` : ''}
-        <div class="title">${title}</div></div>
-      ${tail || ''}${ico('chev', 15, '#c4c4c8')}</div>`;
+        <div class="title done">${title}</div></div></div>`).join('');
 
   return `${statusbar()}
-    <div class="navbar">This Week&rsquo;s To-Dos
+    <div class="navbar">${L.title}
       <span class="trail">${ico('share', 19, '#007AFF')}${ico('plus', 20, '#007AFF')}</span></div>
     <div class="hairline"></div>
     <div class="body"><div class="list">
-      <div class="sechead">Pick any of these up right now &mdash; they don&rsquo;t wait their turn.</div>
-      <div class="card">
-        ${row(boltCircle, 'Tax return', 'Photograph the receipts', '', 'marked')}
-        ${row(boltCircle, '', 'Text Dana back about Friday', '', 'marked')}
-        ${row(donutBolt(1, 4), 'Q3 report', 'Open last quarter&rsquo;s file',
-              '<span class="badge due">Fri</span>', 'marked')}
-        ${row(ico('dashed', 23, '#8e8e93'), '', 'Renew the library books', '', 'errand')}
-        ${row(ico('dashed', 23, '#8e8e93'), '', 'Water the plants', '', 'errand')}
-        ${row(donut(3, 5, 23), 'Kitchen shelf', 'Sand the cut edges',
-              '<span class="badge today">Today</span><span class="dot" style="background:#FF9500"></span>')}
-        ${row(ico('circle', 23, '#8e8e93'), '', 'Plan the trip to Busan',
-              '<span class="badge due">Mar 14</span>')}
-        ${row(donut(0, 3, 23), 'Portfolio site', 'List the projects to include', '')}
-      </div>
+      <div class="sechead">${L.lede}</div>
+      <div class="card">${rows}</div>
       <div class="footchips">
         <span class="chip" style="color:#2BA84A">${ico('bolt', 12, '#2BA84A', 'f')}3</span>
         <span class="chip">${ico('dashed', 12, '#6b6b70')}2</span>
         <span class="chip">${ico('clock', 12, '#6b6b70')}3</span>
         <span class="chip">${ico('check', 12, '#6b6b70')}2</span>
       </div>
-      <div class="sechead">Done &middot; 2</div>
-      <div class="card">
-        <div class="row">${ico('checkFill', 23, '#34C759', 'f')}
-          <div class="txt"><div class="title done">Book the dentist</div></div></div>
-        <div class="row">${ico('checkFill', 23, '#34C759', 'f')}
-          <div class="txt"><div class="parent">Kitchen shelf</div>
-            <div class="title done">Measure the alcove</div></div></div>
-      </div>
+      <div class="sechead">${L.doneHead}</div>
+      <div class="card">${done}</div>
     </div></div>
     ${tabbar('todo')}<div class="homebar"></div>`;
 }
-</script>
-<script>
+
 /* ═══ 3. THE TWO QUESTIONS ═════════════════════════════════════
    FragmentQuestionRows: the app answers first, you only flip what
-   it got wrong. Wording follows TodoSplitAdvisor's question text,
-   why-line and citation.                                          */
+   it got wrong. Question text, why-line and citation all come from
+   TodoSplitAdvisor.                                               */
 function questionsScreen() {
-  const seg = (yes) => `<div class="seg">
-      <span class="${yes ? 'on' : ''}">Yes</span><span class="${yes ? '' : 'on'}">No</span></div>`;
-  const q = (t, why, src, yes) => `<div class="qcard">
-      <div class="qtext">${t}</div>
-      <div class="qwhy">${why}</div>
-      <div class="qsrc">${src}</div>${seg(yes)}</div>`;
+  const Q = S.q;
+  const seg = () => `<div class="seg"><span class="on">${Q.yes}</span><span>${Q.no}</span></div>`;
+  const card = ([t, why, src]) => `<div class="qcard">
+      <div class="qtext">${t}</div><div class="qwhy">${why}</div>
+      <div class="qsrc">${src}</div>${seg()}</div>`;
 
   return `${statusbar()}
-    <div class="navbar">Q3 report<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
+    <div class="navbar">${Q.task}<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
     <div class="hairline"></div>
     <div class="body" style="background:#fff">
       <div class="hero">
-        <div class="htitle">Q3 report</div>
-        <div class="hmeta">${ico('clock', 13, '#6b6b70')} 3 h 20 m total
-          <span style="opacity:.4">&middot;</span> 1 of 5 steps done</div>
+        <div class="htitle">${Q.task}</div>
+        <div class="hmeta">${ico('clock', 13, '#6b6b70')} ${S.steps.meta[0]}
+          <span style="opacity:.4">&middot;</span> ${S.steps.meta[1]}</div>
         <div class="progbar"><i style="width:20%"></i></div>
       </div>
       <div style="position:absolute;inset:0;background:rgba(0,0,0,.28)"></div>
       <div class="sheet">
         <div class="grabber"></div>
-        <div class="navbar" style="background:transparent">Step
-          <span class="trail" style="font-weight:600">Done</span></div>
+        <div class="navbar" style="background:transparent">${Q.sheet}
+          <span class="trail" style="font-weight:600">${Q.done}</span></div>
         <div class="qcard" style="padding:14px 16px">
-          <div style="font-size:17px;font-weight:600;letter-spacing:-.02em">Open last quarter&rsquo;s file</div>
-          <div style="margin-top:5px;font-size:13px;color:var(--sub)">Takes about 5 minutes</div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-.02em">${Q.step}</div>
+          <div style="margin-top:5px;font-size:13px;color:var(--sub)">${Q.dur}</div>
         </div>
-        <div class="sechead" style="padding:2px 20px 8px;text-transform:uppercase;font-size:12px;font-weight:600;letter-spacing:.04em">Can you pick this up in five minutes?</div>
-        ${q('Can you start it without a warm-up?',
-            'A step that makes you re-read the context spends the whole gap just getting going.',
-            'Mark 2008', true)}
-        ${q('Does it finish inside five minutes?',
-            'Work you leave open turns into residue and eats into the next block of time.',
-            'Leroy 2009', true)}
+        <div class="sechead" style="padding:2px 20px 8px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase">${Q.head}</div>
+        ${card(Q.one)}${card(Q.two)}
         <div class="verdict">
-          <div class="vt">${ico('bolt', 15, '#2BA84A', 'f')} Both yes &mdash; this is a five-minute piece.</div>
-          <div class="vs">It moves to the top of the list and stops waiting its turn.</div>
+          <div class="vt">${ico('bolt', 15, '#2BA84A', 'f')} ${Q.verdict}</div>
+          <div class="vs">${Q.verdictSub}</div>
         </div>
-        <div style="padding:0 20px;font-size:12px;color:var(--sub);line-height:1.45">
-          The app answers both questions for you when you write the step down.
-          You only flip the ones it got wrong.</div>
-        <div style="padding:16px 20px 0;font-size:15px;color:var(--blue)">Go back to the app&rsquo;s answer</div>
+        <div style="padding:0 20px;font-size:12px;color:var(--sub);line-height:1.45">${Q.note}</div>
+        <div style="padding:16px 20px 0;font-size:15px;color:var(--blue)">${Q.revert}</div>
       </div>
     </div>`;
 }
 
 /* ═══ 4. STEPS — time adds up from the bottom ══════════════════ */
 function stepsScreen() {
-  const boltPill = `<span class="badge bolt">${ico('bolt', 9, '#2BA84A', 'f')}5-min pick</span>`;
-  const step = (icon, name, extra, hrs, done) => `
-    <div class="steprow">${icon}
-      <div class="st"><div class="sname${done ? ' done' : ''}">${name}</div>
-        ${extra ? `<div class="sreason">${extra}</div>` : ''}</div>
-      <span class="hrs">${hrs}</span></div>`;
+  const T = S.steps;
+  const pill = `<span class="badge bolt">${ico('bolt', 9, '#2BA84A', 'f')}${T.pick}</span>`;
+  const ICON = {
+    done: () => ico('checkFill', 23, '#34C759', 'f'),
+    bolt: () => boltCircle(),
+    idle: () => ico('circle', 23, '#8e8e93'),
+  };
+  const rows = T.rows.map(([kind, name, reason, hrs]) => `
+    <div class="steprow">${ICON[kind]()}
+      <div class="st">
+        <div class="sname${kind === 'done' ? ' done' : ''}">${name}${kind === 'bolt' ? ' ' + pill : ''}</div>
+        ${reason ? `<div class="sreason">${reason}</div>` : ''}</div>
+      <span class="hrs">${hrs}</span></div>`).join('');
 
   return `${statusbar()}
-    <div class="navbar"><span class="lead">${ico('chevL', 17, '#007AFF')}To-Dos</span></div>
+    <div class="navbar"><span class="lead">${ico('chevL', 17, '#007AFF')}${T.back}</span></div>
     <div class="hairline"></div>
     <div class="body" style="background:var(--gray6)"><div style="height:100%;overflow:hidden">
       <div class="hero">
-        <div class="htitle">Q3 report</div>
-        <div class="hmeta">${ico('clock', 13, '#6b6b70')} 3 h 20 m total
-          <span style="opacity:.4">&middot;</span> 1 of 5 steps done</div>
+        <div class="htitle">${T.task}</div>
+        <div class="hmeta">${ico('clock', 13, '#6b6b70')} ${T.meta[0]}
+          <span style="opacity:.4">&middot;</span> ${T.meta[1]}</div>
         <div class="progbar"><i style="width:20%"></i></div>
       </div>
-      <div class="sechead">Steps</div>
+      <div class="sechead">${T.head}</div>
       <div class="card">
         <div class="switchrow">
-          <span style="font-size:15px;letter-spacing:-.02em">Do the steps wait<br>for each other?</span>
-          <div class="segsmall"><span>In order</span><span class="on">Any order</span></div>
-        </div>
-        ${step(ico('checkFill', 23, '#34C759', 'f'), 'Pull the March numbers', '', '30 m', true)}
-        ${step(`<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">${ico('circle', 23, '#2BA84A')}<span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`,
-               `Open last quarter&rsquo;s file ${boltPill}`, '', '5 m')}
-        ${step(ico('circle', 23, '#8e8e93'), 'Draft the intro section',
-               'Needs a run-up &mdash; you have to re-read last quarter first.', '1 h 30 m')}
-        ${step(ico('circle', 23, '#8e8e93'), 'Chart the regional split',
-               'Runs past five minutes, so it needs a block you set aside.', '1 h')}
-        ${step(`<span style="position:relative;display:flex;width:23px;height:23px;align-items:center;justify-content:center">${ico('circle', 23, '#2BA84A')}<span style="position:absolute">${ico('bolt', 11, '#2BA84A', 'f')}</span></span>`,
-               `Send it to Mina ${boltPill}`, '', '5 m')}
+          <span style="font-size:15px;letter-spacing:-.02em">${T.order}</span>
+          <div class="segsmall"><span>${T.inOrder}</span><span class="on">${T.anyOrder}</span></div>
+        </div>${rows}
       </div>
-      <div class="sechead">Time is summed from the steps, never typed in at the top.</div>
-      <div class="card"><div class="sumrow"><span>Q3 report</span><b>3 h 20 m</b></div></div>
-      <div class="sechead">Press and hold a step to drag it into a new order.</div>
+      <div class="sechead">${T.sumNote}</div>
+      <div class="card"><div class="sumrow"><span>${T.task}</span><b>${T.total}</b></div></div>
+      <div class="sechead">${T.dragNote}</div>
     </div></div>
     ${tabbar('todo')}<div class="homebar"></div>`;
 }
@@ -589,9 +806,10 @@ function stepsScreen() {
 <script>
 /* ═══ 5. WIDGETS — Home Screen & Lock Screen ═══════════════════ */
 function widgetScreen() {
+  const W = S.wg;
   const wline = (t, m) => `<div class="wline">${ico('bolt', 12, '#8CF0A6', 'f')}<span>${t}</span><span class="mins">${m}</span></div>`;
 
-  // seven days x four lanes, the same palette the grid uses
+  // seven days x four lanes, one lane one colour — the grid's own rule
   const ON = [[0,0],[0,1],[0,3],[1,0],[1,1],[2,1],[2,2],[2,3],[3,0],[3,2],
               [4,0],[4,2],[4,3],[5,2],[5,3],[6,1],[6,3]];
   let mini = '';
@@ -599,62 +817,51 @@ function widgetScreen() {
     let col = '';
     for (let r = 0; r < 4; r++) {
       const on = ON.some(([x, y]) => x === c && y === r);
-      // one lane, one colour — the same rule the grid follows
       col += `<div class="c" style="${on ? `background:${LANE[r * 2]};opacity:.95` : ''}"></div>`;
     }
     mini += `<div class="col">${col}</div>`;
   }
   const RAINBOW_GRAD = 'linear-gradient(150deg,#FF3B30,#FF9500 24%,#FFCC00 40%,#34C759 56%,#007AFF 72%,#5856D6 86%,#AF52DE)';
-  const appicon = (grad, label) => `<div style="text-align:center;width:60px">
-      <div style="width:60px;height:60px;border-radius:15px;background:${grad};box-shadow:0 4px 12px rgba(0,0,0,.32)"></div>
-      <div style="margin-top:6px;font-size:11px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)">${label}</div></div>`;
-  const iconRow = (icons) => `<div style="display:flex;justify-content:space-between;padding:0 26px;margin-top:22px">
-      ${icons.map(([g, l]) => appicon(g, l)).join('')}</div>`;
+  const GRADS = [
+    [RAINBOW_GRAD, 'linear-gradient(150deg,#4d9bff,#1553c4)',
+     'linear-gradient(150deg,#fdfbef,#f2e9c8)', 'linear-gradient(150deg,#ff5f6d,#c9184a)'],
+    ['linear-gradient(150deg,#3ddc84,#0f9d58)', 'linear-gradient(150deg,#8e8e93,#48484a)',
+     'linear-gradient(150deg,#ffd60a,#ff9f0a)', 'linear-gradient(150deg,#5e5ce6,#3634a3)'],
+    ['linear-gradient(150deg,#ff375f,#c9184a)', 'linear-gradient(150deg,#64d2ff,#0a84ff)',
+     'linear-gradient(150deg,#a2845e,#6b4f34)', 'linear-gradient(150deg,#30d158,#149c3d)'],
+  ];
+  const iconRow = (i) => `<div style="display:flex;justify-content:space-between;padding:0 26px;margin-top:22px">
+      ${W.apps[i].map((label, j) => `<div style="text-align:center;width:60px">
+        <div style="width:60px;height:60px;border-radius:15px;background:${GRADS[i][j]};box-shadow:0 4px 12px rgba(0,0,0,.32)"></div>
+        <div style="margin-top:6px;font-size:11px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)">${label}</div></div>`).join('')}
+    </div>`;
 
   return `<div class="body"><div class="homewall">
       ${statusbar(true)}
       <div class="wgrid" style="padding-top:14px">
         <div class="wg wide">
-          <div class="wt">${ico('bolt', 12, '#8CF0A6', 'f')} FIVE MINUTES &mdash; 3 TO PICK UP</div>
-          ${wline('Photograph the receipts', '5 m')}
-          ${wline('Open last quarter&rsquo;s file', '5 m')}
-          ${wline('Text Dana back about Friday', '2 m')}
+          <div class="wt">${ico('bolt', 12, '#8CF0A6', 'f')} ${W.bolt}</div>
+          ${W.lines.map(([t, m]) => wline(t, m)).join('')}
         </div>
-
         <div class="wg">
-          <div class="wt">${rainbowIco(13)} RAINBOW</div>
-          <div class="wmain">Today &middot; 3 running</div>
-          <div class="wsub">4 h held &middot; 46% full</div>
+          <div class="wt">${rainbowIco(13)} ${W.rainbow}</div>
+          <div class="wmain">${W.today}</div>
+          <div class="wsub">${W.load}</div>
           <div class="wgridmini">${mini}</div>
         </div>
-
         <div class="wg">
-          <div class="wt">${ico('list', 12, '#fff')} TO-DO</div>
-          <div class="wsub" style="margin-top:9px;opacity:.6">Q3 report</div>
-          <div class="wmain" style="margin-top:2px">Open last quarter&rsquo;s file</div>
+          <div class="wt">${ico('list', 12, '#fff')} ${W.todo}</div>
+          <div class="wsub" style="margin-top:9px;opacity:.6">${W.parent}</div>
+          <div class="wmain" style="margin-top:2px">${W.step}</div>
           <div class="wline" style="opacity:.72;font-size:12px">
-            ${donut(1, 4, 14, '#fff')} step 2 of 4 &middot; 5 more</div>
+            ${donut(1, 4, 14, '#fff')} ${W.progress}</div>
         </div>
       </div>
-
-      ${iconRow([[RAINBOW_GRAD, 'Rainbow'],
-                 ['linear-gradient(150deg,#4d9bff,#1553c4)', 'Calendar'],
-                 ['linear-gradient(150deg,#fdfbef,#f2e9c8)', 'Notes'],
-                 ['linear-gradient(150deg,#ff5f6d,#c9184a)', 'Health']])}
-      ${iconRow([['linear-gradient(150deg,#3ddc84,#0f9d58)', 'Messages'],
-                 ['linear-gradient(150deg,#8e8e93,#48484a)', 'Settings'],
-                 ['linear-gradient(150deg,#ffd60a,#ff9f0a)', 'Photos'],
-                 ['linear-gradient(150deg,#5e5ce6,#3634a3)', 'Podcasts']])}
-      ${iconRow([['linear-gradient(150deg,#ff375f,#c9184a)', 'Music'],
-                 ['linear-gradient(150deg,#64d2ff,#0a84ff)', 'Weather'],
-                 ['linear-gradient(150deg,#a2845e,#6b4f34)', 'Files'],
-                 ['linear-gradient(150deg,#30d158,#149c3d)', 'Maps']])}
-
+      ${iconRow(0)}${iconRow(1)}${iconRow(2)}
       <div style="position:absolute;left:0;right:0;bottom:112px;display:flex;justify-content:center;gap:7px">
         <span style="width:7px;height:7px;border-radius:50%;background:#fff"></span>
         <span style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
       </div>
-
       <div style="position:absolute;left:12px;right:12px;bottom:22px;border-radius:30px;
                   background:rgba(255,255,255,.14);backdrop-filter:blur(24px);
                   border:.5px solid rgba(255,255,255,.14);padding:12px 0;
@@ -669,77 +876,50 @@ function widgetScreen() {
 
 /* ═══ 6. WHAT'S FREE ═══════════════════════════════════════════ */
 function priceScreen() {
-  const f = (k, v) => `<div class="fline">${ico('check', 15, '#2BA84A')}
-      <div><span class="k">${k}</span><div class="v">${v}</div></div></div>`;
-  const p = (icon, t) => `<div>${icon}<span>${t}</span></div>`;
+  const P = S.price;
+  const PRO_ICONS = [['bolt', 'f'], ['cal', ''], ['share', ''], ['chart', ''], ['clock', '']];
+  const free = P.free.map(([k, v]) => `<div class="fline">${ico('check', 15, '#2BA84A')}
+      <div><span class="k">${k}</span><div class="v">${v}</div></div></div>`).join('');
+  const pro = P.pro.map((t, i) => `<div>${ico(PRO_ICONS[i][0], 15, '#007AFF', PRO_ICONS[i][1])}<span>${t}</span></div>`).join('');
 
   return `${statusbar()}
-    <div class="navbar">Unlock Everything<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
+    <div class="navbar">${P.title}<span class="lead">${ico('chevL', 17, '#007AFF')}</span></div>
     <div class="hairline"></div>
     <div class="body"><div class="pricewrap">
       <div class="freecard">
-        <span class="tag">FREE, ALWAYS</span>
-        <h3>Everything the app is actually for</h3>
-        ${f('The rainbow', 'See how densely the weeks ahead are stacked.')}
-        ${f('Splitting tasks into steps', 'Cut a task down to a size you can put a hand on.')}
-        ${f('The two questions', 'The app decides what is a five-minute piece, and says why.')}
-        ${f('Step order', 'Say once whether the steps wait for each other.')}
+        <span class="tag">${P.freeTag}</span>
+        <h3>${P.freeHead}</h3>${free}
       </div>
       <div class="procard">
-        <span class="tag2">ONE PURCHASE</span>
-        <h3 style="font-size:19px;font-weight:700;margin-top:11px;letter-spacing:-0.03em">Five extras, if you want them</h3>
-        <div class="pgrid">
-          ${p(ico('bolt', 15, '#007AFF', 'f'), 'Home &amp; Lock widgets')}
-          ${p(ico('cal', 15, '#007AFF'), 'Import from Calendar')}
-          ${p(ico('share', 15, '#007AFF'), 'Share a schedule')}
-          ${p(ico('chart', 15, '#007AFF'), 'Schedule statistics')}
-          ${p(ico('clock', 15, '#007AFF'), 'Recovered-time ledger')}
-        </div>
-        <div class="buybtn">Unlock Everything</div>
-        <div class="oncebadge">One-time purchase &middot; no subscription</div>
+        <span class="tag2">${P.proTag}</span>
+        <h3 style="font-size:19px;font-weight:700;margin-top:11px;letter-spacing:-0.03em">${P.proHead}</h3>
+        <div class="pgrid">${pro}</div>
+        <div class="buybtn">${P.buy}</div>
+        <div class="oncebadge">${P.once}</div>
       </div>
     </div></div>
     ${tabbar('todo')}<div class="homebar"></div>`;
 }
 
 /* ═══ render the six artboards ═════════════════════════════════ */
-document.getElementById('sheets').innerHTML = [
-  shot({ kicker:'The rainbow', top:232,
-    head:'See the week<br>before it lands',
-    sub2:'Every plan takes a lane. The more they overlap, the deeper the color runs.',
-    bg:'linear-gradient(175deg,#f2f6ff 0%,#dfe8ff 100%)', wash:'rgba(0,122,255,.20)',
-    ink:'#101534', sub:'#4b5578', kick:'#007AFF', screen:rainbowScreen() }),
-
-  shot({ kicker:'The list', top:232,
-    head:'Start with what<br>you can start',
-    sub2:'Steps you can pick up right now sit at the top &mdash; they never wait their turn.',
-    bg:'linear-gradient(175deg,#f1fbf3 0%,#d9f2e0 100%)', wash:'rgba(43,168,74,.20)',
-    ink:'#0d2a17', sub:'#3f6a4e', kick:'#2BA84A', screen:todoScreen() }),
-
-  shot({ kicker:'The two questions', top:232,
-    head:'Two questions,<br>and it&rsquo;s settled',
-    sub2:'Can you start it cold? Does it close in five minutes? Both yes, and it&rsquo;s a piece.',
-    bg:'linear-gradient(175deg,#fff8ee 0%,#ffe9cf 100%)', wash:'rgba(255,149,0,.22)',
-    ink:'#3a2205', sub:'#7a5720', kick:'#E07800', screen:questionsScreen() }),
-
-  shot({ kicker:'Steps', top:232,
-    head:'Break it down.<br>Time adds itself up.',
-    sub2:'Hours live on the steps. A task&rsquo;s total is only ever the sum of its parts.',
-    bg:'linear-gradient(175deg,#f3f2ff 0%,#e0deff 100%)', wash:'rgba(88,86,214,.22)',
-    ink:'#16123d', sub:'#4d4a86', kick:'#5856D6', screen:stepsScreen() }),
-
-  shot({ kicker:'Widgets', top:232,
-    head:'Got five minutes?<br>Here&rsquo;s what fits.',
-    sub2:'On the Home and Lock Screen, the Bolt widget shows only what you can pick up now.',
-    bg:'linear-gradient(175deg,#1a1d33 0%,#0a0b14 100%)', wash:'rgba(140,240,166,.14)',
-    ink:'#ffffff', sub:'#a9adcb', kick:'#8CF0A6', screen:widgetScreen() }),
-
-  shot({ kicker:'Pricing', top:232,
-    head:'The heart of it<br>is free',
-    sub2:'The rainbow, the splitting, the two questions. One optional purchase adds the extras.',
-    bg:'linear-gradient(175deg,#f7f8fb 0%,#e8ebf2 100%)', wash:'rgba(52,199,89,.16)',
-    ink:'#14171f', sub:'#575d6b', kick:'#34C759', screen:priceScreen() }),
-].join('');
+const SKINS = [
+  { bg:'linear-gradient(175deg,#f2f6ff 0%,#dfe8ff 100%)', wash:'rgba(0,122,255,.20)',
+    ink:'#101534', sub:'#4b5578', kick:'#007AFF', screen:rainbowScreen },
+  { bg:'linear-gradient(175deg,#f1fbf3 0%,#d9f2e0 100%)', wash:'rgba(43,168,74,.20)',
+    ink:'#0d2a17', sub:'#3f6a4e', kick:'#2BA84A', screen:todoScreen },
+  { bg:'linear-gradient(175deg,#fff8ee 0%,#ffe9cf 100%)', wash:'rgba(255,149,0,.22)',
+    ink:'#3a2205', sub:'#7a5720', kick:'#E07800', screen:questionsScreen },
+  { bg:'linear-gradient(175deg,#f3f2ff 0%,#e0deff 100%)', wash:'rgba(88,86,214,.22)',
+    ink:'#16123d', sub:'#4d4a86', kick:'#5856D6', screen:stepsScreen },
+  { bg:'linear-gradient(175deg,#1a1d33 0%,#0a0b14 100%)', wash:'rgba(140,240,166,.14)',
+    ink:'#ffffff', sub:'#a9adcb', kick:'#8CF0A6', screen:widgetScreen },
+  { bg:'linear-gradient(175deg,#f7f8fb 0%,#e8ebf2 100%)', wash:'rgba(52,199,89,.16)',
+    ink:'#14171f', sub:'#575d6b', kick:'#34C759', screen:priceScreen },
+];
+document.getElementById('sheets').innerHTML = SKINS.map((skin, i) => {
+  const [kicker, head, sub2] = S.shots[i];
+  return shot({ ...skin, kicker, head, sub2, top:232, screen:skin.screen() });
+}).join('');
 </script>
 </body>
 </html>
