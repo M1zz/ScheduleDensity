@@ -21,7 +21,9 @@
   --now:#2BA84A;               /* TodoView.nowGreen  hue .26 sat .72 br .66 */
   --ink:#1c1c1e; --sub:#6b6b70; --tert:#a1a1a6;
   --sep:#e5e5ea; --gray6:#f2f2f7; --gray5:#e5e5ea;
-  --scale:0.80;
+  /* filled in by fitLayout() once the captions have been measured */
+  --shotW:430px; --shotH:932px; --scale:0.80;
+  --phoneW:337px; --clipW:315px; --clipH:682px; --radPhone:50px; --radClip:40px;
 }
 * { box-sizing:border-box; margin:0; padding:0; }
 body {
@@ -46,7 +48,7 @@ body.ko .row .title, body.ko .steprow .sname { line-height:1.35; }
 
 /* ── artboard ─────────────────────────────────────────────── */
 .shot {
-  width:430px; height:932px; position:relative; overflow:hidden;
+  width:var(--shotW); height:var(--shotH); position:relative; overflow:hidden;
   display:flex; flex-direction:column; align-items:center;
 }
 .shot::after {                      /* soft rainbow wash at the bottom */
@@ -71,12 +73,12 @@ body.ko .row .title, body.ko .steprow .sname { line-height:1.35; }
 /* ── device ───────────────────────────────────────────────── */
 .phone {
   position:absolute; left:50%; transform:translateX(-50%);
-  width:337px; padding:11px; border-radius:50px;
+  width:var(--phoneW); padding:11px; border-radius:var(--radPhone);
   background:linear-gradient(160deg,#3a3a3f,#111114 30%,#141418 70%,#45454b);
   box-shadow:0 30px 64px rgba(0,0,0,.32), 0 6px 18px rgba(0,0,0,.20);
 }
 .phone .clip {
-  width:315px; height:682px; overflow:hidden; border-radius:40px;
+  width:var(--clipW); height:var(--clipH); overflow:hidden; border-radius:var(--radClip);
   background:#fff; position:relative;
 }
 .screen {
@@ -384,7 +386,7 @@ function shot(o) {
         <h1>${o.head}</h1>
         <p>${o.sub2}</p>
       </div>
-      <div class="phone" style="top:${o.top}px"><div class="clip"><div class="screen">${o.screen}</div></div></div>
+      <div class="phone"><div class="clip"><div class="screen">${o.screen}</div></div></div>
     </div>`;
 }
 </script>
@@ -918,8 +920,53 @@ const SKINS = [
 ];
 document.getElementById('sheets').innerHTML = SKINS.map((skin, i) => {
   const [kicker, head, sub2] = S.shots[i];
-  return shot({ ...skin, kicker, head, sub2, top:232, screen:skin.screen() });
+  return shot({ ...skin, kicker, head, sub2, screen:skin.screen() });
 }).join('');
+
+/* ═══ fit the device to the artboard ═══════════════════════════
+   App Store Connect wants a different pixel size per display slot,
+   and Hangul captions set taller than Latin ones, so neither the
+   artboard nor the caption height is a constant. Measure the tallest
+   caption of the six, park every device the same distance below it,
+   and scale the 393x852 screen to whatever height is left. One pass,
+   after layout — so a size or a language can change without anyone
+   re-deriving these numbers by hand.
+   ───────────────────────────────────────────────────────────── */
+const SIZES = {
+  // slot                        CSS px  (x3 = the pixels Apple asks for)
+  '1290x2796': { w:430, h:932 }, // 6.9"  iPhone 17 Pro Max / 16 Pro Max
+  '1284x2778': { w:428, h:926 }, // 6.5"/6.7"  iPhone 14 Plus / 12-13 Pro Max
+  '1242x2688': { w:414, h:896 }, // 6.5"  iPhone 11 Pro Max / XS Max
+};
+const GAP = 13;        // caption to device
+const BEZEL = 11;      // frame around the screen on each side
+const SCREEN_W = 393, SCREEN_H = 852;   // iPhone 16 Pro, in points
+
+function fitLayout() {
+  const key = new URLSearchParams(location.search).get('size') || '1290x2796';
+  const { w, h } = SIZES[key] || SIZES['1290x2796'];
+  const root = document.documentElement.style;
+  root.setProperty('--shotW', `${w}px`);
+  root.setProperty('--shotH', `${h}px`);
+
+  // the tallest caption decides where every device starts
+  const caps = [...document.querySelectorAll('.cap')];
+  const top = Math.ceil(Math.max(...caps.map(c => c.offsetHeight))) + GAP;
+
+  // let the device bleed a little past the bottom edge, the way it did
+  // at 1290x2796 — a frame that stops short reads as a floating sticker
+  const clipH = h - top - BEZEL + 4;
+  const scale = clipH / SCREEN_H;
+  const clipW = Math.round(SCREEN_W * scale);
+  root.setProperty('--clipH', `${clipH}px`);
+  root.setProperty('--clipW', `${clipW}px`);
+  root.setProperty('--phoneW', `${clipW + BEZEL * 2}px`);
+  root.setProperty('--scale', scale);
+  root.setProperty('--radPhone', `${Math.round(50 * scale / 0.8)}px`);
+  root.setProperty('--radClip', `${Math.round(40 * scale / 0.8)}px`);
+  document.querySelectorAll('.phone').forEach(p => { p.style.top = `${top}px`; });
+}
+fitLayout();
 </script>
 </body>
 </html>
