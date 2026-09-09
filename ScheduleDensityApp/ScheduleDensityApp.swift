@@ -113,6 +113,13 @@ struct ScheduleDensityApp: App {
 
     init() {
         LeeoEngagement.shared.registerLaunch()
+        // 페이월·피드백 이벤트가 나갈 창구를 연다. 등록 안 하면 LeeoKit 은 조용히
+        // 아무 데도 안 보내므로(no-op), 계약에 싱크를 적어 두는 것만으로는 안 켜진다.
+        //
+        // ⚠️ `LeeoKit.bootstrap(_:)` 을 쓰지 않는다. 그 한 줄은 크래시 진단(MetricKit)과
+        //    사용현황 스냅샷까지 **동의와 무관하게** 켜 버린다. 이 앱은 "켜야만 나간다"고
+        //    써 붙였으므로(→ docs/privacy.html 6항), 싱크만 손으로 등록한다.
+        LeeoAnalyticsCenter.register(ScheduleDensityAppSpec.self)
         // 할 일 화면의 조언은 전부 TipKit으로 낸다 (→ TodoTips.swift).
         TodoTips.configure()
         // 동기화 엔진이 남기는 말을 받아 적기 시작한다 (→ CloudSyncLog.swift).

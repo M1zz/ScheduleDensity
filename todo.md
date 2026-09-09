@@ -4,6 +4,41 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
 ## 완료
+- [x] 페이월 퍼널을 허브로 (2026-09-09) — LeeoKit 분석 싱크를 꽂았다
+      "페이월과 피드백의 데이터 수집." 확인해 보니 **피드백은 이미 모이고 있었고**
+      (설정 > 피드백 보내기 → `iCloud.com.Ysoup.FeedbackHub` 의 `Feedback` 레코드),
+      **페이월만 한 줄도 안 남기고 있었다.** LeeoKit 은 이벤트 이름을 정해 두고
+      (`LeeoEvent`) 실제 전송은 앱이 꽂는 싱크에 맡기는데, 이 앱은 계약에 싱크를
+      선언한 적이 없어 `LeeoNoopAnalytics` 였다. 그래서 `UsageReporting.logIfAllowed`
+      는 **아무도 안 부르는 죽은 함수**였다.
+      - `UsageAnalytics.swift` 신설 — `ConsentedUsageAnalytics`.
+        **동의를 먼저 묻고**, 이벤트 하나를 낱말 한 줄로 눌러 담아 `UsageEvent` 로 보낸다
+        (`paywall_shown:widget`, `purchase_failed:cancelled`, `purchase_restore_empty` …).
+        허브의 이벤트 레코드는 이름 한 칸뿐이라 **가르는 값 하나만** 뒤에 붙인다.
+        상품 ID 는 안 붙인다 — 파는 게 하나뿐이라 언제나 같은 값이다
+      - `ScheduleDensityApp.init` 에서 `LeeoAnalyticsCenter.register` 한 줄.
+        ⚠️ **`LeeoKit.bootstrap(_:)` 은 안 쓴다.** 그 한 줄이 편하긴 한데 크래시 진단
+        (MetricKit)과 사용현황 스냅샷을 **동의와 무관하게** 켜 버린다. 이 앱은
+        "켜야만 나간다"고 써 붙인 앱이다
+      - `PaywallView` 는 뜰 때 `paywallShown(reason:)` — reason 은 막혀 들어온 기능 키다.
+        위젯 때문에 온 사람과 통계 때문에 온 사람을 뭉쳐 세면 "안 팔린다"만 남는다
+      - `PurchaseManager` 는 갈래마다 남긴다 — 시작·완료·취소·승인 대기·오류·복원.
+        오류 문구 자체는 안 보낸다(사람이 읽는 말이라 뭐가 섞였을지 모른다)
+      - 계약의 `monetization` 이 아직 `.free` 였다. 1.1.0부터 실제로 파는데 계약만
+        옛말을 하고 있었다 → `.freemium`. 잠기는 목록은 `ProFeature.sold` 에서 받아 온다
+      - 문구를 실제와 맞췄다: privacy.html 6항(ko·en, 최종 업데이트 2026-09-09),
+        사용 통계 화면의 "보내는 것은 이 화면의 **숫자뿐**" → 페이월 사건도 나간다고 고쳤다.
+        **결제 수단·영수증·금액은 안 나간다**를 '보내지 않는 것'에 새로 적었다
+      - ⚠️ CloudKit Dashboard 에 `UsageEvent` 레코드 타입이 **Production 에 배포되어
+        있어야** 실제로 쌓인다. 그동안 이벤트를 한 번도 안 보냈으므로 개발 환경에서도
+        아직 자동 생성이 안 됐을 수 있다
+      - ⚠️ App Store Connect 개인정보 라벨의 '선택적 사용 데이터'에 **구매 관련 상호작용**이
+        포함되도록 손봐야 한다
+      - 남은 것: `feedback_submitted` 는 아직 못 남긴다. `LeeoFeedbackView` 가 보낸 뒤
+        알려 주는 자리(콜백)가 없어서, 앱에서는 그 순간을 알 길이 없다. LeeoKit 쪽에
+        발화를 넣어야 한다(다른 앱들도 같이 얻는다). 다만 **보낸 피드백 자체는 이미
+        허브의 `Feedback` 레코드로 세어진다** — 못 세는 건 '열었다가 안 보낸 사람'뿐이다
+
 - [x] 맥 계획표에 쓰는 길을 아예 없앰 (2026-09-03)
       "아이폰에서 만든 것은 맥에서 할 일에만 들어가고 어디에도 배정하지 말 것."
       확인해 보니 **이미 아무도 안 부르는 죽은 코드**였다(2026-08에 뜻이 틀려서 걷어냄).

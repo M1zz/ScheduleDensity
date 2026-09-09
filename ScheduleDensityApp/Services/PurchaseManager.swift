@@ -13,6 +13,7 @@
 import Foundation
 import StoreKit
 import WidgetKit
+import LeeoKit
 
 @MainActor
 @Observable
@@ -98,11 +99,16 @@ final class PurchaseManager {
 
     // MARK: - 사기 / 되찾기
 
+    /// ⚠️ 갈래마다 **무슨 일이 벌어졌는지를 한 줄씩 남긴다** (→ UsageAnalytics.swift).
+    ///    취소·승인 대기·진짜 실패를 뭉쳐 세면 "안 팔린다"만 남고 "왜 안 팔리는가"가
+    ///    사라진다. 나가는 것은 정해진 낱말 하나뿐이고, **동의 안 하셨으면 안 나간다.**
     func purchase() async {
         guard let product, !isPurchasing else { return }
         isPurchasing = true
         failureMessage = nil
         defer { isPurchasing = false }
+
+        LeeoAnalyticsCenter.track(.purchaseStarted(productID: product.id))
 
         do {
             switch try await product.purchase() {
@@ -110,20 +116,25 @@ final class PurchaseManager {
                 if case .verified(let transaction) = verification {
                     await transaction.finish()
                     apply(owned: true)
+                    LeeoAnalyticsCenter.track(.purchaseCompleted(productID: product.id))
                 } else {
                     // 서명이 안 맞는 영수증. 열어주지 않는다.
                     failureMessage = String(localized: "구매를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.")
+                    LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "unverified"))
                 }
             case .pending:
                 // 승인 대기(가족 공유의 '구매 요청' 등). 실패가 아니므로 그렇게 말한다.
                 failureMessage = String(localized: "승인을 기다리는 중입니다. 승인되면 자동으로 열립니다.")
+                LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "pending"))
             case .userCancelled:
-                break
+                LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "cancelled"))
             @unknown default:
                 break
             }
         } catch {
             failureMessage = String(localized: "구매하지 못했습니다: \(error.localizedDescription)")
+            // 오류 문구 자체는 안 보낸다 — 사람이 읽는 말이라 무엇이 섞여 있을지 모른다.
+            LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "error"))
         }
     }
 
@@ -136,6 +147,9 @@ final class PurchaseManager {
 
         try? await AppStore.sync()
         await refresh()
+        // 되찾았는지 아닌지가 곧 결과다. 못 찾은 복원이 쌓이면 그건 통계가 아니라
+        // 지원 요청의 예고편이다.
+        LeeoAnalyticsCenter.track(.purchaseRestored(restored: isUnlocked))
         if !isUnlocked {
             failureMessage = String(localized: "이 Apple 계정에서 구매한 기록을 찾지 못했습니다.")
         }

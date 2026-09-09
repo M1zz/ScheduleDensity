@@ -11,6 +11,7 @@
 
 import SwiftUI
 import StoreKit
+import LeeoKit
 
 struct PaywallView: View {
     /// 어디서 막혀 들어왔는지. 그 줄을 목록에서 먼저 짚어준다.
@@ -72,6 +73,13 @@ struct PaywallView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) { buyBar }
+            // 이 화면을 **본 것** 자체가 퍼널의 첫 칸이다. 어느 잠긴 자리에서 들어왔는지를
+            // 함께 남긴다 — 위젯 때문에 온 사람과 통계 때문에 온 사람은 다른 사람이고,
+            // 그걸 뭉쳐 세면 "페이월이 안 팔린다"는 말밖에 안 남는다.
+            // **동의 안 하셨으면 안 나간다** (→ UsageAnalytics.swift).
+            .onAppear {
+                LeeoAnalyticsCenter.track(.paywallShown(reason: highlight?.rawValue))
+            }
             .task {
                 await purchases.loadProduct()
                 await purchases.refresh()
