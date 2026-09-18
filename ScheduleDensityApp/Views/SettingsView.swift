@@ -119,12 +119,25 @@ struct SettingsView: View {
                 set: { timer.setNotifyPreference($0) })
     }
 
-    private var timerNotifyFootnote: String {
-        switch timer.notifyPreference {
+    /// 줄을 언제 세울지.
+    private var timerBar: Binding<TimerBarVisibility> {
+        Binding(get: { timer.barVisibility },
+                set: { timer.setBarVisibility($0) })
+    }
+
+    /// 알림과 줄, 두 설정을 한 문단으로 말한다.
+    private var timerFootnote: String {
+        let notify: String = switch timer.notifyPreference {
         case .always: String(localized: "앱을 닫아 두어도 끝나는 시각에 한 번 울립니다.")
         case .never:  String(localized: "알림을 보내지 않습니다. 앱을 보고 있을 때는 짧게 진동합니다.")
         case .ask:    String(localized: "타이머를 켤 때마다 알림을 드릴지 여쭤봅니다.")
         }
+        let bar: String = switch timer.barVisibility {
+        case .always:      String(localized: "탭 막대 위에 지금 일정과 남은 시간이 섭니다.")
+        case .whileTiming: String(localized: "직접 시작한 타이머가 있을 때만 줄이 섭니다.")
+        case .hidden:      String(localized: "줄을 세우지 않습니다. 타이머는 그대로 돌고 잠금화면에서 봅니다.")
+        }
+        return notify + "\n" + bar
     }
 
     var body: some View {
@@ -496,10 +509,28 @@ struct SettingsView: View {
                     } label: {
                         Label("끝나면 알림", systemImage: "bell.badge")
                     }
+
+                    // 줄을 치우는 자리. 줄에서 길게 눌러 숨긴 사람이 **되돌릴 곳**이기도 하다 —
+                    // 숨기기만 있고 되돌릴 데가 없으면 그건 치운 게 아니라 잃은 것이다.
+                    Picker(selection: timerBar) {
+                        ForEach(TimerBarVisibility.allCases, id: \.self) { option in
+                            Text(option.label).tag(option)
+                        }
+                    } label: {
+                        Label("탭 위 타이머 줄", systemImage: "rectangle.bottomthird.inset.filled")
+                    }
+
+                    if timer.isActive {
+                        Button(role: .destructive) {
+                            timer.stop()
+                        } label: {
+                            Label("지금 세는 타이머 끝내기", systemImage: "stop.fill")
+                        }
+                    }
                 } header: {
                     Text("타이머")
                 } footer: {
-                    Text(timerNotifyFootnote)
+                    Text(timerFootnote)
                 }
 
                 // 일정 분산 섹션

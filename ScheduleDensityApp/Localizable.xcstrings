@@ -2535,6 +2535,16 @@
         }
       }
     },
+    "늘 보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always"
+          }
+        }
+      }
+    },
     "다 됐어요": {
       "localizations": {
         "en": {
@@ -4389,6 +4399,26 @@
         }
       }
     },
+    "세는 중에만": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While timing"
+          }
+        }
+      }
+    },
+    "세는 중에만 보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show only while timing"
+          }
+        }
+      }
+    },
     "세로로 이어진 길이": {
       "localizations": {
         "en": {
@@ -4986,6 +5016,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Don't notify"
+          }
+        }
+      }
+    },
+    "안 보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never"
           }
         }
       }
@@ -6026,6 +6066,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nothing was noted this week."
+          }
+        }
+      }
+    },
+    "이 줄 숨기기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide this bar"
           }
         }
       }
@@ -7223,6 +7273,16 @@
         }
       }
     },
+    "줄을 세우지 않습니다. 타이머는 그대로 돌고 잠금화면에서 봅니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No bar. The timer still runs, and you can see it on the Lock Screen."
+          }
+        }
+      }
+    },
     "중": {
       "localizations": {
         "en": {
@@ -7269,6 +7329,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Current step"
+          }
+        }
+      }
+    },
+    "지금 세는 타이머 끝내기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the running timer"
           }
         }
       }
@@ -7399,6 +7469,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Support"
+          }
+        }
+      }
+    },
+    "직접 시작한 타이머가 있을 때만 줄이 섭니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The bar appears only when a timer you started is running."
           }
         }
       }
@@ -7983,12 +8063,32 @@
         }
       }
     },
+    "타이머 끝내기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop timer"
+          }
+        }
+      }
+    },
     "타이머 열기": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Open timer"
+          }
+        }
+      }
+    },
+    "타이머 열기. 길게 누르면 끝내거나 숨깁니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opens the timer. Press and hold to stop or hide it."
           }
         }
       }
@@ -8009,6 +8109,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Asks each time you start a timer."
+          }
+        }
+      }
+    },
+    "탭 막대 위에 지금 일정과 남은 시간이 섭니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The bar above the tabs shows what is on now and how long is left."
+          }
+        }
+      }
+    },
+    "탭 위 타이머 줄": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer bar"
           }
         }
       }

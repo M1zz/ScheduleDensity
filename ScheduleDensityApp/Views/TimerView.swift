@@ -25,7 +25,16 @@ struct TimerBar: View {
 
     /// 보여줄 것이 있는가. 없으면 초를 세지 않는다 —
     /// 빈 줄이 탭 수만큼 초당 한 번씩 깨어날 이유가 없다.
-    private var hasSomething: Bool { timer.isActive || clock.current() != nil }
+    ///
+    /// 가려 둔 사람에게는 아무것도 안 선다 (→ TimerBarVisibility). 가려도 타이머는 돌고,
+    /// 알림과 잠금화면은 그대로다.
+    private var hasSomething: Bool {
+        switch timer.barVisibility {
+        case .hidden:      false
+        case .whileTiming: timer.isActive
+        case .always:      timer.isActive || clock.current() != nil
+        }
+    }
 
     var body: some View {
         // 보여줄 것이 없으면 초를 세는 뷰 자체를 세우지 않는다.
@@ -127,8 +136,36 @@ struct TimerBar: View {
             .padding(.bottom, 4)
         }
         .buttonStyle(.plain)
+        // 길게 누르면 그 자리에서 끝내거나 치운다 — 시트를 열어야만 멈출 수 있으면,
+        // 급히 멈추려는 손이 한 번 더 헤맨다.
+        .contextMenu {
+            if timer.isActive {
+                Button {
+                    timer.toggle()
+                } label: {
+                    Label(timer.isRunning ? "일시정지" : "이어서",
+                          systemImage: timer.isRunning ? "pause.fill" : "play.fill")
+                }
+                Button(role: .destructive) {
+                    timer.stop()
+                } label: {
+                    Label("타이머 끝내기", systemImage: "stop.fill")
+                }
+                Divider()
+            }
+            Button {
+                timer.setBarVisibility(.whileTiming)
+            } label: {
+                Label("세는 중에만 보기", systemImage: "eye.slash")
+            }
+            Button {
+                timer.setBarVisibility(.hidden)
+            } label: {
+                Label("이 줄 숨기기", systemImage: "eye.slash.fill")
+            }
+        }
         .accessibilityElement(children: .combine)
-        .accessibilityHint("타이머 열기")
+        .accessibilityHint("타이머 열기. 길게 누르면 끝내거나 숨깁니다")
     }
 }
 
@@ -167,26 +204,26 @@ struct TimerSheet: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 16)
-                    // 자리가 남으면 가운데, 모자라면 위에서부터 채우고 스크롤한다.
-                    .frame(minHeight: geo.size.height - 8)
                 }
                 .scrollBounceBehavior(.basedOnSize)
+                // ⚠️ 아래 단추는 **스크롤 뷰에** 붙인다. 바깥에 붙였더니 단추가 차지한 만큼
+                //    글이 가려졌다 — 스크롤 뷰에 붙이면 그 높이만큼 안쪽 여백이 저절로 생겨
+                //    마지막 줄까지 끝까지 올라온다.
+                .safeAreaInset(edge: .bottom) {
+                    if timer.isActive {
+                        controls
+                            .padding(.horizontal, 20)
+                            .padding(.top, 10)
+                            .padding(.bottom, 8)
+                            .background(.bar)
+                    }
+                }
             }
             .navigationTitle("타이머")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("닫기") { dismiss() }
-                }
-            }
-            // 단추는 스크롤과 함께 밀려 올라가지 않는다 — 멈추려는 손이 늘 같은 자리를 짚게.
-            .safeAreaInset(edge: .bottom) {
-                if timer.isActive {
-                    controls
-                        .padding(.horizontal, 20)
-                        .padding(.top, 10)
-                        .padding(.bottom, 8)
-                        .background(.bar)
                 }
             }
         }

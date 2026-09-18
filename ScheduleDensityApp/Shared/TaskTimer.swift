@@ -66,6 +66,29 @@ enum TimerNotifyPreference: String {
     }
 }
 
+// MARK: - 줄을 보일까
+
+/// 탭 막대 위 타이머 줄을 언제 세울지.
+///
+/// **가릴 길을 둔다.** 이 줄은 아무것도 안 눌러도 서기 때문에, 그것을 원치 않는 사람에게는
+/// 치울 방법이 있어야 한다. 가려도 타이머는 그대로 돈다 — 알림도, 잠금화면도 그대로다.
+enum TimerBarVisibility: String, CaseIterable {
+    /// 세는 중이 아니어도 지금 일정과 남은 시간을 보여준다.
+    case always
+    /// 직접 시작한 타이머가 있을 때만.
+    case whileTiming
+    /// 안 보인다. 하루 화면에서 여전히 시작할 수 있고, 잠금화면에서 본다.
+    case hidden
+
+    var label: String {
+        switch self {
+        case .always:      String(localized: "늘 보기")
+        case .whileTiming: String(localized: "세는 중에만")
+        case .hidden:      String(localized: "안 보기")
+        }
+    }
+}
+
 // MARK: - 스토어
 
 @Observable
@@ -98,6 +121,19 @@ final class TaskTimer {
 
     /// 이번 타이머 한 번만 알린다. '이번만'이라고 답했을 때.
     private var allowOnce = false
+
+    /// 탭 막대 위 줄을 언제 세울지 (→ TimerBarVisibility).
+    private(set) var barVisibility: TimerBarVisibility = TaskTimer.storedBarVisibility
+
+    func setBarVisibility(_ value: TimerBarVisibility) {
+        barVisibility = value
+        UserDefaults.standard.set(value.rawValue, forKey: Self.barVisibilityKey)
+    }
+
+    private static var storedBarVisibility: TimerBarVisibility {
+        UserDefaults.standard.string(forKey: barVisibilityKey)
+            .flatMap(TimerBarVisibility.init(rawValue:)) ?? .always
+    }
 
     private init() { restore() }
 
@@ -299,6 +335,7 @@ final class TaskTimer {
 
     private static let notificationID = "taskTimer.end"
     private static let preferenceKey = "taskTimer.notify"
+    private static let barVisibilityKey = "taskTimer.bar"
 
     /// 처음 타이머를 켤 때만 묻는다. 앱을 켜자마자 묻지 않는 이유는, 그때는 아직
     /// 무엇 때문에 알림이 필요한지 사람이 모르기 때문이다.
