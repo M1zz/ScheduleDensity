@@ -1,736 +1,788 @@
 {
-  "sourceLanguage": "ko",
-  "strings": {
-    "%.0f시간": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%.0f h"
+  "sourceLanguage" : "ko",
+  "strings" : {
+    ", %@의 단계" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", step of %@"
           }
         }
       }
     },
-    "%.1f시간": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%.1f h"
+    ", %lld단계 중 %lld번째, 지금 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", step %2$lld of %1$lld, now %3$@"
           }
         }
       }
     },
-    "%@ 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The %@ widget is locked. Buy Rainbow Pro in Settings to open it."
+    ", %lld분" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", %lld min"
           }
         }
       }
     },
-    "%@, 오늘": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@, today"
+    ", 5분에 집을 수 있음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", can be done in five minutes"
           }
         }
       }
     },
-    "%lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld"
+    ", 지금 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", now %@"
           }
         }
       }
     },
-    "%lld%%": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld%%"
+    ", 직접 표시함" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", marked by you"
           }
         }
       }
     },
-    "%lld/%lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld/%lld"
+    "‘욕망의 무지개’를 열고 빈 줄에 바로 적습니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens Rainbow of Desire on a blank line, ready to write."
           }
         }
       }
     },
-    "%lld개": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld"
+    "%.0f시간" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f h"
           }
         }
       }
     },
-    "%lld분": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld min"
+    "%.1f시간" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f h"
           }
         }
       }
     },
-    "+%lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "+%lld"
+    "%@ 위젯이 잠겨 있습니다. 눌러서 무지개 Pro를 여십시오." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The %@ widget is locked. Tap to unlock Rainbow Pro."
           }
         }
       }
     },
-    ", %@의 단계": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", step of %@"
+    "%@ 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The %@ widget is locked. Buy Rainbow Pro in Settings to open it."
           }
         }
       }
     },
-    ", %lld단계 중 %lld번째, 지금 %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", step %2$lld of %1$lld, now %3$@"
+    "%@, 오늘" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, today"
           }
         }
       }
     },
-    ", %lld분": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", %lld min"
+    "%@에 끝남" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ends at %@"
           }
         }
       }
     },
-    ", 5분에 집을 수 있음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", can be done in five minutes"
+    "%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
           }
         }
       }
     },
-    ", 지금 %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", now %@"
+    "%lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/%lld"
           }
         }
       }
     },
-    ", 직접 표시함": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": ", marked by you"
+    "%lld%%" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%%"
           }
         }
       }
     },
-    "0분": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "0 min"
+    "%lld개" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
           }
         }
       }
     },
-    "5분에 집을 수 있는 단계 %lld개. ": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld steps you can do in five minutes. "
+    "%lld분" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
           }
         }
       }
     },
-    "5분이면 %lld개": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld in five minutes"
+    "+%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
           }
         }
       }
     },
-    "‘욕망의 무지개’를 열고 빈 줄에 바로 적습니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opens Rainbow of Desire on a blank line, ready to write."
+    "⚡︎ %lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ %lld · %@"
           }
         }
       }
     },
-    "⚡︎ %lld · %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "⚡︎ %lld · %@"
+    "⚡︎ 집을 조각 없음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ No fragments ready"
           }
         }
       }
     },
-    "⚡︎ 집을 조각 없음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "⚡︎ No fragments ready"
+    "🔒 무지개 Pro" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 Rainbow Pro"
           }
         }
       }
     },
-    "개발": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Work"
+    "🔒 번개 — 무지개 Pro" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 Bolt — Rainbow Pro"
           }
         }
       }
     },
-    "기획서 초안 작성": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Draft the proposal"
+    "🔒 할 일 — 무지개 Pro" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 To-Do — Rainbow Pro"
           }
         }
       }
     },
-    "남은 할 일 없음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing left"
+    "0분" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 min"
           }
         }
       }
     },
-    "남은 할 일이 없어요": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing left to do"
+    "5분에 집을 수 있는 단계 %lld개. " : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps you can do in five minutes. "
           }
         }
       }
     },
-    "내 일정을 읽기 전용으로 나눠 봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share your events with others, read-only."
+    "5분이면 %lld개" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld in five minutes"
           }
         }
       }
     },
-    "단계를 5분에 닫히는 크기로 잘라 두면 여기 섭니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cut a step small enough to close in five minutes and it lands here."
+    "개발" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work"
           }
         }
       }
     },
-    "러닝 30분": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30-minute run"
+    "계획을 넘겼습니다" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Past your plan"
           }
         }
       }
     },
-    "맥과 함께 쓰기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Use it with your Mac"
+    "기획서 초안 작성" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Draft the proposal"
           }
         }
       }
     },
-    "목차 잡기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outline the sections"
+    "남은 할 일 없음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing left"
           }
         }
       }
     },
-    "무지개": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rainbow"
+    "남은 할 일이 없어요" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing left to do"
           }
         }
       }
     },
-    "무지개 위젯이 잠겨 있습니다": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The Rainbow widget is locked"
+    "내 일정을 읽기 전용으로 나눠 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share your events with others, read-only."
           }
         }
       }
     },
-    "번개": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bolt"
+    "눌러서 열기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to unlock"
           }
         }
       }
     },
-    "번개 위젯이 잠겨 있습니다": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The Bolt widget is locked"
+    "단계를 5분에 닫히는 크기로 잘라 두면 여기 섭니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cut a step small enough to close in five minutes and it lands here."
           }
         }
       }
     },
-    "비어 있어요": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing here"
+    "러닝 30분" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30-minute run"
           }
         }
       }
     },
-    "빈 줄을 열고 바로 적습니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opens a blank line and starts writing."
+    "맥과 함께 쓰기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use it with your Mac"
           }
         }
       }
     },
-    "시스템 캘린더의 일정을 무지개로 들여옵니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brings events from Calendar onto the Rainbow."
+    "멈춤" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
           }
         }
       }
     },
-    "쌓인 일정을 통째로 들여다봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Look at everything you've scheduled at once."
+    "목차 잡기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outline the sections"
           }
         }
       }
     },
-    "아직 그은 줄이 없어요": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No lines drawn yet"
+    "무지개" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow"
           }
         }
       }
     },
-    "아직 안 한 일을 홈 화면과 잠금 화면에서 바로 봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "See what's still open on the Home and Lock Screen."
+    "무지개 위젯이 잠겨 있습니다" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Rainbow widget is locked"
           }
         }
       }
     },
-    "앞으로 며칠이 얼마나 차 있는지 한눈에 봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "See at a glance how full the days ahead are."
+    "번개" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bolt"
           }
         }
       }
     },
-    "앱의 설정에서 ‘무지개 Pro’": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings ▸ Rainbow Pro"
+    "번개 위젯이 잠겨 있습니다" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Bolt widget is locked"
           }
         }
       }
     },
-    "업체 예약 전화": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Call to book the movers"
+    "비어 있어요" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing here"
           }
         }
       }
     },
-    "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To-dos you write here show up on your Mac. Writing itself is free."
+    "빈 줄을 열고 바로 적습니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens a blank line and starts writing."
           }
         }
       }
     },
-    "오늘": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Today"
+    "시스템 캘린더의 일정을 무지개로 들여옵니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brings events from Calendar onto the Rainbow."
           }
         }
       }
     },
-    "오늘 %lld개 · %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld today · %@"
+    "쌓인 일정을 통째로 들여다봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look at everything you've scheduled at once."
           }
         }
       }
     },
-    "오늘 비어 있음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing today"
+    "아직 그은 줄이 없어요" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No lines drawn yet"
           }
         }
       }
     },
-    "운동": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Exercise"
+    "아직 안 한 일을 홈 화면과 잠금 화면에서 바로 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See what's still open on the Home and Lock Screen."
           }
         }
       }
     },
-    "위젯 스냅샷 정리": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tidy up widget snapshots"
+    "앞으로 며칠이 얼마나 차 있는지 한눈에 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See at a glance how full the days ahead are."
           }
         }
       }
     },
-    "이번 주에 무엇을 되찾았는지 셉니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Counts what you won back this week."
+    "앱의 설정에서 ‘무지개 Pro’" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings ▸ Rainbow Pro"
           }
         }
       }
     },
-    "이사 준비": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Moving prep"
+    "업체 예약 전화" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call to book the movers"
           }
         }
       }
     },
-    "일정 공유": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Event sharing"
+    "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-dos you write here show up on your Mac. Writing itself is free."
           }
         }
       }
     },
-    "일정 통계": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Event stats"
+    "오늘" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
           }
         }
       }
     },
-    "자료 링크 하나 챙기기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Save one reference link"
+    "오늘 %lld개 · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld today · %@"
           }
         }
       }
     },
-    "장보기 — 우유, 계란": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Groceries — milk, eggs"
+    "오늘 비어 있음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing today"
           }
         }
       }
     },
-    "지금 5분에 집을 수 있는 단계 %lld개": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld steps you could do in five minutes right now"
+    "운동" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exercise"
           }
         }
       }
     },
-    "지금 5분에 집을 수 있는 단계만 모아 봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gathers only the steps you could do in five minutes."
+    "위젯 스냅샷 정리" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidy up widget snapshots"
           }
         }
       }
     },
-    "지금 집을 조각 없음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No fragments ready now"
+    "이번 주에 무엇을 되찾았는지 셉니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Counts what you won back this week."
           }
         }
       }
     },
-    "지금 집을 조각이 없어요": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No fragments ready right now"
+    "이사 준비" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moving prep"
           }
         }
       }
     },
-    "지금 할 단계와 무지개를 앱을 안 열고도 봅니다.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "See the current step and the Rainbow without opening the app."
+    "일정 공유" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event sharing"
           }
         }
       }
     },
-    "집안일": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home"
+    "일정 통계" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event stats"
           }
         }
       }
     },
-    "책 한 챕터 읽기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Read one chapter"
+    "자료 링크 하나 챙기기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save one reference link"
           }
         }
       }
     },
-    "캘린더에서 가져오기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Import from Calendar"
+    "장보기 — 우유, 계란" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groceries — milk, eggs"
           }
         }
       }
     },
-    "할 일": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To-Do"
+    "지금 5분에 집을 수 있는 단계 %lld개" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps you could do in five minutes right now"
           }
         }
       }
     },
-    "할 일 없음": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No to-dos"
+    "지금 5분에 집을 수 있는 단계만 모아 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gathers only the steps you could do in five minutes."
           }
         }
       }
     },
-    "할 일 적기": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Write a to-do"
+    "지금 집을 조각 없음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No fragments ready now"
           }
         }
       }
     },
-    "할 일. ": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To-dos. "
+    "지금 집을 조각이 없어요" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No fragments ready right now"
           }
         }
       }
     },
-    "홈·잠금 화면 위젯": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Home and Lock Screen widgets"
+    "지금 할 단계와 무지개를 앱을 안 열고도 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See the current step and the Rainbow without opening the app."
           }
         }
       }
     },
-    "회수 장부": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ledger"
+    "집안일" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
           }
         }
       }
     },
-    "🔒 무지개 Pro": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "🔒 Rainbow Pro"
+    "책 한 챕터 읽기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read one chapter"
           }
         }
       }
     },
-    "🔒 번개 — 무지개 Pro": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "🔒 Bolt — Rainbow Pro"
+    "캘린더에서 가져오기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import from Calendar"
           }
         }
       }
     },
-    "🔒 할 일 — 무지개 Pro": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "🔒 To-Do — Rainbow Pro"
+    "할 일" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-Do"
+          }
+        }
+      }
+    },
+    "할 일 없음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No to-dos"
+          }
+        }
+      }
+    },
+    "할 일 적기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write a to-do"
+          }
+        }
+      }
+    },
+    "할 일. " : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-dos. "
+          }
+        }
+      }
+    },
+    "홈·잠금 화면 위젯" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home and Lock Screen widgets"
+          }
+        }
+      }
+    },
+    "회수 장부" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ledger"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

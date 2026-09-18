@@ -181,6 +181,16 @@
         }
       }
     },
+    "%@ 결제": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pay %@"
+          }
+        }
+      }
+    },
     "%@ 끝내기": {
       "localizations": {
         "en": {
@@ -197,6 +207,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actually do %@"
+          }
+        }
+      }
+    },
+    "%@ 주": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week of %@"
           }
         }
       }
@@ -241,6 +261,16 @@
         }
       }
     },
+    "%@까지": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Due %@"
+          }
+        }
+      }
+    },
     "%@부터 계속": {
       "localizations": {
         "en": {
@@ -251,7 +281,18 @@
         }
       }
     },
+    "%@에 끝납니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ends at %@"
+          }
+        }
+      }
+    },
     "%@에 열기": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -352,6 +393,7 @@
       }
     },
     "%lld:00": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -591,6 +633,16 @@
         }
       }
     },
+    "%lld일 무료로 써 보고, 그 뒤에 결제됩니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free for %lld days, then it bills."
+          }
+        }
+      }
+    },
     "%lld일 후": {
       "localizations": {
         "en": {
@@ -671,12 +723,72 @@
         }
       }
     },
+    "+10분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+10 min"
+          }
+        }
+      }
+    },
+    "+5분": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+5 min"
+          }
+        }
+      }
+    },
     ", 5분에 집을 수 있음": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": ", can be done in five minutes"
+          }
+        }
+      }
+    },
+    "/ 년": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "/ yr"
+          }
+        }
+      }
+    },
+    "/ 월": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "/ mo"
+          }
+        }
+      }
+    },
+    "/ 일": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "/ day"
+          }
+        }
+      }
+    },
+    "/ 주": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "/ wk"
           }
         }
       }
@@ -841,6 +953,16 @@
         }
       }
     },
+    "App Store에 구매 기록을 확인하는 중입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking your purchases with the App Store."
+          }
+        }
+      }
+    },
     "Apple ID 미로그인": {
       "localizations": {
         "en": {
@@ -867,6 +989,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shows the weekly plan blocks you made on the Mac, read-only.\nRoutines — fixed and quota — repeat every day, so they aren't drawn."
+          }
+        }
+      }
+    },
+    "Pro가 여는 것": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What Pro opens"
           }
         }
       }
@@ -1381,6 +1513,16 @@
         }
       }
     },
+    "같은 Apple 계정이면 양쪽에서 보입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Same Apple Account, visible on both."
+          }
+        }
+      }
+    },
     "같은 세로줄에서 끝나는 날을 다시 꾹 누르면 두 날 사이가 네모로 이어지고, 일정을 적는 창이 열려요.": {
       "localizations": {
         "en": {
@@ -1431,6 +1573,16 @@
         }
       }
     },
+    "개인정보 처리방침": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        }
+      }
+    },
     "건너뛰기": {
       "localizations": {
         "en": {
@@ -1471,12 +1623,52 @@
         }
       }
     },
+    "계속": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        }
+      }
+    },
     "계정 식별자": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Account ID"
+          }
+        }
+      }
+    },
+    "계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For when you started late. Counts down the time that's left."
+          }
+        }
+      }
+    },
+    "계획에 적힌 시간을 거꾸로 셉니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counts down the time written in your plan."
+          }
+        }
+      }
+    },
+    "계획한 시간이 다 됐습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your planned time is up."
           }
         }
       }
@@ -1641,6 +1833,16 @@
         }
       }
     },
+    "구독은 기간이 끝나기 24시간 전까지 해지하지 않으면 같은 요금으로 자동 갱신되며, Apple 계정으로 결제됩니다. 무료 체험 중에 해지하면 요금이 나가지 않습니다. 해지와 관리는 App Store의 계정 설정에서 합니다. 평생 이용권은 구독이 아니라 한 번 결제입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A subscription renews automatically at the same price unless cancelled at least 24 hours before the period ends, and is billed to your Apple Account. Cancel during a free trial and you pay nothing. Manage or cancel in your App Store account settings. The lifetime unlock is a one-time payment, not a subscription."
+          }
+        }
+      }
+    },
     "구매 복원": {
       "localizations": {
         "en": {
@@ -1652,6 +1854,7 @@
       }
     },
     "구매를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1662,6 +1865,7 @@
       }
     },
     "구매하지 못했습니다: %@": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1717,6 +1921,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Just do it"
+          }
+        }
+      }
+    },
+    "그대로 무료인 것": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still free"
           }
         }
       }
@@ -1931,12 +2145,32 @@
         }
       }
     },
+    "끝나면 알림": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When it ends"
+          }
+        }
+      }
+    },
     "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Unfinished work leaves residue that eats into the next block of time."
+          }
+        }
+      }
+    },
+    "끝내기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
           }
         }
       }
@@ -2087,6 +2321,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Left over"
+          }
+        }
+      }
+    },
+    "남음": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "left"
           }
         }
       }
@@ -2321,6 +2565,16 @@
         }
       }
     },
+    "다시 시도": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      }
+    },
     "다음": {
       "localizations": {
         "en": {
@@ -2337,6 +2591,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Next (%lld selected)"
+          }
+        }
+      }
+    },
+    "다음 주": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next week"
           }
         }
       }
@@ -2457,6 +2721,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Calendar range"
+          }
+        }
+      }
+    },
+    "달마다 결제되고 언제든 해지합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bills monthly, cancel any time."
           }
         }
       }
@@ -2631,6 +2905,16 @@
         }
       }
     },
+    "두 질문으로 조각과 덩어리를 가르는 것까지 전부.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Including the two questions that sort quick bits from big blocks."
+          }
+        }
+      }
+    },
     "두 칸은 끝까지 따로 셉니다. 합치면 “50분 벌었는데 왜 아무것도 못 했지”가 됩니다.\n하루의 끝이 시계로 고정돼 있으면 절약은 시간으로 회수되지 않고 여유(부하 감소)로만 회수됩니다. 그때 이 칸이 0인 것은 실패가 아니라 사실입니다.": {
       "localizations": {
         "en": {
@@ -2801,6 +3085,16 @@
         }
       }
     },
+    "매여 있는 일": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ongoing"
+          }
+        }
+      }
+    },
     "매일": {
       "localizations": {
         "en": {
@@ -2827,6 +3121,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "If your Mac is on the same account, the account IDs match.\nIf 'Plans from the Mac' is 0, nothing came down from iCloud; if 'Where to-dos are stored' is red, they're only piling up on this device.\n\n'Count' counts what's actually on iCloud. A type showing 0 means it **hasn't gone up yet** — usually because the Development → Production schema wasn't deployed in the CloudKit console. If the count is there but the app's list is empty, it's **not being read**, which is a different problem."
+          }
+        }
+      }
+    },
+    "맥과 오가기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync with the Mac"
           }
         }
       }
@@ -2877,6 +3181,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Only one step stands at the top — the one to touch right now.\nThe rest wait their turn in the list below."
+          }
+        }
+      }
+    },
+    "멈춰 있습니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
           }
         }
       }
@@ -3031,6 +3345,16 @@
         }
       }
     },
+    "무료 체험 시작": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start free trial"
+          }
+        }
+      }
+    },
     "무슨 일인지 적어요": {
       "localizations": {
         "en": {
@@ -3122,11 +3446,22 @@
       }
     },
     "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 %lld가지가 잠겨 있습니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "The Rainbow, splitting, the two questions, and step order are all yours. %lld extras are locked."
+          }
+        }
+      }
+    },
+    "무지개, 할 일 쪼개기, 타이머, 맥과 오가기는 그대로 쓰십니다. %lld가지가 잠겨 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The rainbow, splitting to-dos, the timer and Mac sync stay yours. %lld things are locked."
           }
         }
       }
@@ -3212,6 +3547,7 @@
       }
     },
     "무지개와 쪼개기는 그대로 무료입니다": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3227,6 +3563,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Group"
+          }
+        }
+      }
+    },
+    "물어보기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask each time"
           }
         }
       }
@@ -3541,7 +3887,9 @@
         }
       }
     },
+    "보내는 것은 이 화면의 **숫자**와, '무지개 Pro' 안내 화면에서 벌어진 일 몇 가지입니다 — 그 화면을 보셨는지, 어느 잠긴 기능에서 들어오셨는지, 사셨는지 못 사셨는지. **전부 앱이 미리 정해 둔 낱말이고, 결제 정보와 영수증은 나가지 않습니다.**\n할 일 제목도, 일정 이름도, 분류 이름도, 날짜도 나가지 않습니다.\n누가 보냈는지는 앱을 깔 때 만들어진 무작위 번호로만 구분하고, 그 번호는 Apple 계정이나 기기와 이어져 있지 않습니다. 앱을 지우면 사라집니다.\n끄시면 이 기기에 적어 둔 날짜 기록도 함께 지웁니다.": {},
     "보내는 것은 이 화면의 **숫자뿐**입니다. 할 일 제목도, 일정 이름도, 분류 이름도, 날짜도 나가지 않습니다.\n누가 보냈는지는 앱을 깔 때 만들어진 무작위 번호로만 구분하고, 그 번호는 Apple 계정이나 기기와 이어져 있지 않습니다. 앱을 지우면 사라집니다.\n끄시면 이 기기에 적어 둔 날짜 기록도 함께 지웁니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3577,6 +3925,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Comfortable"
+          }
+        }
+      }
+    },
+    "복원": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore"
           }
         }
       }
@@ -3747,6 +4105,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "as a block"
+          }
+        }
+      }
+    },
+    "블록으로 회수": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reclaimed in blocks"
+          }
+        }
+      }
+    },
+    "빈 시간 %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ free"
+          }
+        }
+      }
+    },
+    "빈 시간에 집을 조각": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick picks for free time"
           }
         }
       }
@@ -3971,6 +4359,16 @@
         }
       }
     },
+    "설정에서 언제든 바꿀 수 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can change this in Settings any time."
+          }
+        }
+      }
+    },
     "성공": {
       "localizations": {
         "en": {
@@ -4142,6 +4540,7 @@
       }
     },
     "승인을 기다리는 중입니다. 승인되면 자동으로 열립니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4361,6 +4760,26 @@
         }
       }
     },
+    "쌓여야 보이는 것까지 전부 열려 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is open, including what shows up over time."
+          }
+        }
+      }
+    },
+    "쌓여야 보이는 것을 엽니다": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock what only shows up over time"
+          }
+        }
+      }
+    },
     "쌓인 일정을 통째로 들여다봅니다.": {
       "localizations": {
         "en": {
@@ -4561,6 +4980,16 @@
         }
       }
     },
+    "안 받기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't notify"
+          }
+        }
+      }
+    },
     "안 잡음": {
       "localizations": {
         "en": {
@@ -4641,6 +5070,26 @@
         }
       }
     },
+    "알림 받기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify me"
+          }
+        }
+      }
+    },
+    "알림을 보내지 않습니다. 앱을 보고 있을 때는 짧게 진동합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No notifications. It vibrates briefly while you have the app open."
+          }
+        }
+      }
+    },
     "앞 단계가 끝나야 다음이 옵니다.": {
       "localizations": {
         "en": {
@@ -4661,12 +5110,62 @@
         }
       }
     },
+    "앞으로 안 받기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never notify"
+          }
+        }
+      }
+    },
+    "앞으로도 알림 드릴까요?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify you from now on?"
+          }
+        }
+      }
+    },
+    "앞으로도 알림 받기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always notify"
+          }
+        }
+      }
+    },
+    "앞으로도 알림을 끌까요?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep notifications off from now on?"
+          }
+        }
+      }
+    },
     "앱 판정으로 되돌리기": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Back to the app's call"
+          }
+        }
+      }
+    },
+    "앱을 닫아 두어도 끝나는 시각에 한 번 울립니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It rings once at the end, even with the app closed."
           }
         }
       }
@@ -4861,6 +5360,16 @@
         }
       }
     },
+    "연간": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yearly"
+          }
+        }
+      }
+    },
     "연속으로 여신 날": {
       "localizations": {
         "en": {
@@ -4931,6 +5440,16 @@
         }
       }
     },
+    "오늘 시각은 안 정함": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No time set today"
+          }
+        }
+      }
+    },
     "오늘까지": {
       "localizations": {
         "en": {
@@ -4967,6 +5486,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Shows %lld months back and %lld months ahead from today."
+          }
+        }
+      }
+    },
+    "오늘을 사는 데 필요한 것은 그대로 무료입니다. 맥 '무지개 공방'과 오가는 것도 무료입니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What you need to get through today stays free — including syncing with Rainbow Workshop on the Mac."
           }
         }
       }
@@ -5141,12 +5670,32 @@
         }
       }
     },
+    "외 %lld개": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld more"
+          }
+        }
+      }
+    },
     "외 %lld개...": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "and %lld more…"
+          }
+        }
+      }
+    },
+    "요금제": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plans"
           }
         }
       }
@@ -5217,6 +5766,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Exercise"
+          }
+        }
+      }
+    },
+    "월간": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly"
           }
         }
       }
@@ -5451,6 +6010,26 @@
         }
       }
     },
+    "이 주에 돌아온 것": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What came back this week"
+          }
+        }
+      }
+    },
+    "이 주에는 적어 둔 것이 없습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing was noted this week."
+          }
+        }
+      }
+    },
     "이 한 줄이\n말하고 있는 것": {
       "localizations": {
         "en": {
@@ -5532,6 +6111,7 @@
       }
     },
     "이번 주 결산, 잠김": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5631,12 +6211,42 @@
         }
       }
     },
+    "이번만": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Just this once"
+          }
+        }
+      }
+    },
     "이사 준비": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Moving prep"
+          }
+        }
+      }
+    },
+    "이어서": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
+          }
+        }
+      }
+    },
+    "이용약관": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
           }
         }
       }
@@ -5721,6 +6331,16 @@
         }
       }
     },
+    "일시정지": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
     "일은 네 마디로 굴러갑니다": {
       "localizations": {
         "en": {
@@ -5801,6 +6421,16 @@
         }
       }
     },
+    "일정 기준": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From schedule"
+          }
+        }
+      }
+    },
     "일정 데이터는 기기에만 저장되며\n외부로 전송되지 않습니다": {
       "localizations": {
         "en": {
@@ -5822,6 +6452,7 @@
       }
     },
     "일정 밀도(무지개), 할 일 쪼개기, 조각인지 덩어리인지 가르는 두 질문, 단계 순서 — 이 앱이 하는 일의 본체는 값을 받지 않습니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5987,6 +6618,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "An event's color follows the lane it lands in."
+          }
+        }
+      }
+    },
+    "일정이 겹칠수록 진해지는 격자. 개수 제한 없습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The grid that darkens as events overlap. No limits."
           }
         }
       }
@@ -6182,6 +6823,7 @@
       }
     },
     "전에 산 적이 있다면 여기서 되찾습니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -6241,12 +6883,12 @@
         }
       }
     },
-    "점선 칸은 시각이 정해지지 않은 것입니다 — 빈 자리에 놓아 본 자리예요. 정확한 시각은 맥앱 ‘무지개 공방’에서 끌어 옮길 수 있습니다.": {
+    "점선 알약은 시각이 정해지지 않은 것입니다 — 빈 자리에 놓아 본 자리예요. 정확한 시각은 맥앱 ‘무지개 공방’에서 끌어 옮길 수 있습니다.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "A dashed cell has no fixed time — it's just been dropped into an open slot. Drag it to an exact time in Rainbow Workshop on the Mac."
+            "value": "A dashed pill has no fixed time — it's just been dropped into an open slot. Drag it to an exact time in Rainbow Workshop on the Mac."
           }
         }
       }
@@ -6341,6 +6983,16 @@
         }
       }
     },
+    "조각 %lld개": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld quick"
+          }
+        }
+      }
+    },
     "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다.": {
       "localizations": {
         "en": {
@@ -6397,6 +7049,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "in fragments"
+          }
+        }
+      }
+    },
+    "조각으로 회수": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reclaimed in bits"
           }
         }
       }
@@ -6631,6 +7293,16 @@
         }
       }
     },
+    "지금 하기로 한 일이 없어요": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing scheduled right now"
+          }
+        }
+      }
+    },
     "지금 할 단계가 맨 위에": {
       "localizations": {
         "en": {
@@ -6651,12 +7323,32 @@
         }
       }
     },
+    "지금부터 따로 세기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start timing now"
+          }
+        }
+      }
+    },
     "지나간 이벤트 보기": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Show past events"
+          }
+        }
+      }
+    },
+    "지난 주": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Previous week"
           }
         }
       }
@@ -6921,12 +7613,42 @@
         }
       }
     },
+    "처음부터": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart"
+          }
+        }
+      }
+    },
     "첫 단계를 한 줄": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "One line for the first step"
+          }
+        }
+      }
+    },
+    "체험 중에 해지하면 요금이 나가지 않습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel during the trial and you pay nothing."
+          }
+        }
+      }
+    },
+    "초과": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "over"
           }
         }
       }
@@ -7077,6 +7799,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add"
+          }
+        }
+      }
+    },
+    "추천": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best value"
           }
         }
       }
@@ -7241,6 +7973,46 @@
         }
       }
     },
+    "타이머": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timer"
+          }
+        }
+      }
+    },
+    "타이머 열기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open timer"
+          }
+        }
+      }
+    },
+    "타이머가 끝나면 알림 드릴까요?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify you when the timer ends?"
+          }
+        }
+      }
+    },
+    "타이머를 켤 때마다 알림을 드릴지 여쭤봅니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asks each time you start a timer."
+          }
+        }
+      }
+    },
     "테스트용 샘플 일정 추가": {
       "localizations": {
         "en": {
@@ -7297,6 +8069,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Average sleep"
+          }
+        }
+      }
+    },
+    "평생": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lifetime"
           }
         }
       }
@@ -7451,6 +8233,16 @@
         }
       }
     },
+    "하루 화면에서 일정을 눌러 타이머를 시작할 수 있습니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap an item in the day view to start a timer."
+          }
+        }
+      }
+    },
     "하루에 안 들어갔어요": {
       "localizations": {
         "en": {
@@ -7502,6 +8294,7 @@
       }
     },
     "한 번 결제, 추가 요금 없음": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -7511,7 +8304,18 @@
         }
       }
     },
+    "한 번 결제로 계속 씁니다. 구독이 아닙니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One payment, yours for good. Not a subscription."
+          }
+        }
+      }
+    },
     "한 번 사면 끝입니다. 구독이 아니고, 같은 Apple 계정의 다른 기기에서도 열립니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -7522,6 +8326,7 @@
       }
     },
     "한 번 사면 열리는 것": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -7532,6 +8337,7 @@
       }
     },
     "한 번 사서 곁다리까지 전부 열려 있습니다.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -7741,6 +8547,16 @@
         }
       }
     },
+    "할 일과 단계 쪼개기": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To-dos and splitting into steps"
+          }
+        }
+      }
+    },
     "할 일로 가져가 단계로 쪼개면 손댈 수 있는 크기가 됩니다.": {
       "localizations": {
         "en": {
@@ -7777,6 +8593,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Total"
+          }
+        }
+      }
+    },
+    "해마다 결제되고 언제든 해지합니다.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bills yearly, cancel any time."
           }
         }
       }
