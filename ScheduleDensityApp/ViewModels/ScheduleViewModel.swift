@@ -319,6 +319,11 @@ class ScheduleViewModel {
         guard showWeekBlocksPlans else { return [] }
         if weekBlocksCacheToken == dataRefreshTrigger { return weekBlocksCache }
         weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
+        // 안전망: 만드는 쪽이 이름표를 안 새겼어도 여기서 채운다. 이름표 없는 임시 일정은
+        // 레인 배정에서 서로를 덮어써 무지개가 한 칸에 몰린다 (→ `Event.laneKey`).
+        for (index, event) in weekBlocksCache.enumerated() where event.mirrorKey == nil {
+            event.mirrorKey = "wb:\(index)"
+        }
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache
     }
@@ -1157,6 +1162,18 @@ class ScheduleViewModel {
         }
         print(String(repeating: "=", count: 60) + "\n")
 
+        // STEP: 무리마다 왼쪽부터 다시 센다.
+        //
+        // 레인 번호는 앱 전체에서 하나로 매겨져 있었다. 그래서 7월에 일정이 둘뿐이어도 그 둘이
+        // 3·4번 레인이면 7월 화면은 노랑부터 시작하고 1·2번 칸은 끝까지 비어 있었다.
+        // 그 자리를 잡고 있는 일정은 9월에 있어서 7월 화면에는 보이지도 않는다.
+        //
+        // 그래서 **서로 날짜가 닿는 일정끼리 한 무리**로 묶고, 무리마다 레인을 0번부터 다시 센다.
+        // 한 무리 안에서는 누가 몇 번인지가 그대로라 줄이 도중에 옆으로 꺾이지 않는다.
+        // 무리가 다르면 날짜가 아예 안 겹치므로, 같은 1번 레인을 써도 한 칸에서 만나지 않는다.
+        // 결국 일정이 있는 곳은 어디서나 빨강부터 시작한다.
+        compactedLanes = renumberPerCluster(compactedLanes)
+
         // 레인 할당 정보 저장 (압축된 결과 사용)
         var assignments: [String: Int] = [:]
         var indexInLane: [String: Int] = [:]
@@ -1242,6 +1259,46 @@ class ScheduleViewModel {
 
         // 겹치는 날짜가 하나도 없음
         return false
+    }
+
+    /// 날짜가 서로 닿는 일정끼리 묶어, 묶음마다 레인 번호를 0번부터 다시 매긴다.
+    ///
+    /// 번호만 바꾼다 — 누가 누구와 같은 레인인지, 누가 누구보다 왼쪽인지는 그대로다.
+    /// 한 묶음은 날짜가 이어져 있는 덩어리라, 다른 묶음과 같은 번호를 써도 한 칸에서 만나지 않는다.
+    private func renumberPerCluster(_ lanes: [(event: Event, lane: Int)]) -> [(event: Event, lane: Int)] {
+        guard !lanes.isEmpty else { return lanes }
+
+        // 시작일 순으로 훑으며, 지금까지의 가장 늦은 끝보다 늦게 시작하면 거기서 묶음이 갈린다.
+        let sorted = lanes.enumerated().sorted { $0.element.event.startDate < $1.element.event.startDate }
+        var clusters: [[Int]] = []      // 묶음마다 lanes 배열에서의 자리
+        var current: [Int] = []
+        var reach: Date? = nil
+
+        for item in sorted {
+            let start = item.element.event.startDate
+            let end = item.element.event.effectiveEndDate()
+            if let reachEnd = reach, start > reachEnd {
+                clusters.append(current)
+                current = []
+                reach = nil
+            }
+            current.append(item.offset)
+            reach = max(reach ?? end, end)
+        }
+        if !current.isEmpty { clusters.append(current) }
+
+        var result = lanes
+        for cluster in clusters {
+            let used = Set(cluster.map { lanes[$0].lane }).sorted()
+            let renumbered = Dictionary(uniqueKeysWithValues: used.enumerated().map { ($1, $0) })
+            guard used.first != 0 || used.last != used.count - 1 else { continue }
+            for index in cluster {
+                result[index] = (event: lanes[index].event, lane: renumbered[lanes[index].lane] ?? lanes[index].lane)
+            }
+            let titles = cluster.map { lanes[$0].event.title }.prefix(3).joined(separator: ", ")
+            print("   ⬅️  묶음(\(cluster.count)개: \(titles)…) 레인 \(used.map { $0 + 1 }) → \(used.indices.map { $0 + 1 })")
+        }
+        return result
     }
 
     /// 두 일정이 **같은 일정인지**.

@@ -367,8 +367,12 @@ final class WeekBlocksStore {
               + "(루틴 밖 일정=\(blockInputs.count), '루틴 안'이라 제외=\(skippedWithinRoutine))")
 
         // WBVisualEvent → Event (insert 금지, 시각화 입력용 임시 객체)
-        return visual.map { v in
-            Event(
+        //
+        // ⚠️ 스토어에 안 넣은 객체는 `persistentModelID`가 전부 같은 글자다. 레인을 찾는 열쇠를
+        //    그것으로 두면 미러 열 개가 한 열쇠를 나눠 갖고, 화면은 마지막 하나의 레인에 다 그린다
+        //    (→ `Event.laneKey`). 그래서 만드는 자리에서 하나씩 이름을 새겨 준다.
+        return visual.enumerated().map { index, v in
+            let event = Event(
                 title: v.title,
                 startDate: v.startDate,
                 endDate: v.endDate,
@@ -377,6 +381,9 @@ final class WeekBlocksStore {
                 selectedWeekdays: v.selectedWeekdays,
                 importance: EventImportance(rawValue: v.importance) ?? .medium
             )
+            // 같은 목록을 다시 구우면 같은 이름이 나온다 — 차례와 제목·날짜를 함께 쓴다.
+            event.mirrorKey = "wb:\(index):\(v.title)|\(v.startDate.timeIntervalSince1970)"
+            return event
         }
     }
 }

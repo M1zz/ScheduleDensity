@@ -130,9 +130,24 @@ final class Event {
     ///
     ///    SwiftData가 이미 행마다 유일한 이름을 들고 있으므로 그것을 그대로 쓴다.
     ///    같은 행이면 어느 컨텍스트에서 읽어도 같은 값이라, 화면과 계산이 서로를 찾는다.
+    ///    ⚠️ 단, **스토어에 안 넣은 임시 객체**(맥 계획을 비춘 미러 → `WeekBlocksStore.loadVisualEvents`)는
+    ///    `persistentModelID`가 아직 없어서 `temporaryIdentifier`라는 **같은 글자**가 나온다.
+    ///    그래서 미러 열 개가 한 키를 나눠 갖고, 레인 배정이 마지막 하나로 덮어써져
+    ///    무지개가 통째로 한 칸(마지막 일정의 레인)에 그려졌다 — 1·2번 칸이 비고 3번만 노랗던 것이 이것이다.
+    ///    만든 쪽이 `mirrorKey`를 새겨 주면 그것을 쓴다.
+    ///    이름표가 없는 임시 객체가 다른 길로 들어와도 줄이 겹치지 않게, 그때는 **객체 자신의 주소**로
+    ///    떨어뜨린다. 한 번 계산한 배정을 그리는 동안 그 객체가 살아 있으므로 그 사이에는 변하지 않는다.
     var laneKey: String {
-        String(describing: persistentModelID)
+        if let mirrorKey { return mirrorKey }
+        if modelContext == nil {
+            return "tmp:\(UInt(bitPattern: ObjectIdentifier(self).hashValue))"
+        }
+        return String(describing: persistentModelID)
     }
+
+    /// 스토어에 안 들어가는 임시 객체의 이름표. 저장하지 않는다(@Transient).
+    /// 맥 계획 미러처럼 `persistentModelID`가 없는 객체만 이것을 새긴다.
+    @Transient var mirrorKey: String? = nil
 
     // 이 일정의 실제 종료일 계산 (무한 반복 고려)
     func effectiveEndDate() -> Date {

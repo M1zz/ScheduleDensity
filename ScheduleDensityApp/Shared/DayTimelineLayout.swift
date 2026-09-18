@@ -130,7 +130,7 @@ enum TimelineLayout {
 
         /// 원하는 지점에서 가장 가까운, 통째로 들어갈 빈 자리를 찾아 그 자리를 소모한다.
         func place(desired: Double, _ dur: Double) -> (Double, Double)? {
-            let d = min(max(dur, 0), 24)
+            let d = min(max(dur, minVisibleHours), 24)
             guard d > 0 else { return nil }
             var best: (dist: Double, start: Double)? = nil
             for slot in free where slot.1 - slot.0 >= d - 1e-9 {
@@ -143,13 +143,23 @@ enum TimelineLayout {
             return (b.start, b.start + d)
         }
 
+        /// 통째로 들어갈 빈 구간이 없을 때. 가장 넓은 빈 구간 머리에(빈 구간이 아예 없으면 바란 시각에)
+        /// 겹쳐 세운다 — 겹친 것은 보이는 게 사라지는 것보다 낫다. (맥과 같다)
+        func overlapPlace(desired: Double, _ dur: Double) -> (Double, Double) {
+            let d = min(max(dur, minVisibleHours), 24)
+            let widest = free.max { ($0.1 - $0.0) < ($1.1 - $1.0) }
+            let s = min(max(widest?.0 ?? desired, 0), 24 - d)
+            return (s, s + d)
+        }
+
         let freeBlocks = blocks.filter { !$0.withinRoutine }
 
         // 2a) 시각이 지정된 계획 블록 — 그 자리에 그대로 (겹쳐도 됨).
         for blk in freeBlocks where blk.startHour >= 0 {
-            let s = blk.startHour
+            let dur = visibleDuration(blk)
+            let s = min(blk.startHour, 24 - minVisibleHours)
             var piece = 0
-            for (a, b) in splitAtMidnight(s, s + blk.durationHours) {
+            for (a, b) in splitAtMidnight(s, s + dur) {
                 segs.append(TimeSegment(id: "block:\(blockID(blk)):\(piece)", start: a, end: b,
                                         color: blockColor(blk), title: blk.title, isRoutine: false,
                                         kind: .planBlock))
@@ -163,11 +173,14 @@ enum TimelineLayout {
                 .filter({ $0.startHour < 0 && $0.timeBand == band })
                 .sorted(by: { $0.durationHours > $1.durationHours })
             {
-                if let (s, e) = place(desired: bandStart[band] ?? 12, blk.durationHours) {
-                    segs.append(TimeSegment(id: "block:\(blockID(blk)):0", start: s, end: e,
-                                            color: blockColor(blk), title: blk.title, isRoutine: false,
-                                            kind: .planBlock))
-                }
+                // ⚠️ 들어갈 빈 구간이 없어도 **안 그리지는 않는다.** 무지개 칸에는 서 있는데 시계에서만
+                //    사라지면 두 화면 중 하나가 거짓말이 된다. 겹쳐서라도 세운다 (→ overlapPlace, 맥과 같다).
+                let desired = bandStart[band] ?? 12
+                let dur = visibleDuration(blk)
+                let (s, e) = place(desired: desired, dur) ?? overlapPlace(desired: desired, dur)
+                segs.append(TimeSegment(id: "block:\(blockID(blk)):0", start: s, end: e,
+                                        color: blockColor(blk), title: blk.title, isRoutine: false,
+                                        kind: .planBlock))
             }
         }
 
@@ -192,9 +205,10 @@ enum TimelineLayout {
 
         // 4) 루틴 안 일정 — 루틴 위에 겹쳐(인셋). 빈 구간에 영향 없음.
         for blk in blocks where blk.withinRoutine {
-            let start = blk.startHour >= 0 ? blk.startHour : 9
+            let dur = visibleDuration(blk)
+            let start = blk.startHour >= 0 ? min(blk.startHour, 24 - minVisibleHours) : 9
             var piece = 0
-            for (a, b) in splitAtMidnight(start, start + blk.durationHours) {
+            for (a, b) in splitAtMidnight(start, start + dur) {
                 segs.append(TimeSegment(id: "nested:\(blockID(blk)):\(piece)", start: a, end: b,
                                         color: .accentColor, title: blk.title, isRoutine: false,
                                         isNested: true, kind: .planBlock))
@@ -225,6 +239,16 @@ enum TimelineLayout {
         let title: String
         let hours: Double
         let color: Color
+    }
+
+    /// 그릴 때 쓰는 가장 짧은 길이. **0분짜리 할 일을 올린 블록도 시계 위에 한 칸은 서야 한다** —
+    /// 길이 0인 구간은 잘라내기(`HourWindow.clamp`)에서 사라져, 무지개 칸에는 있는데 하루 화면에만
+    /// 없었다. (⚠️ 맥 `DayTimelineView.minVisibleHours`와 같은 값이어야 한다)
+    static let minVisibleHours = 0.25
+
+    /// 그릴 때 쓰는 길이. 0분이어도 최소 한 칸.
+    private static func visibleDuration(_ blk: PlanBlock) -> Double {
+        max(blk.durationHours, minVisibleHours)
     }
 
     /// 맥은 '구체성 확인'을 통과한 블록만 액센트로 칠한다. 같은 규칙을 쓴다.
