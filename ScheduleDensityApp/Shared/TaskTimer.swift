@@ -91,8 +91,8 @@ final class TaskTimer {
     enum NotifyAsk: Equatable {
         /// "이번 타이머가 끝나면 알림 드릴까요?"
         case thisTimer
-        /// "앞으로도 그렇게 할까요?" — 앞의 답을 들고 온다.
-        case always(notify: Bool)
+        /// "앞으로도 그렇게 할까요?" — 앞의 답은 `allowOnce`가 이미 들고 있다.
+        case always
     }
     private(set) var notifyAsk: NotifyAsk?
 
@@ -129,28 +129,25 @@ final class TaskTimer {
     func isTiming(_ token: String) -> Bool { target?.token == token }
 
     /// 끝날 때 알릴지. 설정에서 바꾼다.
-    var notifyPreference: TimerNotifyPreference {
-        get {
-            UserDefaults.standard.string(forKey: Self.preferenceKey)
-                .flatMap(TimerNotifyPreference.init(rawValue:)) ?? .ask
-        }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: Self.preferenceKey)
-            switch newValue {
-            case .always:
-                askForNotificationsIfNeeded()
-                scheduleEndNotification()
-            case .never:
-                allowOnce = false
-                cancelEndNotification()
-            case .ask:
-                break
-            }
-        }
+    ///
+    /// ⚠️ **저장 프로퍼티라야 한다.** 계산 프로퍼티로 UserDefaults를 직접 읽으면 `@Observable`이
+    ///    그 값을 못 본다 — 설정에서 골라도 화면이 다시 그려질 근거가 없다.
+    private(set) var notifyPreference: TimerNotifyPreference = TaskTimer.storedPreference
+
+    func setNotifyPreference(_ value: TimerNotifyPreference) {
+        notifyPreference = value
+        UserDefaults.standard.set(value.rawValue, forKey: Self.preferenceKey)
+        if value == .never { allowOnce = false }
+        armNotifications()
     }
 
-    /// 이번 것에 알림을 걸어 둘 것인가.
-    private var notifiesThisTimer: Bool {
+    private static var storedPreference: TimerNotifyPreference {
+        UserDefaults.standard.string(forKey: preferenceKey)
+            .flatMap(TimerNotifyPreference.init(rawValue:)) ?? .ask
+    }
+
+    /// 이번 것에 알림을 걸어 둘 것인가. 두 번째 물음의 말도 이 값을 따른다.
+    var willNotifyThisTimer: Bool {
         notifyPreference == .always || allowOnce
     }
 
@@ -159,20 +156,26 @@ final class TaskTimer {
     /// "이번 타이머가 끝나면 알림 드릴까요?"의 답.
     func answerThisTimer(notify: Bool) {
         allowOnce = notify
-        if notify {
-            askForNotificationsIfNeeded()
-            scheduleEndNotification()
-        } else {
-            cancelEndNotification()
-        }
+        armNotifications()
         // 한 번 더 묻는다 — 이번만인지, 앞으로도인지.
-        notifyAsk = .always(notify: notify)
+        notifyAsk = .always
     }
 
     /// "앞으로도 그렇게 할까요?"의 답. 기억하지 않으면 다음 타이머에서 다시 묻는다.
-    func answerAlways(remember: Bool, notify: Bool) {
-        if remember { notifyPreference = notify ? .always : .never }
+    func answerAlways(remember: Bool) {
+        if remember { setNotifyPreference(allowOnce ? .always : .never) }
         notifyAsk = nil
+    }
+
+    /// **알림을 걸거나 걷는다.** 지금 규칙으로 다시 재는 자리는 여기 하나뿐이다 —
+    /// 시작할 때·답을 들었을 때·설정을 바꿨을 때가 같은 말을 세 벌 적고 있었다.
+    private func armNotifications() {
+        guard willNotifyThisTimer else {
+            cancelEndNotification()
+            return
+        }
+        askForNotificationsIfNeeded()
+        scheduleEndNotification()
     }
 
     /// 물음을 닫기만 한다 (시트를 쓸어내린 경우). 이번 타이머의 답은 그대로 두고,
@@ -196,15 +199,8 @@ final class TaskTimer {
         startTicking()
         // 알린다고 정해 둔 사람에게만 곧바로 건다. 아직 안 물어봤으면 여기서 묻는다.
         allowOnce = false
-        switch notifyPreference {
-        case .always:
-            askForNotificationsIfNeeded()
-            scheduleEndNotification()
-        case .never:
-            break
-        case .ask:
-            notifyAsk = .thisTimer
-        }
+        if notifyPreference == .ask { notifyAsk = .thisTimer }
+        armNotifications()
         startActivity()
     }
 
@@ -316,7 +312,7 @@ final class TaskTimer {
     /// 끝나는 시각에 한 번 울리도록 걸어 둔다. 멈추거나 시간을 더하면 다시 건다.
     private func scheduleEndNotification() {
         cancelEndNotification()
-        guard notifiesThisTimer, let target, isRunning, remaining > 0 else { return }
+        guard willNotifyThisTimer, let target, isRunning, remaining > 0 else { return }
 
         let content = UNMutableNotificationContent()
         content.title = target.title
@@ -430,21 +426,4 @@ final class TaskTimer {
         adoptRunningActivity()
         if isRunning { startTicking() }
     }
-}
-
-// MARK: - 표기
-
-/// 남은 시간을 타이머 숫자로. 두 시간 미만은 분:초(1시간 → `60:00`),
-/// 그 위는 시:분:초로 적는다 — `180:00`은 사람이 한눈에 읽지 못한다.
-/// 계획을 넘겼으면 앞에 `+`를 달아 초과분을 센다.
-///
-/// ⚠️ 맥앱의 같은 이름 함수와 규칙이 같아야 한다.
-func formatCountdown(_ seconds: Double) -> String {
-    let over = seconds < 0
-    let total = Int(abs(seconds).rounded())
-    let h = total / 3600, m = (total % 3600) / 60, s = total % 60
-    let body = abs(seconds) < 7200
-        ? String(format: "%d:%02d", total / 60, s)
-        : String(format: "%d:%02d:%02d", h, m, s)
-    return over ? "+" + body : body
 }

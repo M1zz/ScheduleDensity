@@ -347,6 +347,7 @@ final class WeekBlocksStore {
             // '루틴 안' 일정은 자유시간을 추가 소비하지 않으므로 밀도에서 제외.
             guard !b.withinRoutine else { return nil }
             return WBBlockInput(
+                sourceID: String(describing: b.persistentModelID),
                 title: b.title,
                 weekStartDate: b.weekStartDate,
                 dayOffset: b.day.rawValue,
@@ -370,8 +371,9 @@ final class WeekBlocksStore {
         //
         // ⚠️ 스토어에 안 넣은 객체는 `persistentModelID`가 전부 같은 글자다. 레인을 찾는 열쇠를
         //    그것으로 두면 미러 열 개가 한 열쇠를 나눠 갖고, 화면은 마지막 하나의 레인에 다 그린다
-        //    (→ `Event.laneKey`). 그래서 만드는 자리에서 하나씩 이름을 새겨 준다.
-        return visual.enumerated().map { index, v in
+        //    (→ `Event.laneKey`). 그래서 **출처 블록의 이름**을 그대로 새겨 준다 —
+        //    목록 순서가 바뀌어도, 다시 구워도 같은 값이고, 하루 화면이 같은 열쇠로 색을 찾는다.
+        return visual.map { v in
             let event = Event(
                 title: v.title,
                 startDate: v.startDate,
@@ -381,8 +383,7 @@ final class WeekBlocksStore {
                 selectedWeekdays: v.selectedWeekdays,
                 importance: EventImportance(rawValue: v.importance) ?? .medium
             )
-            // 같은 목록을 다시 구우면 같은 이름이 나온다 — 차례와 제목·날짜를 함께 쓴다.
-            event.mirrorKey = "wb:\(index):\(v.title)|\(v.startDate.timeIntervalSince1970)"
+            event.mirrorKey = "wb:\(v.sourceID)"
             return event
         }
     }

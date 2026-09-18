@@ -50,9 +50,11 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
             termsURL: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!,
             entitlementIDs: ProEntitlement.entitlementIDs,
             gate: LeeoGatePolicy(
-                // 무료로도 **써 보고 알 만큼**은 연다: 최근 2주 장부·통계는 그냥 보인다.
-                freeLimits: [Gate.ledgerWeeks: ProFeature.freeWeekCount,
-                             Gate.statisticsWeeks: ProFeature.freeWeekCount],
+                // 무료로도 **써 보고 알 만큼**은 연다: 최근 2주 장부는 그냥 보인다.
+                // ⚠️ 여기 적은 것은 **실제로 구현된 것만**이다. 통계에도 2주 창을 열 생각이지만,
+                //    코드가 아직 통째로 잠그므로 적지 않는다 — 계약이 거짓말을 하면
+                //    Preflight도 포트폴리오도 이 앱을 잘못 센다.
+                freeLimits: [Gate.ledgerWeeks: ProFeature.freeWeekCount],
                 // 잠기는 자리는 페이월이 늘어놓는 목록 그 자체다. 두 군데에 따로 적으면
                 // 반드시 어긋나므로 `ProFeature.sold` 하나에서 받아 온다.
                 proOnly: Set(ProFeature.sold.map(\.rawValue))),
@@ -61,10 +63,8 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
 
     /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
     enum Gate {
-        /// 회수 장부를 몇 주까지 거슬러 보는가 (무료는 2주).
+        /// 회수 장부를 몇 주까지 거슬러 보는가 (무료는 2주 → WeekLedgerView.isFree).
         static let ledgerWeeks = "ledgerWeeks"
-        /// 일정 통계를 몇 주까지 거슬러 보는가 (무료는 2주).
-        static let statisticsWeeks = "statisticsWeeks"
     }
 
     /// 페이월·피드백에서 벌어진 일을 허브로 흘려보내는 싱크.

@@ -44,15 +44,6 @@ final class PurchaseManager {
     /// 사다가 막혔을 때 화면에 그대로 보여줄 말. 조용히 실패하면 사용자는 단추가 고장 난 줄 안다.
     private(set) var failureMessage: String?
 
-    /// **Pro를 화면에 세우는가.** 팔고 있거나, 이미 산 사람이면.
-    /// 산 사람에게는 판매를 멈춘 뒤에도 계속 보인다 — 값을 치른 것이 사라지면 안 된다.
-    var offersPro: Bool { ProEntitlement.sellsPro || isUnlocked }
-
-    /// 설정 화면에 가격 한 줄을 적을 대표 상품 (연간).
-    var featuredProduct: Product? {
-        products.first { $0.id == ProEntitlement.yearlyID } ?? products.first
-    }
-
     /// **이번 실행에서 영수증을 실제로 읽었는가.**
     ///
     /// ⚠️ 이 플래그가 서기 전에는 캐시에 아무것도 쓰지 않는다. LeeoStore는 상품을 불러오는
@@ -95,30 +86,10 @@ final class PurchaseManager {
     private func syncCrossPlatformMark() async {
         // 맥과 함께 쓰는 그 스토어. 표는 거기 산다 (→ ProMark.swift).
         guard let context = WeekBlocksStore.sharedContainer?.mainContext else { return }
-
-        if store.hasPro {
-            // 구독은 끝나는 날을 함께 적는다. 평생 이용권은 끝이 없으므로 비운다.
-            var expiry: Date?
-            var productID = ProEntitlement.yearlyID
-            var lifetime = false
-            for await entitlement in Transaction.currentEntitlements {
-                guard case .verified(let transaction) = entitlement,
-                      ProEntitlement.entitlementIDs.contains(transaction.productID),
-                      transaction.revocationDate == nil else { continue }
-                productID = transaction.productID
-                if let end = transaction.expirationDate {
-                    expiry = max(expiry ?? .distantPast, end)
-                } else {
-                    lifetime = true   // 평생 이용권·옛 1회 구매
-                }
-            }
-            ProMarkStore.stamp(productID: productID, validUntil: lifetime ? nil : expiry, in: context)
-        } else {
-            // 내 쪽 권한이 사라졌으면 내 표도 지운다 — 해지가 다른 기기에도 닿아야 한다.
-            ProMarkStore.clearMine(in: context)
-        }
-
-        crossPlatformPro = ProMarkStore.otherPlatformHasPro(in: context)
+        crossPlatformPro = await ProMarkStore.sync(hasPro: store.hasPro,
+                                                   entitlementIDs: ProEntitlement.entitlementIDs,
+                                                   defaultProductID: ProEntitlement.yearlyID,
+                                                   in: context)
     }
 
     /// 맥에서 산 것이 살아 있는가.

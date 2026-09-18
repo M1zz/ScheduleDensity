@@ -315,15 +315,14 @@ class ScheduleViewModel {
     }
 
     /// Mac WeekBlocks 계획 → 시각화용 Event(메모리 전용). dataRefreshTrigger 기준 캐시.
+    /// **무지개에 서 있는 맥 계획들.** 이미 구워 둔 캐시를 그대로 준다 —
+    /// 하루 화면이 색을 맞추려고 `Event` 테이블을 다시 읽지 않도록 (→ DayTimelineView).
+    func mirrorEvents() -> [Event] { weekBlocksEvents() }
+
     private func weekBlocksEvents() -> [Event] {
         guard showWeekBlocksPlans else { return [] }
         if weekBlocksCacheToken == dataRefreshTrigger { return weekBlocksCache }
         weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
-        // 안전망: 만드는 쪽이 이름표를 안 새겼어도 여기서 채운다. 이름표 없는 임시 일정은
-        // 레인 배정에서 서로를 덮어써 무지개가 한 칸에 몰린다 (→ `Event.laneKey`).
-        for (index, event) in weekBlocksCache.enumerated() where event.mirrorKey == nil {
-            event.mirrorKey = "wb:\(index)"
-        }
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache
     }
@@ -756,12 +755,12 @@ class ScheduleViewModel {
 
         guard !events.isEmpty else { return [] }
 
-        print("\n" + String(repeating: "=", count: 60))
-        print("📌 [Lane Packing] 시작 - 총 \(events.count)개 일정")
-        print("   목표: 1번 레인에 최대한 많은 칸 배치 (점수 최대화)")
-        print("   전략: ① 긴 일정 우선 배치 ② 백트래킹으로 최적 조합 탐색")
-        print("         ③ Gap Filling으로 빈 구간 메우기 ④ 압축 최적화")
-        print(String(repeating: "=", count: 60))
+        laneLog("\n" + String(repeating: "=", count: 60))
+        laneLog("📌 [Lane Packing] 시작 - 총 \(events.count)개 일정")
+        laneLog("   목표: 1번 레인에 최대한 많은 칸 배치 (점수 최대화)")
+        laneLog("   전략: ① 긴 일정 우선 배치 ② 백트래킹으로 최적 조합 탐색")
+        laneLog("         ③ Gap Filling으로 빈 구간 메우기 ④ 압축 최적화")
+        laneLog(String(repeating: "=", count: 60))
 
         var eventLanes: [(event: Event, lane: Int)] = []
         var assignedEventIds = Set<ObjectIdentifier>()
@@ -863,7 +862,7 @@ class ScheduleViewModel {
 
             // 💡 무한 루프 방지: 배치할 일정이 없으면 종료
             if laneEvents.isEmpty {
-                print("   ⚠️  더 이상 배치할 일정이 없습니다. 레인 할당 종료.")
+                laneLog("   ⚠️  더 이상 배치할 일정이 없습니다. 레인 할당 종료.")
                 break
             }
 
@@ -878,10 +877,10 @@ class ScheduleViewModel {
             }
 
             let method = useBacktracking ? "백트래킹" : "Greedy"
-            print("   🎨 레인 \(currentLane + 1): \(laneEvents.count)개 일정, \(totalDays)칸 [\(method)]")
+            laneLog("   🎨 레인 \(currentLane + 1): \(laneEvents.count)개 일정, \(totalDays)칸 [\(method)]")
             for event in laneEvents {
                 let cells = event.actualCellCount()
-                print("      - '\(event.title)' (\(cells)칸)")
+                laneLog("      - '\(event.title)' (\(cells)칸)")
             }
 
             currentLane += 1
@@ -899,18 +898,18 @@ class ScheduleViewModel {
             totalScore += score
         }
 
-        print("   ✅ 배치 완료: \(totalLanes)개 레인 사용 (1번~\(totalLanes)번)")
-        print("   📊 총 점수: \(totalScore.formatted())점")
-        print("      (1번 레인: 10,000,000점/칸, 2번: 1,000,000점/칸, 3번: 100,000점/칸, 4번: 10,000점/칸, 5번: 1,000점/칸, 6번: 100점/칸, 7번: 10점/칸)")
+        laneLog("   ✅ 배치 완료: \(totalLanes)개 레인 사용 (1번~\(totalLanes)번)")
+        laneLog("   📊 총 점수: \(totalScore.formatted())점")
+        laneLog("      (1번 레인: 10,000,000점/칸, 2번: 1,000,000점/칸, 3번: 100,000점/칸, 4번: 10,000점/칸, 5번: 1,000점/칸, 6번: 100점/칸, 7번: 10점/칸)")
 
         // STEP: Gap Filling - 레인의 빈 구간을 짧은 일정으로 메우기
-        print("\n   🔧 Gap Filling: 레인의 빈 구간에 짧은 일정 배치")
+        laneLog("\n   🔧 Gap Filling: 레인의 빈 구간에 짧은 일정 배치")
 
         // Gap Filling 전 레인별 상세 정보 출력
-        print("\n   📋 [Gap Filling 전] 레인별 상세:")
+        laneLog("\n   📋 [Gap Filling 전] 레인별 상세:")
         for lane in 0..<totalLanes {
             let eventsInLane = eventLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
-            print("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
+            laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
             for event in eventsInLane {
                 let cells = event.actualCellCount()
                 let weekdaysStr = formatWeekdays(event.selectedWeekdays)
@@ -920,7 +919,7 @@ class ScheduleViewModel {
                                                             locale: .autoupdatingCurrent)
                 let startStr = dateFormatter.string(from: event.startDate)
                 let endStr = dateFormatter.string(from: event.endDate)
-                print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
             }
         }
 
@@ -928,7 +927,7 @@ class ScheduleViewModel {
         var assignedSet = Set(eventLanes.map { ObjectIdentifier($0.event) })
         var unassignedEvents = events.filter { !assignedSet.contains(ObjectIdentifier($0)) }
 
-        print("\n      미배치 일정: \(unassignedEvents.count)개")
+        laneLog("\n      미배치 일정: \(unassignedEvents.count)개")
         for event in unassignedEvents {
             let cells = event.actualCellCount()
             let weekdaysStr = formatWeekdays(event.selectedWeekdays)
@@ -938,7 +937,7 @@ class ScheduleViewModel {
                                                         locale: .autoupdatingCurrent)
             let startStr = dateFormatter.string(from: event.startDate)
             let endStr = dateFormatter.string(from: event.endDate)
-            print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+            laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
         }
 
         var gapFilledCount = 0
@@ -946,33 +945,33 @@ class ScheduleViewModel {
         if !unassignedEvents.isEmpty {
             // 레인별로 배치 가능한 일정 찾기 (점수가 높은 레인부터 처리)
             for lane in 0..<totalLanes {
-                print("\n      🔍 레인 \(lane + 1) 분석 중...")
+                laneLog("\n      🔍 레인 \(lane + 1) 분석 중...")
                 let eventsInLane = gapFilledLanes.filter { $0.lane == lane }.map { $0.event }
 
                 // 💡 개선: gap에 국한되지 않고, 레인 전체에서 배치 가능한 일정 찾기
-                print("         현재 레인의 일정: \(eventsInLane.count)개")
+                laneLog("         현재 레인의 일정: \(eventsInLane.count)개")
                 for existingEvent in eventsInLane {
                     let weekdaysStr = formatWeekdays(existingEvent.selectedWeekdays)
-                    print("            - '\(existingEvent.title)' (\(weekdaysStr))")
+                    laneLog("            - '\(existingEvent.title)' (\(weekdaysStr))")
                 }
 
-                print("         미배치 일정 확인 중: \(unassignedEvents.count)개")
+                laneLog("         미배치 일정 확인 중: \(unassignedEvents.count)개")
                 for unassignedEvent in unassignedEvents {
                     let weekdaysStr = formatWeekdays(unassignedEvent.selectedWeekdays)
-                    print("            - '\(unassignedEvent.title)' (\(weekdaysStr)) 체크 중...")
+                    laneLog("            - '\(unassignedEvent.title)' (\(weekdaysStr)) 체크 중...")
 
                     // 겹침 확인
                     var canFit = true
                     for existingEvent in eventsInLane {
                         if eventsOverlap(unassignedEvent, existingEvent) {
                             let existingWeekdays = formatWeekdays(existingEvent.selectedWeekdays)
-                            print("               ❌ '\(existingEvent.title)' (\(existingWeekdays))와 겹침")
+                            laneLog("               ❌ '\(existingEvent.title)' (\(existingWeekdays))와 겹침")
                             canFit = false
                             break
                         }
                     }
                     if canFit {
-                        print("               ✅ 배치 가능!")
+                        laneLog("               ✅ 배치 가능!")
                     }
                 }
 
@@ -995,7 +994,7 @@ class ScheduleViewModel {
                 // 배치 가능한 일정들을 모두 이 레인에 추가
                 for event in fittableEvents {
                     guard !placedHere.contains(where: { eventsOverlap(event, $0) }) else {
-                        print("               ↩️  '\(event.title)': 방금 넣은 일정과 겹쳐 건너뜀")
+                        laneLog("               ↩️  '\(event.title)': 방금 넣은 일정과 겹쳐 건너뜀")
                         continue
                     }
                     placedHere.append(event)
@@ -1005,7 +1004,7 @@ class ScheduleViewModel {
 
                     let cells = event.actualCellCount()
                     let weekdaysStr = formatWeekdays(event.selectedWeekdays)
-                    print("      🎯 레인 \(lane + 1)에 '\(event.title)' 배치 (\(cells)칸, \(weekdaysStr))")
+                    laneLog("      🎯 레인 \(lane + 1)에 '\(event.title)' 배치 (\(cells)칸, \(weekdaysStr))")
                     gapFilledCount += 1
                 }
             }
@@ -1020,15 +1019,15 @@ class ScheduleViewModel {
                 }
 
                 let gapImprovement = gapFilledScore - totalScore
-                print("      ✅ Gap Filling 완료: \(gapFilledCount)개 일정 배치, +\(gapImprovement.formatted())점 개선")
+                laneLog("      ✅ Gap Filling 완료: \(gapFilledCount)개 일정 배치, +\(gapImprovement.formatted())점 개선")
                 totalScore = gapFilledScore
 
                 // Gap Filling 후 레인별 상세 정보 출력
-                print("\n   📋 [Gap Filling 후] 레인별 상세:")
+                laneLog("\n   📋 [Gap Filling 후] 레인별 상세:")
                 let gapFilledTotalLanes = Set(gapFilledLanes.map { $0.lane }).count
                 for lane in 0..<gapFilledTotalLanes {
                     let eventsInLane = gapFilledLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
-                    print("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
+                    laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
                     for event in eventsInLane {
                         let cells = event.actualCellCount()
                         let weekdaysStr = formatWeekdays(event.selectedWeekdays)
@@ -1038,18 +1037,18 @@ class ScheduleViewModel {
                                                                     locale: .autoupdatingCurrent)
                         let startStr = dateFormatter.string(from: event.startDate)
                         let endStr = dateFormatter.string(from: event.endDate)
-                        print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                        laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
                     }
                 }
             } else {
-                print("      ⏭️  Gap Filling 기회 없음")
+                laneLog("      ⏭️  Gap Filling 기회 없음")
             }
         } else {
-            print("      ⏭️  미배치 일정 없음")
+            laneLog("      ⏭️  미배치 일정 없음")
         }
 
         // STEP: 압축 (Compaction) - 긴 일정을 왼쪽으로, 짧은 일정을 오른쪽으로
-        print("\n   🔄 압축 시작: 긴 일정 왼쪽 배치로 점수 최적화")
+        laneLog("\n   🔄 압축 시작: 긴 일정 왼쪽 배치로 점수 최적화")
         var compactedLanes = gapFilledLanes
         var changed = true
         var iteration = 0
@@ -1075,7 +1074,7 @@ class ScheduleViewModel {
 
                     if !hasOverlap {
                         let cells = event.actualCellCount()
-                        print("      ↩️  '\(event.title)' (\(cells)칸): 레인 \(currentLane + 1) → 레인 \(targetLane + 1)")
+                        laneLog("      ↩️  '\(event.title)' (\(cells)칸): 레인 \(currentLane + 1) → 레인 \(targetLane + 1)")
                         compactedLanes[i] = (event: event, lane: targetLane)
                         changed = true
                         break
@@ -1104,7 +1103,7 @@ class ScheduleViewModel {
                         let event2CanGoToLane1 = !otherInLane1.contains { eventsOverlap(event2, $0) }
 
                         if event1CanGoToLane2 && event2CanGoToLane1 {
-                            print("      🔄 스왑: '\(event1.title)' (\(cells1)칸) ↔ '\(event2.title)' (\(cells2)칸) | 레인 \(lane1 + 1) ↔ 레인 \(lane2 + 1)")
+                            laneLog("      🔄 스왑: '\(event1.title)' (\(cells1)칸) ↔ '\(event2.title)' (\(cells2)칸) | 레인 \(lane1 + 1) ↔ 레인 \(lane2 + 1)")
                             compactedLanes[i] = (event: event1, lane: lane2)
                             compactedLanes[j] = (event: event2, lane: lane1)
                             changed = true
@@ -1130,24 +1129,24 @@ class ScheduleViewModel {
         let improvement = compactedScore - totalScore
         let finalLanes = Set(compactedLanes.map { $0.lane }).count
 
-        print("   ✅ 압축 완료: \(iteration)회 반복")
-        print("   📊 최종 점수: \(compactedScore.formatted())점 (개선: +\(improvement.formatted())점)")
-        print("   🎯 최종 레인 사용: \(finalLanes)개 (1번~\(finalLanes)번)")
-        print("\n   📋 레인별 상세:")
+        laneLog("   ✅ 압축 완료: \(iteration)회 반복")
+        laneLog("   📊 최종 점수: \(compactedScore.formatted())점 (개선: +\(improvement.formatted())점)")
+        laneLog("   🎯 최종 레인 사용: \(finalLanes)개 (1번~\(finalLanes)번)")
+        laneLog("\n   📋 레인별 상세:")
         for lane in 0..<finalLanes {
             let score = laneScores[lane] ?? 0
             let cells = laneCells[lane] ?? 0
             let pointPerCell = pointsPerCell(for: lane)
-            print("      레인 \(lane + 1): \(cells)칸 → \(score.formatted())점 (칸당 \(pointPerCell.formatted())점)")
+            laneLog("      레인 \(lane + 1): \(cells)칸 → \(score.formatted())점 (칸당 \(pointPerCell.formatted())점)")
         }
-        print("      " + String(repeating: "-", count: 40))
-        print("      총합: \(compactedScore.formatted())점")
+        laneLog("      " + String(repeating: "-", count: 40))
+        laneLog("      총합: \(compactedScore.formatted())점")
 
         // 최종 레인별 일정 상세 출력
-        print("\n   📋 [최종] 레인별 일정 상세:")
+        laneLog("\n   📋 [최종] 레인별 일정 상세:")
         for lane in 0..<finalLanes {
             let eventsInLane = compactedLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
-            print("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
+            laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
             for event in eventsInLane {
                 let cells = event.actualCellCount()
                 let weekdaysStr = formatWeekdays(event.selectedWeekdays)
@@ -1157,10 +1156,10 @@ class ScheduleViewModel {
                                                             locale: .autoupdatingCurrent)
                 let startStr = dateFormatter.string(from: event.startDate)
                 let endStr = dateFormatter.string(from: event.endDate)
-                print("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
             }
         }
-        print(String(repeating: "=", count: 60) + "\n")
+        laneLog(String(repeating: "=", count: 60) + "\n")
 
         // STEP: 무리마다 왼쪽부터 다시 센다.
         //
@@ -1206,6 +1205,14 @@ class ScheduleViewModel {
         // 압축된 결과로 정렬
         let compactedResult = compactedLanes.sorted { $0.lane < $1.lane }.map { $0.event }
         return compactedResult
+    }
+
+    /// 레인 배정 과정을 눈으로 따라가기 위한 기록. **출시 빌드에서는 아무 일도 안 한다** —
+    /// 배정 한 번에 열댓 줄이 찍히고 그중 하나는 일정마다 `DateFormatter`를 새로 만든다.
+    private func laneLog(_ message: @autoclosure () -> String) {
+#if DEBUG
+        print(message())
+#endif
     }
 
     // 두 일정이 겹치는지 확인

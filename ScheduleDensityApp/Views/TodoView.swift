@@ -40,11 +40,7 @@ struct TodoView: View {
     @State private var newTitle = ""
     @State private var showingFamilyShareNotice = false
     @State private var showingLedger = false
-    /// 회수 장부는 값을 받고 여는 것 중 하나다 (→ ProEntitlement.swift).
     @State private var purchases = PurchaseManager.shared
-    @State private var showingLedgerPaywall = false
-    /// '적기'가 잠겼을 때 내는 페이월 (→ ProFeature.editing).
-    @State private var editingPaywall = false
     /// 적는 줄이 열려 있는가. + 를 누르면 열리고, 빈 채로 포커스를 잃으면 닫힌다.
     @State private var isAdding = false
     /// 오른쪽 위 + 를 누를 때마다 하나씩 오른다. 값 자체는 뜻이 없고, 바뀌었다는 것만 신호다.
@@ -210,8 +206,6 @@ struct TodoView: View {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
         .confirmsTodoDeletion($deletionRequest)
-        .paywall(for: .ledger, isPresented: $showingLedgerPaywall)
-        .paywall(for: .editing, isPresented: $editingPaywall)
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
                 Task { await family.startSharing() }
@@ -322,14 +316,6 @@ struct TodoView: View {
             rainbowPendingSection
 
             Section {
-                // 0. 여기서 적은 것이 아직 맥에 안 간다는 사실을 말한다
-                //    (→ TodoAccess.swift). **적는 것은 아무 지장이 없으므로**
-                //    막는 말이 아니라 알려 주는 말이다. 그래서 실제로 안 건너간
-                //    줄이 있을 때만 뜬다 — 없는데 띄우면 팔려고 세운 벽이 된다.
-                if !TodoAccess.canSync, hiddenCount > 0 {
-                    readOnlyNotice()
-                }
-
                 // 1. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
                 //    뒤가 계속 보이고, 그동안 아무거나 할 수 있다 (→ BoltOnboarding.swift).
                 if showsBoltHint(items: items, errands: errands) {
@@ -453,51 +439,6 @@ struct TodoView: View {
     /// 밀 것이 없는 설명은 그냥 읽을 거리다.
     private func showsBoltHint(items: [BacklogItem], errands: [BacklogItem]) -> Bool {
         !hasSeenBoltOnboarding && !(items.isEmpty && errands.isEmpty)
-    }
-
-    /// 이 기기에서 적었지만 아직 다른 기기에서 안 보이는 줄의 수.
-    /// 안내 줄은 **이 값이 0보다 클 때만** 뜬다 — 없는데 띄우면 팔려고 세운 벽이 된다.
-    private var hiddenCount: Int {
-        allItems.filter { !$0.isShared && TodoSharing.isMine($0) && !$0.isCompleted }.count
-    }
-
-    /// 잠긴 기기라고 말하는 줄. 두 목록이 같은 줄을 쓴다 — 화면마다 다른 말을 하면
-    /// 같은 잠금이 다른 잠금처럼 읽힌다.
-    ///
-    /// - Parameter showsMyListCounts: 내 목록에서만 뜻이 있는 숫자들(받은 상자·안 보이는 줄)을
-    ///   함께 보일지. 공유 목록에서는 그 숫자가 이 화면 이야기가 아니라 끈다.
-    private func readOnlyNotice(showsMyListCounts: Bool = true) -> some View {
-        Button {
-            editingPaywall = true
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "arrow.left.arrow.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(TodoAccess.lockedTitle)
-                        .font(.system(size: 14, weight: .semibold))
-                        .tracking(-0.3)
-                    Text(TodoAccess.lockedNote)
-                        .font(.system(size: 12))
-                        .tracking(-0.2)
-                        .lineSpacing(3)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                    // 여기 것이 저기서 안 보인다는 사실을 숫자로 말한다.
-                    // "동기화가 고장났나"와 "안 열어서 그렇다"를 가르는 한 줄이다.
-                    if showsMyListCounts, hiddenCount > 0 {
-                        Text("이 기기의 \(hiddenCount)개는 다른 기기에서 안 보입니다.")
-                            .font(.system(size: 12, weight: .medium))
-                            .tracking(-0.2)
-                            .foregroundStyle(TodoView.nowGreen)
-                    }
-                }
-                Spacer(minLength: 0)
-            }
-            .padding(.vertical, 4)
-        }
-        .buttonStyle(.plain)
     }
 
     /// 완료한 것으로 가는 줄. 개수는 여기서도 보인다 — 오늘 뭘 끝냈는지는
@@ -825,12 +766,6 @@ struct TodoView: View {
 
             let open = family.items.filter { !$0.isCompleted }
             let done = family.items.filter { $0.isCompleted }
-
-            // 함께 보는 목록도 같은 규칙이다 — 잠긴 기기는 **보기만** 한다.
-            // 내 목록에서 하던 말을 여기서도 그대로 한다 (→ TodoAccess.swift).
-            if !TodoAccess.canSync, hiddenCount > 0 {
-                Section { readOnlyNotice(showsMyListCounts: false) }
-            }
 
             Section {
                 ForEach(open) { todo in

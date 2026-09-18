@@ -27,9 +27,6 @@ import Foundation
 /// 값을 받고 여는 것들. 목록은 페이월과 설정 화면이 함께 읽는다 —
 /// 무엇이 열리는지 두 군데에 따로 적으면 반드시 어긋난다.
 enum ProFeature: String, CaseIterable, Identifiable {
-    /// 이 기기에서 적은 할 일이 맥으로 건너가기 (→ TodoAccess.swift).
-    /// **적는 것 자체는 값을 안 받는다.**
-    case editing
     case widget
     case calendarImport
     case scheduleShare
@@ -39,12 +36,7 @@ enum ProFeature: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     /// **지금 실제로 파는 것들.** 페이월과 설정이 이 목록만 읽는다.
-    ///
-    /// 아직 안 파는 것을 목록에 올리면, 산 사람이 "돈을 냈는데 이건 왜 안 열리지"로
-    /// 읽는다. 판매 스위치가 꺼져 있는 항목은 여기서 빠진다 (→ TodoAccess.swift).
-    static var sold: [ProFeature] {
-        allCases.filter { $0 != .editing || ProEntitlement.sellsSync }
-    }
+    static var sold: [ProFeature] { allCases }
 
     /// 무료로도 **써 보고 알 만큼**은 열어 두는 것. 문을 통째로 잠그면 무엇을 사는지
     /// 모른 채 값을 내라는 말이 된다 — 최근 2주는 그냥 보이고 그 앞이 잠긴다.
@@ -53,7 +45,6 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .editing:        return String(localized: "맥과 함께 쓰기")
         case .widget:         return String(localized: "홈·잠금 화면 위젯")
         case .calendarImport: return String(localized: "캘린더에서 가져오기")
         case .scheduleShare:  return String(localized: "일정 공유")
@@ -64,7 +55,6 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var note: String {
         switch self {
-        case .editing:        return String(localized: "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다.")
         case .widget:         return String(localized: "지금 할 단계와 무지개를 앱을 안 열고도 봅니다.")
         case .calendarImport: return String(localized: "시스템 캘린더의 일정을 무지개로 들여옵니다.")
         case .scheduleShare:  return String(localized: "내 일정을 읽기 전용으로 나눠 봅니다.")
@@ -75,7 +65,6 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
     var systemImage: String {
         switch self {
-        case .editing:        return "arrow.left.arrow.right"
         case .widget:         return "rectangle.3.group"
         case .calendarImport: return "calendar.badge.plus"
         case .scheduleShare:  return "person.2"
@@ -87,19 +76,9 @@ enum ProFeature: String, CaseIterable, Identifiable {
 
 enum ProEntitlement {
 
-    /// **'맥과 함께 쓰기'를 파는가. — 안 판다.**
-    ///
-    /// ⚠️ 1.1.x에서 잠깐 팔았다. 맥이 같은 것을 팔려다 "되던 걸 막는 것"이라며 무료로
-    ///    되돌렸고, 맥 페이월은 지금 그것을 **무료 항목으로 광고한다.** 두 앱이 서로 다른
-    ///    말을 하면 두 앱을 다 쓰는 사람 — 가장 오래 쓸 사람 — 에게서 신뢰를 잃는다.
-    ///    다시 켜지 말 것. 파는 것은 아래 `sellsPro`가 정한다.
-    ///
-    /// ⚠️ 파는 것은 **적기가 아니라 건너가기**다. 적는 것은 이 앱의 본체라 잠그지
-    ///    않는다 — 잠그면 새로 깐 사람이 첫 화면에서 한 줄도 못 적고, 앱이 무엇인지
-    ///    알기도 전에 값부터 치르라는 말이 된다 (→ TodoAccess.swift).
-    ///
-    /// 위젯도 이 파일을 함께 쓰므로 스위치가 여기 있다.
-    static let sellsSync = false
+    // ⚠️ **'맥과 함께 쓰기'는 팔지 않는다.** 1.1.x에서 잠깐 팔았다가, 맥이 같은 것을 팔려다
+    //    "되던 걸 막는 것"이라며 무료로 되돌렸고 맥 페이월은 지금 그것을 무료 항목으로 광고한다.
+    //    두 앱이 서로 다른 말을 하면 두 앱을 다 쓰는 사람에게서 신뢰를 잃는다. 다시 팔지 말 것.
 
     /// **Pro를 팔기 시작했는가.**
     ///
@@ -196,6 +175,8 @@ enum ProEntitlement {
     ///    화면은 그것을 비추는 `PurchaseManager.isUnlocked`를 본다. 밖에서 직접
     ///    고치면 화면에 알려 줄 사람이 없어 설정만 낡은 말을 하게 된다.
     static func setPurchased(_ value: Bool) {
+        // 위젯과 함께 쓰는 통이라 쓰는 일이 공짜가 아니다. 값이 그대로면 두고 간다.
+        guard cachedPurchase != value else { return }
         defaults.set(value, forKey: purchasedKey)
     }
 

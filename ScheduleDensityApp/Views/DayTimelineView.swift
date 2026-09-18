@@ -36,7 +36,7 @@ struct DayTimeAnalysisView: View {
     /// 왼쪽 시각 글씨가 서는 폭.
     private static let gutter: CGFloat = 46
     /// 알약의 폭. 아이콘 하나가 가운데 들어가는 크기.
-    private static let pillWidth: CGFloat = 34
+    static let pillWidth: CGFloat = 34
     /// 한 줄(알약 + 시각·제목)이 차지하는 가장 작은 키. 15분짜리도 이만큼은 선다.
     private static let minRowHeight: CGFloat = 38
 
@@ -185,8 +185,10 @@ struct DayTimeAnalysisView: View {
         // 다른 일정 위에 겹친 끼니는 칸을 따로 갖지 않고 오른쪽에 얹힌다 — 회사 9시간이 끼니 한 번
         // 때문에 반쪽이 되지 않게.
         let base = segs.filter { !$0.isNested && !$0.isFlexible }
-        let laned = segs.filter { !Self.overlaysOther($0, base: base) }
-        let lanes = Self.lanes(laned, minHours: Double(Self.minRowHeight / Self.hourHeight))
+        // 얹히는 것들은 한 번만 가려 둔다 — 아래 `frame(for:)`이 조각마다 다시 세면 O(n²)가 두 번이다.
+        let overlays = Set(segs.filter { Self.overlaysOther($0, base: base) }.map(\.id))
+        let laned = segs.filter { !overlays.contains($0.id) }
+        let lanes = Self.lanes(laned)
         let order = Dictionary(uniqueKeysWithValues: segs.sorted { $0.start < $1.start }
             .enumerated().map { ($1.id, $0) })
 
@@ -202,7 +204,8 @@ struct DayTimeAnalysisView: View {
                 }
 
                 ForEach(segs) { seg in
-                    if let box = frame(for: seg, window: window, base: base, lanes: lanes, trackWidth: trackWidth) {
+                    if let box = frame(for: seg, window: window, overlays: overlays,
+                                       lanes: lanes, trackWidth: trackWidth) {
                         let i = order[seg.id] ?? 0
                         DaySegmentRow(segment: seg,
                                       size: box.size,
@@ -319,9 +322,6 @@ struct DayTimeAnalysisView: View {
         /// 몇 번째로 드러나는가 — 위쪽 알약이 선 뒤에 늘어난다.
         var order = 0
 
-        /// 하루의 첫머리·끝머리 — 이어 줄 일정이 없는 쪽은 투명하게 스러진다.
-        var fadesTop: Bool { !joinsTop }
-        var fadesBottom: Bool { !joinsBottom }
     }
 
     /// 등뼈 위에 서는 일정(첫 칸) 사이의 빈자리를 찾는다 (→ 맥 DayScheduleView.connectors).
@@ -389,8 +389,9 @@ struct DayTimeAnalysisView: View {
         let gap = max(0, c.bottom - c.top)
         let radius = Self.pillWidth / 2
         // 알약에 닿는 끝은 알약 반지름만큼 파고들어 둥근 끝을 감싼다. 안 닿는 끝은 그대로.
-        let tuckTop: CGFloat = c.joinsTop ? radius : (c.fadesTop ? 0 : 12)
-        let tuckBottom: CGFloat = c.joinsBottom ? radius : (c.fadesBottom ? 0 : 12)
+        // 알약에 안 닿는 끝(하루의 첫머리·끝머리)은 그 자리에서 투명하게 스러진다.
+        let tuckTop: CGFloat = c.joinsTop ? radius : 0
+        let tuckBottom: CGFloat = c.joinsBottom ? radius : 0
         let height = gap + tuckTop + tuckBottom
         // 목이 퍼지는 길이 — 알약 안(반지름) + 밖으로 조금. 둘이 붙어 있으면 밖 몫이 줄어든다.
         let spread = min(14, gap / 2)
@@ -402,8 +403,8 @@ struct DayTimeAnalysisView: View {
         let end: Double = 0.85, waist: Double = 0.42
         let topOpacity = (c.joinsTop ? end : 0) * (c.dimsTop ? 0.5 : 1)
         let bottomOpacity = (c.joinsBottom ? end : 0) * (c.dimsBottom ? 0.5 : 1)
-        let waistTop = (c.fadesTop ? waist * 0.6 : waist) * (c.dimsTop ? 0.5 : 1)
-        let waistBottom = (c.fadesBottom ? waist * 0.6 : waist) * (c.dimsBottom ? 0.5 : 1)
+        let waistTop = (c.joinsTop ? waist : waist * 0.6) * (c.dimsTop ? 0.5 : 1)
+        let waistBottom = (c.joinsBottom ? waist : waist * 0.6) * (c.dimsBottom ? 0.5 : 1)
         let upper = height > 0 ? min(0.5, max(flareTop, tuckTop + 6) / height) : 0
         let lower = height > 0 ? max(0.5, 1 - max(flareBottom, tuckBottom + 6) / height) : 1
         let showsLabel = c.hours >= 0.5 && gap >= 30
@@ -464,14 +465,14 @@ struct DayTimeAnalysisView: View {
     }
 
     /// 조각 하나가 놓일 자리 (시각 칸 오른쪽 기준). 창 밖으로 나가면 nil.
-    private func frame(for seg: TimeSegment, window: HourWindow, base: [TimeSegment],
+    private func frame(for seg: TimeSegment, window: HourWindow, overlays: Set<String>,
                        lanes: [String: Lane], trackWidth w: CGFloat) -> CGRect? {
         guard let vis = window.clamp(seg.start, seg.end) else { return nil }
         let top = y(vis.start, window)
         // 짧은 일도 알약 하나와 글씨 한 줄은 들어간다. 겹칠 몫은 칸 나누기가 미리 셌다.
         let height = max(Self.minRowHeight, y(vis.end, window) - y(vis.start, window) - 3)
 
-        if Self.overlaysOther(seg, base: base) {
+        if overlays.contains(seg.id) {
             let x = w * 0.45
             return CGRect(x: x, y: top, width: max(Self.pillWidth, w - x), height: height)
         }
@@ -492,9 +493,10 @@ struct DayTimeAnalysisView: View {
     ///
     /// 서로 이어 겹치는 **묶음마다** 칸 수를 따로 센다 — 오전에 둘이 겹쳤다고 오후 일정까지
     /// 반쪽이 되지 않게.
-    /// - Parameter minHours: 짧은 일도 화면에서는 이만큼 차지한다. 시각으로는 안 겹쳐도
-    ///   알약이 겹쳐 보이면 나란히 세운다.
-    static func lanes(_ segs: [TimeSegment], minHours: Double = 0) -> [String: Lane] {
+    /// ⚠️ **화면 높이로 겹침을 재지 않는다.** 짧은 일도 한 줄 키만큼 그리다 보니 "09:00에 끝나는
+    ///    일이 화면에서는 09:09까지 뻗는다"는 이유로 다음 일정과 겹친 것으로 세어, 둘이 반쪽씩
+    ///    갈라졌다. 겹침은 **시각으로만** 잰다 (맥이 같은 자리에서 같은 결론을 냈다).
+    static func lanes(_ segs: [TimeSegment]) -> [String: Lane] {
         var result: [String: Lane] = [:]
         var cluster: [(id: String, lane: Int)] = []
         var laneEnds: [Double] = []
@@ -512,7 +514,7 @@ struct DayTimeAnalysisView: View {
                 clusterEnd = -Double.infinity
             }
             let lane: Int
-            let end = max(seg.end, seg.start + minHours)
+            let end = seg.end
             if let open = laneEnds.firstIndex(where: { $0 <= seg.start + 1e-6 }) {
                 laneEnds[open] = end
                 lane = open
@@ -530,7 +532,7 @@ struct DayTimeAnalysisView: View {
     /// 이 조각으로 타이머를 켠다. 하루 화면이 타이머로 가는 단 하나의 문이다.
     private func startTimer(for seg: TimeSegment) {
         let midnight = Calendar.current.startOfDay(for: date)
-        let slot = ScheduleSlot(id: "\(date.timeIntervalSince1970):\(seg.id)",
+        let slot = ScheduleSlot(id: ScheduleClock.slotID(seg.id, on: date),
                                 title: seg.title,
                                 iconName: day.icon(for: seg) ?? "timer",
                                 colorHex: day.routineColors[seg.title],
@@ -772,7 +774,8 @@ struct DayTimeAnalysisView: View {
         // 그래서 여기서 새로 정하지 않고, 그 날 무지개에 서 있는 미러 일정에서 받아 온다.
         let rainbowColors = planColorsFromRainbow()
         result.segments = result.segments.map { seg in
-            guard seg.kind == .planBlock, let color = rainbowColors[seg.title] else { return seg }
+            guard seg.kind == .planBlock,
+                  let color = rainbowColors[Self.blockKey(ofSegment: seg.id)] else { return seg }
             return TimeSegment(id: seg.id, start: seg.start, end: seg.end, color: color,
                                title: seg.title, isRoutine: seg.isRoutine,
                                isFlexible: seg.isFlexible, isNested: seg.isNested,
@@ -899,21 +902,34 @@ struct DayTimeAnalysisView: View {
         return (try? context.fetch(descriptor)) ?? []
     }
 
-    /// 그 날 무지개에 서 있는 계획들의 색 (제목 → 줄 색).
+    /// 그 날 무지개에 서 있는 계획들의 색 (출처 블록의 이름 → 줄 색).
     ///
     /// 맥 계획은 무지개에 '미러 일정'으로 서고, 줄 색은 거기서 이미 정해져 있다.
-    /// ⚠️ 제목으로 맞춘다 — 미러 일정과 계획 블록을 잇는 안정적인 열쇠가 아직 없다
-    ///    (→ WeekBlocksStore의 머리주석, "제목으로 맞추지 말 것"은 **쓰는 쪽** 이야기다.
-    ///    여기서는 색 하나를 고르는 일이라, 같은 제목이 둘이면 같은 색이 되는 정도가 전부다).
+    /// 미러와 조각은 **같은 출처 블록의 이름**을 들고 있으므로 그것으로 맞춘다
+    /// (→ WeekBlocksStore.loadVisualEvents, DayTimelineLayout.blockID) — 제목으로 맞추면
+    /// 같은 제목의 두 계획이 한 색으로 뭉친다.
     private func planColorsFromRainbow() -> [String: Color] {
         var result: [String: Color] = [:]
-        for event in viewModel.fetchEvents() where event.occursOn(date: date) {
-            // 이 앱에서 직접 만든 일정은 아래 `flexible`로 따로 들어간다. 여기서 찾는 것은
-            // 맥에서 비춰 온 계획뿐이다 — 그것만 제목으로 계획 블록과 짝이 된다.
-            guard event.mirrorKey != nil else { continue }
-            result[event.title] = laneColor(for: event)
+        for event in viewModel.mirrorEvents() where event.occursOn(date: date) {
+            guard let key = event.mirrorKey else { continue }
+            result[Self.blockKey(ofMirror: key)] = laneColor(for: event)
         }
         return result
+    }
+
+    /// 조각 id `"block:<블록>:<토막>"` → `<블록>`.
+    static func blockKey(ofSegment id: String) -> String {
+        for prefix in ["block:", "nested:"] where id.hasPrefix(prefix) {
+            let body = id.dropFirst(prefix.count)
+            guard let cut = body.lastIndex(of: ":") else { return String(body) }
+            return String(body[..<cut])
+        }
+        return id
+    }
+
+    /// 미러 이름표 `"wb:<블록>"` → `<블록>`.
+    static func blockKey(ofMirror key: String) -> String {
+        key.hasPrefix("wb:") ? String(key.dropFirst(3)) : key
     }
 
     private func laneColor(for event: Event) -> Color {
@@ -979,12 +995,7 @@ struct DayTimeAnalysisView: View {
 
         func status(for seg: TimeSegment) -> ReviewStatus? {
             guard seg.kind == .planBlock else { return nil }
-            for prefix in ["block:", "nested:"] where seg.id.hasPrefix(prefix) {
-                let body = seg.id.dropFirst(prefix.count)
-                guard let cut = body.lastIndex(of: ":") else { return nil }
-                return blockStatuses[String(body[..<cut])]
-            }
-            return nil
+            return blockStatuses[DayTimeAnalysisView.blockKey(ofSegment: seg.id)]
         }
     }
 
@@ -1024,7 +1035,8 @@ private struct DaySegmentRow: View {
     let status: ReviewStatus?
     let isPast: Bool
 
-    private static let pillWidth: CGFloat = 34
+    /// 알약 폭은 시계가 정한다 — 여기서 따로 적으면 다리 이음매가 틀어진다.
+    private static let pillWidth = DayTimeAnalysisView.pillWidth
 
     private var done: Bool { status == .done }
 

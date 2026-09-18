@@ -59,6 +59,8 @@ struct SettingsView: View {
     @State private var deletionRequest: EventDeletionRequest?
     /// 유료로 가른 곁다리들 (→ ProEntitlement.swift). 잠겨 있으면 페이월을 낸다.
     @State private var purchases = PurchaseManager.shared
+    /// 타이머 설정을 보여주고 바꾸는 자리 (→ TaskTimer.swift).
+    @State private var timer = TaskTimer.shared
     @State private var paywallFeature: ProFeature?
     /// 할 일 분류를 만들고 고치는 시트 (→ CategoryManagerView.swift).
     @State private var showingCategoryManager = false
@@ -113,12 +115,12 @@ struct SettingsView: View {
     /// 타이머가 끝날 때 알릴지. 값은 타이머가 들고 있다 —
     /// 설정과 타이머가 각자 기억하면 한쪽에서 끈 것이 다른 쪽에서 안 꺼진다.
     private var timerNotify: Binding<TimerNotifyPreference> {
-        Binding(get: { TaskTimer.shared.notifyPreference },
-                set: { TaskTimer.shared.notifyPreference = $0 })
+        Binding(get: { timer.notifyPreference },
+                set: { timer.setNotifyPreference($0) })
     }
 
     private var timerNotifyFootnote: String {
-        switch TaskTimer.shared.notifyPreference {
+        switch timer.notifyPreference {
         case .always: String(localized: "앱을 닫아 두어도 끝나는 시각에 한 번 울립니다.")
         case .never:  String(localized: "알림을 보내지 않습니다. 앱을 보고 있을 때는 짧게 진동합니다.")
         case .ask:    String(localized: "타이머를 켤 때마다 알림을 드릴지 여쭤봅니다.")

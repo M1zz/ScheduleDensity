@@ -363,6 +363,7 @@
       }
     },
     "맥과 함께 쓰기" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -524,6 +525,7 @@
       }
     },
     "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

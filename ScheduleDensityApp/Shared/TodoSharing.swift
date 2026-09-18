@@ -80,7 +80,8 @@ enum TodoSharing {
     /// 새로 적는 줄에 지금 상태를 새긴다.
     static func stamp(_ item: some SharedRecord) {
         item.originInstallID = installID
-        item.isShared = TodoAccess.canSync
+        // 동기화는 무료다 — 적은 것은 언제나 다른 기기로 건너간다 (→ ProEntitlement.swift).
+        item.isShared = true
     }
 
     // MARK: - 열리고 잠길 때

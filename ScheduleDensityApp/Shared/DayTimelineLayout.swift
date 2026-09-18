@@ -33,32 +33,12 @@ struct HourWindow: Equatable {
     var span: Double { max(1, end - start) }
     var isFullDay: Bool { start <= 0 && end >= 24 }
 
-    /// 시각 → 축 위 위치 비율(0...1).
-    func fraction(_ hour: Double) -> Double {
-        (hour - start) / span
-    }
-
     /// 창 밖으로 나간 부분을 잘라낸다. 완전히 벗어나면 nil.
     func clamp(_ s: Double, _ e: Double) -> (start: Double, end: Double)? {
         let cs = max(s, start), ce = min(e, end)
         return ce - cs > 0.0001 ? (cs, ce) : nil
     }
 
-    /// 축에 숫자를 찍을 시각들 — 창의 양끝 + 그 사이 3시간 배수.
-    var axisHours: [Int] {
-        let lo = Int(start.rounded(.up)), hi = Int(end.rounded(.down))
-        var hours = [lo]
-        hours += stride(from: lo, through: hi, by: 1).filter { $0 % 3 == 0 && $0 != lo && $0 != hi }
-        if hi != lo { hours.append(hi) }
-        return hours
-    }
-
-    /// 격자를 그릴 시각들 (창 안쪽 정시).
-    var gridHours: [Int] {
-        let lo = Int(start.rounded(.down)) + 1, hi = Int(end.rounded(.up)) - 1
-        guard lo <= hi else { return [] }
-        return Array(lo...hi)
-    }
 }
 
 /// 하루 위에 놓인 한 조각.
@@ -350,38 +330,4 @@ enum TimelineLayout {
         return result.filter { $0.1 - $0.0 > 0.0001 }
     }
 
-    /// 겹치는 조각들을 나란히 세우기 위한 열 배정. 세로 화면(iOS)에서만 쓴다 —
-    /// 맥은 가로 막대 하나에 다 얹지만, 좁은 화면에서 그러면 뒤엣것이 안 보인다.
-    static func assignColumns(_ segments: [TimeSegment]) -> [String: (column: Int, total: Int)] {
-        let sorted = segments.sorted { $0.start < $1.start }
-        var result: [String: (Int, Int)] = [:]
-        var cluster: [TimeSegment] = []
-        var clusterEnd = -1.0
-
-        func flush() {
-            guard !cluster.isEmpty else { return }
-            var columnEnds: [Double] = []
-            var columnOf: [String: Int] = [:]
-            for seg in cluster {
-                if let free = columnEnds.firstIndex(where: { $0 <= seg.start + 1e-9 }) {
-                    columnEnds[free] = seg.end
-                    columnOf[seg.id] = free
-                } else {
-                    columnEnds.append(seg.end)
-                    columnOf[seg.id] = columnEnds.count - 1
-                }
-            }
-            for (id, column) in columnOf { result[id] = (column, columnEnds.count) }
-            cluster = []
-            clusterEnd = -1
-        }
-
-        for seg in sorted {
-            if seg.start >= clusterEnd - 1e-9 { flush() }
-            cluster.append(seg)
-            clusterEnd = max(clusterEnd, seg.end)
-        }
-        flush()
-        return result
-    }
 }

@@ -58,7 +58,6 @@ struct TodoDetailView: View {
     @State private var sheetStepTitle = ""
     @FocusState private var inputFocused: Bool
     @FocusState private var sheetStepFocused: Bool
-    /// 잠긴 기기에서 고치려 들면 내는 페이월 (→ ProFeature.editing).
     /// 목록 화면과 같다 — 잠긴 자리는 아무 일도 안 일어나게 두지 않는다.
 
     private var tree: TodoTree { TodoTree(allItems) }

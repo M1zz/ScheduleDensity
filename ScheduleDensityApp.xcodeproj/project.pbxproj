@@ -100,7 +100,6 @@
 		CB298C12B23FF6BBBD9B23DD /* CloudSyncLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059E898FF838C334CC121045 /* CloudSyncLog.swift */; };
 		CB523D8E557C1B3985468738 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0EA73C01E663B2E7E1A5958A /* InfoPlist.xcstrings */; };
 		CD908E0CA926627D15F997E8 /* ScheduleClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9986D50F72A622E5CA223199 /* ScheduleClock.swift */; };
-		CE5BCD25D19C6102CB9668AC /* TodoAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */; };
 		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
 		CFF51ED63E41C1792E020ACB /* BacklogItem+Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */; };
 		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
@@ -266,7 +265,6 @@
 		F1DFC2876EC6FE5666C43486 /* TodoTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTree.swift; sourceTree = "<group>"; };
 		F2DFFB40BB030A552DC9AC4C /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrencePattern.swift; sourceTree = "<group>"; };
-		FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoAccess.swift; sourceTree = "<group>"; };
 		FD190E36511B72612020479E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -479,7 +477,6 @@
 				3485B020981ACBBB7679B4BF /* TaskTimer.swift */,
 				A16A56CFD7BFD1A4F77443B7 /* Theme.swift */,
 				AD55D4646CC08F9037882688 /* TimerActivity.swift */,
-				FBDDF31F49E70E27D3E5C67B /* TodoAccess.swift */,
 				EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */,
 				B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */,
 				21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */,
@@ -742,7 +739,6 @@
 				CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */,
 				FDD795001175EF2B314A3484 /* TimerActivity.swift in Sources */,
 				34A0EC8B0A706939563B6C1D /* TimerView.swift in Sources */,
-				CE5BCD25D19C6102CB9668AC /* TodoAccess.swift in Sources */,
 				51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */,
 				8F4252EBC0246EBBC967E3B5 /* TodoDeletion.swift in Sources */,
 				8DFF99514D06C1499F68AD41 /* TodoDetailView.swift in Sources */,

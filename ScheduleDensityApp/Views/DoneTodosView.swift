@@ -21,7 +21,6 @@ struct DoneTodosView: View {
 
     @Environment(\.modelContext) private var context
 
-    /// 잠긴 기기에서 되돌리려 들면 내는 페이월 (→ ProFeature.editing).
 
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]

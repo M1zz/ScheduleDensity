@@ -52,10 +52,29 @@ enum ScheduleClock {
     /// **내일까지 보는 이유**: '다음 일정'은 자정을 넘어 있을 수 있다.
     static func slots(around now: Date = Date()) -> [ScheduleSlot] {
         let cal = Calendar.current
-        return (-1...1).flatMap { offset -> [ScheduleSlot] in
+        let raw = (-1...1).flatMap { offset -> [ScheduleSlot] in
             guard let date = cal.date(byAdding: .day, value: offset, to: now) else { return [] }
             return slots(on: date)
         }
+        return merged(raw)
+    }
+
+    /// **자정에 잘린 것을 하나로 되돌린다.** 23:00–07:00 잠은 어제 줄의 [23,24]와 오늘 줄의
+    /// [0,7] 두 조각으로 그려진다. 그대로 두면 23:29에 "31분 남음"이라고 답하는데,
+    /// 실제로 남은 것은 7시간 31분이다 (→ 맥 `ScheduleClock`도 같은 답을 낸다).
+    private static func merged(_ slots: [ScheduleSlot]) -> [ScheduleSlot] {
+        var result: [ScheduleSlot] = []
+        for slot in slots.sorted(by: { $0.start < $1.start }) {
+            if let last = result.last, last.title == slot.title,
+               abs(last.end.timeIntervalSince(slot.start)) < 1 {
+                result[result.count - 1] = ScheduleSlot(
+                    id: last.id, title: last.title, iconName: last.iconName, colorHex: last.colorHex,
+                    start: last.start, end: slot.end, isFlexible: last.isFlexible)
+            } else {
+                result.append(slot)
+            }
+        }
+        return result
     }
 
     /// 지금 하고 있는 것. 겹쳐 있으면 **가장 짧은 것**을 고른다 —
@@ -72,9 +91,8 @@ enum ScheduleClock {
 
     /// 그 날 하루에 그려지는 조각들. 하루 화면과 **같은 계산**을 쓴다 (→ DayTimelineView.load).
     ///
-    /// 자정을 넘기는 잠은 하루 화면에서 [23,24]·[0,7] 두 조각으로 그려지는데, 여기서는
-    /// 그 날짜의 0시를 기준으로 절대 시각을 만들 뿐이라 두 조각 그대로 온다.
-    /// 이어 붙이지 않는다 — '지금 그 안인가'는 어느 조각으로 물어도 답이 같다.
+    /// 자정을 넘기는 잠은 하루 화면에서 [23,24]·[0,7] 두 조각으로 그려지므로 여기서도 둘로 온다.
+    /// 이어 붙이는 일은 사흘을 모으는 `slots(around:)`가 한다 (→ `merged`).
     static func slots(on date: Date) -> [ScheduleSlot] {
         let input = WeekBlocksStore.shared.dayInput(for: date)
         guard input.isAvailable else { return [] }
@@ -96,7 +114,6 @@ enum ScheduleClock {
         }
 
         let midnight = Calendar.current.startOfDay(for: date)
-        let dayKey = Self.dayKey(midnight)
 
         return result.segments.compactMap { seg -> ScheduleSlot? in
             // 루틴 안에 얹힌 일정은 그 루틴과 같은 시각을 두 번 세는 셈이라 뺀다.
@@ -104,7 +121,7 @@ enum ScheduleClock {
             let isRoutineLike = seg.kind == .routine || seg.kind == .quota
             return ScheduleSlot(
                 // 같은 일이 여러 날 서 있으므로 날짜까지 넣어야 그 날의 그것을 가리킨다.
-                id: "\(dayKey):\(seg.id)",
+                id: slotID(seg.id, on: date),
                 title: seg.title,
                 iconName: isRoutineLike ? (icons[seg.title] ?? "timer") : "square.stack.3d.up",
                 colorHex: isRoutineLike ? colors[seg.title] ?? nil : nil,
@@ -114,11 +131,35 @@ enum ScheduleClock {
         }
     }
 
-    /// "2026-09-18". 같은 이름의 조각을 날짜로 가른다.
-    private static func dayKey(_ midnight: Date) -> String {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: midnight)
+    /// **한 조각을 가리키는 열쇠.** 하루 화면과 타이머가 같은 이름으로 부르도록 여기서만 짓는다
+    /// (→ TaskTimer.isTiming, DayTimeAnalysisView.startTimer).
+    static func slotID(_ segmentID: String, on date: Date) -> String {
+        "\(Int(Calendar.current.startOfDay(for: date).timeIntervalSince1970)):\(segmentID)"
+    }
+}
+
+// MARK: - 한 벌만 셈한다
+
+/// **일정에서 읽은 '지금'을 앱에 한 벌만 둔다.**
+///
+/// ⚠️ 타이머 줄은 탭마다 선다. 줄마다 제 손으로 `slots()`를 부르면 같은 답을 세 번 셈하는데,
+///    한 번이 스토어 넷을 통째로 훑는 일(사흘 × `dayInput`)이라 탭을 옮기거나 앱이 앞으로 나올
+///    때마다 그 비용이 세 배가 됐다. 여기 한 벌을 두고 줄들은 읽기만 한다.
+@Observable
+@MainActor
+final class ScheduleClockStore {
+    static let shared = ScheduleClockStore()
+
+    private(set) var slots: [ScheduleSlot] = []
+
+    private init() {}
+
+    func reload() {
+        slots = ScheduleClock.slots()
+    }
+
+    /// 지금 하고 있는 것.
+    func current(at now: Date = Date()) -> ScheduleSlot? {
+        ScheduleClock.current(slots, at: now)
     }
 }

@@ -41,7 +41,13 @@ struct WeekLedgerView: View {
         return weeksBack < ProFeature.freeWeekCount
     }
 
-    private var isLocked: Bool { !purchases.isUnlocked && !isFree(week) }
+    /// 지난 주로 더 넘어갈 수 있는가. 아이콘과 동작이 **같은 답**을 쓴다.
+    ///
+    /// ⚠️ 영수증을 아직 못 읽었으면(`isKnown == false`) 잠그지 않는다 — 산 사람이 앱을 켜자마자
+    ///    넘기려 할 때 자물쇠와 페이월을 보게 되기 때문이다 (→ PurchaseManager.isKnown).
+    private var canGoBack: Bool {
+        purchases.isUnlocked || !purchases.isKnown || isFree(previousWeek)
+    }
 
     /// 이번 주인가. 지난 주 장부는 읽기만 한다 — 지나간 주에 새 기록을 더할 일은 없다.
     private var isThisWeek: Bool {
@@ -99,16 +105,10 @@ struct WeekLedgerView: View {
                 }
                 ToolbarItemGroup(placement: .topBarLeading) {
                     Button {
-                        let previous = Calendar(identifier: .iso8601)
-                            .date(byAdding: .day, value: -7, to: week) ?? week
                         // 잠긴 주로 넘어가려 하면, 넘기는 대신 그 자리에서 판다.
-                        if !purchases.isUnlocked, !isFree(previous) {
-                            showingPaywall = true
-                        } else {
-                            shownWeek = previous
-                        }
+                        if canGoBack { shownWeek = previousWeek } else { showingPaywall = true }
                     } label: {
-                        Image(systemName: purchases.isUnlocked || isFree(previousWeek) ? "chevron.left" : "lock")
+                        Image(systemName: canGoBack ? "chevron.left" : "lock")
                     }
                     .accessibilityLabel("지난 주")
 

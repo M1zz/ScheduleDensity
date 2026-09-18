@@ -106,7 +106,7 @@ struct TaskTimerLiveActivity: Widget {
                      countsDown: true)
                     .multilineTextAlignment(.trailing)
             } else {
-                Text(verbatim: Self.paused(state.pausedRemaining))
+                Text(verbatim: formatCountdown(state.pausedRemaining))
             }
         }
         .font(.system(size: size, weight: .semibold, design: .rounded))
@@ -114,20 +114,5 @@ struct TaskTimerLiveActivity: Widget {
         .foregroundStyle(tint)
     }
 
-    private static func tint(_ state: TaskTimerAttributes.ContentState) -> Color {
-        // 계획을 넘겼으면 빨강. 가는 중에는 끝 시각이 지났는지로 안다.
-        let over = state.isRunning ? state.endDate < Date() : state.isOvertime
-        if over { return .red }
-        return state.colorHex.flatMap { Color(hex: $0) } ?? .accentColor
-    }
-
-    /// 멈춰 있을 때 세워 둘 숫자. 앱의 `formatCountdown`과 같은 규칙이다.
-    private static func paused(_ seconds: TimeInterval) -> String {
-        let over = seconds < 0
-        let total = Int(abs(seconds).rounded())
-        let body = abs(seconds) < 7200
-            ? String(format: "%d:%02d", total / 60, total % 60)
-            : String(format: "%d:%02d:%02d", total / 3600, (total % 3600) / 60, total % 60)
-        return over ? "+" + body : body
-    }
+    private static func tint(_ state: TaskTimerAttributes.ContentState) -> Color { state.tint }
 }

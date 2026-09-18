@@ -359,7 +359,7 @@ struct PaywallView: View {
         var eligible: Set<String> = []
         for product in purchases.products {
             guard let subscription = product.subscription,
-                  product.subscription?.introductoryOffer?.paymentMode == .freeTrial else { continue }
+                  subscription.introductoryOffer?.paymentMode == .freeTrial else { continue }
             if await subscription.isEligibleForIntroOffer { eligible.insert(product.id) }
         }
         trialEligible = eligible

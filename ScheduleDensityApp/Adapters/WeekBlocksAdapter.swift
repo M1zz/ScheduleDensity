@@ -45,6 +45,9 @@ struct WBRoutineInput {
 
 /// WeekBlocks 계획 블록(특정 주)의 시각화용 중립 표현.
 struct WBBlockInput {
+    /// **출처를 가리키는 이름.** 이 블록 하나를 가리키는 값(`PlanBlock.persistentModelID`)이다.
+    /// 여기서 버리면 하류가 제목·차례로 신원을 다시 지어내야 한다 (→ Event.laneKey).
+    var sourceID: String = ""
     var title: String
     var weekStartDate: Date        // 그 주 월요일 00:00
     var dayOffset: Int             // 월요일=0 … 일요일=6
@@ -55,6 +58,8 @@ struct WBBlockInput {
 
 /// 시각화 결과 — iOS에서 `Event`로 그대로 옮겨지는 중립 구조.
 struct WBVisualEvent: Equatable {
+    /// 어느 계획 블록에서 나왔는가 (→ WBBlockInput.sourceID).
+    var sourceID: String = ""
     var title: String
     var startDate: Date
     var endDate: Date
@@ -93,6 +98,7 @@ enum WeekBlocksAdapter {
         else { return nil }
 
         return WBVisualEvent(
+            sourceID: block.sourceID,
             title: title,
             startDate: date,
             endDate: date,                  // 하루짜리

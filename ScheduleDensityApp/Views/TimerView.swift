@@ -20,12 +20,38 @@ import SwiftUI
 /// 직접 센 타이머가 있으면 그것이, 없으면 일정에 적힌 지금 것이 선다. 둘 다 없으면 서지 않는다.
 struct TimerBar: View {
     @State private var timer = TaskTimer.shared
-    @State private var slots: [ScheduleSlot] = []
+    @State private var clock = ScheduleClockStore.shared
     @State private var showingSheet = false
 
+    /// 보여줄 것이 있는가. 없으면 초를 세지 않는다 —
+    /// 빈 줄이 탭 수만큼 초당 한 번씩 깨어날 이유가 없다.
+    private var hasSomething: Bool { timer.isActive || clock.current() != nil }
+
     var body: some View {
+        // 보여줄 것이 없으면 초를 세는 뷰 자체를 세우지 않는다.
+        Group {
+            if hasSomething { ticking } else { Color.clear.frame(height: 0) }
+        }
+        // 일정은 자주 바뀌지 않는다. 화면이 뜰 때와 일정이 바뀌었을 때만 다시 읽는다.
+        // 읽는 자리도 한 벌이다 (→ ScheduleClockStore) — 줄이 셋이어도 셈은 한 번이다.
+        .task { if clock.slots.isEmpty { clock.reload() } }
+        .onReceive(NotificationCenter.default.publisher(for: .todoPeriodDidChange)) { _ in
+            clock.reload()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            clock.reload()
+        }
+        .sheet(isPresented: $showingSheet) {
+            TimerSheet(slot: clock.current())
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
+    }
+
+    /// 초를 세며 서 있는 줄.
+    private var ticking: some View {
         TimelineView(.periodic(from: .now, by: 1)) { ctx in
-            let slot = ScheduleClock.current(slots, at: ctx.date)
+            let slot = clock.current(at: ctx.date)
             Group {
                 if timer.isActive {
                     bar(icon: timer.isRunning ? (timer.target?.iconName ?? "timer") : "pause.fill",
@@ -45,19 +71,6 @@ struct TimerBar: View {
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.82), value: timer.isActive)
             .animation(.spring(response: 0.3, dampingFraction: 0.82), value: slot?.id)
-        }
-        // 일정은 자주 바뀌지 않는다. 화면이 뜰 때와 일정이 바뀌었을 때만 다시 읽는다.
-        .task { slots = ScheduleClock.slots() }
-        .onReceive(NotificationCenter.default.publisher(for: .todoPeriodDidChange)) { _ in
-            slots = ScheduleClock.slots()
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
-            slots = ScheduleClock.slots()
-        }
-        .sheet(isPresented: $showingSheet) {
-            TimerSheet(slot: ScheduleClock.current(slots))
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
         }
     }
 
@@ -394,8 +407,8 @@ private struct TimerNotifyAskModifier: ViewModifier {
                 Text("앱을 닫아 두어도 끝나는 시각에 한 번 울립니다.")
             }
             .alert(alwaysAskTitle, isPresented: askingAlways) {
-                Button(alwaysAskConfirm) { timer.answerAlways(remember: true, notify: alwaysAskNotify) }
-                Button("이번만") { timer.answerAlways(remember: false, notify: alwaysAskNotify) }
+                Button(alwaysAskConfirm) { timer.answerAlways(remember: true) }
+                Button("이번만") { timer.answerAlways(remember: false) }
             } message: {
                 Text("설정에서 언제든 바꿀 수 있습니다.")
             }
@@ -407,15 +420,12 @@ private struct TimerNotifyAskModifier: ViewModifier {
     }
 
     private var askingAlways: Binding<Bool> {
-        Binding(get: { if case .always = timer.notifyAsk { return true }; return false },
-                set: { if !$0, case .always = timer.notifyAsk { timer.dismissAsk() } })
+        Binding(get: { timer.notifyAsk == .always },
+                set: { if !$0, timer.notifyAsk == .always { timer.dismissAsk() } })
     }
 
     /// 앞의 답이 무엇이었냐에 따라 두 번째 물음의 말이 달라진다.
-    private var alwaysAskNotify: Bool {
-        if case .always(let notify) = timer.notifyAsk { return notify }
-        return false
-    }
+    private var alwaysAskNotify: Bool { timer.willNotifyThisTimer }
 
     private var alwaysAskTitle: String {
         alwaysAskNotify

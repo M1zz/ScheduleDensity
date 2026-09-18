@@ -37,8 +37,9 @@ struct ConsentedUsageAnalytics: LeeoAnalytics {
     /// 가르는 값 하나만** 뒤에 붙인다. 값은 전부 열거형에서 나오는 정해진 낱말이라
     /// 사용자가 적은 글자가 섞여 들어갈 길이 없다.
     ///
-    /// 상품 ID 는 일부러 안 붙인다. 파는 것이 '무지개 Pro' 하나뿐이라 언제나 같은 값이고,
-    /// 같은 값을 매번 붙이면 이름만 길어지고 세는 데는 아무 도움이 안 된다.
+    /// 상품 ID 는 붙인다. 파는 것이 연간·평생·월간 셋이 된 뒤로는, 그것이 **무엇이 팔렸는지**를
+    /// 가르는 유일한 값이다. 셋을 한 낱말로 뭉치면 아래 `purchaseFailed` 주석이 경계하는
+    /// 그 실수를 반대편에서 저지르게 된다. 값은 우리가 정한 상수 ID뿐이다.
     static func label(for event: LeeoEvent) -> String {
         switch event {
         case .paywallShown(let reason):
@@ -47,10 +48,10 @@ struct ConsentedUsageAnalytics: LeeoAnalytics {
             return join("paywall_shown", reason)
         case .gateBlocked(let key):
             return join("gate_blocked", key)
-        case .purchaseStarted:
-            return "purchase_started"
-        case .purchaseCompleted:
-            return "purchase_completed"
+        case .purchaseStarted(let productID):
+            return join("purchase_started", shortPlan(productID))
+        case .purchaseCompleted(let productID):
+            return join("purchase_completed", shortPlan(productID))
         case .purchaseFailed(_, let reason):
             // 취소인지, 승인 대기인지, 진짜 실패인지를 가른다. 셋을 뭉치면
             // "안 팔린다"만 남고 "왜 안 팔리는가"가 사라진다.
@@ -65,6 +66,12 @@ struct ConsentedUsageAnalytics: LeeoAnalytics {
         case .custom:
             return event.name
         }
+    }
+
+    /// 상품 ID의 꼬리만 남긴다 — `…pro.yearly` → `yearly`. 허브의 이름 한 칸에
+    /// 번들 ID를 통째로 넣으면 이름이 길어지기만 하고 세는 데는 꼬리 한 낱말이면 된다.
+    private static func shortPlan(_ productID: String) -> String {
+        productID.split(separator: ".").last.map(String.init) ?? productID
     }
 
     private static func join(_ name: String, _ value: String?) -> String {

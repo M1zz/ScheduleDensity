@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import SwiftUI
 import ActivityKit
 
 struct TaskTimerAttributes: ActivityAttributes {
@@ -36,12 +37,38 @@ struct TaskTimerAttributes: ActivityAttributes {
         /// 멈춘 순간의 남은 시간(초). 음수면 계획을 넘긴 것이다.
         var pausedRemaining: TimeInterval
 
-        /// 계획을 넘겼나. 멈춰 있을 때만 이 값으로 판단한다
-        /// (가고 있을 때는 `endDate`가 지났는지로 화면이 스스로 안다).
-        var isOvertime: Bool { pausedRemaining < 0 }
+        /// 계획을 넘겼나. 가는 중이면 끝 시각이 지났는지로, 멈춰 있으면 남은 시간으로 안다.
+        func isOvertime(at now: Date = Date()) -> Bool {
+            isRunning ? endDate < now : pausedRemaining < 0
+        }
+
+        /// 알약·고리·숫자의 색. **넘긴 것은 빨강** — 앱과 잠금화면이 같은 답을 쓴다.
+        var tint: Color {
+            if isOvertime() { return .red }
+            return colorHex.flatMap { Color(hex: $0) } ?? .accentColor
+        }
     }
 
     /// 무엇에 붙은 타이머인가 (→ `TaskTimer.TimerTarget.token`).
     /// 같은 일을 두 번 시작하려 할 때 이미 떠 있는 것을 알아보는 데 쓴다.
     var token: String
+}
+
+// MARK: - 표기
+
+/// 남은 시간을 타이머 숫자로. 두 시간 미만은 분:초(1시간 → `60:00`),
+/// 그 위는 시:분:초로 적는다 — `180:00`은 사람이 한눈에 읽지 못한다.
+/// 계획을 넘겼으면 앞에 `+`를 달아 초과분을 센다.
+///
+/// ⚠️ **앱과 잠금화면이 같은 숫자를 적어야 한다.** 이 파일은 두 타깃에 함께 들어 있어서,
+///    규칙을 여기 한 벌만 두면 위젯이 복사본을 들 이유가 없다.
+///    (맥앱의 같은 이름 함수와도 규칙이 같다 → 무지개 공방 TaskTimer.swift)
+func formatCountdown(_ seconds: Double) -> String {
+    let over = seconds < 0
+    let total = Int(abs(seconds).rounded())
+    let h = total / 3600, m = (total % 3600) / 60, s = total % 60
+    let body = abs(seconds) < 7200
+        ? String(format: "%d:%02d", total / 60, s)
+        : String(format: "%d:%02d:%02d", h, m, s)
+    return over ? "+" + body : body
 }
