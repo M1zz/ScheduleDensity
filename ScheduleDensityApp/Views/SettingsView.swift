@@ -110,6 +110,21 @@ struct SettingsView: View {
         ProFeature.sold.map(\.title).joined(separator: ", ")
     }
 
+    /// 타이머가 끝날 때 알릴지. 값은 타이머가 들고 있다 —
+    /// 설정과 타이머가 각자 기억하면 한쪽에서 끈 것이 다른 쪽에서 안 꺼진다.
+    private var timerNotify: Binding<TimerNotifyPreference> {
+        Binding(get: { TaskTimer.shared.notifyPreference },
+                set: { TaskTimer.shared.notifyPreference = $0 })
+    }
+
+    private var timerNotifyFootnote: String {
+        switch TaskTimer.shared.notifyPreference {
+        case .always: String(localized: "앱을 닫아 두어도 끝나는 시각에 한 번 울립니다.")
+        case .never:  String(localized: "알림을 보내지 않습니다. 앱을 보고 있을 때는 짧게 진동합니다.")
+        case .ask:    String(localized: "타이머를 켤 때마다 알림을 드릴지 여쭤봅니다.")
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -468,6 +483,21 @@ struct SettingsView: View {
                     Text(showPastEvents
                         ? "모든 일정(지나간 일정 포함)을 표시합니다."
                         : "종료일이 오늘 이전인 일정은 자동으로 숨겨집니다.")
+                }
+
+                // 타이머 섹션 — 끝날 때 알릴지 (→ TaskTimer.swift).
+                Section {
+                    Picker(selection: timerNotify) {
+                        Text(TimerNotifyPreference.always.label).tag(TimerNotifyPreference.always)
+                        Text(TimerNotifyPreference.never.label).tag(TimerNotifyPreference.never)
+                        Text(TimerNotifyPreference.ask.label).tag(TimerNotifyPreference.ask)
+                    } label: {
+                        Label("끝나면 알림", systemImage: "bell.badge")
+                    }
+                } header: {
+                    Text("타이머")
+                } footer: {
+                    Text(timerNotifyFootnote)
                 }
 
                 // 일정 분산 섹션

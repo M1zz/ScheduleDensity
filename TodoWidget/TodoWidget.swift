@@ -70,6 +70,10 @@ struct RainbowWidgetBundle: WidgetBundle {
         TodoWidget()
         FragmentWidget()
         RainbowWidget()
+        // 잠금화면·다이나믹 아일랜드의 타이머 (→ TimerLiveActivity.swift).
+        if #available(iOS 16.2, *) {
+            TaskTimerLiveActivity()
+        }
         // 제어센터 컨트롤은 iOS 18부터다 (→ QuickTodoControl.swift).
         if #available(iOS 18.0, *) {
             QuickTodoControl()

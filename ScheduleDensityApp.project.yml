@@ -112,6 +112,9 @@ targets:
       # 위젯은 값을 받고 여는 것 중 하나다. 익스텐션은 결제를 조회할 수 없으므로
       # 앱이 App Group에 구워둔 한 줄만 읽는다 (StoreKit은 앱 쪽에만 있다).
       - path: ScheduleDensityApp/Shared/ProEntitlement.swift
+      # 잠금화면 타이머가 주고받는 값의 모양. 그리는 쪽(위젯)과 보내는 쪽(앱)이
+      # 같은 타입을 알아야 해서 양쪽 타깃에 든다 (→ TimerActivity.swift).
+      - path: ScheduleDensityApp/Shared/TimerActivity.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoWidget

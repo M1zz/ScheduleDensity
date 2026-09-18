@@ -323,9 +323,11 @@ struct ScheduleDensityApp: App {
                 // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
                 TodoView()
                     .modelContainer(todoContainer)
+                    .timerBar()
                     .tabItem { Label("할 일", systemImage: "checklist") }
                     .tag(AppTab.todo)
                 ContentView(viewModel: schedule)
+                    .timerBar()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
@@ -333,11 +335,14 @@ struct ScheduleDensityApp: App {
                 // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
                 if showShareTab, purchases.isUnlocked {
                     ScheduleShareView()
+                        .timerBar()
                         .tabItem { Label("공유", systemImage: "person.2.circle") }
                         .tag(AppTab.share)
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
+            // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
+            .timerNotifyAsk()
             .paywall(for: .widget, isPresented: $widgetPaywall)
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
