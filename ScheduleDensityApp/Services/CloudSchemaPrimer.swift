@@ -65,6 +65,8 @@ enum CloudSchemaPrimer {
         block.reviewedAt = now
         // 맥의 캘린더 가져오기가 더한 칸. 아이폰은 안 쓰지만 스키마는 함께 쓴다.
         block.calendarEventID = "schema-sample-event"
+        // 맥이 타이머를 멈출 때 남기는 '다음 첫 동작' 칸 (→ PlanBlock.nextAction).
+        block.nextAction = "schema-sample-next"
         block.isShared = true
         block.originInstallID = "schema-sample-install"
 

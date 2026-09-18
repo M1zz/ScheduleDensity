@@ -46,6 +46,12 @@ final class PlanBlock {
     /// 이것이 난 자리(앱 설치본). 감출 것을 고르려면 누가 만들었는지를 알아야 한다.
     var originInstallID: String = ""
 
+    /// **돌아오면 무엇부터.** 맥에서 타이머를 멈출 때 한 줄 남기는 '다음 첫 동작'.
+    /// 아이폰에는 아직 적는 화면이 없지만, 칸은 있어야 맥이 적은 값을 받아 들고 있는다.
+    ///
+    /// ⚠️ 맥 '무지개 공방'의 같은 이름 필드와 **이름·타입이 같아야 한다** (CloudKit 스키마를 함께 쓴다).
+    var nextAction: String? = nil
+
     // Review (populated after the day passes)
     var reviewStatusRaw: String? = nil
     var reviewNote: String? = nil
