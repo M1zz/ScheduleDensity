@@ -46,6 +46,31 @@ enum UsageDiary {
         defaults.set(days, forKey: daysKey)
     }
 
+    // MARK: - 페이월을 본 횟수·산 횟수 (기기 안에만)
+
+    //  **전환율의 분모와 분자.** 이것이 없으면 "무엇을 고쳐서 나아졌는지"를 영영 알 수 없다.
+    //
+    //  ⚠️ 허브로 보내는 분석은 사용자가 켜야만 나가고(→ UsageReporting.swift), 동의율은 보통
+    //     한 자릿수라 그 숫자는 표본이 못 된다. 그래서 **아무 데도 안 보내는 수 두 개**를
+    //     기기 안에 따로 센다. 날짜도, 상품 ID도, 어느 화면에서 왔는지도 안 적는다 —
+    //     '본 횟수'와 '산 횟수' 숫자 둘뿐이다. 설정 ▸ 사용 통계에서 본인이 본다.
+
+    private static let paywallSeenKey = "usage.paywallSeen"
+    private static let paywallBoughtKey = "usage.paywallBought"
+
+    /// 페이월이 실제로 떴다.
+    static func markPaywallSeen() {
+        defaults.set(paywallSeenCount + 1, forKey: paywallSeenKey)
+    }
+
+    /// 그 자리에서 샀다.
+    static func markPaywallBought() {
+        defaults.set(paywallBoughtCount + 1, forKey: paywallBoughtKey)
+    }
+
+    static var paywallSeenCount: Int { defaults.integer(forKey: paywallSeenKey) }
+    static var paywallBoughtCount: Int { defaults.integer(forKey: paywallBoughtKey) }
+
     /// 적어 둔 날들. 오래된 것부터.
     static var activeDays: [Date] {
         (defaults.stringArray(forKey: daysKey) ?? [])
@@ -89,6 +114,8 @@ enum UsageDiary {
     /// 적어 둔 것을 전부 버린다. 설정에서 '보내지 않기'로 되돌릴 때 함께 부른다 —
     /// 안 보낼 거면 들고 있을 이유도 없다.
     static func forgetEverything() {
+        defaults.removeObject(forKey: paywallSeenKey)
+        defaults.removeObject(forKey: paywallBoughtKey)
         defaults.removeObject(forKey: daysKey)
     }
 }

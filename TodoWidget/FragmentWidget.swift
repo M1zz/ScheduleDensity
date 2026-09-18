@@ -60,7 +60,8 @@ struct FragmentWidget: Widget {
         StaticConfiguration(kind: TodoWidgetBridge.fragmentWidgetKind, provider: FragmentProvider()) { entry in
             FragmentWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
-                .widgetURL(TodoWidgetBridge.fragmentDeepLink)
+                // 잠겨 있으면 페이월로 간다 — 그 자리에서 무엇이 잠겼는지 말한다 (→ ProEntitlement.paywallDeepLink).
+                .widgetURL(entry.isLocked ? ProEntitlement.paywallDeepLink : TodoWidgetBridge.fragmentDeepLink)
         }
         .configurationDisplayName("번개")
         .description("지금 5분에 집을 수 있는 단계만 모아 봅니다.")

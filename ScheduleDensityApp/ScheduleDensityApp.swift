@@ -107,6 +107,8 @@ struct ScheduleDensityApp: App {
     /// 곁다리 다섯을 열었는가 (→ ProEntitlement.swift).
     @State private var purchases = PurchaseManager.shared
     @State private var selectedTab: AppTab = .todo
+    /// 잠긴 위젯을 눌러 들어왔나. 그 자리에서 페이월을 낸다.
+    @State private var widgetPaywall = false
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
     @State private var schedule = ScheduleViewModel()
@@ -336,6 +338,7 @@ struct ScheduleDensityApp: App {
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
+            .paywall(for: .widget, isPresented: $widgetPaywall)
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
             .task { KeyboardDismissOnTap.install() }
@@ -418,6 +421,12 @@ struct ScheduleDensityApp: App {
             .onOpenURL { url in
                 // 홈·잠금 화면 위젯 탭 → 그 위젯이 보여주던 탭 열기.
                 guard url.scheme == TodoWidgetBridge.deepLink.scheme else { return }
+                // 잠긴 위젯을 누른 사람. 무지개 탭 위에 페이월을 바로 낸다.
+                if url.host == ProEntitlement.paywallDeepLink.host {
+                    selectedTab = .rainbow
+                    widgetPaywall = true
+                    return
+                }
                 switch url.host {
                 case TodoWidgetBridge.deepLink.host:    selectedTab = .todo
                 // 번개 위젯. 조각만 보는 자리가 아직 없어 '할 일' 탭에 내린다 —

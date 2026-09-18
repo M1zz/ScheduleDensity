@@ -33,22 +33,39 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
         marketingURL: URL(string: siteRoot)!
     )
 
-    /// **무료로 쓰다가 한 번 사면 열리는 앱이다** (→ ProEntitlement.swift).
+    /// **무료로 쓰다가, 쌓여야 보이는 것과 밖으로 나가는 것을 Pro로 파는 앱이다.**
     ///
-    /// 오랫동안 여기가 `.free` 였는데, 1.1.0부터 '무지개 Pro'를 실제로 팔기 시작한 뒤에도
-    /// 이 한 줄만 옛말을 하고 있었다. 계약이 거짓말을 하면 Preflight 도, 포트폴리오도,
-    /// 이 앱을 무료 앱으로 센다. 파는 것이 있으면 여기 적는다.
+    /// 맥앱 '무지개 공방'과 **같은 문장, 같은 사다리**다 — 연간(7일 체험) · 평생 · 월간.
+    /// 1.1.x에서 4,900원에 한 번 사는 상품을 팔았고, 그 구매자는 평생 Pro로 인정한다
+    /// (`entitlementIDs`에 옛 상품이 함께 들어 있다 → ProEntitlement.legacyProductID).
     ///
-    /// ⚠️ 선언일 뿐 동작이 바뀌지는 않는다. 이 앱의 페이월과 영수증 확인은 계속
-    ///    `PaywallView`·`PurchaseManager` 가 한다 — LeeoKit 의 `LeeoStore` 를 쓰지 않는다.
-    static let monetization = LeeoMonetization.freemium(
-        LeeoPurchaseConfig(
-            productIDs: [ProEntitlement.productID],
-            // 잠기는 자리는 페이월이 늘어놓는 목록 그 자체다. 두 군데에 따로 적으면
-            // 반드시 어긋나므로 `ProFeature.sold` 하나에서 받아 온다.
-            gate: LeeoGatePolicy(proOnly: Set(ProFeature.sold.map(\.rawValue))),
+    /// ⚠️ **여기 선언했다고 팔기 시작하는 게 아니다.** 실제로 파는지는
+    ///    `ProEntitlement.sellsPro`가 정한다. 상품이 App Store Connect에 서기 전에 켜면
+    ///    아무도 못 사는 채로 Pro 기능만 잠긴다.
+    static let monetization = LeeoMonetization.freemiumSubscription(
+        LeeoSubscriptionConfig(
+            productIDs: ProEntitlement.productIDs,
+            // 자체 약관이 없으므로 애플 표준 사용권 계약(EULA)을 건다.
+            // 구독을 파는 앱의 심사 필수 항목이다.
+            termsURL: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!,
+            entitlementIDs: ProEntitlement.entitlementIDs,
+            gate: LeeoGatePolicy(
+                // 무료로도 **써 보고 알 만큼**은 연다: 최근 2주 장부·통계는 그냥 보인다.
+                freeLimits: [Gate.ledgerWeeks: ProFeature.freeWeekCount,
+                             Gate.statisticsWeeks: ProFeature.freeWeekCount],
+                // 잠기는 자리는 페이월이 늘어놓는 목록 그 자체다. 두 군데에 따로 적으면
+                // 반드시 어긋나므로 `ProFeature.sold` 하나에서 받아 온다.
+                proOnly: Set(ProFeature.sold.map(\.rawValue))),
             // 위젯과 함께 읽는 그 통. 권한 한 줄이 실제로 여기 적힌다.
             cacheSuiteName: ProEntitlement.appGroupID))
+
+    /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
+    enum Gate {
+        /// 회수 장부를 몇 주까지 거슬러 보는가 (무료는 2주).
+        static let ledgerWeeks = "ledgerWeeks"
+        /// 일정 통계를 몇 주까지 거슬러 보는가 (무료는 2주).
+        static let statisticsWeeks = "statisticsWeeks"
+    }
 
     /// 페이월·피드백에서 벌어진 일을 허브로 흘려보내는 싱크.
     /// **동의한 사람의 것만 나간다** (→ UsageAnalytics.swift, UsageReporting.swift).

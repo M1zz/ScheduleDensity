@@ -22,23 +22,109 @@ struct WeekLedgerView: View {
 
     @State private var entry = WeekLedgerEntry()
     @State private var showingClearConfirm = false
+    @State private var purchases = PurchaseManager.shared
+    @State private var showingPaywall = false
+
+    /// 지금 보고 있는 주. 뒤로 넘기면 지난 주들이 나온다.
+    @State private var shownWeek: Date?
+
+    private var week: Date { shownWeek ?? weekStart }
+
+    /// **무료로도 최근 2주는 그냥 보인다** (→ ScheduleDensityAppSpec.Gate.ledgerWeeks).
+    ///
+    /// ⚠️ 문을 통째로 잠그면, 무엇을 사는지 모르는 채로 값을 내라는 말이 된다. 이 장부는
+    ///    쌓여야 값이 나오는 것이라 더 그렇다 — 두 주를 직접 써 보고 나서야 "지난 달은
+    ///    어땠지"가 궁금해진다. 그 물음이 생긴 자리에서 판다.
+    private func isFree(_ candidate: Date) -> Bool {
+        let weeksBack = Calendar(identifier: .iso8601)
+            .dateComponents([.weekOfYear], from: candidate, to: weekStart).weekOfYear ?? 0
+        return weeksBack < ProFeature.freeWeekCount
+    }
+
+    private var isLocked: Bool { !purchases.isUnlocked && !isFree(week) }
+
+    /// 이번 주인가. 지난 주 장부는 읽기만 한다 — 지나간 주에 새 기록을 더할 일은 없다.
+    private var isThisWeek: Bool {
+        Calendar(identifier: .iso8601).isDate(week, inSameDayAs: weekStart)
+    }
+
+    /// 지난 주 장부 — 그 주에 무엇이 돌아왔는지만.
+    @ViewBuilder
+    private var pastWeekSummary: some View {
+        Section {
+            if entry.isEmpty {
+                Text("이 주에는 적어 둔 것이 없습니다.")
+                    .foregroundStyle(.secondary)
+            } else {
+                LabeledContent("조각으로 회수", value: formatDuration(Double(entry.fragmentMinutes) / 60))
+                LabeledContent("블록으로 회수", value: formatDuration(Double(entry.blockMinutes) / 60))
+                LabeledContent("회복", value: formatDuration(Double(entry.breakMinutes) / 60))
+            }
+        } header: {
+            Text("이 주에 돌아온 것")
+        }
+    }
+
+    private var previousWeek: Date {
+        Calendar(identifier: .iso8601).date(byAdding: .day, value: -7, to: week) ?? week
+    }
+
+    /// "9월 8일 주". 지난 주를 볼 때 제목에 선다.
+    private var weekLabel: String {
+        let f = DateFormatter()
+        f.locale = .autoupdatingCurrent
+        f.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0, locale: .autoupdatingCurrent)
+        return String(localized: "\(f.string(from: week)) 주")
+    }
 
     var body: some View {
         NavigationStack {
             List {
-                workSection
-                reclaimSection
-                recoverySection
-                if !entry.isEmpty { clearSection }
+                // 지난 주 장부는 **읽기만 한다.** 지나간 주에 새로 회수를 적는 일은 없고,
+                // '남은 몫'은 지금 남은 단계라 이번 주에만 뜻이 있다.
+                if isThisWeek {
+                    workSection
+                    reclaimSection
+                    recoverySection
+                    if !entry.isEmpty { clearSection }
+                } else {
+                    pastWeekSummary
+                }
             }
-            .navigationTitle("이번 주 결산")
+            .navigationTitle(isThisWeek ? String(localized: "이번 주 결산") : weekLabel)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("닫기") { dismiss() }
                 }
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    Button {
+                        let previous = Calendar(identifier: .iso8601)
+                            .date(byAdding: .day, value: -7, to: week) ?? week
+                        // 잠긴 주로 넘어가려 하면, 넘기는 대신 그 자리에서 판다.
+                        if !purchases.isUnlocked, !isFree(previous) {
+                            showingPaywall = true
+                        } else {
+                            shownWeek = previous
+                        }
+                    } label: {
+                        Image(systemName: purchases.isUnlocked || isFree(previousWeek) ? "chevron.left" : "lock")
+                    }
+                    .accessibilityLabel("지난 주")
+
+                    Button {
+                        shownWeek = Calendar(identifier: .iso8601)
+                            .date(byAdding: .day, value: 7, to: week) ?? week
+                    } label: {
+                        Image(systemName: "chevron.right")
+                    }
+                    .disabled(isThisWeek)
+                    .accessibilityLabel("다음 주")
+                }
             }
-            .onAppear { entry = WeekLedger.entry(for: weekStart) }
+            .onAppear { entry = WeekLedger.entry(for: week) }
+            .onChange(of: week) { _, newWeek in entry = WeekLedger.entry(for: newWeek) }
+            .paywall(for: .ledger, isPresented: $showingPaywall)
             .confirmationDialog("이번 주 장부를 지울까요?",
                                 isPresented: $showingClearConfirm,
                                 titleVisibility: .visible) {

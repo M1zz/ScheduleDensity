@@ -1,17 +1,24 @@
 //
 //  PurchaseManager.swift
 //
-//  '무지개 Pro' 한 개(비소모성)를 파는 StoreKit 2 껍데기.
+//  '무지개 Pro'를 파는 자리. **속은 전부 `LeeoStore`다.**
 //
-//  구독이 아니라 **평생 1회 구매**다. 갱신·유예·환불 상태를 따라다닐 필요가 없고,
-//  산 사람은 다시 묻지 않아도 되며, 기기를 바꿔도 '구매 복원'으로 되찾는다.
+//  이 클래스가 하는 일은 두 가지뿐이다 —
+//   ① LeeoKit의 값(`ObservableObject`)을 SwiftUI의 `@Observable` 세계로 옮겨 적는 것,
+//   ② 그 값을 앱의 정책(`ProEntitlement`)에 통과시키는 것.
 //
-//  권한의 근거는 언제나 `Transaction.currentEntitlements`다. App Group에 적어 둔
-//  `ProEntitlement`의 한 줄은 위젯이 읽으라고 둔 거울일 뿐이라, 켤 때마다 여기서 덮어쓴다.
+//  ⚠️ 맥앱 '무지개 공방'의 같은 이름 파일과 **같은 구조**다. 두 앱이 같은 사다리(연간·평생·월간)를
+//     팔고 같은 함정(영수증이 늦게 오면 산 사람이 잠긴다)을 지나므로, 고칠 때 같이 고친다.
+//
+//  ⚠️ 상품 로드·구매·복원·거래 리스너(다른 기기에서 산 것, 가족 공유, '구입 요청' 승인분,
+//     환불, 구독 만료)는 전부 LeeoStore 안에 있다. 여기 직접 쓰지 않는다 —
+//     예전에 StoreKit을 직접 쥐고 있었고, 그때 구독 갱신·만료를 따라갈 자리가 없었다.
 //
 
 import Foundation
+import Combine
 import StoreKit
+import SwiftData
 import WidgetKit
 import LeeoKit
 
@@ -21,158 +28,144 @@ final class PurchaseManager {
 
     static let shared = PurchaseManager()
 
+    @ObservationIgnored let store: LeeoStore
+
     /// 지금 열려 있는가. 화면은 전부 이 값만 본다.
-    ///
-    /// ⚠️ 값을 여기 따로 들고 있지 않는다. 근거는 App Group에 적힌 한 줄뿐이고,
-    ///    이것은 그것을 그대로 비추기만 한다.
-    ///
-    ///    전에는 켤 때 한 번 읽어 캐시했다. 그 캐시는 `apply`에서만 고쳐지는데,
-    ///    `apply`는 `refresh()`의 StoreKit 조회가 끝나야 불린다. 조회가 늦으면
-    ///    캐시만 낡은 채 남는다 — 실시간 값을 읽는 적기·위젯은 열려 있는데,
-    ///    캐시를 읽는 설정 화면은 '무료 버전'이라고 말했다.
-    ///    진실이 두 벌이면 언젠가 반드시 갈라진다. 그래서 한 벌만 둔다.
-    var isUnlocked: Bool {
-        access(keyPath: \.isUnlocked)
-        return ProEntitlement.isUnlocked
+    private(set) var isUnlocked: Bool = ProEntitlement.isUnlocked
+
+    /// **애플에게 물어봐서 답을 받았는가.** false면 화면은 '무료'라고 단정하면 안 된다.
+    private(set) var isKnown: Bool = ProEntitlement.isKnown
+
+    /// 페이월에 설 상품들. 계약의 차례(연간 → 평생 → 월간)를 따른다.
+    private(set) var products: [Product] = []
+
+    private(set) var isWorking = false
+
+    /// 사다가 막혔을 때 화면에 그대로 보여줄 말. 조용히 실패하면 사용자는 단추가 고장 난 줄 안다.
+    private(set) var failureMessage: String?
+
+    /// **Pro를 화면에 세우는가.** 팔고 있거나, 이미 산 사람이면.
+    /// 산 사람에게는 판매를 멈춘 뒤에도 계속 보인다 — 값을 치른 것이 사라지면 안 된다.
+    var offersPro: Bool { ProEntitlement.sellsPro || isUnlocked }
+
+    /// 설정 화면에 가격 한 줄을 적을 대표 상품 (연간).
+    var featuredProduct: Product? {
+        products.first { $0.id == ProEntitlement.yearlyID } ?? products.first
     }
 
-    /// App Store에서 받아온 상품. 못 받아오면 값을 못 보여주므로 구매 버튼을 막는다.
-    private(set) var product: Product?
-
-    private(set) var isPurchasing = false
-    private(set) var isRestoring = false
-
-    /// 사용자에게 보여줄 마지막 실패 사유. 성공하면 비운다.
-    var failureMessage: String?
-
-    /// 앱 밖에서 일어난 거래(가족 공유, 다른 기기의 구매, 환불)를 받는 자리.
-    private var updates: Task<Void, Never>?
+    /// **이번 실행에서 영수증을 실제로 읽었는가.**
+    ///
+    /// ⚠️ 이 플래그가 서기 전에는 캐시에 아무것도 쓰지 않는다. LeeoStore는 상품을 불러오는
+    ///    중에도 값이 바뀌었다고 알려 오는데, 그 알림에 대고 `hasPro`(아직 false)를 캐시에
+    ///    적어 버리면 **처음 켠 구매자가 '무료'로 못박힌다.** 그 순간 위젯 셋도 같이 잠긴다.
+    @ObservationIgnored private var entitlementsChecked = false
+    @ObservationIgnored private var observation: AnyCancellable?
 
     private init() {
-        updates = Task { [weak self] in
-            for await update in Transaction.updates {
-                guard let self else { return }
-                if case .verified(let transaction) = update {
-                    await transaction.finish()
-                }
-                await self.refresh()
-            }
+        guard let config = ScheduleDensityAppSpec.paywall else {
+            preconditionFailure("계약에 페이월이 없다 — ScheduleDensityAppSpec.monetization을 확인할 것")
+        }
+        store = LeeoStore(config: config)
+
+        // ⚠️ objectWillChange는 값이 바뀌기 **직전**에 온다. 그 자리에서 읽으면 옛 값이므로
+        //    다음 차례로 미뤄서 읽는다.
+        observation = store.objectWillChange.sink { [weak self] _ in
+            Task { @MainActor in self?.pull() }
         }
     }
-
-    // deinit에서 updates를 끊지 않는다. 이 객체는 앱과 수명이 같은 하나뿐인 것이라
-    // 죽을 일이 없고, @MainActor 격리된 속성은 nonisolated인 deinit에서 못 읽는다.
 
     // MARK: - 상태 맞추기
 
     /// 영수증을 다시 읽어 열림/잠김을 정한다. 앱이 켜질 때와 활성화될 때마다 부른다.
     func refresh() async {
-        var owned = false
-        var seen: [String] = []
-        for await entitlement in Transaction.currentEntitlements {
-            guard case .verified(let transaction) = entitlement else { continue }
-            seen.append(transaction.productID)
-            if transaction.productID == ProEntitlement.productID, transaction.revocationDate == nil {
-                owned = true
-            }
-        }
-#if DEBUG
-        // 안 열릴 때 물어볼 것은 둘뿐이다 — 영수증이 오기는 했는가, 그리고 그 안의
-        // 상품 ID가 우리가 찾는 것과 같은가. 둘 다 여기서 눈으로 확인한다.
-        //
-        // ⚠️ 스킴에 로컬 StoreKit 설정이 붙어 있으면 이 목록은 **가짜 스토어의 것**이다.
-        //    진짜 영수증을 보려면 Edit Scheme → Run → Options → StoreKit Configuration
-        //    을 None 으로 두고 실기기에서 돌려야 한다 (→ project.yml 의 schemes).
-        print("🔑 [Purchase] 찾는 ID: \(ProEntitlement.productID)")
-        print("🔑 [Purchase] 영수증에 있는 ID: \(seen.isEmpty ? "(없음)" : seen.joined(separator: ", "))")
-        print("🔑 [Purchase] 샀는가: \(owned) / 지금 열려 있는가: \(ProEntitlement.isUnlocked)")
-#endif
-        apply(owned: owned)
+        await store.refreshEntitlements()
+        if ProEntitlement.sellsPro { await store.loadProducts() }
+        entitlementsChecked = true
+        await syncCrossPlatformMark()
+        pull()
     }
 
-    /// 값을 보여주려면 상품이 필요하다. 실패해도 조용히 넘어간다 —
-    /// 네트워크가 없다고 화면이 오류로 덮이면, 이미 산 사람에게도 그렇게 보인다.
-    func loadProduct() async {
-        guard product == nil else { return }
-        product = try? await Product.products(for: [ProEntitlement.productID]).first
+    // MARK: - 한쪽에서 사면 양쪽이 (→ ProMark.swift)
+
+    /// **내 영수증을 맥이 읽을 수 있는 표로 옮겨 적고, 맥이 적어 둔 표를 읽는다.**
+    ///
+    /// 두 앱은 App Store에서 서로 다른 앱이라 영수증이 건너가지 않는다. 그런데 두 앱을 다
+    /// 쓰는 사람에게 두 번 받는 것은 팔기 전에 이미 잃는 장사다. 같은 iCloud를 쓰므로
+    /// 산 쪽이 표를 하나 남기면 다른 쪽이 그것을 보고 연다.
+    private func syncCrossPlatformMark() async {
+        // 맥과 함께 쓰는 그 스토어. 표는 거기 산다 (→ ProMark.swift).
+        guard let context = WeekBlocksStore.sharedContainer?.mainContext else { return }
+
+        if store.hasPro {
+            // 구독은 끝나는 날을 함께 적는다. 평생 이용권은 끝이 없으므로 비운다.
+            var expiry: Date?
+            var productID = ProEntitlement.yearlyID
+            var lifetime = false
+            for await entitlement in Transaction.currentEntitlements {
+                guard case .verified(let transaction) = entitlement,
+                      ProEntitlement.entitlementIDs.contains(transaction.productID),
+                      transaction.revocationDate == nil else { continue }
+                productID = transaction.productID
+                if let end = transaction.expirationDate {
+                    expiry = max(expiry ?? .distantPast, end)
+                } else {
+                    lifetime = true   // 평생 이용권·옛 1회 구매
+                }
+            }
+            ProMarkStore.stamp(productID: productID, validUntil: lifetime ? nil : expiry, in: context)
+        } else {
+            // 내 쪽 권한이 사라졌으면 내 표도 지운다 — 해지가 다른 기기에도 닿아야 한다.
+            ProMarkStore.clearMine(in: context)
+        }
+
+        crossPlatformPro = ProMarkStore.otherPlatformHasPro(in: context)
+    }
+
+    /// 맥에서 산 것이 살아 있는가.
+    @ObservationIgnored private var crossPlatformPro = false
+
+    /// 상품을 아직 못 불러왔을 때 페이월이 다시 청한다.
+    /// 실패해도 조용히 넘어가지 않는다 — 페이월이 값을 못 보여주면 단추가 죽고,
+    /// 그 죽은 단추는 "안 팔린 것"으로만 남아 왜 안 팔렸는지가 사라진다.
+    func loadProducts() async {
+        await store.loadProducts()
+        pull()
     }
 
     // MARK: - 사기 / 되찾기
 
-    /// ⚠️ 갈래마다 **무슨 일이 벌어졌는지를 한 줄씩 남긴다** (→ UsageAnalytics.swift).
-    ///    취소·승인 대기·진짜 실패를 뭉쳐 세면 "안 팔린다"만 남고 "왜 안 팔리는가"가
-    ///    사라진다. 나가는 것은 정해진 낱말 하나뿐이고, **동의 안 하셨으면 안 나간다.**
-    func purchase() async {
-        guard let product, !isPurchasing else { return }
-        isPurchasing = true
-        failureMessage = nil
-        defer { isPurchasing = false }
-
-        LeeoAnalyticsCenter.track(.purchaseStarted(productID: product.id))
-
-        do {
-            switch try await product.purchase() {
-            case .success(let verification):
-                if case .verified(let transaction) = verification {
-                    await transaction.finish()
-                    apply(owned: true)
-                    LeeoAnalyticsCenter.track(.purchaseCompleted(productID: product.id))
-                } else {
-                    // 서명이 안 맞는 영수증. 열어주지 않는다.
-                    failureMessage = String(localized: "구매를 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.")
-                    LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "unverified"))
-                }
-            case .pending:
-                // 승인 대기(가족 공유의 '구매 요청' 등). 실패가 아니므로 그렇게 말한다.
-                failureMessage = String(localized: "승인을 기다리는 중입니다. 승인되면 자동으로 열립니다.")
-                LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "pending"))
-            case .userCancelled:
-                LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "cancelled"))
-            @unknown default:
-                break
-            }
-        } catch {
-            failureMessage = String(localized: "구매하지 못했습니다: \(error.localizedDescription)")
-            // 오류 문구 자체는 안 보낸다 — 사람이 읽는 말이라 무엇이 섞여 있을지 모른다.
-            LeeoAnalyticsCenter.track(.purchaseFailed(productID: product.id, reason: "error"))
-        }
+    /// 고른 상품을 산다. 성공·취소·승인 대기·실패의 갈래와 퍼널 이벤트는 LeeoStore 안에 있다.
+    func purchase(_ product: Product) async {
+        _ = await store.purchase(product)
+        entitlementsChecked = true
+        pull()
     }
 
     /// 기기를 바꿨거나 앱을 지웠다 받은 사람이 되찾는 길. 심사에서도 요구한다.
     func restore() async {
-        guard !isRestoring else { return }
-        isRestoring = true
-        failureMessage = nil
-        defer { isRestoring = false }
-
-        try? await AppStore.sync()
-        await refresh()
-        // 되찾았는지 아닌지가 곧 결과다. 못 찾은 복원이 쌓이면 그건 통계가 아니라
-        // 지원 요청의 예고편이다.
-        LeeoAnalyticsCenter.track(.purchaseRestored(restored: isUnlocked))
-        if !isUnlocked {
+        await store.restore()
+        entitlementsChecked = true
+        pull()
+        if !isUnlocked, failureMessage == nil {
             failureMessage = String(localized: "이 Apple 계정에서 구매한 기록을 찾지 못했습니다.")
         }
     }
 
     // MARK: -
 
-    private func apply(owned: Bool) {
-        mutatingEntitlement { ProEntitlement.setPurchased(owned) }
-    }
+    private func pull() {
+        let before = isUnlocked
+        // ⚠️ 물어보기 전에는 캐시에 쓰지 않는다 (위 `entitlementsChecked` 주석).
+        // 맥에서 산 표가 살아 있으면 그것도 권한이다 (→ syncCrossPlatformMark).
+        if entitlementsChecked { ProEntitlement.setPurchased(store.hasPro || crossPlatformPro) }
 
-    /// App Group의 한 줄을 바꾸는 일은 **전부 여기를 지난다.**
-    ///
-    /// `isUnlocked`가 계산 프로퍼티라 저장 프로퍼티처럼 저절로 알려지지 않는다.
-    /// 밖에서 그 한 줄을 직접 고치면 화면은 낡은 말을 계속 하게 되므로,
-    /// 고치는 자리를 하나로 모아 여기서 알린다.
-    private func mutatingEntitlement(_ change: () -> Void) {
-        let before = ProEntitlement.isUnlocked
-        change()
-        guard ProEntitlement.isUnlocked != before else { return }
-        // 값은 이미 바뀐 뒤다. 괄호 안에서 더 할 일은 없고, 바뀌었다고 알리기만 한다.
-        withMutation(keyPath: \.isUnlocked) { }
-        // 위젯은 App Group의 한 줄만 읽는다. 바뀌었으면 다시 그리라고 알린다.
-        WidgetCenter.shared.reloadAllTimelines()
+        isUnlocked = ProEntitlement.isUnlocked
+        isKnown = entitlementsChecked || ProEntitlement.isKnown
+        products = store.products
+        isWorking = store.purchasingProductID != nil || store.isRestoring
+        failureMessage = store.lastError
+
+        // 위젯은 App Group의 그 한 줄만 읽는다. 열림/잠김이 바뀐 판에만 다시 그리게 한다.
+        if before != isUnlocked { WidgetCenter.shared.reloadAllTimelines() }
     }
 }

@@ -83,17 +83,24 @@ struct SettingsView: View {
     // MARK: - 내 버전 (설정 맨 위)
 
     /// 무료인가 열려 있는가. 한 단어로 먼저 답한다.
+    ///
+    /// ⚠️ **모를 때는 단정하지 않는다.** 영수증을 아직 못 읽었는데 '무료 버전'이라고 적으면,
+    ///    산 사람이 설정을 열 때마다 한 번씩 거짓말을 보게 된다 (→ PurchaseManager.isKnown).
     private var entitlementTitle: String {
-        purchases.isUnlocked ? String(localized: "무지개 Pro") : String(localized: "무료 버전")
+        if purchases.isUnlocked { return String(localized: "무지개 Pro") }
+        return purchases.isKnown ? String(localized: "무료 버전") : String(localized: "확인 중…")
     }
 
     /// 그래서 지금 무엇을 쓰고 있는가. 잠긴 쪽에서도 **본체는 다 쓴다**는 말을 먼저 한다 —
     /// 이 앱은 무료로도 온전히 돌아가고, 그 사실을 감추면 안 사는 사람이 지운다.
     private var entitlementNote: String {
         if purchases.isUnlocked {
-            return String(localized: "한 번 사서 곁다리까지 전부 열려 있습니다.")
+            return String(localized: "쌓여야 보이는 것까지 전부 열려 있습니다.")
         }
-        return String(localized: "무지개, 할 일 쪼개기, 두 질문, 단계 순서는 그대로 쓰십니다. 곁다리 \(ProFeature.sold.count)가지가 잠겨 있습니다.")
+        if !purchases.isKnown {
+            return String(localized: "App Store에 구매 기록을 확인하는 중입니다.")
+        }
+        return String(localized: "무지개, 할 일 쪼개기, 타이머, 맥과 오가기는 그대로 쓰십니다. \(ProFeature.sold.count)가지가 잠겨 있습니다.")
     }
 
     /// 값을 받고 여는 것들의 이름.
@@ -155,7 +162,7 @@ struct SettingsView: View {
                         Button("구매 복원") {
                             Task { await purchases.restore() }
                         }
-                        .disabled(purchases.isRestoring)
+                        .disabled(purchases.isWorking)
                     }
                 } header: {
                     Text("내 버전")

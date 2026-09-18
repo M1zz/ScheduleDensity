@@ -51,7 +51,8 @@ struct TodoWidget: Widget {
         StaticConfiguration(kind: TodoWidgetBridge.widgetKind, provider: TodoProvider()) { entry in
             TodoWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
-                .widgetURL(TodoWidgetBridge.deepLink)
+                // 잠겨 있으면 페이월로 간다 — 그 자리에서 무엇이 잠겼는지 말한다 (→ ProEntitlement.paywallDeepLink).
+                .widgetURL(entry.isLocked ? ProEntitlement.paywallDeepLink : TodoWidgetBridge.deepLink)
         }
         .configurationDisplayName("할 일")
         .description("아직 안 한 일을 홈 화면과 잠금 화면에서 바로 봅니다.")

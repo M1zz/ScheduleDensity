@@ -53,7 +53,8 @@ struct RainbowWidget: Widget {
         StaticConfiguration(kind: RainbowWidgetBridge.widgetKind, provider: RainbowProvider()) { entry in
             RainbowWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
-                .widgetURL(RainbowWidgetBridge.deepLink)
+                // 잠겨 있으면 페이월로 간다 — 그 자리에서 무엇이 잠겼는지 말한다 (→ ProEntitlement.paywallDeepLink).
+                .widgetURL(entry.isLocked ? ProEntitlement.paywallDeepLink : RainbowWidgetBridge.deepLink)
         }
         .configurationDisplayName("무지개")
         .description("앞으로 며칠이 얼마나 차 있는지 한눈에 봅니다.")

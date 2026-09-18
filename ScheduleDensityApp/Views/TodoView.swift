@@ -165,13 +165,15 @@ struct TodoView: View {
             .toolbar {
                 if visibleTab == .mine {
                     ToolbarItem(placement: .topBarLeading) {
+                        // 장부는 **누구에게나 열린다.** 최근 2주는 무료고, 그보다 거슬러
+                        // 올라갈 때 잠긴다 (→ WeekLedgerView). 문을 통째로 잠가 두면
+                        // 무엇을 사는지 모른 채 값을 내라는 말이 된다.
                         Button {
-                            if purchases.isUnlocked { showingLedger = true }
-                            else { showingLedgerPaywall = true }
+                            showingLedger = true
                         } label: {
-                            Image(systemName: purchases.isUnlocked ? "list.clipboard" : "lock")
+                            Image(systemName: "list.clipboard")
                         }
-                        .accessibilityLabel(purchases.isUnlocked ? "이번 주 결산" : "이번 주 결산, 잠김")
+                        .accessibilityLabel("이번 주 결산")
                     }
                 }
                 if visibleTab == .family {

@@ -24,7 +24,9 @@ struct WidgetLockedView: View {
             Text(name)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
-            Text("앱의 설정에서 ‘무지개 Pro’")
+            // 누르면 그 자리에서 페이월이 열린다 (→ ProEntitlement.paywallDeepLink).
+            // "설정 어딘가에 있다"고 말하던 때에는, 여기까지 온 사람을 보물찾기로 보냈다.
+            Text("눌러서 열기")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -32,6 +34,6 @@ struct WidgetLockedView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(name) 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다.")
+        .accessibilityLabel("\(name) 위젯이 잠겨 있습니다. 눌러서 무지개 Pro를 여십시오.")
     }
 }

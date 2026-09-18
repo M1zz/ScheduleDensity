@@ -86,8 +86,11 @@ final class WeekBlocksStore {
     private(set) var lastErrorDescription: String?
 
     /// 루틴·계획·할 일이 **한 스토어**에 함께 산다. 맥 '무지개 공방'과 같은 여섯 타입이다.
+    /// ⚠️ `ProMark`는 일곱 번째 타입이다 — "한쪽에서 샀다"는 표 (→ ProMark.swift).
+    ///    맥 스토어의 같은 목록과 **글자 하나까지 같아야 한다.**
     static let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self,
-                                RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self])
+                                RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self,
+                                ProMark.self])
 
     /// 앱 전체가 함께 쓰는 단 하나의 컨테이너. 할 일 화면도 이것을 꽂아 쓴다.
     /// (→ ScheduleDensityApp.todoContainer)
