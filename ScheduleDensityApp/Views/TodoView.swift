@@ -232,6 +232,7 @@ struct TodoView: View {
         }
         // 제어센터에서 '할 일 적기'를 눌렀다 (→ QuickTodoBridge.swift).
         // 콜드 런치는 이 .task 가, 이미 떠 있으면 아래 알림이 받는다.
+        .task { await reconcileStepStates() }
         .task { consumeQuickAddRequest() }
         .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
             consumeQuickAddRequest()
@@ -1233,6 +1234,22 @@ struct TodoView: View {
         syncWidget()
     }
 
+    /// **단계가 다 끝났는데 목록에 남아 있는 할 일을 맞춘다.**
+    ///
+    /// `TodoTree.rollUp` 이 시작점 자신을 안 세던 동안, 단계를 지운 할 일은 남은 단계가
+    /// 전부 끝났는데도 부모가 미완료로 남았다. 규칙은 고쳤지만 이미 어긋난 것은 다시
+    /// 손대기 전에는 안 돌아온다 — 정작 그런 할 일은 더 손댈 것이 없어서 손이 안 간다.
+    /// 그래서 목록이 설 때 한 번 훑는다. 고칠 게 없으면 아무것도 쓰지 않는다.
+    ///
+    /// ⚠️ iCloud 가 단계를 다 내려받기 전에 세면 **아직 안 온 단계**가 없는 것으로 보여,
+    ///    끝난 단계만 있는 할 일을 완료로 찍어 목록에서 내려 버린다. 잠깐 기다린다.
+    ///    (맥 '무지개 공방'도 같은 이유로 같은 만큼 기다린다.)
+    private func reconcileStepStates() async {
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        let tree = TodoTree(allItems.filter(TodoSharing.isVisible))
+        guard tree.reconcile() else { return }
+        save()
+    }
 
     /// **안 끝난 채 주를 넘긴 일을 이번 주로 끌어온다.**
     ///
