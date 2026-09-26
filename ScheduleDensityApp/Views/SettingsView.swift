@@ -33,6 +33,9 @@ struct SettingsView: View {
     @State private var showingStatistics = false
     @State private var showingUsageStats = false
     @State private var showingDeleteiCloudAlert = false
+    /// 맥 소개에 '새로'를 다는지 (→ MacCompanionView.swift).
+    @AppStorage(MacCompanion.usesMacKey) private var usesMac = false
+    @AppStorage(MacCompanion.seenKey) private var seenMacCompanion = false
 
     // MARK: 동기화 진단
     // "맥이랑 할 일이 다른데?"를 화면에서 바로 판별하려고 둔 값들.
@@ -1011,6 +1014,42 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                 } header: {
                     Text("번개")
+                }
+
+                // 맥 '무지개 공방' — 할 일이 쌓였을 때 한 주에 나눠 놓는 곳 (→ MacCompanionView.swift).
+                // 같은 사람이 만든 다른 앱들은 그 아래 한 줄로. 짝인 무지개 공방이 늘 먼저다
+                // (→ ScheduleDensityAppSpec.familyFeatured).
+                Section {
+                    NavigationLink {
+                        MacCompanionView()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "macbook.and.iphone")
+                                .foregroundColor(.indigo)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("맥 앱 ‘무지개 공방’")
+                                    .font(.headline)
+                                Text("같은 할 일을 맥에서 한 주에 나눠 놓기")
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                            }
+                            if !usesMac && !seenMacCompanion {
+                                Spacer(minLength: 8)
+                                Text("새로")
+                                    .font(.body.weight(.semibold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 3)
+                                    .background(Capsule().fill(Color.red))
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    LeeoFamilySettingsRow<ScheduleDensityAppSpec>()
+                } header: {
+                    Text("함께 쓰기")
                 }
 
                 Section {

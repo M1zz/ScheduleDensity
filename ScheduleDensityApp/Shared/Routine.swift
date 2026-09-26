@@ -20,6 +20,10 @@ final class Routine {
     var weeklyHours: Double = 0
     /// 쿼터 루틴의 하루 횟수(끼니·세션). 0 = 미설정. 회당 시간 계산에 사용.
     var sessionsPerDay: Int = 0
+    /// 쿼터 루틴의 **회차별 기본 시작 시각** — "7,12.5,19" 꼴(시, 소수). nil 이면 하루 활동 구간에
+    /// 고르게 나눈 계산값을 쓴다(맥 `Routine.defaultSessionStart`). 요일마다 옮긴 것(QuotaPlacement)이 이보다 먼저다.
+    /// ⚠️ CloudKit 스키마가 늘어나는 필드다 — 맥·아이폰 양쪽에 같이 있어야 한다 (→ README).
+    var sessionStartsRaw: String? = nil
 
     var sortIndex: Int = 0
     var createdAt: Date = Date()

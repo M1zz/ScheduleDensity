@@ -20,7 +20,7 @@ options:
 packages:
   LeeoKit:
     url: https://github.com/M1zz/LeeoKit.git
-    majorVersion: 3.5.1
+    majorVersion: 3.11.0
 settings:
   base:
 # ⚠️ MARKETING_VERSION 과 CURRENT_PROJECT_VERSION 은 **여기 두지 않는다.**

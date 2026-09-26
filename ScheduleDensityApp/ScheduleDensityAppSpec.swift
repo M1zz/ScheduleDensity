@@ -70,4 +70,9 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
     /// 페이월·피드백에서 벌어진 일을 허브로 흘려보내는 싱크.
     /// **동의한 사람의 것만 나간다** (→ UsageAnalytics.swift, UsageReporting.swift).
     static let analytics: any LeeoAnalytics = ConsentedUsageAnalytics()
+
+    // '함께 쓰는 앱' 화면 (LeeoFamily). 이 앱은 맥 '무지개 공방'과 같은 목록을 나눠 쓰는 짝이라,
+    // 그 앱을 다른 앱들보다 먼저 — 이야기보다도 먼저 — 세운다 (→ MacCompanionView.swift).
+    static let familyID: String? = "rainbow-ios"
+    static let familyFeatured = ["rainbow-mac"]
 }

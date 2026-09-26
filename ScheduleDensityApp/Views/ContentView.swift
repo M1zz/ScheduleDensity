@@ -14,6 +14,10 @@ struct ContentView: View {
     /// 무지개에 줄이 그어지므로, 무지개 탭을 한 번도 안 열어도 살아 있어야 한다.
     @Bindable var viewModel: ScheduleViewModel
     @State private var showingSettings = false
+    // 맥을 안 쓰고 소개도 아직 안 봤으면, 설정 안에 새로 볼 것이 있다고 점을 찍는다
+    // (→ MacCompanionView.swift). 소개를 한 번 열면 내린다.
+    @AppStorage(MacCompanion.usesMacKey) private var usesMac = false
+    @AppStorage(MacCompanion.seenKey) private var seenMacCompanion = false
 
     var body: some View {
         NavigationStack {
@@ -26,7 +30,17 @@ struct ContentView: View {
                             showingSettings = true
                         }) {
                             Image(systemName: "gearshape")
+                                .overlay(alignment: .topTrailing) {
+                                    if !usesMac && !seenMacCompanion {
+                                        Circle()
+                                            .fill(Color.red)
+                                            .frame(width: 8, height: 8)
+                                            .offset(x: 3, y: -2)
+                                    }
+                                }
                         }
+                        .accessibilityLabel(!usesMac && !seenMacCompanion
+                                            ? Text("설정, 새로 볼 것 있음") : Text("설정"))
                     }
                 }
                 .sheet(isPresented: $viewModel.showingAddEvent) {

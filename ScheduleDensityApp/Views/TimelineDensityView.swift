@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import TipKit
 
 struct TimelineDensityView: View {
     @Bindable var viewModel: ScheduleViewModel
@@ -61,6 +62,8 @@ struct TimelineDensityView: View {
     @State private var pendingSplitDate: Date?
     /// 단계를 적으러 열 할 일.
     @State private var todoToSplit: BacklogItem?
+    /// 맥 '무지개 공방' 소개를 밀어 넣는 중인가 (→ MacCompanionView.swift).
+    @State private var showingMacCompanion = false
 
     var body: some View {
         mainContent
@@ -267,6 +270,17 @@ struct TimelineDensityView: View {
                     }
                 }
 
+                // 앞으로 한 주가 진하면 맥에서 다시 나눠 보라고 한 번 권한다.
+                // 처음 무지개를 배우는 중에는 세우지 않는다 — 짚어 주는 칸이 가려진다.
+                if onboardingStep == .idle, isWeekAheadBusy, MacBusyWeekTip().shouldDisplay {
+                    TipView(MacBusyWeekTip()) { action in
+                        if action.id == "learn" { showingMacCompanion = true }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGroupedBackground))
+                }
+
                 timelineScrollView
                 Divider()
                 selectedDayView
@@ -284,6 +298,9 @@ struct TimelineDensityView: View {
                 splitOfferBar(for: event)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
+        }
+        .navigationDestination(isPresented: $showingMacCompanion) {
+            MacCompanionView()
         }
         // 뜻풀이는 격자 위가 아니라 전체 화면으로. 만드는 경험이 끝난 뒤에 온다.
         .fullScreenCover(isPresented: $showingMeaning, onDismiss: {
@@ -317,6 +334,16 @@ struct TimelineDensityView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: onboardingStep)
+    }
+
+    /// 오늘부터 이레 가운데 사흘 이상이 네 줄 넘게 겹쳐 있는가.
+    /// 하루만 진한 건 그날 버티면 되지만, 여러 날이 진하면 한 주를 다시 짜야 한다.
+    private var isWeekAheadBusy: Bool {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        guard let end = calendar.date(byAdding: .day, value: 7, to: today) else { return false }
+        let crowded = densityData.filter { $0.date >= today && $0.date < end && $0.density >= 4 }
+        return crowded.count >= 3
     }
 
     private var toastView: some View {

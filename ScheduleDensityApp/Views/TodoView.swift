@@ -34,6 +34,11 @@ struct TodoView: View {
     private var allItems: [BacklogItem]
     @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
     private var categories: [BacklogCategory]
+    @Query(sort: [SortDescriptor(\Project.sortIndex), SortDescriptor(\Project.createdAt)])
+    private var projects: [Project]
+    /// 새 프로젝트를 만들어 붙일 할 일 (길게 눌러 '새 프로젝트…').
+    @State private var newProjectFor: BacklogItem?
+    @State private var newProjectName = ""
 
     @State private var tab: Tab = .mine
     @State private var family = FamilyShareStore.shared
@@ -70,6 +75,8 @@ struct TodoView: View {
     @AppStorage(AppSettingsKey.hasSeenBoltOnboarding) private var hasSeenBoltOnboarding = false
     /// 번개 뜻풀이 한 장을 밀어 넣는 중인가 (→ BoltOnboarding.swift).
     @State private var showingBoltMeaning = false
+    /// 맥 '무지개 공방' 소개 한 장을 밀어 넣는 중인가 (→ MacCompanionView.swift).
+    @State private var showingMacCompanion = false
 
     private let cal = Calendar(identifier: .iso8601)
     private var weekStart: Date { .currentWeekStart }
@@ -201,11 +208,25 @@ struct TodoView: View {
             .navigationDestination(isPresented: $showingBoltMeaning) {
                 BoltMeaningView(showsDoneButton: false) { }
             }
+            .navigationDestination(isPresented: $showingMacCompanion) {
+                MacCompanionView()
+            }
         }
         .sheet(isPresented: $showingLedger) {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
         .confirmsTodoDeletion($deletionRequest)
+        .alert("새 프로젝트", isPresented: Binding(
+            get: { newProjectFor != nil },
+            set: { if !$0 { newProjectFor = nil } })
+        ) {
+            TextField("프로젝트 이름", text: $newProjectName)
+            Button("만들기") {
+                if let item = newProjectFor { createProject(for: item) }
+                newProjectFor = nil
+            }
+            Button("취소", role: .cancel) { newProjectFor = nil }
+        }
         .alert("할 일 공유 시작", isPresented: $showingFamilyShareNotice) {
             Button("공유 시작") {
                 Task { await family.startSharing() }
@@ -326,6 +347,14 @@ struct TodoView: View {
                         // 색은 있어야 하지만, 진하면 할 일보다 안내가 먼저 읽힌다.
                         .listRowBackground(Self.hintTint)
                         .transition(.opacity.combined(with: .move(edge: .top)))
+                } else if MacHandoffTip().shouldDisplay {
+                    // 번개 안내와 한꺼번에 세우지 않는다. 안내 둘이 겹치면 할 일보다 먼저 읽힌다.
+                    TipView(MacHandoffTip()) { action in
+                        if action.id == "learn" { showingMacCompanion = true }
+                    }
+                    .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
 
                 // 2. 적는 자리. 평소에는 없고, + 를 누르면 여기 열린다 —
@@ -369,6 +398,7 @@ struct TodoView: View {
                     TodoRow(item: item,
                             tree: tree,
                             category: category(of: item),
+                            project: project(of: item),
                             when: .backlog,
                             deadline: nil,
                             onAdvance: advance)
@@ -385,6 +415,7 @@ struct TodoView: View {
                     TodoRow(item: item,
                             tree: tree,
                             category: category(of: item),
+                            project: project(of: item),
                             when: when(item),
                             deadline: periods[item.dragToken]?.end,
                             onAdvance: advance)
@@ -1130,6 +1161,30 @@ struct TodoView: View {
                 }
             }
         }
+        // 분류와 따로 고른다 — '업무'이면서 '테크맵'일 수 있다 (→ Project).
+        Menu("프로젝트") {
+            Button {
+                item.projectID = nil
+                save()
+            } label: {
+                Label("프로젝트 없음", systemImage: item.projectID == nil ? "checkmark" : "circle")
+            }
+            ForEach(projects.filter { !$0.isCompleted }) { p in
+                Button {
+                    item.projectID = p.uuid
+                    save()
+                } label: {
+                    Label(p.name, systemImage: item.projectID == p.uuid ? "checkmark" : "folder")
+                }
+            }
+            Divider()
+            Button {
+                newProjectName = ""
+                newProjectFor = item
+            } label: {
+                Label("새 프로젝트…", systemImage: "folder.badge.plus")
+            }
+        }
         Button(role: .destructive) {
             askToDelete(item, tree: tree)
         } label: {
@@ -1142,6 +1197,23 @@ struct TodoView: View {
     private func category(of item: BacklogItem) -> BacklogCategory? {
         guard let id = item.categoryID else { return nil }
         return categories.first { $0.uuid == id }
+    }
+
+    private func project(of item: BacklogItem) -> Project? {
+        guard let id = item.projectID else { return nil }
+        return projects.first { $0.uuid == id }
+    }
+
+    /// 새 프로젝트를 만들고, 길게 누른 그 할 일에 붙인다. 색은 아직 안 쓴 것부터.
+    private func createProject(for item: BacklogItem) {
+        let name = newProjectName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return }
+        let used = Set(projects.map(\.colorName))
+        let color = routineColorOptions.map(\.name).first { !used.contains($0) } ?? "blue"
+        let project = Project(name: name, colorName: color, sortIndex: projects.count)
+        context.insert(project)
+        item.projectID = project.uuid
+        save()
     }
 
     /// 빈 줄에서 엔터 = 다 적었다는 뜻이라 키보드를 내린다.
@@ -1275,6 +1347,10 @@ struct TodoView: View {
     private func refreshTipRules() {
         let tree = TodoTree(allItems)
         if tree.roots.contains(where: { tree.children(of: $0).count >= 2 }) { ShareSplitTip.hasSplit = true }
+
+        // 맥 권유 (→ MacCompanionView.swift).
+        MacHandoffTip.openTodoCount = tree.roots.filter { !$0.isCompleted }.count
+        MacCompanion.refresh(in: context)
     }
 
     /// 무지개에 그어져 있는 기간들을 다시 읽고, 오늘 계획을 거기 맞춘다.
@@ -1316,6 +1392,8 @@ struct TodoRow: View {
     let item: BacklogItem
     let tree: TodoTree
     let category: BacklogCategory?
+    /// 이 할 일이 속한 프로젝트. 줄 끝에 그 이름이 그 색으로 선다.
+    var project: Project? = nil
     /// 언제의 일인가 — 상세에 적어 둔 기간 하나로 판정한 것 (→ `TodoWhen`).
     let when: TodoWhen
     /// 무지개에 그어 둔 줄의 끝나는 날. 없으면 아직 날짜를 안 정한 일.
@@ -1432,6 +1510,15 @@ struct TodoRow: View {
                         .fill(category.displayColor)
                         .frame(width: 10, height: 10)
                         .accessibilityLabel(category.name)
+                }
+                // 프로젝트는 이름으로 — 점 하나로는 여러 프로젝트를 가를 수 없다.
+                // 제목보다 먼저 줄어들게 두어 할 일 이름을 밀어내지 않는다.
+                if let project {
+                    Text(project.name)
+                        .font(.body)
+                        .foregroundStyle(project.displayColor)
+                        .lineLimit(1)
+                        .layoutPriority(-1)
                 }
                 Spacer(minLength: 0)
             }

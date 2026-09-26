@@ -49,8 +49,15 @@ enum CloudSchemaPrimer {
         let category = BacklogCategory(name: marker, colorName: "blue",
                                        iconName: "tag", sortIndex: 9_999)
 
+        // 프로젝트 (→ BacklogCategory.swift). 새 타입이라 한 번도 안 쓰인 기기에서는 스키마에
+        // 타입부터 없다. 끝낸 날까지 채워야 completedAt 칸이 생긴다.
+        let project = Project(name: marker, colorName: "blue", sortIndex: 9_999)
+        project.isCompleted = true
+        project.completedAt = now
+
         let item = BacklogItem(title: marker, durationHours: 1, sortIndex: 9_999,
                                categoryID: category.uuid, weekStartDate: week)
+        item.projectID = project.uuid
         item.completedAt = now
         item.parentToken = "schema-sample-parent"
         item.labelRaw = "schema-sample-label"
@@ -69,8 +76,10 @@ enum CloudSchemaPrimer {
         block.nextAction = "schema-sample-next"
         block.isShared = true
         block.originInstallID = "schema-sample-install"
+        // 알약 아이콘 칸 (→ PlanBlock.iconName). 맥에서 아이콘을 누른 사람에게서만 생긴다.
+        block.iconName = "star.fill"
 
-        for model in [category as any PersistentModel, item, block] {
+        for model in [category as any PersistentModel, project, item, block] {
             context.insert(model)
         }
         do {
@@ -84,7 +93,7 @@ enum CloudSchemaPrimer {
 
         // ── 치운다. 스키마는 남는다. ────────────────────────────────────────
         var deleted = 0
-        for model in [category as any PersistentModel, item, block] {
+        for model in [category as any PersistentModel, project, item, block] {
             context.delete(model)
             deleted += 1
         }
@@ -99,7 +108,7 @@ enum CloudSchemaPrimer {
         } else {
             note = String(localized: "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요.")
         }
-        return Report(created: 3, deleted: deleted, note: note)
+        return Report(created: 4, deleted: deleted, note: note)
     }
 }
 

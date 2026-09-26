@@ -3,6 +3,91 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 외국어 기기에서 한국어가 뜨던 것 (2026-09-26, 시뮬레이터 확인함 · 커밋 안 함)
+
+- [x] 세 Info.plist `CFBundleDevelopmentRegion` = en (원래 $(DEVELOPMENT_LANGUAGE)=ko → 독일어 기기에 한국어)
+- [x] 세 Info.plist `CFBundleLocalizations` = ko, en
+- [x] 카탈로그에 ko 값 명시 1,079개 — 안 하면 ko.lproj가 안 생겨 **한국어 사용자에게 영어가 뜬다**
+      (`scripts/fill-source-ko.py`, 새 문자열 넣은 뒤 한 번 돌릴 것)
+- [x] 빠진 영어 번역 1개 (분석 동의 설명)
+- [x] 시뮬레이터: ko→한국어 · de/en/ja→영어 확인
+- [x] LeeoKit도 같은 세 가지 — `defaultLocalization: "en"` + ko 값 178개 + 테스트
+- [x] LeeoKit v3.10.0 태그 (영어 fallback) · v3.11.0 태그 (`familyFeatured` — 짝을 맨 앞에)
+- [x] 이 앱 LeeoKit 3.5.1 → 3.11.0 (pbxproj · project.yml · Package.resolved). 빌드 성공
+- [x] 설정 '함께 쓰기' 섹션 — 맥 무지개 공방 소개 줄 + LeeoFamily 줄. Spec에 `familyID`·`familyFeatured = ["rainbow-mac"]`
+- [ ] 시뮬레이터에서 둘러보기: 3.5.1→3.11.0 사이 바뀐 피드백 화면(유형별 칸) · 함께 쓰는 앱 화면 맨 위 '이 앱과 짝인 앱'
+- [ ] LeeoKit ru 71개 · id 8개 번역 빠짐 — 그 언어 사용자에겐 그 줄만 한국어 키가 뜬다
+- [ ] 맥 '무지개 공방'도 같은 문제 (Reddit 제보) — 같은 세 가지를 맥에도
+
+## ▶ 맥 앱 안내 (2026-09-26, 빌드 성공 · 커밋 안 함 · 시뮬레이터 확인 안 함)
+
+- [x] `Views/MacCompanionView.swift` — 맥 '무지개 공방' 소개 한 장 + `MacHandoffTip`(아이폰 전용, TodoTips.swift에 안 넣음)
+- [x] 설정 '맥에서 정리하기' 섹션 → 소개 화면으로 밀어 넣기
+- [x] 할 일 목록 맨 위 권유: 안 끝낸 할 일 8개 이상 · 루틴/계획(맥이 적는 것) 없음 · 번개 안내가 안 떠 있을 때
+- [x] 넛지 둘 더 (`MacBlockStepTip` 할 일 상세, 덩어리 단계가 있을 때 · `MacBusyWeekTip` 무지개, 이레 중 사흘 이상 밀도 4+)
+- [x] 설정 배지 — 무지개 탭 기어에 빨간 점 + 설정 줄에 '새로'. 맥 안 쓰고 소개 안 봤을 때만
+- [x] 맥 사용 여부·소개 봤는지는 `MacCompanion`(UserDefaults)에 — 설정은 일정 스토어라 할 일 스토어를 못 봐서
+- [x] 한국어·영어 문자열 25개
+- [ ] 시뮬레이터에서 확인: 설정 → 맥에서 정리하기 · 할 일 8개 넘겼을 때 권유 → '맥 앱 알아보기' · 링크 공유 시트
+      · 덩어리 단계 적었을 때 상세 권유 · 붐비는 주 권유 · 소개 한 번 열면 배지·권유가 다 내려가는지
+
+## ▶ 이어서 할 것 — 프로젝트 (2026-09-21 시작, 맥 먼저 · iOS는 멈춰 둠)
+
+> **지금 상태 한 줄:** iOS 코드는 들어가 있고 **빌드는 성공**했지만 **커밋 안 함 · 시뮬레이터로
+> 눌러 보지 않음.** 맥(WeekBlocks)을 먼저 마무리하기로 해서 여기서 멈췄다.
+> 이어 받는 사람은 `git status`로 아래 파일들이 그대로 있는지부터 볼 것.
+
+### 무엇인가
+할 일을 **끝이 있는 일 단위**(테크맵, 1.2 출시 …)로 묶는다. **분류와 다른 축**이다 —
+분류는 삶의 칸(업무·개인·건강)이라 끝나지 않고, 프로젝트는 끝난다. 할 일 하나가 '업무'이면서
+'테크맵'일 수 있다. 맥에서는 이미 만들고·붙이고·목록이 프로젝트별로 묶여 보인다.
+
+### 커밋 안 된 채 들어가 있는 것 (dev 브랜치 작업 트리)
+| 파일 | 내용 |
+|---|---|
+| `Shared/BacklogCategory.swift` | 맨 아래 `@Model final class Project` — uuid·name·colorName·sortIndex·createdAt·isCompleted·completedAt. **맥 같은 파일과 글자 하나까지 같다**(주석의 앱 이름만 다름) |
+| `Shared/BacklogItem.swift` | `var projectID: String? = nil` (Project.uuid). 단계(하위 줄)에는 안 적고 최상위 것을 따른다 |
+| `Services/WeekBlocksStore.swift` | `schema`에 `Project.self` |
+| `Services/CloudSchemaPrimer.swift` | 표본에 Project 하나(끝낸 것으로, completedAt까지) + `item.projectID` |
+| `Views/TodoView.swift` | `@Query projects` · 줄 길게 누르기 → **프로젝트** 메뉴(없음/목록/새 프로젝트…) · 새 프로젝트 알림창(`newProjectFor`) · `TodoRow.project` — 줄 끝에 이름을 그 색으로(`.body`, 제목보다 먼저 줄어듦) |
+| `Views/TodoDetailView.swift` | '이 할 일' 시트, 분류 아래 `projectPicker` + 새 프로젝트 알림창(시트 위에 붙어 있어야 뜬다) |
+| `Localizable.xcstrings` | 6개 추가: 프로젝트 · 프로젝트 없음 · 새 프로젝트… · 새 프로젝트 · 프로젝트 이름 · 만들기 |
+| `README.md` | '두 저장소를 함께 고쳐야 하는 것'에 `Project` 추가 |
+
+⚠️ 이 카탈로그는 `json.dumps(indent=2, ensure_ascii=False) + "\n"`과 **바이트 단위로 같은** 모양이다
+(맥 카탈로그는 Xcode 모양 `"key" : {` 라서 다르다). 손으로 고칠 때 이 모양을 지킬 것.
+
+### 해야 할 것 — 순서대로
+- [ ] **0. 커밋 전 확인.** 시뮬레이터에서: 줄 길게 누르기 → 새 프로젝트… → 이름 적기 → 그 줄에
+      이름이 서는지 · 상세 시트에서 바꿔지는지 · 맥에서 만든 프로젝트가 넘어와 보이는지.
+- [ ] **1. 목록을 프로젝트별로 묶기** (`TodoView` 본문). ⚠️ 지금 목록은 **성질로 이미 갈라져 있다** —
+      3.바로 하면 되는 일 / 4.그냥 하면 되는 것 / 5.시간을 잡은 일 (줄 339~432 번호 주석).
+      프로젝트로 또 가르면 두 축이 겹친다. 정할 것: (a) 성질 칸 **안에서** 프로젝트끼리 모으기,
+      (b) 맨 위에 프로젝트 칩을 두고 **거르기만** (맥 할 일 창과 같은 손), (c) 프로젝트 머리글 아래
+      성질 칸. 맥은 한 판 카드라 머리글 아래에 모았지만 iOS 목록과는 모양이 다르다 — 사용자에게 물어볼 것.
+- [ ] **2. 프로젝트 관리 화면** — 이름·색 고치기, 끝냄, 삭제. `CategoryManagerView.swift`가 본보기
+      (설정 줄 1011, 상세 시트 줄 460에서 연다). 맥 `ProjectManagerView`(WeekBlocks `BacklogView.swift`)와
+      규칙을 맞출 것: **삭제해도 할 일은 안 지운다**(projectID만 nil — 지우면 맥까지 건너가 사라진다) ·
+      끝낸 프로젝트는 고르는 메뉴에서 빠지되, 이미 붙은 할 일의 상세에서는 계속 보인다(지금 `projectPicker`가 그렇게 한다).
+- [ ] **3. 위젯·공유 익스텐션** — 프로젝트를 보여 줄지 정하기. 지금은 둘 다 모른다(모델 파일을 안 담는다).
+
+### 출시 — 맥과 함께 봐야 하는 것
+- [ ] ⚠️ **Production 스키마 배포가 무엇보다 먼저.** 새 레코드 타입 `CD_Project`와
+      `CD_BacklogItem.CD_projectID`. 배포 없이 내보내면 사용자가 프로젝트를 **처음 만드는 순간**
+      서버가 거절하고 그 거절 하나가 미러링을 통째로 멈춘다(→ CloudSchemaPrimer 머리말).
+      디버그 빌드 설정의 표본 올리기를 한 번 → Development 콘솔에서 칸 확인 → Production 배포.
+      **맥만 먼저 내보내도 이건 필요하다** — 맥이 먼저 이 칸을 쓴다.
+- [ ] **맥이 먼저 나가면**: 스토어의 옛 아이폰 앱은 `Project`를 모르므로 프로젝트가 안 보일 뿐일 것으로
+      본다. 확인 안 된 것 하나 — **옛 아이폰 앱이 할 일을 고쳐 올릴 때 맥이 붙인 projectID가 남는가.**
+      맥에서 프로젝트를 붙이고, 옛 아이폰 빌드에서 그 할 일 제목을 바꾼 뒤, 맥에서 프로젝트가 붙어 있는지 볼 것.
+- [ ] 알려진 어긋남(이번 일과 무관, 전부터): 맥 스키마에는 `ProMark`가 있고 여기(`WeekBlocksStore.schema`)엔 없다.
+- [ ] (2026-09-22 추가) **`PlanBlock.iconName: String?`** 을 넣었다(커밋 안 함, 표본 올리기에도 채움). 맥 일간 시간표에서
+      알약 아이콘을 누르면 바뀌는 값이다. 아이폰은 아직 안 그린다 — 그릴지 정할 것. 이 칸도 Production 배포 대상이다.
+- [ ] (2026-09-22 추가) **`Routine.sessionStartsRaw: String?`** 을 넣었다(커밋 안 함) — 유동 루틴(끼니)의 회차별 기본 시각
+      ("7,12,19"). 맥이 시간표·루틴 편집기에서 쓴다. 아이폰은 끼니 시각을 안 그려서 칸만 맞춘 것. 표본은 맥이 채운다.
+      Production 배포 대상.
+- [ ] 알려진 어긋남(전부터): 맥 `PlanBlock.nextAction`이 여기엔 아직 없다 (2026-09-18 맥 todo의 항목).
+
 ## 완료
 - [x] 페이월 퍼널을 허브로 (2026-09-09) — LeeoKit 분석 싱크를 꽂았다
       "페이월과 피드백의 데이터 수집." 확인해 보니 **피드백은 이미 모이고 있었고**

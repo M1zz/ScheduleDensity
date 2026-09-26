@@ -27,6 +27,11 @@ struct TodoDetailView: View {
 
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]
+    @Query(sort: [SortDescriptor(\Project.sortIndex), SortDescriptor(\Project.createdAt)])
+    private var projects: [Project]
+    /// '새 프로젝트…' 물음이 떠 있는가, 그리고 적는 이름.
+    @State private var showingNewProject = false
+    @State private var newProjectName = ""
     @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
     private var categories: [BacklogCategory]
 
@@ -54,6 +59,8 @@ struct TodoDetailView: View {
     @State private var showingSettings = false
     /// 쪼개기 도우미 — 목록에 펼쳐 두지 않고 눌러서 연다.
     @State private var showingSplitHelper = false
+    /// 맥 '무지개 공방' 소개를 밀어 넣는 중인가 (→ MacCompanionView.swift).
+    @State private var showingMacCompanion = false
     /// 시트 안 '세부 단계' 빈 줄. 목록의 빈 줄과 상태를 나눠 쓰면 두 줄이 서로 커서를 뺏는다.
     @State private var sheetStepTitle = ""
     @FocusState private var inputFocused: Bool
@@ -94,8 +101,12 @@ struct TodoDetailView: View {
             // 팁은 한 번에 하나만. 둘 다 뜨면 단계를 보러 들어온 화면이
             // 설명 카드 두 장으로 덮인다. 이 할 일에 대한 조언을 먼저 내고,
             // 그걸 닫은 뒤에 비중 규칙을 한 번 설명한다.
+            //
+            // 맥 권유는 그 둘이 다 지나간 뒤에야 선다. 이 일에 대한 조언이 먼저다.
             if !rows.isEmpty {
-                if showsSplitHint { splitHintTip } else { shareSplitTip }
+                if showsSplitHint { splitHintTip }
+                else if ShareSplitTip().shouldDisplay { shareSplitTip }
+                else { macBlockStepTip }
             }
             // 단계가 아직 없어도 이 섹션은 그린다 — 그 안의 빈 줄이 '첫 단계를 적는 자리'다.
             stepsSection
@@ -160,6 +171,9 @@ struct TodoDetailView: View {
         .navigationTitle(root.title)
         .navigationBarTitleDisplayMode(.inline)
         .confirmsTodoDeletion($deletionRequest)
+        .navigationDestination(isPresented: $showingMacCompanion) {
+            MacCompanionView()
+        }
         // 단계를 또 쪼개는 자리는 **그 단계의 상세 화면**이다. 같은 화면이 한 층 아래로
         // 다시 열리므로, 세 번째 층도 네 번째 층도 같은 손짓으로 이어진다.
         .navigationDestination(item: $pushedStep) { step in
@@ -453,6 +467,12 @@ struct TodoDetailView: View {
                 // 이 화면은 이미 할 일 스토어에서 돌고 있으므로 컨테이너를 따로 안 붙인다.
                 CategoryManagerView()
             }
+            // 이 시트 위에서 물어야 뜬다 (분류 시트와 같은 까닭).
+            .alert("새 프로젝트", isPresented: $showingNewProject) {
+                TextField("프로젝트 이름", text: $newProjectName)
+                Button("만들기") { createProject() }
+                Button("취소", role: .cancel) { }
+            }
         }
     }
 
@@ -551,8 +571,66 @@ struct TodoDetailView: View {
             // '언제 할 일인가'의 답이 한 일 안에서 갈라진다 (→ TodoWhen).
             if !isSubStep { periodRows }
             categoryPicker
+            projectPicker
         }
 
+    }
+
+    /// 프로젝트 — 분류와 따로 고른다 ('업무'이면서 '테크맵'). 만드는 자리도 고르는 자리 안에.
+    private var projectPicker: some View {
+        Menu {
+            Button {
+                root.projectID = nil
+                save()
+            } label: {
+                Label("프로젝트 없음", systemImage: root.projectID == nil ? "checkmark" : "circle")
+            }
+            ForEach(projects.filter { !$0.isCompleted || $0.uuid == root.projectID }) { p in
+                Button {
+                    root.projectID = p.uuid
+                    save()
+                } label: {
+                    Label(p.name, systemImage: root.projectID == p.uuid ? "checkmark" : "folder")
+                }
+            }
+            Divider()
+            Button {
+                newProjectName = ""
+                showingNewProject = true
+            } label: {
+                Label("새 프로젝트…", systemImage: "folder.badge.plus")
+            }
+        } label: {
+            HStack {
+                Text("프로젝트")
+                    .foregroundStyle(.primary)
+                Spacer()
+                if let id = root.projectID, let project = projects.first(where: { $0.uuid == id }) {
+                    Circle()
+                        .fill(project.displayColor)
+                        .frame(width: 10, height: 10)
+                    Text(project.name)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("프로젝트 없음")
+                        .foregroundStyle(.secondary)
+                }
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.body)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    private func createProject() {
+        let name = newProjectName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { return }
+        let used = Set(projects.map(\.colorName))
+        let color = routineColorOptions.map(\.name).first { !used.contains($0) } ?? "blue"
+        let project = Project(name: name, colorName: color, sortIndex: projects.count)
+        context.insert(project)
+        root.projectID = project.uuid
+        save()
     }
 
     private var categoryPicker: some View {
@@ -915,6 +993,32 @@ struct TodoDetailView: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             }
+        }
+    }
+
+    /// 덩어리 단계가 하나라도 있으면, 그런 단계를 한 주에 놓는 곳이 맥에 있다고 한 번 권한다.
+    @ViewBuilder
+    private var macBlockStepTip: some View {
+        if hasBlockStep, MacBlockStepTip().shouldDisplay {
+            Section {
+                TipView(MacBlockStepTip()) { action in
+                    if action.id == "learn" { showingMacCompanion = true }
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+            }
+        }
+    }
+
+    /// 잎(실제로 하는 단계) 가운데 '덩어리'로 판정된 것이 있는가.
+    private var hasBlockStep: Bool {
+        let tree = self.tree
+        return rows.contains { row in
+            !tree.hasChildren(row.item)
+                && TodoSplitAdvisor.advice(title: row.item.title,
+                                           durationHours: row.item.durationHours,
+                                           pick: row.item.fragmentPick).kind == .block
         }
     }
 

@@ -8,6 +8,12 @@
             "state" : "translated",
             "value" : ", step of %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", %@의 단계"
+          }
         }
       }
     },
@@ -17,6 +23,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", step %2$lld of %1$lld, now %3$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", %lld단계 중 %lld번째, 지금 %@"
           }
         }
       }
@@ -28,6 +40,12 @@
             "state" : "translated",
             "value" : ", %lld min"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", %lld분"
+          }
         }
       }
     },
@@ -37,6 +55,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", can be done in five minutes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", 5분에 집을 수 있음"
           }
         }
       }
@@ -48,6 +72,12 @@
             "state" : "translated",
             "value" : ", now %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", 지금 %@"
+          }
         }
       }
     },
@@ -57,6 +87,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", marked by you"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", 직접 표시함"
           }
         }
       }
@@ -68,6 +104,12 @@
             "state" : "translated",
             "value" : "Opens Rainbow of Desire on a blank line, ready to write."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘욕망의 무지개’를 열고 빈 줄에 바로 적습니다."
+          }
         }
       }
     },
@@ -77,6 +119,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.0f h"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f시간"
           }
         }
       }
@@ -88,6 +136,12 @@
             "state" : "translated",
             "value" : "%.1f h"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f시간"
+          }
         }
       }
     },
@@ -97,6 +151,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The %@ widget is locked. Tap to unlock Rainbow Pro."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 위젯이 잠겨 있습니다. 눌러서 무지개 Pro를 여십시오."
           }
         }
       }
@@ -109,6 +169,12 @@
             "state" : "translated",
             "value" : "The %@ widget is locked. Buy Rainbow Pro in Settings to open it."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다."
+          }
         }
       }
     },
@@ -118,6 +184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, today"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, 오늘"
           }
         }
       }
@@ -129,12 +201,24 @@
             "state" : "translated",
             "value" : "Ends at %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@에 끝남"
+          }
         }
       }
     },
     "%lld" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -149,12 +233,24 @@
             "state" : "translated",
             "value" : "%lld/%lld"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/%lld"
+          }
         }
       }
     },
     "%lld%%" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%%"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld%%"
@@ -169,6 +265,12 @@
             "state" : "translated",
             "value" : "%lld"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld개"
+          }
         }
       }
     },
@@ -179,12 +281,24 @@
             "state" : "translated",
             "value" : "%lld min"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld분"
+          }
         }
       }
     },
     "+%lld" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        },
+        "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+%lld"
@@ -199,6 +313,12 @@
             "state" : "translated",
             "value" : "⚡︎ %lld · %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ %lld · %@"
+          }
         }
       }
     },
@@ -208,6 +328,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⚡︎ No fragments ready"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ 집을 조각 없음"
           }
         }
       }
@@ -219,6 +345,12 @@
             "state" : "translated",
             "value" : "🔒 Rainbow Pro"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 무지개 Pro"
+          }
         }
       }
     },
@@ -228,6 +360,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🔒 Bolt — Rainbow Pro"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 번개 — 무지개 Pro"
           }
         }
       }
@@ -239,6 +377,12 @@
             "state" : "translated",
             "value" : "🔒 To-Do — Rainbow Pro"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 할 일 — 무지개 Pro"
+          }
         }
       }
     },
@@ -248,6 +392,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "0 min"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0분"
           }
         }
       }
@@ -259,6 +409,12 @@
             "state" : "translated",
             "value" : "%lld steps you can do in five minutes. "
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5분에 집을 수 있는 단계 %lld개. "
+          }
         }
       }
     },
@@ -268,6 +424,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld in five minutes"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5분이면 %lld개"
           }
         }
       }
@@ -279,6 +441,12 @@
             "state" : "translated",
             "value" : "Work"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개발"
+          }
         }
       }
     },
@@ -288,6 +456,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Past your plan"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계획을 넘겼습니다"
           }
         }
       }
@@ -299,6 +473,12 @@
             "state" : "translated",
             "value" : "Draft the proposal"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기획서 초안 작성"
+          }
         }
       }
     },
@@ -308,6 +488,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing left"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "남은 할 일 없음"
           }
         }
       }
@@ -319,6 +505,12 @@
             "state" : "translated",
             "value" : "Nothing left to do"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "남은 할 일이 없어요"
+          }
         }
       }
     },
@@ -328,6 +520,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share your events with others, read-only."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 일정을 읽기 전용으로 나눠 봅니다."
           }
         }
       }
@@ -339,6 +537,12 @@
             "state" : "translated",
             "value" : "Tap to unlock"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "눌러서 열기"
+          }
         }
       }
     },
@@ -349,6 +553,12 @@
             "state" : "translated",
             "value" : "Cut a step small enough to close in five minutes and it lands here."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단계를 5분에 닫히는 크기로 잘라 두면 여기 섭니다."
+          }
         }
       }
     },
@@ -358,6 +568,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "30-minute run"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 30분"
           }
         }
       }
@@ -370,6 +586,12 @@
             "state" : "translated",
             "value" : "Use it with your Mac"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "맥과 함께 쓰기"
+          }
         }
       }
     },
@@ -379,6 +601,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paused"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멈춤"
           }
         }
       }
@@ -390,6 +618,12 @@
             "state" : "translated",
             "value" : "Outline the sections"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목차 잡기"
+          }
         }
       }
     },
@@ -399,6 +633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rainbow"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무지개"
           }
         }
       }
@@ -410,6 +650,12 @@
             "state" : "translated",
             "value" : "The Rainbow widget is locked"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무지개 위젯이 잠겨 있습니다"
+          }
         }
       }
     },
@@ -419,6 +665,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bolt"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "번개"
           }
         }
       }
@@ -430,6 +682,12 @@
             "state" : "translated",
             "value" : "The Bolt widget is locked"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "번개 위젯이 잠겨 있습니다"
+          }
         }
       }
     },
@@ -439,6 +697,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing here"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비어 있어요"
           }
         }
       }
@@ -450,6 +714,12 @@
             "state" : "translated",
             "value" : "Opens a blank line and starts writing."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "빈 줄을 열고 바로 적습니다."
+          }
         }
       }
     },
@@ -459,6 +729,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brings events from Calendar onto the Rainbow."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시스템 캘린더의 일정을 무지개로 들여옵니다."
           }
         }
       }
@@ -470,6 +746,12 @@
             "state" : "translated",
             "value" : "Look at everything you've scheduled at once."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "쌓인 일정을 통째로 들여다봅니다."
+          }
         }
       }
     },
@@ -479,6 +761,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No lines drawn yet"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 그은 줄이 없어요"
           }
         }
       }
@@ -490,6 +778,12 @@
             "state" : "translated",
             "value" : "See what's still open on the Home and Lock Screen."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 안 한 일을 홈 화면과 잠금 화면에서 바로 봅니다."
+          }
         }
       }
     },
@@ -499,6 +793,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "See at a glance how full the days ahead are."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞으로 며칠이 얼마나 차 있는지 한눈에 봅니다."
           }
         }
       }
@@ -511,6 +811,12 @@
             "state" : "translated",
             "value" : "Settings ▸ Rainbow Pro"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앱의 설정에서 ‘무지개 Pro’"
+          }
         }
       }
     },
@@ -520,6 +826,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Call to book the movers"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "업체 예약 전화"
           }
         }
       }
@@ -532,6 +844,12 @@
             "state" : "translated",
             "value" : "To-dos you write here show up on your Mac. Writing itself is free."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다."
+          }
         }
       }
     },
@@ -541,6 +859,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Today"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘"
           }
         }
       }
@@ -552,6 +876,12 @@
             "state" : "translated",
             "value" : "%lld today · %@"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 %lld개 · %@"
+          }
         }
       }
     },
@@ -561,6 +891,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing today"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 비어 있음"
           }
         }
       }
@@ -572,6 +908,12 @@
             "state" : "translated",
             "value" : "Exercise"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "운동"
+          }
         }
       }
     },
@@ -581,6 +923,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tidy up widget snapshots"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위젯 스냅샷 정리"
           }
         }
       }
@@ -592,6 +940,12 @@
             "state" : "translated",
             "value" : "Counts what you won back this week."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이번 주에 무엇을 되찾았는지 셉니다."
+          }
         }
       }
     },
@@ -601,6 +955,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moving prep"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이사 준비"
           }
         }
       }
@@ -612,6 +972,12 @@
             "state" : "translated",
             "value" : "Event sharing"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정 공유"
+          }
         }
       }
     },
@@ -621,6 +987,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Event stats"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정 통계"
           }
         }
       }
@@ -632,6 +1004,12 @@
             "state" : "translated",
             "value" : "Save one reference link"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자료 링크 하나 챙기기"
+          }
         }
       }
     },
@@ -641,6 +1019,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Groceries — milk, eggs"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "장보기 — 우유, 계란"
           }
         }
       }
@@ -652,6 +1036,12 @@
             "state" : "translated",
             "value" : "%lld steps you could do in five minutes right now"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 5분에 집을 수 있는 단계 %lld개"
+          }
         }
       }
     },
@@ -661,6 +1051,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gathers only the steps you could do in five minutes."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 5분에 집을 수 있는 단계만 모아 봅니다."
           }
         }
       }
@@ -672,6 +1068,12 @@
             "state" : "translated",
             "value" : "No fragments ready now"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 집을 조각 없음"
+          }
         }
       }
     },
@@ -681,6 +1083,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No fragments ready right now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 집을 조각이 없어요"
           }
         }
       }
@@ -692,6 +1100,12 @@
             "state" : "translated",
             "value" : "See the current step and the Rainbow without opening the app."
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 할 단계와 무지개를 앱을 안 열고도 봅니다."
+          }
         }
       }
     },
@@ -701,6 +1115,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Home"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "집안일"
           }
         }
       }
@@ -712,6 +1132,12 @@
             "state" : "translated",
             "value" : "Read one chapter"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "책 한 챕터 읽기"
+          }
         }
       }
     },
@@ -721,6 +1147,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Import from Calendar"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더에서 가져오기"
           }
         }
       }
@@ -732,6 +1164,12 @@
             "state" : "translated",
             "value" : "To-Do"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "할 일"
+          }
         }
       }
     },
@@ -741,6 +1179,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No to-dos"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "할 일 없음"
           }
         }
       }
@@ -752,6 +1196,12 @@
             "state" : "translated",
             "value" : "Write a to-do"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "할 일 적기"
+          }
         }
       }
     },
@@ -761,6 +1211,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "To-dos. "
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "할 일. "
           }
         }
       }
@@ -772,6 +1228,12 @@
             "state" : "translated",
             "value" : "Home and Lock Screen widgets"
           }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈·잠금 화면 위젯"
+          }
         }
       }
     },
@@ -781,6 +1243,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ledger"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회수 장부"
           }
         }
       }

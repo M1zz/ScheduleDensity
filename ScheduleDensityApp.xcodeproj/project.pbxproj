@@ -28,6 +28,7 @@
 		2DA6447E5C4C977781B3F105 /* TodoSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */; };
 		311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */; };
 		328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */; };
+		A1C0FFEE5EED0000000000A1 /* MacCompanionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0FFEE5EED0000000000A2 /* MacCompanionView.swift */; };
 		34A0EC8B0A706939563B6C1D /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB99E2E5FB474F18ADACDB3E /* TimerView.swift */; };
 		34DAD7231133774754F5C9F2 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 66F83109177C87ECC54FC849 /* InfoPlist.xcstrings */; };
 		365C0C76527D982BAB6ED969 /* CloudSchemaPrimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */; };
@@ -170,6 +171,7 @@
 		2C853BE37B3248C998610275 /* PressHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressHaptics.swift; sourceTree = "<group>"; };
 		2CBAA221C53BC924F7AF2934 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
 		2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeaningPage.swift; sourceTree = "<group>"; };
+		A1C0FFEE5EED0000000000A2 /* MacCompanionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCompanionView.swift; sourceTree = "<group>"; };
 		2E623D45F3D5901AF972B0CA /* BacklogItem+StepOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BacklogItem+StepOrder.swift"; sourceTree = "<group>"; };
 		30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTimelineLayout.swift; sourceTree = "<group>"; };
 		3485B020981ACBBB7679B4BF /* TaskTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTimer.swift; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
 				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
 				2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */,
+				A1C0FFEE5EED0000000000A2 /* MacCompanionView.swift */,
 				1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */,
 				7A5EF904E1E47DF7E2D6E33E /* RainbowMeaningView.swift */,
 				DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */,
@@ -709,6 +712,7 @@
 				6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */,
 				86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */,
 				328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */,
+				A1C0FFEE5EED0000000000A1 /* MacCompanionView.swift in Sources */,
 				4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */,
 				311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */,
 				EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */,
@@ -1107,7 +1111,7 @@
 			repositoryURL = "https://github.com/M1zz/LeeoKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.5.1;
+				minimumVersion = 3.11.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

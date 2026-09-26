@@ -2,8 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- 기기 언어가 한국어도 영어도 아닐 때(독일어 등) 떨어지는 언어. 원문은 한국어(ko)지만
+	     여기는 en 이어야 한다 — $(DEVELOPMENT_LANGUAGE)(=ko)로 두면 외국 사용자에게 한국어가 뜬다. -->
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<string>en</string>
+	<!-- 원문(ko)은 키 그대로라 ko.lproj가 만들어지지 않는다. 여기 적지 않으면 한국어가
+	     지원 언어로 안 잡혀서 한국어 사용자에게도 영어가 뜬다. 언어를 늘리면 여기도 늘릴 것. -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ko</string>
+		<string>en</string>
+	</array>
 	<key>CFBundleDisplayName</key>
 	<string>할 일로</string>
 	<key>CFBundleExecutable</key>

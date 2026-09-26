@@ -56,6 +56,9 @@ final class PlanBlock {
     var reviewStatusRaw: String? = nil
     var reviewNote: String? = nil
     var reviewedAt: Date? = nil
+    /// 알약 아이콘 (SF Symbol 이름) — 맥 일간 시간표에서 누르면 바뀐다. 아이폰은 아직 안 그린다.
+    /// ⚠️ 맥 PlanBlock 에도 같은 칸이 있다. CloudKit 스키마가 늘어나는 필드 (→ README).
+    var iconName: String? = nil
 
     init(day: DayOfWeek,
          timeBand: TimeBand,

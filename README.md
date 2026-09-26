@@ -140,7 +140,8 @@ docs/                GitHub Pages (소개 · 개인정보 · 릴리즈 노트)
   '답 없음'으로 지나가므로 깨지지는 않지만, 순서 없는 묶음도 사슬로 세운다.
   옮길 때 `TodoTree.currentStep`도 같이 고칠 것
 
-`BacklogItem` / `BacklogCategory` 는 같은 CloudKit 스키마를 쓰므로 **필드 추가·삭제는 반드시 양쪽 동시에** 한다.
+`BacklogItem` / `BacklogCategory` / `Project` 는 같은 CloudKit 스키마를 쓰므로 **필드 추가·삭제는 반드시 양쪽 동시에** 한다.
+`Project` 정의는 두 저장소의 `BacklogCategory.swift` 맨 아래에 **글자 하나까지 같게** 있다.
 맥에만 있는 전파 계약 필드처럼 한쪽에만 있는 필드는 옵셔널 또는 기본값이어야 한다.
 
 ## 데이터
