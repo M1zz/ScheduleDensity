@@ -359,11 +359,12 @@ struct ScheduleDensityApp: App {
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
             .task { intakeSharedTodos() }
-            // 앱을 연 날을 적고, 켜 두셨으면 그 숫자를 허브에 갱신한다.
-            // **안 켜 두었으면 한 바이트도 안 나간다** (→ UsageReporting.swift).
+            // 앱을 연 날을 적고, 끄지 않았으면 그 숫자를 허브에 갱신한다.
+            // **끈 사람에게서는 한 바이트도 안 나간다** (→ UsageReporting.swift).
             .task {
                 UsageDiary.markToday()
                 guard UsageReporting.isEnabled else { return }
+                UsageReporting.logOpenIfAllowed()
                 let context = todoContainer.mainContext
                 let todos = (try? context.fetch(FetchDescriptor<BacklogItem>())) ?? []
                 let categories = (try? context.fetch(FetchDescriptor<BacklogCategory>())) ?? []
@@ -415,6 +416,9 @@ struct ScheduleDensityApp: App {
                     TodoArchive.write(from: todoContainer.mainContext)
                 }
                 if phase == .active {
+                    // 며칠 켜 둔 채 돌아온 날도 '연 날'이다 (→ UsageReporting.logOpenIfAllowed).
+                    UsageDiary.markToday()
+                    UsageReporting.logOpenIfAllowed()
                     if QuickTodoBridge.hasPendingAdd { selectedTab = .todo }
                     intakeSharedTodos()
                     // 맥에서 넘어온 변경도 위젯에 반영한다.

@@ -1,11 +1,15 @@
 //
 //  UsageReporting.swift
 //
-//  **묻지 않고는 안 보낸다.**
+//  **기본으로 보내고, 끄면 안 보낸다.**
 //
-//  이 앱의 개인정보 처리방침은 오랫동안 "수집하거나 전송하지 않습니다"였다.
-//  그 말을 지키면서 통계를 보내는 방법은 하나뿐이다 — **사용자가 켜야 나간다.**
-//  기본값은 꺼짐이고, 안 켜면 네트워크로 한 바이트도 안 나간다.
+//  예전에는 켜야만 나갔다(기본 꺼짐). 그랬더니 App Store 첫 다운로드 392건에 허브에
+//  잡히는 설치가 거의 없어서, 이 앱이 어떻게 쓰이는지를 아무것도 알 수 없었다
+//  (2026-09-26). 그래서 기본을 켬으로 바꾸고, 통계 화면의 스위치로 끌 수 있게 둔다.
+//  끄면 네트워크로 한 바이트도 안 나간다.
+//
+//  ⚠️ 예전에 **직접 끈** 사람은 그대로 꺼져 있다. 저장된 값이 없는(한 번도 안 만진)
+//     설치만 켬으로 읽는다 — 본인이 고른 것을 앱이 뒤집지 않는다.
 //
 //  ⚠️ 나가는 것은 두 가지다 — `UsageStats.metrics` 의 **숫자**, 그리고 페이월에서
 //     벌어진 일을 가리키는 **앱이 미리 정해 둔 낱말** 한 줄 (→ UsageAnalytics.swift).
@@ -29,9 +33,9 @@ enum UsageReporting {
 
     private static var defaults: UserDefaults { .standard }
 
-    /// 개발자에게도 보낼 것인가. **기본은 꺼짐이다.**
+    /// 개발자에게도 보낼 것인가. **기본은 켬이다.** 끈 사람만 false 가 저장돼 있다.
     static var isEnabled: Bool {
-        get { defaults.bool(forKey: enabledKey) }
+        get { defaults.object(forKey: enabledKey) == nil ? true : defaults.bool(forKey: enabledKey) }
         set {
             defaults.set(newValue, forKey: enabledKey)
             defaults.set(true, forKey: askedKey)
@@ -40,8 +44,21 @@ enum UsageReporting {
         }
     }
 
-    /// 한 번이라도 답한 적이 있는가. 아직이면 화면에서 먼저 물어본다.
+    /// 한 번이라도 스위치를 만진 적이 있는가.
     static var hasAnswered: Bool { defaults.bool(forKey: askedKey) }
+
+    /// **이 앱을 연 날** — 하루 한 건. 허브의 DAU · 잔존 · "며칠 왔나"는 그날 이벤트가
+    /// 하나라도 있었는지로 세서, 이게 없으면 페이월 같은 드문 일이 있던 날만 잡힌다.
+    /// 이름은 다른 앱과 같은 `app_open` 이어야 허브가 알아본다.
+    static func logOpenIfAllowed(_ now: Date = Date()) {
+        guard isEnabled else { return }
+        let key = "usage.lastOpenSent"
+        let today = Calendar.current.startOfDay(for: now)
+        if let last = defaults.object(forKey: key) as? Date,
+           Calendar.current.startOfDay(for: last) >= today { return }
+        defaults.set(now, forKey: key)
+        LeeoUsageReporter(spec: ScheduleDensityAppSpec.self).logEventInBackground("app_open")
+    }
 
     /// 앱을 켤 때. 켜 두었으면 스냅샷을 갱신한다.
     /// 보내는 간격은 LeeoUsageReporter 가 12시간으로 막아 두어 매번 나가지 않는다.

@@ -148,9 +148,7 @@ struct UsageStatsView: View {
             Toggle(isOn: $sendsToDeveloper) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("개발자에게도 익명으로 보내기")
-                    Text(UsageReporting.hasAnswered
-                         ? "언제든 여기서 끄실 수 있습니다."
-                         : "아직 안 보내고 있습니다. 켜셔야 나갑니다.")
+                    Text("언제든 여기서 끄실 수 있습니다.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

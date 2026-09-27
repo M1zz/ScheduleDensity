@@ -8,9 +8,9 @@
 //    ① 동의했는가를 먼저 묻고 (→ UsageReporting.swift)
 //    ② 이벤트 하나를 문자열 한 줄로 눌러 담아 허브의 `UsageEvent` 로 보낸다.
 //
-//  ⚠️ **동의 없이는 한 줄도 안 나간다.** `UsageReporting.isEnabled` 는 기본이 꺼짐이고,
-//     이 싱크는 그 값을 통과하지 못하면 아무 일도 하지 않는다. 페이월 이벤트라고
-//     예외를 두지 않는다 — 돈이 걸린 숫자일수록 몰래 가져가면 안 된다.
+//  ⚠️ **끈 사람에게서는 한 줄도 안 나간다.** `UsageReporting.isEnabled` 는 기본이 켬이고
+//     통계 화면에서 끌 수 있다. 이 싱크는 그 값을 통과하지 못하면 아무 일도 하지 않는다.
+//     페이월 이벤트라고 예외를 두지 않는다.
 //
 //  ⚠️ `LeeoKit.bootstrap(_:)` 은 **부르지 않는다.** 그 한 줄은 편하지만 크래시 진단
 //     (MetricKit)과 사용현황 스냅샷을 동의와 무관하게 켜 버린다. 이 앱은 개인정보
@@ -21,7 +21,7 @@
 import Foundation
 import LeeoKit
 
-/// 동의한 사람의 것만 허브로 보내는 분석 싱크.
+/// 끄지 않은 사람의 것만 허브로 보내는 분석 싱크.
 struct ConsentedUsageAnalytics: LeeoAnalytics {
 
     func track(_ event: LeeoEvent) {
