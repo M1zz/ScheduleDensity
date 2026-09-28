@@ -7,13 +7,13 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Rainbow of Desire"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "욕망의 무지개"
           }
         }
@@ -23,9 +23,15 @@
       "comment" : "Bundle name",
       "extractionState" : "extracted_with_value",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
         "ko" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "ScheduleDensityApp"
           }
         }
@@ -55,13 +61,13 @@
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Reads your calendar events so it can measure how full your days are. The data stays on this device and is never sent anywhere."
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "일정 밀도를 분석하기 위해 캘린더 일정을 가져옵니다. 데이터는 기기에만 저장되며 외부로 전송되지 않습니다."
           }
         }
