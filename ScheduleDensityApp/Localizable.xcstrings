@@ -1492,6 +1492,118 @@
         }
       }
     },
+    "고른 캘린더를 무지개에 늘 비추기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Always show chosen calendars on the rainbow"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고른 캘린더를 무지개에 늘 비추기"
+          }
+        }
+      }
+    },
+    "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events from the calendars you pick always show on your rainbow. Move or delete them in Calendar and the rainbow follows."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다."
+          }
+        }
+      }
+    },
+    "설정 앱 열기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 앱 열기"
+          }
+        }
+      }
+    },
+    "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read only. Nothing is ever written to your calendars."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다."
+          }
+        }
+      }
+    },
+    "캘린더 연동" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar Sync"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 연동"
+          }
+        }
+      }
+    },
+    "캘린더 접근 허용" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow Calendar Access"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 접근 허용"
+          }
+        }
+      }
+    },
+    "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar access is off. In the Settings app, set Calendars to Full Access for this app."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요."
+          }
+        }
+      }
+    },
     "할 일 %lld개" : {
       "localizations" : {
         "en" : {

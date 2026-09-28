@@ -40,6 +40,8 @@
 	<true/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>고른 캘린더의 일정을 무지개에 함께 보여 드리려고 읽습니다. 캘린더에는 아무것도 쓰지 않으며, 일정은 외부로 전송되지 않습니다.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>일정 밀도를 분석하기 위해 캘린더 일정을 가져옵니다. 데이터는 기기에만 저장되며 외부로 전송되지 않습니다.</string>
 	<key>NSSupportsLiveActivities</key>

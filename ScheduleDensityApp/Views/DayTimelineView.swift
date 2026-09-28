@@ -754,6 +754,21 @@ struct DayTimeAnalysisView: View {
                                          color: laneColor(for: event))
         }
 
+        // 캘린더 일정은 **적힌 시각 그대로** (→ CalendarMirror.timedEvents). 줄 색은 무지개와 한 벌이다 —
+        // 무지개에 그 일정의 줄이 있으면 그 색, 없으면 캘린더 자신의 색.
+        let calendarColors = Dictionary(
+            viewModel.calendarMirrorEvents().compactMap { e in e.mirrorKey.map { ($0, laneColor(for: e)) } },
+            uniquingKeysWith: { first, _ in first })
+        // 맥이 이미 계획 블록으로 옮겨 적은 회의는 그 블록이 같은 시각에 서 있다 — 한 번만.
+        let planned = ProEntitlement.isUnlocked ? WeekBlocksStore.shared.plannedCalendarCopies() : .init()
+        let fixed = (ProEntitlement.isUnlocked ? CalendarMirror.shared.timedEvents(on: date, planned: planned) : [])
+            .enumerated()
+            .map { index, e in
+                TimelineLayout.FixedEvent(id: "\(e.key)#\(index)", title: e.title,
+                                          start: e.start, end: e.end,
+                                          color: calendarColors[e.key] ?? Color(cgColor: e.color))
+            }
+
         var result = TimelineLayout.segments(
             routines: input.fixedRoutines,
             blocks: input.blocks,
@@ -761,6 +776,7 @@ struct DayTimeAnalysisView: View {
             routineStartOverride: input.routineStartOverride,
             quotaPlacement: input.quotaPlacement,
             quotaHidden: input.quotaHidden,
+            fixedEvents: fixed,
             flexibleEvents: flexible
         )
 
@@ -784,6 +800,7 @@ struct DayTimeAnalysisView: View {
 
         let window = TimelineLayout.visibleWindow(fixedRoutines: input.fixedRoutines,
                                                   blocks: input.blocks,
+                                                  fixedEvents: fixed,
                                                   hideSleep: hideSleep)
 
         // 겹친 시간은 한 번만 센다 (맥과 같은 규칙).
@@ -990,6 +1007,7 @@ struct DayTimeAnalysisView: View {
             switch seg.kind {
             case .routine, .quota: routineIcons[seg.title]
             case .planBlock, .rainbowEvent: nil
+            case .calendarEvent: "calendar"
             }
         }
 

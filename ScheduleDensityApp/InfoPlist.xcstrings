@@ -31,6 +31,24 @@
         }
       }
     },
+    "NSCalendarsFullAccessUsageDescription" : {
+      "comment" : "Privacy - Calendars Full Access Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads the calendars you pick so their events can show on your rainbow. Nothing is written to your calendars, and events are never sent anywhere."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고른 캘린더의 일정을 무지개에 함께 보여 드리려고 읽습니다. 캘린더에는 아무것도 쓰지 않으며, 일정은 외부로 전송되지 않습니다."
+          }
+        }
+      }
+    },
     "NSCalendarsUsageDescription" : {
       "comment" : "Privacy - Calendars Usage Description",
       "extractionState" : "extracted_with_value",

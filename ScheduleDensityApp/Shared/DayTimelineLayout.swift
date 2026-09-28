@@ -16,7 +16,11 @@
 //   4. 주간 쿼터(식사 등) — 활동 구간 7.5~19.5에 회차 수만큼 균등 분산. 겹침 허용, 자유 시간을 깎지 않는다.
 //   5. 루틴 안 일정 — 루틴 위에 겹쳐(인셋). 미지정이면 9시.
 //
-//  iOS가 하나 더 얹는 것: 무지개 일정(Event)은 시작 시각이 없다. 3번과 같은 방식으로
+//  iOS가 얹는 것 둘:
+//   - 캘린더 일정(→ CalendarMirror)은 **실제 시각 그대로** 세운다. 루틴 다음, 계획 블록보다 먼저 —
+//     짐작으로 놓는 것들(시각 미지정 계획·무지개 일정)이 진짜 회의 자리를 피해 가야 한다.
+//     겹쳐도 옮기지 않는다. 캘린더에 적힌 시각이 사실이고, 겹침은 옆 칸으로 나란히 보인다.
+//   - 무지개 일정(Event)은 시작 시각이 없다. 3번과 같은 방식으로
 //  낮 한가운데를 원하는 지점 삼아 남은 자리에 넣되, 시각이 짐작이라는 뜻으로 '유연'하게 그린다.
 //
 
@@ -65,6 +69,8 @@ struct TimeSegment: Identifiable {
         case planBlock
         /// 무지개 일정. 시작 시각이 없어 자리를 짐작한 것.
         case rainbowEvent
+        /// 캘린더 일정. 시각이 캘린더에 적힌 그대로다 (→ CalendarMirror).
+        case calendarEvent
     }
 
     var hours: Double { end - start }
@@ -80,6 +86,7 @@ enum TimelineLayout {
     ///
     /// - routineStartOverride: 이 요일만 따로 옮긴 고정 루틴 시작 시각(이름 → 시각).
     /// - quotaPlacement: 이 요일에서 옮긴 끼니 위치(이름 → [회차: 시각]).
+    /// - fixedEvents: 시각이 정해진 캘린더 일정. 그 자리에 그대로 선다.
     /// - flexibleEvents: 시작 시각이 없는 무지개 일정 (제목, 시간, 색).
     static func segments(routines: [Routine],
                          blocks: [PlanBlock],
@@ -87,6 +94,7 @@ enum TimelineLayout {
                          routineStartOverride: [String: Double] = [:],
                          quotaPlacement: [String: [Int: Double]] = [:],
                          quotaHidden: [String: Set<Int>] = [:],
+                         fixedEvents: [FixedEvent] = [],
                          flexibleEvents: [FlexibleEvent] = []) -> (segments: [TimeSegment], unplaced: [FlexibleEvent])
     {
         var segs: [TimeSegment] = []
@@ -107,6 +115,17 @@ enum TimelineLayout {
         }
 
         var free = subtract([(0, 24)], occupied)
+
+        // 1b) (iOS만) 캘린더 일정 — 적힌 시각 그대로. 루틴과 겹쳐도 옮기지 않고, 그 자리를 소모해
+        //     아래에서 짐작으로 놓는 것들이 이 자리를 피해 간다.
+        for event in fixedEvents.sorted(by: { $0.start < $1.start }) {
+            let s = min(max(event.start, 0), 24 - minVisibleHours)
+            let e = min(24, max(event.end, s + minVisibleHours))
+            segs.append(TimeSegment(id: "calendar:\(event.id)", start: s, end: e,
+                                    color: event.color, title: event.title, isRoutine: false,
+                                    kind: .calendarEvent))
+            free = subtract(free, [(s, e)])
+        }
 
         /// 원하는 지점에서 가장 가까운, 통째로 들어갈 빈 자리를 찾아 그 자리를 소모한다.
         func place(desired: Double, _ dur: Double) -> (Double, Double)? {
@@ -213,6 +232,15 @@ enum TimelineLayout {
         return (segs, unplaced)
     }
 
+    /// 시각이 정해진 캘린더 일정. 그 날 안으로 잘라서 준다(0...24).
+    struct FixedEvent: Identifiable {
+        let id: String
+        let title: String
+        let start: Double
+        let end: Double
+        let color: Color
+    }
+
     /// 시작 시각이 없는 무지개 일정.
     struct FlexibleEvent: Identifiable {
         let id: String
@@ -251,6 +279,7 @@ enum TimelineLayout {
     /// 시간 축이 끊겨서 앞뒤 시각을 읽을 수 없기 때문이다.
     static func visibleWindow(fixedRoutines: [Routine],
                               blocks: [PlanBlock],
+                              fixedEvents: [FixedEvent] = [],
                               hideSleep: Bool) -> HourWindow
     {
         guard hideSleep else { return .full }
@@ -265,6 +294,8 @@ enum TimelineLayout {
         for b in blocks where b.startHour >= 0 {
             protected.append(contentsOf: splitAtMidnight(b.startHour, b.startHour + b.durationHours))
         }
+        // 캘린더 일정도 시각이 사실이다. 새벽 비행기가 수면 접기에 가려지면 안 된다.
+        for e in fixedEvents { protected.append((e.start, e.end)) }
         guard !sleep.isEmpty else { return .full }
 
         var start = 0.0, end = 24.0

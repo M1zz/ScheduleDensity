@@ -179,6 +179,10 @@ class ScheduleViewModel {
     private var todoBundleCache: [Event] = []
     private var todoBundleCacheKey: (token: UUID, day: Date)? = nil
     private var todoSaveObserver: NSObjectProtocol?
+    /// 캘린더 미러(→ CalendarMirror). 새로 고침 신호로 캐시한다.
+    private var calendarCache: [Event] = []
+    private var calendarCacheToken: UUID? = nil
+    private var calendarObserver: NSObjectProtocol?
     // CloudKit 원격 변경(첫 동기화·다른 기기 변경) 시 화면을 갱신하기 위한 옵저버.
     private var remoteChangeObserver: NSObjectProtocol?
     // 앱 안에서 '오늘로 배정'해 계획이 바뀐 경우의 옵저버.
@@ -254,6 +258,17 @@ class ScheduleViewModel {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
         }
 
+        // 비추는 캘린더를 바꿨거나 캘린더 쪽 일정이 바뀌었다.
+        calendarObserver = NotificationCenter.default.addObserver(
+            forName: .calendarMirrorDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.calendarCacheToken = nil
+            self.dataRefreshTrigger = UUID()
+        }
+
         // 할 일을 적거나 끝내면 오늘 칸의 묶음 개수가 바뀐다. 할 일 스토어는 이 뷰모델이
         // 안 보는 컨테이너라, 거기서 저장이 일어났다는 것만 듣고 다시 센다.
         todoSaveObserver = NotificationCenter.default.addObserver(
@@ -292,6 +307,9 @@ class ScheduleViewModel {
         }
         if let todoSaveObserver {
             NotificationCenter.default.removeObserver(todoSaveObserver)
+        }
+        if let calendarObserver {
+            NotificationCenter.default.removeObserver(calendarObserver)
         }
     }
 
@@ -348,6 +366,21 @@ class ScheduleViewModel {
         weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache
+    }
+
+    /// 무지개에 서 있는 캘린더 줄들. 하루 화면이 같은 줄 색을 찾는다 (→ DayTimelineView).
+    func calendarMirrorEvents() -> [Event] { calendarEvents() }
+
+    /// 고른 캘린더의 일정(→ CalendarMirror). 캘린더는 Pro다 — '가져오기'와 같은 잠금.
+    /// ⚠️ 잠기면 **비추기도 멈춘다.** 켜 둔 채 구독이 끝났다고 계속 보이면 잠금이 이름뿐이다.
+    private func calendarEvents() -> [Event] {
+        guard ProEntitlement.isUnlocked else { return [] }
+        if calendarCacheToken == dataRefreshTrigger { return calendarCache }
+        // 맥이 이미 계획표에 옮겨 적은 회의는 맥 계획으로 서 있다. 두 번 세지 않는다.
+        calendarCache = CalendarMirror.shared.visualEvents(from: currentStartDate, to: currentEndDate,
+                                                           planned: weekBlocksStore.plannedCalendarCopies())
+        calendarCacheToken = dataRefreshTrigger
+        return calendarCache
     }
 
     /// 오늘 칸에 묶어 세우는 기간 없는 할 일 (→ TodoRainbowBundle).
@@ -563,6 +596,8 @@ class ScheduleViewModel {
             let weekBlocks = weekBlocksEvents()
             // 기간 없는 할 일은 오늘 칸에 묶어서 선다. 오늘뿐이라 지나간 필터와 상관없다.
             let todoBundles = todoBundleEvents(ownEvents: ownEvents)
+            // 캘린더 미러도 맥 계획처럼 지나간 필터에서 면제한다 — 캘린더에 있는 그대로 보인다.
+            let calendarMirror = calendarEvents()
 
             // 지나간 이벤트 필터링.
             //
@@ -586,10 +621,11 @@ class ScheduleViewModel {
                 }
 
                 print("📊 [ViewModel] 이벤트 조회됨: 내 일정 \(ownEvents.count)개 중 활성 \(activeOwnEvents.count)개"
-                      + " + WB 미러 \(weekBlocks.count)개(필터 면제) + 할 일 묶음 \(todoBundles.count)줄")
-                return activeOwnEvents + weekBlocks + todoBundles
+                      + " + WB 미러 \(weekBlocks.count)개(필터 면제) + 할 일 묶음 \(todoBundles.count)줄"
+                      + " + 캘린더 \(calendarMirror.count)줄")
+                return activeOwnEvents + weekBlocks + todoBundles + calendarMirror
             } else {
-                let allEvents = ownEvents + weekBlocks + todoBundles
+                let allEvents = ownEvents + weekBlocks + todoBundles + calendarMirror
                 print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
                 return allEvents
             }

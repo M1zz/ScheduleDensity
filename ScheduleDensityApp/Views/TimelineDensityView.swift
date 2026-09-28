@@ -410,7 +410,12 @@ struct TimelineDensityView: View {
                             viewModel: viewModel,
                             allDensityData: densityData,
                             onEventTap: { event in
-                                handleEventTap(event)
+                                // 캘린더 일정은 캘린더 앱의 그 날로 — 고치는 곳이 거기다.
+                                if event.isCalendarMirror {
+                                    openCalendarApp(on: dayData.date)
+                                } else {
+                                    handleEventTap(event)
+                                }
                             },
                             onEmptyCellTap: {
                                 selectedDateForNewEvent = dayData.date
@@ -518,6 +523,14 @@ struct TimelineDensityView: View {
         }
         // 탭 = 일정 보기. 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼.
         eventToView = event
+    }
+
+    /// 캘린더 앱을 그 날짜로 연다. `calshow:` 뒤에는 2001-01-01부터 잰 초가 온다.
+    private func openCalendarApp(on date: Date) {
+        let noon = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: date) ?? date
+        if let url = URL(string: "calshow:\(Int(noon.timeIntervalSinceReferenceDate))") {
+            UIApplication.shared.open(url)
+        }
     }
 
     private func handleDateLabelTap(_ date: Date) {
@@ -1110,8 +1123,9 @@ struct GridCell: View {
             }
         }
         .contextMenu {
-            // 할 일 묶음은 고치거나 지울 일정이 아니다 (→ TodoRainbowBundle).
-            if isActive, let event = event, !event.isTodoBundle {
+            // 할 일 묶음 · 캘린더 미러는 여기서 고치거나 지울 일정이 아니다
+            // (→ TodoRainbowBundle, CalendarMirror).
+            if isActive, let event = event, !event.isTodoBundle, !event.isCalendarMirror {
                 // 일정 수정
                 Button(action: {
                     viewModel.eventToEdit = event

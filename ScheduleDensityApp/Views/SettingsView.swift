@@ -56,6 +56,7 @@ struct SettingsView: View {
     @State private var balanceSuggestions: [Event: Date] = [:]
     @State private var isAnalyzingBalance = false
     @State private var showingCalendarImport = false
+    @State private var showingCalendarMirror = false
     @State private var showingAddSampleAlert = false
     /// 지우기 직전에 세우는 물음. 문구도 순서도 다른 화면과 같은 자리에서 낸다
     /// (→ EventDeletion.swift).
@@ -269,6 +270,31 @@ struct SettingsView: View {
                                     .foregroundColor(.primary)
                                 Text("전체 일정 분석 및 통계")
                                     .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            if !purchases.isUnlocked { ProLockBadge() }
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button(action: {
+                        if purchases.isUnlocked { showingCalendarMirror = true }
+                        else { paywallFeature = .calendarImport }
+                    }) {
+                        HStack {
+                            Image(systemName: "calendar")
+                                .foregroundColor(.green)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("캘린더 연동")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("고른 캘린더를 무지개에 늘 비추기")
+                                    .font(.body)
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
@@ -1106,6 +1132,9 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showingStatistics) {
             StatisticsView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingCalendarMirror) {
+            CalendarMirrorView()
         }
         .sheet(isPresented: $showingCalendarImport) {
             CalendarImportView(viewModel: viewModel)

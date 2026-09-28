@@ -318,6 +318,24 @@ final class WeekBlocksStore {
         return (routines, blocks)
     }
 
+    /// 맥 계획표에 **시각까지 적혀 있는** 블록들 → 캘린더 미러가 두 번 세지 않을 목록
+    /// (→ CalendarMirror.PlannedCopies). 시각이 없는 블록은 캘린더 일정과 겹칠 수가 없어 뺀다.
+    func plannedCalendarCopies() -> CalendarMirror.PlannedCopies {
+        guard let container else { return .init() }
+        let context = ModelContext(container)
+        let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
+            .filter { TodoSharing.isVisible($0) && $0.startHour >= 0 }
+        var copies = CalendarMirror.PlannedCopies()
+        for block in blocks {
+            if let id = block.calendarEventID { copies.ids.insert(id) }
+            guard let day = Calendar.current.date(byAdding: .day, value: block.dayRaw, to: block.weekStartDate)
+            else { continue }
+            copies.slots.insert(CalendarMirror.PlannedCopies.slot(
+                day: day, minute: Int((block.startHour * 60).rounded()), title: block.title))
+        }
+        return copies
+    }
+
     /// 기간을 안 정한, 아직 안 끝낸 할 일들의 예상 시간. 무지개 오늘 칸에 묶어서 선다
     /// (→ `TodoRainbowBundle`).
     ///
