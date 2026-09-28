@@ -3,6 +3,15 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 1.1.6 (16) 업로드함 (2026-09-28)
+
+- [x] 버전 1.1.6 (16) · 릴리즈 노트(docs/RELEASE_NOTES.md) · Release 빌드 · App Store Connect 업로드
+- [ ] **심사 제출 전 필수**: CloudKit Production 스키마 배포 (WeekBlocks/todo.md 절차). 1.1.6에 할 일 프로젝트가 들어가서
+      `CD_Project` · `BacklogItem.projectID` 가 Production에 없으면 아이폰도 프로젝트 하나 만드는 순간 동기화가 통째로 멈춘다
+- [ ] App Store 개인정보 라벨: 사용 데이터(제품 상호작용), 사용자와 연결 안 됨
+- [ ] dev → main 병합 (처리방침 페이지가 Pages에 뜨게)
+- [ ] ASC에서 빌드 처리 끝나면 1.1.6에 빌드 붙이고 '새로운 기능' 붙여넣고 제출
+
 ## ▶ 기간 없는 할 일도 오늘 무지개에 (2026-09-28, 빌드 성공 · 커밋 안 함 · 시뮬레이터 확인 안 함)
 
 - [x] `TodoRainbowBundle` (TodoEventBridge.swift) — 안 끝낸 · 기간 없는 · 뿌리 할 일을 3개에 한 줄, 최대 3줄로 오늘 칸에
@@ -27,7 +36,7 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 - [x] `UsageReporting.isEnabled` 기본 꺼짐 → 켬. 한 번도 안 만진 설치만 켬으로 읽고, 직접 끈 사람은 그대로
 - [x] 하루 한 건 `app_open` (켤 때 · 앞으로 돌아올 때) — 허브 DAU · 잔존이 이걸로 센다
 - [x] 통계 화면 스위치 밑 문구 "언제든 여기서 끄실 수 있습니다."
-- [ ] **배포 전 필수**: `docs/privacy.html` · `docs/en/privacy.html` 핵심 요약(92행)과 6항(141~142행) — "기본 꺼짐 · 켜야만" 문구 고치기
+- [x] **배포 전 필수**: `docs/privacy.html` · `docs/en/privacy.html` — "기본 켜짐, 끌 수 있음"으로 고침 (9/28, dev에만 — Pages에 뜨려면 main 병합)
 - [ ] **배포 전 필수**: App Store 개인정보 라벨을 사용 데이터(제품 상호작용), 사용자와 연결 안 됨으로
 - [ ] 이번 문구 변경으로 안 쓰이게 된 문자열 "아직 안 보내고 있습니다. 켜셔야 나갑니다."는 카탈로그에서 정리
 
