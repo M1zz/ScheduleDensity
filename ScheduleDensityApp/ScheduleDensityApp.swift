@@ -391,6 +391,9 @@ struct ScheduleDensityApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
                 selectedTab = .todo
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openTodoTabRequested)) { _ in
+                selectedTab = .todo
+            }
             // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
             .task {

@@ -1,5 +1,42 @@
 # 릴리즈 노트
 
+## 1.1.6
+
+### 앱스토어 (한국어)
+
+<!-- App Store Connect '이 버전의 새로운 기능' 에 그대로 올라가는 글이다.
+     DeployBar 가 이 코드펜스 안을 읽어 쓴다 (→ RepoNotes.swift).
+     글머리표·번호·이모지·마크다운은 넣지 않는다. 줄바꿈으로만 가른다. -->
+
+```
+날짜를 안 정한 할 일도 무지개에 보입니다. 세 개마다 오늘 칸에 한 줄이 섭니다
+맥에서 루틴 안에 잡은 계획도 무지개에 셉니다
+할 일을 프로젝트로 묶을 수 있습니다
+한국어가 아닌 기기에서는 영어로 보입니다
+설정에서 맥 앱 무지개 공방을 소개합니다
+익명 사용 통계가 기본으로 켜집니다. 설정에서 끌 수 있습니다
+```
+
+### 앱스토어 (English)
+
+```
+Undated to-dos now show on the rainbow, one line for every three today
+Plans placed inside a routine on the Mac now count on the rainbow
+Group your to-dos into projects
+Devices in other languages now show the app in English
+Settings now introduces the Mac app, Rainbow Craft
+Anonymous usage stats are now on by default. Turn them off in Settings
+```
+
+### 욕망의 무지개 (iOS)
+
+**무지개가 '그날 나를 붙잡는 일'을 더 빠짐없이 셉니다.**
+
+- 기간을 안 정한, 안 끝낸 할 일을 세 개에 한 줄씩 오늘 칸에 묶어 세웁니다(최대 세 줄). 누르면 할 일 탭으로 갑니다.
+- 맥 '무지개 공방'에서 루틴 안에 잡은 계획도 셉니다. 루틴 자체는 여전히 빠집니다.
+- 할 일 프로젝트, 외국어 기기의 영어 표시, 맥 앱 소개 화면이 함께 나갑니다.
+- 익명 사용 통계를 기본으로 켭니다. 직접 끈 사람은 그대로 꺼져 있습니다. 처리방침도 같은 날 고쳤습니다.
+
 ## 1.1.5
 
 ### 앱스토어 (한국어)

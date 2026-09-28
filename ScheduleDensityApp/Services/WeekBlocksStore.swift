@@ -302,7 +302,7 @@ final class WeekBlocksStore {
     }
 
     /// WeekBlocks 계획 → 밀도 시각화용 Event 배열(메모리 전용).
-    /// **루틴은 종류를 가리지 않고 전부 제외**하고, 계획 블록만 넘긴다.
+    /// **루틴은 종류를 가리지 않고 전부 제외**하고, 계획 블록은 '루틴 안' 것까지 전부 넘긴다.
     /// 컨테이너가 없거나 데이터가 비어 있으면 빈 배열.
     /// 미러가 지금 들고 있는 것. 설정 > 동기화 진단이 그대로 보여준다.
     /// 0/0이면 맥에서 아무것도 안 내려온 것 — 계정이 다르거나 iCloud가 안 붙은 것이다.
@@ -316,6 +316,24 @@ final class WeekBlocksStore {
         let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
             .filter(TodoSharing.isVisible).count
         return (routines, blocks)
+    }
+
+    /// 기간을 안 정한, 아직 안 끝낸 할 일들의 예상 시간. 무지개 오늘 칸에 묶어서 선다
+    /// (→ `TodoRainbowBundle`).
+    ///
+    /// 단계 줄은 세지 않는다 — 쪼갠 일은 뿌리 하나가 한 일이다. 단계까지 세면 잘게
+    /// 쪼갤수록 오늘이 진해져서, 손대기 쉽게 만든 일이 도리어 무거워 보인다.
+    ///
+    /// - Parameter linkedTokens: 이미 무지개에 제 줄이 있는 할 일. 두 번 세지 않는다.
+    func undatedOpenTodoHours(excluding linkedTokens: Set<String>) -> [Double] {
+        guard let container else { return [] }
+        let context = ModelContext(container)
+        let items = (try? context.fetch(FetchDescriptor<BacklogItem>(
+            predicate: #Predicate { !$0.isCompleted && $0.parentToken == nil },
+            sortBy: [SortDescriptor(\.sortIndex)]))) ?? []
+        return items
+            .filter { TodoSharing.isVisible($0) && !linkedTokens.contains($0.dragToken) }
+            .map(\.durationHours)
     }
 
     func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
@@ -332,7 +350,7 @@ final class WeekBlocksStore {
 
         // 어디서 비는지 한 줄로 판별하기 위한 계측:
         //  - 0/0 이면 미러가 아직 안 내려왔거나(첫 동기화 대기) CloudKit 환경/계정이 다른 것.
-        //  - 값이 있는데 화면이 비면 아래 withinRoutine 필터나 날짜 범위 문제.
+        //  - 값이 있는데 화면이 비면 날짜 범위 문제.
         print("📥 [WeekBlocks] 미러 조회: routines=\(routines.count)(전부 무지개에서 제외), "
               + "blocks=\(blocks.count), 범위=\(rangeStart)~\(rangeEnd)")
 
@@ -344,10 +362,11 @@ final class WeekBlocksStore {
         // (어댑터의 루틴 변환은 그대로 두고 여기서 안 넘기기만 한다 — 되살리기 쉽게.)
         let routineInputs: [WBRoutineInput] = []
 
-        let blockInputs: [WBBlockInput] = blocks.compactMap { b in
-            // '루틴 안' 일정은 자유시간을 추가 소비하지 않으므로 밀도에서 제외.
-            guard !b.withinRoutine else { return nil }
-            return WBBlockInput(
+        // 루틴 말고는 전부 센다. '루틴 안' 일정(출퇴근길 강의 등)도 넣는다 —
+        // 자유 시간은 안 깎아도 그날 해야 할 일이라는 건 같다. 무지개는 시간표가 아니라
+        // '그날 나를 붙잡는 일이 몇 개인가'를 보는 자리다.
+        let blockInputs: [WBBlockInput] = blocks.map { b in
+            WBBlockInput(
                 sourceID: String(describing: b.persistentModelID),
                 title: b.title,
                 weekStartDate: b.weekStartDate,
@@ -364,9 +383,9 @@ final class WeekBlocksStore {
             weeks: 1
         )
 
-        let skippedWithinRoutine = blocks.count - blockInputs.count
+        let withinRoutine = blocks.filter(\.withinRoutine).count
         print("🧮 [WeekBlocks] 변환 결과: 시각화 이벤트=\(visual.count) "
-              + "(루틴 밖 일정=\(blockInputs.count), '루틴 안'이라 제외=\(skippedWithinRoutine))")
+              + "(계획 \(blockInputs.count)개, 그중 '루틴 안' \(withinRoutine)개)")
 
         // WBVisualEvent → Event (insert 금지, 시각화 입력용 임시 객체)
         //

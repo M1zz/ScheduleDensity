@@ -245,3 +245,56 @@ final class TodoEventBridge {
         return (try? todoContext.fetch(descriptor))?.first
     }
 }
+
+// MARK: - 기간 없는 할 일 → 오늘 무지개
+
+extension Notification.Name {
+    /// 무지개에서 할 일 묶음 줄을 눌렀다. 할 일 탭으로 넘어간다.
+    static let openTodoTabRequested = Notification.Name("openTodoTabRequested")
+}
+
+/// 기간을 안 정한 할 일을 **오늘 칸에 묶어서** 세운다.
+///
+/// 무지개는 기간이 있는 일만 그렸다. 그런데 날짜를 안 정했다고 안 해도 되는 일은 아니다.
+/// 목록에 열두 개가 쌓여 있는 날은 무지개가 비어 있어도 가벼운 날이 아니다.
+///
+/// 하나씩 줄로 세우면 백로그 서른 개가 오늘을 서른 단계로 만든다. 그래서 **세 개에 한 줄,
+/// 세 줄까지만** 세운다. 두 개까지는 안 선다 — 그 정도는 틈에 하는 일이다.
+///
+///   0~2개 → 없음 · 3~5개 → 1줄 · 6~8개 → 2줄 · 9개~ → 3줄 (마지막 줄이 나머지를 다 든다)
+///
+/// 만든 `Event`는 **스토어에 넣지 않는다** — 맥 계획 미러와 같은 임시 객체다
+/// (→ WeekBlocksStore.loadVisualEvents). 레인 열쇠는 `todos:<줄 번호>`로 새긴다.
+enum TodoRainbowBundle {
+    static let perLine = 3
+    static let maxLines = 3
+    static let keyPrefix = "todos:"
+
+    static func events(hours: [Double], on date: Date = Date()) -> [Event] {
+        let lines = min(maxLines, hours.count / perLine)
+        guard lines > 0 else { return [] }
+        let day = Calendar.current.startOfDay(for: date)
+
+        return (0..<lines).map { line in
+            let from = line * perLine
+            let to = line == lines - 1 ? hours.count : from + perLine
+            let slice = hours[from..<to]
+            let event = Event(
+                title: String(localized: "할 일 \(slice.count)개"),
+                startDate: day,
+                endDate: day,
+                color: "\(keyPrefix)\(line)",   // 실제 색은 배정된 레인이 정한다.
+                hoursPerDay: slice.reduce(0, +),
+                selectedWeekdays: nil,
+                importance: .medium
+            )
+            event.mirrorKey = "\(keyPrefix)\(line)"
+            return event
+        }
+    }
+}
+
+extension Event {
+    /// 기간 없는 할 일을 묶은 줄인가 (→ TodoRainbowBundle). 고치거나 지울 수 없다.
+    var isTodoBundle: Bool { mirrorKey?.hasPrefix(TodoRainbowBundle.keyPrefix) == true }
+}

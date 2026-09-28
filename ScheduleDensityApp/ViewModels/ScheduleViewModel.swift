@@ -174,6 +174,11 @@ class ScheduleViewModel {
     // 매 fetchEvents 호출마다 CloudKit 스토어를 다시 읽지 않도록 dataRefreshTrigger 기준 캐시.
     private var weekBlocksCache: [Event] = []
     private var weekBlocksCacheToken: UUID? = nil
+    /// 기간 없는 할 일 묶음(→ TodoRainbowBundle). 새로 고침 신호와 **날짜**로 캐시한다 —
+    /// 자정을 넘기면 어제 칸에 서 있던 묶음이 오늘로 옮겨 가야 한다.
+    private var todoBundleCache: [Event] = []
+    private var todoBundleCacheKey: (token: UUID, day: Date)? = nil
+    private var todoSaveObserver: NSObjectProtocol?
     // CloudKit 원격 변경(첫 동기화·다른 기기 변경) 시 화면을 갱신하기 위한 옵저버.
     private var remoteChangeObserver: NSObjectProtocol?
     // 앱 안에서 '오늘로 배정'해 계획이 바뀐 경우의 옵저버.
@@ -249,6 +254,21 @@ class ScheduleViewModel {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
         }
 
+        // 할 일을 적거나 끝내면 오늘 칸의 묶음 개수가 바뀐다. 할 일 스토어는 이 뷰모델이
+        // 안 보는 컨테이너라, 거기서 저장이 일어났다는 것만 듣고 다시 센다.
+        todoSaveObserver = NotificationCenter.default.addObserver(
+            forName: ModelContext.didSave,
+            object: nil,
+            queue: .main
+        ) { [weak self] note in
+            guard let self,
+                  let context = note.object as? ModelContext,
+                  let todos = WeekBlocksStore.sharedContainer,
+                  context.container === todos else { return }
+            self.todoBundleCacheKey = nil
+            self.dataRefreshTrigger = UUID()
+        }
+
         // 할 일 탭에서 '오늘로 배정'한 경우. 같은 프로세스의 로컬 저장이라
         // NSPersistentStoreRemoteChange가 오지 않으므로 즉시(디바운스 없이) 갱신한다.
         planChangeObserver = NotificationCenter.default.addObserver(
@@ -269,6 +289,9 @@ class ScheduleViewModel {
         }
         if let planChangeObserver {
             NotificationCenter.default.removeObserver(planChangeObserver)
+        }
+        if let todoSaveObserver {
+            NotificationCenter.default.removeObserver(todoSaveObserver)
         }
     }
 
@@ -325,6 +348,20 @@ class ScheduleViewModel {
         weekBlocksCache = weekBlocksStore.loadVisualEvents(rangeStart: currentStartDate, rangeEnd: currentEndDate)
         weekBlocksCacheToken = dataRefreshTrigger
         return weekBlocksCache
+    }
+
+    /// 오늘 칸에 묶어 세우는 기간 없는 할 일 (→ TodoRainbowBundle).
+    /// 이미 제 줄이 있는 할 일(`todoToken`)은 빼고 센다.
+    private func todoBundleEvents(ownEvents: [Event]) -> [Event] {
+        let today = Calendar.current.startOfDay(for: Date())
+        if let key = todoBundleCacheKey, key.token == dataRefreshTrigger, key.day == today {
+            return todoBundleCache
+        }
+        let linked = Set(ownEvents.compactMap(\.todoToken))
+        let hours = weekBlocksStore.undatedOpenTodoHours(excluding: linked)
+        todoBundleCache = TodoRainbowBundle.events(hours: hours, on: today)
+        todoBundleCacheKey = (dataRefreshTrigger, today)
+        return todoBundleCache
     }
 
     func setModelContext(_ context: ModelContext) {
@@ -524,6 +561,8 @@ class ScheduleViewModel {
             // Mac WeekBlocks 계획(읽기 전용·메모리). 같은 밀도 파이프라인에 투입하되,
             // '지나간 이벤트' 필터는 적용하지 않는다 — 아래 주석 참조.
             let weekBlocks = weekBlocksEvents()
+            // 기간 없는 할 일은 오늘 칸에 묶어서 선다. 오늘뿐이라 지나간 필터와 상관없다.
+            let todoBundles = todoBundleEvents(ownEvents: ownEvents)
 
             // 지나간 이벤트 필터링.
             //
@@ -547,10 +586,10 @@ class ScheduleViewModel {
                 }
 
                 print("📊 [ViewModel] 이벤트 조회됨: 내 일정 \(ownEvents.count)개 중 활성 \(activeOwnEvents.count)개"
-                      + " + WB 미러 \(weekBlocks.count)개(필터 면제)")
-                return activeOwnEvents + weekBlocks
+                      + " + WB 미러 \(weekBlocks.count)개(필터 면제) + 할 일 묶음 \(todoBundles.count)줄")
+                return activeOwnEvents + weekBlocks + todoBundles
             } else {
-                let allEvents = ownEvents + weekBlocks
+                let allEvents = ownEvents + weekBlocks + todoBundles
                 print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
                 return allEvents
             }

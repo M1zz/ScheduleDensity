@@ -511,6 +511,11 @@ struct TimelineDensityView: View {
     }
 
     private func handleEventTap(_ event: Event) {
+        // 할 일 묶음은 일정이 아니다 — 그 할 일들이 있는 곳으로 보낸다.
+        if event.isTodoBundle {
+            NotificationCenter.default.post(name: .openTodoTabRequested, object: nil)
+            return
+        }
         // 탭 = 일정 보기. 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼.
         eventToView = event
     }
@@ -1105,7 +1110,8 @@ struct GridCell: View {
             }
         }
         .contextMenu {
-            if isActive, let event = event {
+            // 할 일 묶음은 고치거나 지울 일정이 아니다 (→ TodoRainbowBundle).
+            if isActive, let event = event, !event.isTodoBundle {
                 // 일정 수정
                 Button(action: {
                     viewModel.eventToEdit = event
