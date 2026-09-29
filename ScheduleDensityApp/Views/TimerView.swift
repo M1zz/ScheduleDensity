@@ -382,7 +382,7 @@ struct TimerSheet: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    Text("계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다.")
+                    Text("일정의 전체 길이로 셉니다. 이미 지난 만큼은 흐른 채로 시작합니다.")
                         .font(.system(size: 12, design: .rounded))
                         .foregroundStyle(.tertiary)
                         .multilineTextAlignment(.center)
@@ -405,13 +405,15 @@ struct TimerSheet: View {
 /// 일정 한 조각에서 타이머를 켜는 길. 하루 화면·타이머 시트가 같은 문으로 들어온다.
 @MainActor
 enum TimerStarter {
-    /// 남은 만큼 센다. 계획보다 늦게 시작했으면 이미 지나간 몫은 돌려주지 않는다 —
-    /// 18시까지 하기로 한 일을 17시 30분에 시작했다면 남은 것은 30분이지 한 시간이 아니다.
+    /// 일정의 **전체 길이**를 세되, 이미 지나간 몫은 흐른 채로 시작한다 —
+    /// 17:00–18:30 일정을 17:45에 켜면 45분 타이머가 아니라 90분 중 45분이 지난 타이머다.
+    /// 고리도 절반 찬 채로 선다. 끝난 일정이나 아직 안 온 일정은 적힌 길이를 통째로 센다.
     static func start(slot: ScheduleSlot, from now: Date = Date()) {
-        let remaining = slot.remaining(at: now)
+        let inside = slot.contains(now)
         TaskTimer.shared.start(token: slot.id,
                                title: slot.title,
-                               plannedSeconds: remaining > 0 ? remaining : slot.duration,
+                               plannedSeconds: slot.duration,
+                               alreadyElapsed: inside ? now.timeIntervalSince(slot.start) : 0,
                                iconName: slot.iconName,
                                colorHex: slot.colorHex)
     }

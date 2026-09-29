@@ -222,12 +222,17 @@ final class TaskTimer {
 
     /// 새로 시작한다. 이미 다른 일을 세고 있었다면 그건 그대로 끝난다 —
     /// 한 번에 하나만 센다. 두 개를 동시에 세면 어느 쪽도 믿을 수 없다.
+    ///
+    /// `alreadyElapsed` — 일정 한가운데서 켰을 때 이미 지나간 몫. 90분 일정에 45분 남았다면
+    /// 45분짜리 새 타이머가 아니라 **90분 중 45분이 흐른 타이머**로 선다.
     func start(token: String, title: String, plannedSeconds: Double,
+               alreadyElapsed: TimeInterval = 0,
                iconName: String = "timer", colorHex: String? = nil) {
         endActivity()
+        let planned = max(60, plannedSeconds)
         target = TimerTarget(token: token, title: title, colorHex: colorHex,
-                             iconName: iconName, plannedSeconds: max(60, plannedSeconds))
-        accumulated = 0
+                             iconName: iconName, plannedSeconds: planned)
+        accumulated = min(max(0, alreadyElapsed), planned)
         now = Date()
         runningSince = now
         didRingZero = false

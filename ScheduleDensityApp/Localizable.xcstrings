@@ -2947,18 +2947,18 @@
         }
       }
     },
-    "계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다." : {
+    "일정의 전체 길이로 셉니다. 이미 지난 만큼은 흐른 채로 시작합니다." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For when you started late. Counts down the time that's left."
+            "value" : "Counts the whole length of the plan, with the time already past counted as elapsed."
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다."
+            "value" : "일정의 전체 길이로 셉니다. 이미 지난 만큼은 흐른 채로 시작합니다."
           }
         }
       }
