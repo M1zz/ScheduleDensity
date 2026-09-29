@@ -19,12 +19,15 @@ import ActivityKit
 struct TaskTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TaskTimerAttributes.self) { context in
-            lockScreen(context.state)
+            lockScreen(context.state, stale: context.isStale)
                 .activityBackgroundTint(Color.black.opacity(0.35))
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
             let state = context.state
-            let tint = Self.tint(state)
+            // 끝 시각(데드라인)을 지나면 시스템이 '묵었다'(isStale)며 다시 그린다 (→ TaskTimer: staleDate = 끝 시각).
+            // 그때 '끝났습니다'로 넘어간다 — 앱이 주머니 속이어도. 앱이 다시 깨면 걷는다.
+            let stale = context.isStale
+            let tint = Self.tint(state, stale: stale)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     Label(state.title, systemImage: state.iconName)
@@ -34,18 +37,19 @@ struct TaskTimerLiveActivity: Widget {
                         .padding(.leading, 4)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    countdown(state, size: 16)
+                    countdown(state, stale: stale, size: 16)
                         .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    caption(state)
+                    caption(state, stale: stale)
                 }
             } compactLeading: {
                 Image(systemName: state.isRunning ? state.iconName : "pause.fill")
                     .foregroundStyle(tint)
             } compactTrailing: {
-                countdown(state, size: 13)
-                    .frame(maxWidth: 52)
+                countdown(state, stale: stale, size: 13)
+                    // '8:59:59'도 들어가는 폭. 좁으면 시간 단위 타이머가 '…'로 잘린다.
+                    .frame(maxWidth: 64)
             } minimal: {
                 Image(systemName: state.isRunning ? "timer" : "pause.fill")
                     .foregroundStyle(tint)
@@ -57,8 +61,8 @@ struct TaskTimerLiveActivity: Widget {
     // MARK: 잠금화면
 
     @ViewBuilder
-    private func lockScreen(_ state: TaskTimerAttributes.ContentState) -> some View {
-        let tint = Self.tint(state)
+    private func lockScreen(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> some View {
+        let tint = Self.tint(state, stale: stale)
         HStack(spacing: 12) {
             ZStack {
                 Circle().fill(tint.opacity(0.18))
@@ -72,23 +76,23 @@ struct TaskTimerLiveActivity: Widget {
                 Text(state.title)
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .lineLimit(1)
-                caption(state)
+                caption(state, stale: stale)
             }
             Spacer(minLength: 6)
-            countdown(state, size: 26)
+            countdown(state, stale: stale, size: 26)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
     }
 
-    private func caption(_ state: TaskTimerAttributes.ContentState) -> some View {
+    private func caption(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> some View {
         Group {
             if !state.isRunning {
                 Text("멈춤")
-            } else if state.endDate > Date() {
+            } else if !Self.isOver(state, stale: stale) {
                 Text("\(Text(state.endDate, style: .time))에 끝남")
             } else {
-                Text("계획을 넘겼습니다")
+                Text("끝났습니다")
             }
         }
         .font(.system(size: 12, design: .rounded))
@@ -98,21 +102,35 @@ struct TaskTimerLiveActivity: Widget {
 
     /// 가고 있으면 잠금화면이 스스로 센다. 멈춰 있으면 그 순간의 숫자를 세워 둔다.
     @ViewBuilder
-    private func countdown(_ state: TaskTimerAttributes.ContentState, size: CGFloat) -> some View {
-        let tint = Self.tint(state)
+    private func countdown(_ state: TaskTimerAttributes.ContentState, stale: Bool, size: CGFloat) -> some View {
+        let tint = Self.tint(state, stale: stale)
         Group {
             if state.isRunning {
-                Text(timerInterval: state.endDate...max(state.endDate, Date().addingTimeInterval(1)),
-                     countsDown: true)
-                    .multilineTextAlignment(.trailing)
+                // ⚠️ 구간은 **시작 → 끝**이다. 예전에는 `끝...max(끝, 지금+1초)`를 넘겨서, 끝이 아직 멀면
+                //    폭이 0인 구간이 되어 숫자가 0:00에 선 채 움직이지 않았다.
+                // 데드라인을 지나면 0에 선다. 넘긴 시간은 세지 않는다 — 끝은 일정이 정한 것이다.
+                if Self.isOver(state, stale: stale) {
+                    Text(verbatim: formatCountdown(0))
+                } else {
+                    Text(timerInterval: state.startDate...max(state.endDate, state.startDate.addingTimeInterval(1)),
+                         countsDown: true)
+                }
             } else {
                 Text(verbatim: formatCountdown(state.pausedRemaining))
             }
         }
         .font(.system(size: size, weight: .semibold, design: .rounded))
         .monospacedDigit()
+        .multilineTextAlignment(.trailing)
         .foregroundStyle(tint)
     }
 
-    private static func tint(_ state: TaskTimerAttributes.ContentState) -> Color { state.tint }
+    /// 계획을 넘겼나. 가는 중이면 시스템이 '묵었다'고 알려 준 것까지 본다.
+    private static func isOver(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> Bool {
+        (state.isRunning && stale) || state.isOvertime()
+    }
+
+    private static func tint(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> Color {
+        isOver(state, stale: stale) ? .secondary : state.tint
+    }
 }

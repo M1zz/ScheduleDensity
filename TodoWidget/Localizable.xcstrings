@@ -451,6 +451,7 @@
       }
     },
     "계획을 넘겼습니다" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -478,6 +479,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "기획서 초안 작성"
+          }
+        }
+      }
+    },
+    "끝났습니다" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finished"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝났습니다"
           }
         }
       }
@@ -542,6 +559,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "눌러서 열기"
+          }
+        }
+      }
+    },
+    "다음 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next: %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 %@"
+          }
+        }
+      }
+    },
+    "다음 %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next: %1$@ %2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 %@ %@"
           }
         }
       }
@@ -981,6 +1030,22 @@
         }
       }
     },
+    "일정 기준" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From schedule"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정 기준"
+          }
+        }
+      }
+    },
     "일정 통계" : {
       "localizations" : {
         "en" : {
@@ -1061,6 +1126,22 @@
         }
       }
     },
+    "지금 일정 없음" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing scheduled now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 일정 없음"
+          }
+        }
+      }
+    },
     "지금 집을 조각 없음" : {
       "localizations" : {
         "en" : {
@@ -1089,6 +1170,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금 집을 조각이 없어요"
+          }
+        }
+      }
+    },
+    "지금 하는 일정에 얼마 남았는지 봅니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See how much time is left in your current schedule."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 하는 일정에 얼마 남았는지 봅니다."
           }
         }
       }
@@ -1153,6 +1250,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "캘린더에서 가져오기"
+          }
+        }
+      }
+    },
+    "타이머" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timer"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "타이머"
+          }
+        }
+      }
+    },
+    "타이머 위젯이 잠겨 있습니다" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Timer widget is locked"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "타이머 위젯이 잠겨 있습니다"
           }
         }
       }
