@@ -86,6 +86,14 @@ struct TimerBar: View {
         timer.target?.colorHex.flatMap { Color(hex: $0) } ?? .accentColor
     }
 
+    /// 지금 겹쳐 있는 일정들 (→ ScheduleClock.overlapping).
+    private var overlapping: [ScheduleSlot] { clock.overlapping() }
+
+    /// 이 줄이 지금 말하고 있는 일정인가. 세는 중이면 세는 것, 아니면 일정 기준의 지금 것.
+    private func isShown(_ slot: ScheduleSlot) -> Bool {
+        timer.isActive ? timer.isTiming(slot.id) : slot.id == clock.current()?.id
+    }
+
     private func bar(icon: String, title: String, time: String, caption: String,
                      tint: Color, left: Double) -> some View {
         Button {
@@ -152,6 +160,19 @@ struct TimerBar: View {
                     Label("다이나믹 아일랜드에 보이기", systemImage: "platter.filled.top.iphone")
                 }
             }
+            // 지금 겹쳐 있는 다른 일정으로 곧바로 갈아탄다 — 09–18 회사 안의 13시 식사처럼.
+            let others = overlapping.filter { !isShown($0) }
+            if !others.isEmpty {
+                Section("지금 겹친 일정으로 바꾸기") {
+                    ForEach(others) { slot in
+                        Button {
+                            TimerStarter.start(slot: slot)
+                        } label: {
+                            Label(slot.title, systemImage: slot.iconName)
+                        }
+                    }
+                }
+            }
             Divider()
             Button {
                 timer.setBarVisibility(.whileTiming)
@@ -182,6 +203,7 @@ struct TimerSheet: View {
     let slot: ScheduleSlot?
 
     @State private var timer = TaskTimer.shared
+    @State private var clock = ScheduleClockStore.shared
     /// 다른 일정을 고르는 목록을 열었나 (→ TimerSlotPicker).
     @State private var showingPicker = false
     @Environment(\.dismiss) private var dismiss
@@ -211,6 +233,7 @@ struct TimerSheet: View {
                     } else {
                         emptyFace
                     }
+                    overlapSwitcher
                     islandSwitch
                 }
                 .padding(.horizontal, 20)
@@ -364,6 +387,63 @@ struct TimerSheet: View {
         }
         .padding(14)
         .background(RoundedRectangle(cornerRadius: 18).fill(Color(.secondarySystemBackground)))
+    }
+
+    // MARK: 겹친 일정 바꾸기
+
+    /// **지금 겹쳐 있는 일정이 둘 이상이면** 그 자리에서 바꿔 센다. 목록('일정 고르기')까지 들어가지 않아도 된다.
+    ///
+    /// 겹치면 가장 짧은 것이 저절로 선다(→ ScheduleClock.current). 09–18 회사 안의 13시 식사라면 식사가 선다 —
+    /// 그런데 식사를 건너뛰고 일을 하는 날도 있다. 그때 회사로 한 번에 돌린다. 고르면 그 일정의 끝 시각까지 센다.
+    @ViewBuilder
+    private var overlapSwitcher: some View {
+        let now = Date()
+        let overlapping = clock.overlapping(at: now)
+        if overlapping.count > 1 {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("지금 겹친 일정")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(overlapping) { item in
+                            overlapChip(item, shown: isShown(item))
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemBackground)))
+        }
+    }
+
+    private func overlapChip(_ item: ScheduleSlot, shown: Bool) -> some View {
+        let tint = item.colorHex.flatMap { Color(hex: $0) } ?? .accentColor
+        return Button {
+            guard !shown else { return }
+            UISelectionFeedbackGenerator().selectionChanged()
+            TimerStarter.start(slot: item)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: shown ? "checkmark" : item.iconName)
+                    .font(.body.weight(.semibold))
+                Text(item.title)
+                    .font(.body.weight(shown ? .semibold : .regular))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(shown ? Color.white : tint)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(Capsule().fill(shown ? tint : tint.opacity(0.12)))
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(shown ? .isSelected : [])
+    }
+
+    /// 지금 이 시트가 말하고 있는 일정인가. 세는 중이면 세는 것, 아니면 일정 기준의 지금 것.
+    private func isShown(_ item: ScheduleSlot) -> Bool {
+        timer.isActive ? timer.isTiming(item.id) : item.id == slot?.id
     }
 
     // MARK: 아일랜드

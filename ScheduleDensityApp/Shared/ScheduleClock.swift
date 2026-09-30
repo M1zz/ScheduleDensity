@@ -84,6 +84,11 @@ enum ScheduleClock {
             .min { $0.duration < $1.duration }
     }
 
+    /// 지금 겹쳐 있는 것 전부. 짧은 것부터 — `current`가 고르는 것이 맨 앞에 선다.
+    static func overlapping(_ slots: [ScheduleSlot], at now: Date = Date()) -> [ScheduleSlot] {
+        slots.filter { $0.contains(now) }.sorted { $0.duration < $1.duration }
+    }
+
     /// 다음에 올 것. 지금 하는 것이 없을 때 "그럼 언제부터"에 답한다.
     static func next(_ slots: [ScheduleSlot], at now: Date = Date()) -> ScheduleSlot? {
         slots.filter { $0.start > now }.min { $0.start < $1.start }
@@ -162,5 +167,10 @@ final class ScheduleClockStore {
     /// 지금 하고 있는 것.
     func current(at now: Date = Date()) -> ScheduleSlot? {
         ScheduleClock.current(slots, at: now)
+    }
+
+    /// 지금 겹쳐 있는 것 전부 (타이머를 갈아탈 후보).
+    func overlapping(at now: Date = Date()) -> [ScheduleSlot] {
+        ScheduleClock.overlapping(slots, at: now)
     }
 }

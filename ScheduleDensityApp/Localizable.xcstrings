@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "지금 겹친 일정" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Happening now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 겹친 일정"
+          }
+        }
+      }
+    },
+    "지금 겹친 일정으로 바꾸기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to another event now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 겹친 일정으로 바꾸기"
+          }
+        }
+      }
+    },
     "다시 불러오기" : {
       "localizations" : {
         "en" : {
