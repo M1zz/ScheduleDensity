@@ -1,5 +1,44 @@
 # 릴리즈 노트
 
+## 1.1.8
+
+### 앱스토어 (한국어)
+
+<!-- App Store Connect '이 버전의 새로운 기능' 에 그대로 올라가는 글이다.
+     DeployBar 가 이 코드펜스 안을 읽어 쓴다 (→ RepoNotes.swift).
+     글머리표·번호·이모지·마크다운은 넣지 않는다. 줄바꿈으로만 가른다. -->
+
+```
+고른 캘린더의 일정이 무지개와 하루 화면에 늘 함께 보입니다
+타이머가 일정의 끝 시각까지 셉니다. 다른 일정을 골라 셀 수도 있습니다
+일정이 겹칠 때 타이머를 다른 일정으로 바로 바꿀 수 있습니다
+다이나믹 아일랜드에 띄울지 타이머마다 고를 수 있습니다
+홈 화면과 잠금 화면에 타이머 위젯이 생겼습니다
+무지개 Pro를 연간, 월간, 평생 중에서 고를 수 있습니다. 연간은 1주 무료로 써 볼 수 있습니다
+아이패드에서 구매가 되지 않던 문제를 고쳤습니다
+```
+
+### 앱스토어 (English)
+
+```
+Events from the calendars you choose now always show on the rainbow and the day view
+The timer counts down to the end of the event. You can pick another event to time
+When events overlap, switch the timer to another one in a tap
+Choose per timer whether it shows in the Dynamic Island
+New timer widgets for the Home Screen and Lock Screen
+Rainbow Pro now comes yearly, monthly or lifetime. Try yearly free for one week
+Fixed purchases failing on iPad
+```
+
+### 욕망의 무지개 (iOS)
+
+**캘린더를 비추고, 타이머는 일정의 끝까지 센다. 무지개 Pro는 요금제 셋으로.**
+
+- 캘린더 연동: 고른 캘린더를 무지개와 하루 화면에 한 방향으로 비춥니다(복사하지 않음). Pro.
+- 타이머는 일정의 끝 시각(데드라인)까지. 일정 고르기 · 겹친 일정끼리 바로 갈아타기 · 이번 타이머만 아일랜드 켜고 끄기 · 타이머 위젯.
+- 무지개 Pro: 연간(`…pro.annual`, 1주 체험) · 월간(`…pro.monthly`) · 평생(1.1.x의 `…pro` 재활용 — 그때 산 분은 그대로 평생).
+- 1.1.8 (17)·(20) 심사 2.1(b) 거절 원인: 페이월이 청하던 상품이 App Store Connect에 없었다. 요금제를 못 불러오면 오류 대신 '다시 불러오기'.
+
 ## 1.1.6
 
 ### 앱스토어 (한국어)
