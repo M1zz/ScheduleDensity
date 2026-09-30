@@ -8,26 +8,6 @@
       "internalID": "A1B2C3D4-0000-4000-8000-000000000002",
       "localizations": [
         {
-          "description": "1.1.x에서 팔던 한 번 사는 상품입니다. 산 분은 계속 Pro입니다.",
-          "displayName": "무지개 Pro",
-          "locale": "ko_KR"
-        },
-        {
-          "description": "The one-time purchase sold in 1.1.x. If you bought it, you keep Pro.",
-          "displayName": "Rainbow Pro",
-          "locale": "en_US"
-        }
-      ],
-      "productID": "com.example.ScheduleDensityApp.pro",
-      "referenceName": "무지개 Pro (1.1.x 구매자용 · 판매 중지)",
-      "type": "NonConsumable"
-    },
-    {
-      "displayPrice": "49000",
-      "familyShareable": false,
-      "internalID": "8573B1AF-A678-4AC4-809D-DE7BFD5A7CA6",
-      "localizations": [
-        {
           "description": "위젯, 캘린더에서 가져오기, 일정 공유, 그리고 2주보다 더 거슬러 보는 통계와 회수 장부를 엽니다. 한 번 결제로 계속 씁니다.",
           "displayName": "무지개 Pro 평생",
           "locale": "ko_KR"
@@ -38,8 +18,8 @@
           "locale": "en_US"
         }
       ],
-      "productID": "com.example.ScheduleDensityApp.pro.lifetime",
-      "referenceName": "Pro 평생",
+      "productID": "com.example.ScheduleDensityApp.pro",
+      "referenceName": "Pro 평생 (1.1.x의 그 상품)",
       "type": "NonConsumable"
     }
   ],
@@ -83,7 +63,7 @@
               "locale": "en_US"
             }
           ],
-          "productID": "com.example.ScheduleDensityApp.pro.yearly",
+          "productID": "com.example.ScheduleDensityApp.pro.annual",
           "recurringSubscriptionPeriod": "P1Y",
           "referenceName": "Pro 연간",
           "subscriptionGroupID": "0C80D52C-9DD4-4CE6-B2CA-166795667330",

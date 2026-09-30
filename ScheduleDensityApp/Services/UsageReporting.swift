@@ -70,7 +70,7 @@ enum UsageReporting {
             .reportInBackground(metrics: metrics)
     }
 
-    /// 이 설치가 Pro 를 샀는가. **팔기 시작한 뒤에만** 나간다.
+    /// 이 설치가 Pro 를 샀는가.
     ///
     /// 허브(FeedbackHubViewer)가 유료·무료 고객을 가르는 근거다. 규약 이름은
     /// `flag.isPaid` 이고, 이 앱은 결제 말고 열리는 길이 없으므로 접근 권한도 같은
@@ -78,11 +78,8 @@ enum UsageReporting {
     /// 해당 제도가 없어서 안 보낸다. 없는 것을 0 으로 보내면 "체험자가 0명"이 되어
     /// 제도가 없다는 사실과 구분되지 않는다).
     ///
-    /// **두 경우에는 한 줄도 안 보낸다. 둘 다 0 과 다른 말이기 때문이다:**
+    /// **영수증을 아직 안 물어봤을 때는 한 줄도 안 보낸다. 0 과 다른 말이기 때문이다:**
     ///
-    /// - 아직 안 팔 때(`sellsPro == false`). 0 을 보내면 허브는 "아무도 안 샀다"로
-    ///   읽는데 진실은 "살 수가 없다"다. 전환율이 0% 로 찍히고, 그 숫자를 보고
-    ///   가격이나 문구를 고치게 된다.
     /// - 영수증을 아직 안 물어봤을 때(`cachedPurchase == nil`). 한 번 늦은 조회가
     ///   산 사람을 무료로 만들면 안 된다 — `ProEntitlement.cachedPurchase` 가
     ///   세 상태인 까닭이 그것이다. 허브는 안 온 값을 0 이 아니라 **모름**으로 센다.
@@ -91,8 +88,9 @@ enum UsageReporting {
     ///    `docs/privacy.html` 6항이 그렇게 적혀 있다. 여기서 더 보내게 되면 그 글도
     ///    같이 고친다.
     private static func entitlementMetrics() -> [String: Double] {
-        guard ProEntitlement.sellsPro,
-              let purchased = ProEntitlement.cachedPurchase else { return [:] }
+        // 구독 사다리를 켜기 전에도 옛 한 번 결제 상품은 판다(→ ProEntitlement.productIDs).
+        // 살 수 있으니 0 은 '안 샀다'가 맞다.
+        guard let purchased = ProEntitlement.cachedPurchase else { return [:] }
         return ["flag.isPaid": purchased ? 1 : 0]
     }
 

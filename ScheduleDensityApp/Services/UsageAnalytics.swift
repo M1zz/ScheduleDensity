@@ -68,7 +68,7 @@ struct ConsentedUsageAnalytics: LeeoAnalytics {
         }
     }
 
-    /// 상품 ID의 꼬리만 남긴다 — `…pro.yearly` → `yearly`. 허브의 이름 한 칸에
+    /// 상품 ID의 꼬리만 남긴다 — `…pro.annual` → `annual`. 허브의 이름 한 칸에
     /// 번들 ID를 통째로 넣으면 이름이 길어지기만 하고 세는 데는 꼬리 한 낱말이면 된다.
     private static func shortPlan(_ productID: String) -> String {
         productID.split(separator: ".").last.map(String.init) ?? productID

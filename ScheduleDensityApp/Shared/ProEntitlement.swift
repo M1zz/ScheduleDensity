@@ -88,31 +88,34 @@ enum ProEntitlement {
     ///
     /// ⚠️ 상품이 콘솔에 없는데 출시 빌드에서 켜면, 아무도 못 사는 자물쇠만 선다.
     ///    (맥의 같은 스위치 → 무지개 공방 `MacEntitlement.sellsPro`)
-    static var sellsPro: Bool {
-#if DEBUG
-        true
-#else
-        false
-#endif
-    }
+    ///
+    /// ⚠️ 2026-09-30 출시 빌드도 켰다. **이 빌드를 제출하기 전에 ASC에 연간·월간·평생 셋이
+    ///    '제출 준비 완료'로 서 있어야 한다** — 없으면 1.1.8처럼 페이월이 빈손으로 오류를 낸다.
+    static var sellsPro: Bool { true }
 
     /// App Store Connect의 상품 ID.
     /// ⚠️ 콘솔에 만든 것·`Products.storekit`에 적은 것과 **글자 하나까지 같아야 한다.**
     /// 연간·월간은 같은 구독 그룹('무지개 Pro')에 넣어야 서로 갈아탈 수 있다.
-    static let yearlyID = "com.example.ScheduleDensityApp.pro.yearly"
+    /// ⚠️ `…pro.yearly` 가 아니다. 그 ID는 ASC에서 "이미 다른 구독에서 사용 중"이라 못 쓴다(2026-09-30).
+    static let yearlyID = "com.example.ScheduleDensityApp.pro.annual"
     static let monthlyID = "com.example.ScheduleDensityApp.pro.monthly"
-    static let lifetimeID = "com.example.ScheduleDensityApp.pro.lifetime"
+    /// **평생 이용권은 1.1.x에서 4,900원에 팔던 그 상품이다** (2026-09-30 재활용).
+    /// ASC에 이미 승인된 비소모 상품이라 새로 심사받을 것이 없고, 그때 산 사람은 **따로 챙기지
+    /// 않아도 그대로 평생 Pro다.** `…pro.lifetime` 을 새로 만들지 않는다.
+    static let lifetimeID = "com.example.ScheduleDensityApp.pro"
 
     /// 페이월에 세우는 차례 — 연간(체험) → 평생 → 월간.
-    static let productIDs = [yearlyID, lifetimeID, monthlyID]
-
-    /// **1.1.x에서 4,900원에 팔던 한 번 사는 상품.**
-    /// 그때 산 사람은 **평생 Pro로 인정한다.** 값을 치른 것이 판을 바꿨다고 사라지면 안 된다.
-    /// (맥이 옛 '함께 쓰기' 구매자에게 한 것과 같다 → `WeekBlocksSpec.legacySyncProductID`)
-    static let legacyProductID = "com.example.ScheduleDensityApp.pro"
+    ///
+    /// ⚠️ **구독 사다리를 켜기 전(`sellsPro == false`)에는 평생 이용권 하나만 판다.**
+    ///    구독 둘이 App Store Connect에 없을 때 페이월이 청하면 빈손으로 돌아와
+    ///    오류만 뜬다 — 1.1.8 (17)·(20)이 iPad 심사에서 그걸로 2.1(b) 거절을 두 번 받았다.
+    ///    그렇다고 잠금을 풀지는 않는다. 열림의 조건은 여전히 '샀는가' 하나다.
+    static var productIDs: [String] {
+        sellsPro ? [yearlyID, lifetimeID, monthlyID] : [lifetimeID]
+    }
 
     /// 이 중 하나라도 있으면 Pro다.
-    static let entitlementIDs = Set(productIDs + [legacyProductID])
+    static let entitlementIDs: Set<String> = [yearlyID, lifetimeID, monthlyID]
 
     /// 위젯과 함께 쓰는 자리. 스냅샷이 오가는 통과 같다.
     static let appGroupID = "group.com.devkoan.ScheduleDensity"

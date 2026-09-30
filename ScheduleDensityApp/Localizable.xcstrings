@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "다시 불러오기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 불러오기"
+          }
+        }
+      }
+    },
+    "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load the plans. Check your internet connection and try again."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요."
+          }
+        }
+      }
+    },
     " · 회당 약 " : {
       "localizations" : {
         "en" : {
