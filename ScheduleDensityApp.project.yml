@@ -20,7 +20,7 @@ options:
 packages:
   LeeoKit:
     url: https://github.com/M1zz/LeeoKit.git
-    majorVersion: 3.11.0
+    majorVersion: 3.13.0
 settings:
   base:
 # ⚠️ MARKETING_VERSION 과 CURRENT_PROJECT_VERSION 은 **여기 두지 않는다.**
@@ -115,6 +115,8 @@ targets:
       # 잠금화면 타이머가 주고받는 값의 모양. 그리는 쪽(위젯)과 보내는 쪽(앱)이
       # 같은 타입을 알아야 해서 양쪽 타깃에 든다 (→ TimerActivity.swift).
       - path: ScheduleDensityApp/Shared/TimerActivity.swift
+      # 홈·잠금 화면 타이머 위젯이 읽는 스냅샷 (→ TimerWidgetSnapshot.swift).
+      - path: ScheduleDensityApp/Shared/TimerWidgetSnapshot.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoWidget

@@ -25,6 +25,8 @@ struct PaywallView: View {
     @State private var purchases = PurchaseManager.shared
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    /// 결제 시트를 **이 페이월이 떠 있는 창**에 띄운다 (→ PurchaseManager.purchase).
+    @Environment(\.purchase) private var purchaseAction
 
     /// 고른 상품. 처음엔 연간.
     @State private var selectedID: String = ProEntitlement.yearlyID
@@ -217,7 +219,7 @@ struct PaywallView: View {
             Button {
                 guard let product = selectedProduct else { return }
                 Task {
-                    await purchases.purchase(product)
+                    await purchases.purchase(product, using: purchaseAction)
                     if purchases.isUnlocked {
                         UsageDiary.markPaywallBought()
                         dismiss()

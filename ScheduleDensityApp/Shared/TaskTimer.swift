@@ -135,6 +135,44 @@ final class TaskTimer {
             .flatMap(TimerBarVisibility.init(rawValue:)) ?? .always
     }
 
+    /// 다이나믹 아일랜드(와 잠금화면)에 타이머를 띄울지 — **새 타이머의 기본값.** 설정에서 바꾼다.
+    ///
+    /// ⚠️ **둘은 따로 끌 수 없다.** 라이브 액티비티 하나가 두 자리에 함께 서기 때문에,
+    ///    아일랜드에서만 치우는 길은 시스템이 주지 않는다. 끄면 둘 다 걷히고, 타이머는 앱 안에서 그대로 돈다.
+    private(set) var showsLiveActivity: Bool = TaskTimer.storedShowsLiveActivity
+
+    /// **이번 타이머만** 띄울지. 타이머 시트의 스위치가 이것을 바꾼다 — 기본값은 건드리지 않는다.
+    /// 타이머를 끝내면 기본값으로 돌아간다. 세는 것이 없을 때는 "이 시트에서 곧 시작할 타이머"의 값이다.
+    private(set) var showsLiveActivityThisTimer: Bool = TaskTimer.storedShowsLiveActivity
+
+    /// 기본값을 바꾼다. 지금 세는 타이머도 곧바로 따른다 — 설정에서 끈 사람에게 떠 있는 것이 남으면
+    /// 스위치가 안 듣는 것처럼 보인다.
+    func setShowsLiveActivity(_ value: Bool) {
+        showsLiveActivity = value
+        UserDefaults.standard.set(value, forKey: Self.liveActivityKey)
+        setShowsLiveActivityThisTimer(value)
+    }
+
+    /// 이번 타이머만 바꾼다. 켜고 끄는 즉시 따른다.
+    func setShowsLiveActivityThisTimer(_ value: Bool) {
+        showsLiveActivityThisTimer = value
+        persist()
+        if value {
+            // 붙잡고 있던 것이 이미 걷혔으면(잠금화면에서 쓸어 치웠거나 시스템이 끝냈으면) 새로 띄운다.
+            // 걷힌 것을 "떠 있다"고 믿으면 스위치를 켜도 아무 일이 없다.
+            if !isActivityAlive {
+                activity = nil
+                startActivity()
+            }
+        } else {
+            endActivity()
+        }
+    }
+
+    private static var storedShowsLiveActivity: Bool {
+        UserDefaults.standard.object(forKey: liveActivityKey) as? Bool ?? true
+    }
+
     private init() { restore() }
 
     // MARK: 읽기
@@ -222,12 +260,18 @@ final class TaskTimer {
 
     /// 새로 시작한다. 이미 다른 일을 세고 있었다면 그건 그대로 끝난다 —
     /// 한 번에 하나만 센다. 두 개를 동시에 세면 어느 쪽도 믿을 수 없다.
+    ///
+    /// `alreadyElapsed` — 일정 한가운데서 켰을 때 이미 지나간 몫. 90분 일정에 45분 남았다면
+    /// 45분짜리 새 타이머가 아니라 **90분 중 45분이 흐른 타이머**로 선다.
+    /// 아직 오지 않은 일정이면 **음수**다 — 끝 시각(데드라인)이 일정에 적힌 그대로 서야 하기 때문이다.
     func start(token: String, title: String, plannedSeconds: Double,
+               alreadyElapsed: TimeInterval = 0,
                iconName: String = "timer", colorHex: String? = nil) {
         endActivity()
+        let planned = max(60, plannedSeconds)
         target = TimerTarget(token: token, title: title, colorHex: colorHex,
-                             iconName: iconName, plannedSeconds: max(60, plannedSeconds))
-        accumulated = 0
+                             iconName: iconName, plannedSeconds: planned)
+        accumulated = min(alreadyElapsed, planned)
         now = Date()
         runningSince = now
         didRingZero = false
@@ -240,28 +284,8 @@ final class TaskTimer {
         startActivity()
     }
 
-    func pause() {
-        guard let since = runningSince else { return }
-        accumulated += Date().timeIntervalSince(since)
-        runningSince = nil
-        now = Date()
-        persist()
-        stopTicking()
-        cancelEndNotification()
-        updateActivity()
-    }
-
-    func resume() {
-        guard isActive, runningSince == nil else { return }
-        now = Date()
-        runningSince = now
-        persist()
-        startTicking()
-        scheduleEndNotification()
-        updateActivity()
-    }
-
-    func toggle() { isRunning ? pause() : resume() }
+    // ⚠️ **멈추기·다시 가기·시간 더하기·처음부터는 없다.** 이 타이머의 끝은 일정에 적힌 끝 시각(데드라인)이다.
+    //    사람이 늘리거나 되감을 수 있으면 숫자가 더는 "일정까지 얼마"를 말하지 않는다. 끝나면 저절로 걷힌다 (→ tick).
 
     /// 끝낸다. 세던 것을 지우고 자리를 비운다.
     func stop() {
@@ -275,31 +299,8 @@ final class TaskTimer {
         stopTicking()
         cancelEndNotification()
         endActivity()
-    }
-
-    /// 시간을 더 준다. 계획을 늘리는 것이지 이미 쓴 시간을 지우는 게 아니다.
-    func extend(minutes: Double) {
-        guard var t = target else { return }
-        t.plannedSeconds += minutes * 60
-        target = t
-        // 다시 0 위로 올라왔으면 종이 한 번 더 울릴 자격이 있다.
-        if remaining > 0 { didRingZero = false }
-        persist()
-        scheduleEndNotification()
-        updateActivity()
-    }
-
-    /// 처음부터 다시 센다.
-    func restart() {
-        guard isActive else { return }
-        accumulated = 0
-        now = Date()
-        runningSince = now
-        didRingZero = false
-        persist()
-        startTicking()
-        scheduleEndNotification()
-        updateActivity()
+        // 이번 것에만 걸었던 선택은 여기서 끝난다. 다음 타이머는 기본값으로 선다.
+        showsLiveActivityThisTimer = showsLiveActivity
     }
 
     // MARK: 심장
@@ -322,12 +323,11 @@ final class TaskTimer {
 
     private func tick() {
         now = Date()
-        if !didRingZero, isActive, remaining <= 0 {
-            didRingZero = true
+        // 데드라인에 닿으면 끝이다. 넘긴 시간을 '+'로 세지 않는다 — 끝은 일정이 정한 것이다.
+        if isActive, remaining <= 0 {
             // 앱을 보고 있을 때의 알림. 주머니 속이라면 로컬 알림이 대신 울린다.
             UINotificationFeedbackGenerator().notificationOccurred(.success)
-            persist()
-            updateActivity()
+            stop()
         }
     }
 
@@ -336,6 +336,7 @@ final class TaskTimer {
     private static let notificationID = "taskTimer.end"
     private static let preferenceKey = "taskTimer.notify"
     private static let barVisibilityKey = "taskTimer.bar"
+    private static let liveActivityKey = "taskTimer.liveActivity"
 
     /// 처음 타이머를 켤 때만 묻는다. 앱을 켜자마자 묻지 않는 이유는, 그때는 아직
     /// 무엇 때문에 알림이 필요한지 사람이 모르기 때문이다.
@@ -384,17 +385,38 @@ final class TaskTimer {
             pausedRemaining: remaining)
     }
 
+    /// iOS 설정에서 이 앱의 '실시간 현황'이 켜져 있나. 꺼져 있으면 무엇을 해도 안 뜬다 — 화면이 그 사실을 말한다.
+    var areLiveActivitiesEnabled: Bool { ActivityAuthorizationInfo().areActivitiesEnabled }
+
+    /// 붙잡은 것이 아직 화면에 서 있나.
+    private var isActivityAlive: Bool {
+        guard let activity else { return false }
+        return activity.activityState == .active || activity.activityState == .stale
+    }
+
+    /// 끝 시각. 이때 시스템이 아일랜드를 다시 그려 빨강과 '+'로 넘긴다 — 앱이 꺼져 있어도.
+    /// 멈춰 있거나 이미 넘겼으면 둘 필요가 없다.
+    private var activityStaleDate: Date? {
+        guard isRunning, remaining > 0 else { return nil }
+        return Date().addingTimeInterval(remaining)
+    }
+
     private func startActivity() {
-        guard ActivityAuthorizationInfo().areActivitiesEnabled,
+        guard showsLiveActivityThisTimer, ActivityAuthorizationInfo().areActivitiesEnabled,
               let target, let state = activityState else { return }
-        activity = try? Activity.request(
-            attributes: TaskTimerAttributes(token: target.token),
-            content: .init(state: state, staleDate: nil))
+        do {
+            activity = try Activity.request(
+                attributes: TaskTimerAttributes(token: target.token),
+                content: .init(state: state, staleDate: activityStaleDate))
+        } catch {
+            // 조용히 삼키면 "켜져 있는데 안 보인다"의 까닭을 찾을 길이 없다.
+            print("⚠️ [Timer] 라이브 액티비티를 못 띄웠다: \(error)")
+        }
     }
 
     private func updateActivity() {
         guard let activity, let state = activityState else { return }
-        Task { await activity.update(.init(state: state, staleDate: nil)) }
+        Task { await activity.update(.init(state: state, staleDate: activityStaleDate)) }
     }
 
     private func endActivity() {
@@ -406,7 +428,12 @@ final class TaskTimer {
     /// 앱을 껐다 켰을 때, 지난번에 띄워 둔 잠금화면 타이머를 다시 붙잡는다.
     /// 안 붙잡으면 화면에는 떠 있는데 앱이 그것을 끝낼 수 없는 유령이 된다.
     private func adoptRunningActivity() {
-        activity = Activity<TaskTimerAttributes>.activities.first { $0.attributes.token == target?.token }
+        // 꺼 두었으면 붙잡지 않고 모두 걷는다.
+        // 이미 걷힌 것은 붙잡지 않는다 — 붙잡으면 다시 켜도 안 뜬다.
+        activity = !showsLiveActivityThisTimer ? nil : Activity<TaskTimerAttributes>.activities.first {
+            $0.attributes.token == target?.token
+                && ($0.activityState == .active || $0.activityState == .stale)
+        }
         for stray in Activity<TaskTimerAttributes>.activities where stray.id != activity?.id {
             Task { await stray.end(nil, dismissalPolicy: .immediate) }
         }
@@ -419,17 +446,22 @@ final class TaskTimer {
         var runningSince: Date?
         var accumulated: TimeInterval
         var didRingZero: Bool
+        /// 이번 타이머만의 아일랜드 선택. 예전 스냅샷에는 없으므로 없으면 기본값을 쓴다.
+        var showsLiveActivity: Bool?
     }
 
     private static let key = "taskTimer.snapshot"
 
     private func persist() {
+        // 홈·잠금 화면 위젯도 같은 값을 본다 (→ TimerWidgetSync). 아일랜드를 꺼 두어도 위젯은 따로다.
+        TimerWidgetSync.publish(timer: activityState)
         guard let target else {
             UserDefaults.standard.removeObject(forKey: Self.key)
             return
         }
         let snap = Snapshot(target: target, runningSince: runningSince,
-                            accumulated: accumulated, didRingZero: didRingZero)
+                            accumulated: accumulated, didRingZero: didRingZero,
+                            showsLiveActivity: showsLiveActivityThisTimer)
         if let data = try? JSONEncoder().encode(snap) {
             UserDefaults.standard.set(data, forKey: Self.key)
         }
@@ -454,13 +486,16 @@ final class TaskTimer {
         runningSince = snap.runningSince
         accumulated = snap.accumulated
         didRingZero = snap.didRingZero
+        showsLiveActivityThisTimer = snap.showsLiveActivity ?? showsLiveActivity
         now = Date()
 
-        if elapsed > snap.target.plannedSeconds + 12 * 3600 {
+        // 꺼져 있던 사이 데드라인이 지났으면 끝난 것이다. 예전 판에서 멈춰 둔 것도 걷는다 — 이제 멈춤은 없다.
+        if remaining <= 0 || !isRunning {
             stop()
             return
         }
         adoptRunningActivity()
+        TimerWidgetSync.publish(timer: activityState)
         if isRunning { startTicking() }
     }
 }

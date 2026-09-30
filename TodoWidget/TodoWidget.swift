@@ -70,6 +70,8 @@ struct RainbowWidgetBundle: WidgetBundle {
         TodoWidget()
         FragmentWidget()
         RainbowWidget()
+        // 홈·잠금 화면의 타이머 (→ TimerWidget.swift). 아일랜드와 달리 늘 서 있다.
+        TimerWidget()
         // 잠금화면·다이나믹 아일랜드의 타이머 (→ TimerLiveActivity.swift).
         if #available(iOS 16.2, *) {
             TaskTimerLiveActivity()

@@ -18,6 +18,7 @@
 import Foundation
 import Combine
 import StoreKit
+import SwiftUI
 import SwiftData
 import WidgetKit
 import LeeoKit
@@ -106,8 +107,12 @@ final class PurchaseManager {
     // MARK: - 사기 / 되찾기
 
     /// 고른 상품을 산다. 성공·취소·승인 대기·실패의 갈래와 퍼널 이벤트는 LeeoStore 안에 있다.
-    func purchase(_ product: Product) async {
-        _ = await store.purchase(product)
+    ///
+    /// ⚠️ `action`은 페이월의 `@Environment(\.purchase)`다. `product.purchase()`로 사면
+    ///    결제 시트를 띄울 창을 StoreKit이 짐작하는데, 아이패드에서 그 짐작이 빗나가
+    ///    구매가 오류로 끝났다 — 1.1.8 심사가 iPad Air에서 그걸로 2.1(b) 거절을 냈다.
+    func purchase(_ product: Product, using action: PurchaseAction) async {
+        _ = await store.purchase(product) { try await action($0) }
         entitlementsChecked = true
         pull()
     }

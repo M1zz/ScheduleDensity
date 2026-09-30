@@ -1461,6 +1461,7 @@
       }
     },
     "+5분" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1477,6 +1478,7 @@
       }
     },
     "+10분" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1488,146 +1490,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "+10분"
-          }
-        }
-      }
-    },
-    "고른 캘린더를 무지개에 늘 비추기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Always show chosen calendars on the rainbow"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "고른 캘린더를 무지개에 늘 비추기"
-          }
-        }
-      }
-    },
-    "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Events from the calendars you pick always show on your rainbow. Move or delete them in Calendar and the rainbow follows."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다."
-          }
-        }
-      }
-    },
-    "설정 앱 열기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Settings"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "설정 앱 열기"
-          }
-        }
-      }
-    },
-    "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Read only. Nothing is ever written to your calendars."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다."
-          }
-        }
-      }
-    },
-    "캘린더 연동" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calendar Sync"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "캘린더 연동"
-          }
-        }
-      }
-    },
-    "캘린더 접근 허용" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Allow Calendar Access"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "캘린더 접근 허용"
-          }
-        }
-      }
-    },
-    "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Calendar access is off. In the Settings app, set Calendars to Full Access for this app."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요."
-          }
-        }
-      }
-    },
-    "할 일 %lld개" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld to-do"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld to-dos"
-                }
-              }
-            }
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "할 일 %lld개"
           }
         }
       }
@@ -2450,6 +2312,22 @@
         }
       }
     },
+    "iOS 설정 ▸ 이 앱 ▸ 실시간 현황이 꺼져 있어 보이지 않습니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live Activities are turned off for this app in iOS Settings, so it can't appear."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS 설정 ▸ 이 앱 ▸ 실시간 현황이 꺼져 있어 보이지 않습니다."
+          }
+        }
+      }
+    },
     "Mac에서 짠 주간 계획 블록을 밀도에 함께 표시 (읽기 전용).\n루틴(고정·쿼터)은 매일 그대로 깔리므로 그리지 않습니다." : {
       "localizations" : {
         "en" : {
@@ -2947,22 +2825,6 @@
         }
       }
     },
-    "계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For when you started late. Counts down the time that's left."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "계획보다 늦게 시작했을 때. 남은 시간만큼 거꾸로 셉니다."
-          }
-        }
-      }
-    },
     "계획에 적힌 시간을 거꾸로 셉니다." : {
       "localizations" : {
         "en" : {
@@ -3007,6 +2869,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "고른 날 하루에 들어가는 시간이에요. 이 숫자가 그날이 얼마나 차는지를 정합니다."
+          }
+        }
+      }
+    },
+    "고른 캘린더를 무지개에 늘 비추기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Always show chosen calendars on the rainbow"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고른 캘린더를 무지개에 늘 비추기"
+          }
+        }
+      }
+    },
+    "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Events from the calendars you pick always show on your rainbow. Move or delete them in Calendar and the rainbow follows."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고른 캘린더의 일정이 무지개에 늘 함께 보입니다. 캘린더에서 옮기거나 지우면 무지개도 따라갑니다."
+          }
+        }
+      }
+    },
+    "고를 일정이 없어요" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No schedules to choose"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고를 일정이 없어요"
           }
         }
       }
@@ -3798,6 +3708,7 @@
       }
     },
     "끝내기" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4230,6 +4141,22 @@
         }
       }
     },
+    "내일 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내일 %@"
+          }
+        }
+      }
+    },
     "넘쳤어요" : {
       "localizations" : {
         "en" : {
@@ -4422,6 +4349,38 @@
         }
       }
     },
+    "다가올 일정" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upcoming"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다가올 일정"
+          }
+        }
+      }
+    },
+    "다른 일정 고르기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose another schedule"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 일정 고르기"
+          }
+        }
+      }
+    },
     "다시 보기로 바꿨습니다" : {
       "localizations" : {
         "en" : {
@@ -4546,6 +4505,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "다음 주 이후"
+          }
+        }
+      }
+    },
+    "다이나믹 아일랜드에 보기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Dynamic Island"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다이나믹 아일랜드에 보기"
+          }
+        }
+      }
+    },
+    "다이나믹 아일랜드에 보이기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Dynamic Island"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다이나믹 아일랜드에 보이기"
+          }
+        }
+      }
+    },
+    "다이나믹 아일랜드에서 감추기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide from Dynamic Island"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다이나믹 아일랜드에서 감추기"
+          }
+        }
+      }
+    },
+    "다이나믹 아일랜드에서도 보기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Also Show in Dynamic Island"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다이나믹 아일랜드에서도 보기"
           }
         }
       }
@@ -5592,7 +5615,25 @@
         }
       }
     },
+    "멈춤" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멈춤"
+          }
+        }
+      }
+    },
     "멈춰 있습니다" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6282,22 +6323,6 @@
         }
       }
     },
-    "바로 하면 됨" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ready to go"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "바로 하면 됨"
-          }
-        }
-      }
-    },
     "바로 하면 되는 일" : {
       "localizations" : {
         "en" : {
@@ -6310,6 +6335,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "바로 하면 되는 일"
+          }
+        }
+      }
+    },
+    "바로 하면 됨" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to go"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "바로 하면 됨"
           }
         }
       }
@@ -7340,6 +7381,38 @@
         }
       }
     },
+    "새 타이머는 다이나믹 아일랜드와 잠금화면에 남은 시간이 보입니다. 이번 타이머만 감추려면 타이머 화면에서 끄십시오." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New timers show the remaining time in the Dynamic Island and on the Lock Screen. To hide just the current timer, turn it off on the timer screen."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 타이머는 다이나믹 아일랜드와 잠금화면에 남은 시간이 보입니다. 이번 타이머만 감추려면 타이머 화면에서 끄십시오."
+          }
+        }
+      }
+    },
+    "새 타이머는 다이나믹 아일랜드와 잠금화면에 띄우지 않습니다. 이번 타이머만 보이려면 타이머 화면에서 켜십시오." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New timers won't appear in the Dynamic Island or on the Lock Screen. To show just the current timer, turn it on on the timer screen."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 타이머는 다이나믹 아일랜드와 잠금화면에 띄우지 않습니다. 이번 타이머만 보이려면 타이머 화면에서 켜십시오."
+          }
+        }
+      }
+    },
     "새 프로젝트" : {
       "localizations" : {
         "en" : {
@@ -7372,6 +7445,22 @@
         }
       }
     },
+    "색" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Color"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "색"
+          }
+        }
+      }
+    },
     "새로" : {
       "localizations" : {
         "en" : {
@@ -7400,22 +7489,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "새로고침"
-          }
-        }
-      }
-    },
-    "색" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Color"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "색"
           }
         }
       }
@@ -7516,6 +7589,22 @@
         }
       }
     },
+    "설정 앱 열기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 앱 열기"
+          }
+        }
+      }
+    },
     "설정, 새로 볼 것 있음" : {
       "localizations" : {
         "en" : {
@@ -7576,6 +7665,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "성공"
+          }
+        }
+      }
+    },
+    "세는 중" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timing"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세는 중"
           }
         }
       }
@@ -8995,6 +9100,22 @@
         }
       }
     },
+    "어제 %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yesterday %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어제 %@"
+          }
+        }
+      }
+    },
     "언제" : {
       "localizations" : {
         "en" : {
@@ -9361,6 +9482,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오늘 시각은 안 정함"
+          }
+        }
+      }
+    },
+    "오늘과 내일 남은 일정이 여기에 보입니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remaining schedules for today and tomorrow appear here."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘과 내일 남은 일정이 여기에 보입니다."
           }
         }
       }
@@ -10681,6 +10818,7 @@
       }
     },
     "이어서" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -10841,6 +10979,7 @@
       }
     },
     "일시정지" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -10932,6 +11071,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "일정 검색"
+          }
+        }
+      }
+    },
+    "일정 고르기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a Schedule"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정 고르기"
           }
         }
       }
@@ -11305,6 +11460,23 @@
         }
       }
     },
+    "일정의 전체 길이로 셉니다. 이미 지난 만큼은 흐른 채로 시작합니다." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Counts the whole length of the plan, with the time already past counted as elapsed."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정의 전체 길이로 셉니다. 이미 지난 만큼은 흐른 채로 시작합니다."
+          }
+        }
+      }
+    },
     "일정이 겹칠수록 진해지는 격자. 개수 제한 없습니다." : {
       "localizations" : {
         "en" : {
@@ -11381,6 +11553,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "일정이 이미 균형잡혀 있습니다.\n재배치가 필요한 일정이 없습니다."
+          }
+        }
+      }
+    },
+    "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read only. Nothing is ever written to your calendars."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "읽기만 합니다. 캘린더에는 아무것도 쓰지 않습니다."
           }
         }
       }
@@ -12219,22 +12407,6 @@
         }
       }
     },
-    "중" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Medium"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "중"
-          }
-        }
-      }
-    },
     "주간 일정 밀도" : {
       "localizations" : {
         "en" : {
@@ -12332,6 +12504,22 @@
         }
       }
     },
+    "중" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medium"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중"
+          }
+        }
+      }
+    },
     "중요도" : {
       "localizations" : {
         "en" : {
@@ -12396,22 +12584,6 @@
         }
       }
     },
-    "지금 세는 타이머 끝내기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stop the running timer"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지금 세는 타이머 끝내기"
-          }
-        }
-      }
-    },
     "지금 집을 것" : {
       "localizations" : {
         "en" : {
@@ -12460,6 +12632,22 @@
         }
       }
     },
+    "지금 하는 중" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In progress"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 하는 중"
+          }
+        }
+      }
+    },
     "지금 할 단계가 맨 위에" : {
       "localizations" : {
         "en" : {
@@ -12493,6 +12681,7 @@
       }
     },
     "지금부터 따로 세기" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -12504,38 +12693,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금부터 따로 세기"
-          }
-        }
-      }
-    },
-    "지남" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Past"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지남"
-          }
-        }
-      }
-    },
-    "지나간 이벤트 보기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show past events"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지나간 이벤트 보기"
           }
         }
       }
@@ -12568,6 +12725,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지난 주에서 넘어온 것"
+          }
+        }
+      }
+    },
+    "지남" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Past"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지남"
+          }
+        }
+      }
+    },
+    "지나간 이벤트 보기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show past events"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지나간 이벤트 보기"
           }
         }
       }
@@ -12973,6 +13162,7 @@
       }
     },
     "처음부터" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -13436,6 +13626,22 @@
         }
       }
     },
+    "캘린더 연동" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar Sync"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 연동"
+          }
+        }
+      }
+    },
     "캘린더 접근 권한 필요" : {
       "localizations" : {
         "en" : {
@@ -13464,6 +13670,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "캘린더 접근 권한이 거부되었습니다"
+          }
+        }
+      }
+    },
+    "캘린더 접근 허용" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow Calendar Access"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 접근 허용"
+          }
+        }
+      }
+    },
+    "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar access is off. In the Settings app, set Calendars to Full Access for this app."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더 접근이 꺼져 있습니다. 설정 앱에서 이 앱의 캘린더를 '전체 접근'으로 바꿔 주세요."
           }
         }
       }
@@ -13565,6 +13803,7 @@
       }
     },
     "타이머 끝내기" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14079,6 +14318,7 @@
       }
     },
     "하루 화면에서 일정을 눌러 타이머를 시작할 수 있습니다." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14366,6 +14606,34 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "할 일 · %lld개"
+          }
+        }
+      }
+    },
+    "할 일 %lld개" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-do"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld to-dos"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "할 일 %lld개"
           }
         }
       }

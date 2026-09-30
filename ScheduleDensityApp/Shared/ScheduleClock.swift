@@ -156,6 +156,7 @@ final class ScheduleClockStore {
 
     func reload() {
         slots = ScheduleClock.slots()
+        TimerWidgetSync.publish(slots: slots)
     }
 
     /// 지금 하고 있는 것.

@@ -141,7 +141,10 @@ struct SettingsView: View {
         case .whileTiming: String(localized: "직접 시작한 타이머가 있을 때만 줄이 섭니다.")
         case .hidden:      String(localized: "줄을 세우지 않습니다. 타이머는 그대로 돌고 잠금화면에서 봅니다.")
         }
-        return notify + "\n" + bar
+        let island = timer.showsLiveActivity
+            ? String(localized: "새 타이머는 다이나믹 아일랜드와 잠금화면에 남은 시간이 보입니다. 이번 타이머만 감추려면 타이머 화면에서 끄십시오.")
+            : String(localized: "새 타이머는 다이나믹 아일랜드와 잠금화면에 띄우지 않습니다. 이번 타이머만 보이려면 타이머 화면에서 켜십시오.")
+        return notify + "\n" + bar + "\n" + island
     }
 
     var body: some View {
@@ -549,13 +552,13 @@ struct SettingsView: View {
                         Label("탭 위 타이머 줄", systemImage: "rectangle.bottomthird.inset.filled")
                     }
 
-                    if timer.isActive {
-                        Button(role: .destructive) {
-                            timer.stop()
-                        } label: {
-                            Label("지금 세는 타이머 끝내기", systemImage: "stop.fill")
-                        }
+                    // 다이나믹 아일랜드·잠금화면의 타이머. 둘은 하나의 라이브 액티비티라 함께 켜지고 꺼진다.
+                    Toggle(isOn: Binding(get: { timer.showsLiveActivity },
+                                         set: { timer.setShowsLiveActivity($0) })) {
+                        Label("다이나믹 아일랜드에 보기", systemImage: "capsule.fill")
+                            // 새 타이머의 기본값이다. 이번 것만은 타이머 시트에서 바꾼다.
                     }
+
                 } header: {
                     Text("타이머")
                 } footer: {

@@ -109,6 +109,8 @@ struct ScheduleDensityApp: App {
     @State private var selectedTab: AppTab = .todo
     /// 잠긴 위젯을 눌러 들어왔나. 그 자리에서 페이월을 낸다.
     @State private var widgetPaywall = false
+    /// 타이머 위젯을 눌러 들어왔다 (→ TimerWidget.swift).
+    @State private var timerSheet = false
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
     @State private var schedule = ScheduleViewModel()
@@ -344,6 +346,11 @@ struct ScheduleDensityApp: App {
             // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
             .timerNotifyAsk()
             .paywall(for: .widget, isPresented: $widgetPaywall)
+            // 타이머 위젯을 눌렀을 때 뜨는 시트. 탭마다 선 줄이 아니라 루트에 하나만 둔다.
+            .sheet(isPresented: $timerSheet) {
+                TimerSheet(slot: ScheduleClockStore.shared.current())
+                    .presentationDragIndicator(.visible)
+            }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
             .task { KeyboardDismissOnTap.install() }
@@ -445,6 +452,8 @@ struct ScheduleDensityApp: App {
                 // 표시해 둔 조각은 그 목록 맨 위 칸에 이미 모여 있다.
                 case TodoWidgetBridge.fragmentDeepLink.host: selectedTab = .todo
                 case RainbowWidgetBridge.deepLink.host: selectedTab = .rainbow
+                // 타이머 위젯. 탭은 그대로 두고 타이머 시트를 연다.
+                case TimerWidgetBridge.deepLink.host:   timerSheet = true
                 default: break
                 }
             }
