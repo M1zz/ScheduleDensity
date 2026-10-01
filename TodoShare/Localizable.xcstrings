@@ -14,6 +14,12 @@
             "state": "translated",
             "value": "%@ 실제로 하기"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "實際去做%@"
+          }
         }
       }
     },
@@ -29,6 +35,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@짜리라 조각 안에 들어갑니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長度為 %@，放得進碎片。"
           }
         }
       }
@@ -46,6 +58,12 @@
             "state": "translated",
             "value": "%@짜리라 조각에 안 들어갑니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長度為 %@，放不進碎片。"
+          }
         }
       }
     },
@@ -61,6 +79,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@짜리입니다. 한 자리에서도 안 닫힙니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "長度為 %@。就算一次坐下也收不了尾。"
           }
         }
       }
@@ -78,6 +102,12 @@
             "state": "translated",
             "value": "%lld개 단계가 2시간을 넘습니다. 끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個步驟超過兩小時。請再拆分到能收尾的大小。做到一半的步驟會把注意力拖到下一個小時。"
+          }
         }
       }
     },
@@ -93,6 +123,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld분"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 分鐘"
           }
         }
       }
@@ -110,6 +146,12 @@
             "state": "translated",
             "value": "%lld시간"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 小時"
+          }
         }
       }
     },
@@ -125,6 +167,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld시간 %lld분"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 小時 %lld 分鐘"
           }
         }
       }
@@ -142,6 +190,12 @@
             "state": "translated",
             "value": "'보내기·발행하기·제출하기'처럼 끝을 닫는 단계를 마지막에 두세요. 90% 끝난 일의 마지막 10%는 조각의 가장 좋은 용도이고, 닫아두면 그 뒤의 덩어리 시간까지 깨끗해집니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把「寄出、發布、提交」這類收尾的步驟放在最後。完成 90% 的事剩下的 10%，是碎片最好的用途；收完尾，之後的整塊時間也會清爽許多。"
+          }
         }
       }
     },
@@ -157,6 +211,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "5분 안에 끝까지 가나요?"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "五分鐘內能做到底嗎？"
           }
         }
       }
@@ -174,6 +234,12 @@
             "state": "translated",
             "value": "5분이 생겼을 때 집을 단계가 없습니다"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有能在五分鐘空檔拿起來做的步驟"
+          }
         }
       }
     },
@@ -189,6 +255,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "‘%@’은(는) 한 번에 안 끝납니다"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」無法一次完成"
           }
         }
       }
@@ -206,6 +278,12 @@
             "state": "translated",
             "value": "‘%@’이(가) ‘%@’보다 뒤입니다. 정해지지 않은 채 시작한 작업은 조각에서도 덩어리에서도 닫히지 않습니다. 결정 단계를 앞으로 옮기세요."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」排在「%@」之後。還沒決定就開始的工作，不論在碎片或整塊時間都無法收尾。請把決定的步驟往前移。"
+          }
         }
       }
     },
@@ -221,6 +299,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "건너뜀"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已略過"
           }
         }
       }
@@ -238,6 +322,12 @@
             "state": "translated",
             "value": "결정이 작업 뒤에 있습니다"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "決定排在工作之後"
+          }
         }
       }
     },
@@ -253,6 +343,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "고정 시간대"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "固定時段"
           }
         }
       }
@@ -270,6 +366,12 @@
             "state": "translated",
             "value": "글쓰기·구현·설계처럼 맥락을 다시 불러와야 하는 일은 조각 크기로 잡아두면 시동만 걸다 끝납니다. 시간을 늘리거나, 그 앞에 '준비' 조각 단계를 따로 두세요."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "寫作、實作、設計這類需要重新載入脈絡的事，若只給碎片大小的時間，只會暖身就結束。請增加時間，或在前面另外加一個「準備」的碎片步驟。"
+          }
         }
       }
     },
@@ -285,6 +387,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "끊기면 다시 올라와야 합니다. 방해 없는 시간에 두세요."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一旦中斷就得重新爬回去。請放在不受打擾的時間。"
           }
         }
       }
@@ -302,6 +410,12 @@
             "state": "translated",
             "value": "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒做完的事會留下殘留，連帶啃掉下一段整塊時間。"
+          }
         }
       }
     },
@@ -317,6 +431,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "끝을 닫는 단계. 짬이 나면 바로 집을 수 있습니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收尾的步驟。一有空檔就能拿起來做。"
           }
         }
       }
@@ -334,6 +454,12 @@
             "state": "translated",
             "value": "끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請再拆分到能收尾的大小。做到一半的步驟會把注意力拖到下一個小時。"
+          }
         }
       }
     },
@@ -349,6 +475,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "끝이 정해져 있어 여기서 닫힙니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終點已確定，所以能在這裡收尾。"
           }
         }
       }
@@ -366,6 +498,12 @@
             "state": "translated",
             "value": "끝이 정해져 있지 않아 안 닫힙니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終點沒有確定，所以收不了尾。"
+          }
         }
       }
     },
@@ -381,6 +519,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光是重新進入狀況平均就要 23 分鐘。放在碎片裡只會暖身就結束，請增加時間，或放在整塊時間。"
           }
         }
       }
@@ -398,6 +542,12 @@
             "state": "translated",
             "value": "달성"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "達成"
+          }
         }
       }
     },
@@ -413,6 +563,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "덩어리"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "整塊"
           }
         }
       }
@@ -430,6 +586,12 @@
             "state": "translated",
             "value": "덩어리입니다. 지켜 둔 시간에 두세요."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是整塊。請放在預留的時間。"
+          }
         }
       }
     },
@@ -445,6 +607,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "링크·자료를 펼쳐만 둡니다. 본 작업의 시동 비용을 여기서 미리 냅니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只要打開連結和資料就好。先在這裡付掉正式工作的暖身成本。"
           }
         }
       }
@@ -462,6 +630,12 @@
             "state": "translated",
             "value": "마무리해서 보내기"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收尾並寄出"
+          }
         }
       }
     },
@@ -477,6 +651,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "마지막을 닫는 단계가 없습니다"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有收尾的步驟"
           }
         }
       }
@@ -494,6 +674,12 @@
             "state": "translated",
             "value": "맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要重新讀回脈絡的事，在碎片裡只會暖身就結束。"
+          }
         }
       }
     },
@@ -509,6 +695,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "모든 단계가 자리를 잡아야 하는 크기입니다. 자료 모아두기·한 줄 메모처럼 조각에서 닫히는 단계를 하나 만들어두면, 흘려보내던 틈이 이 할 일에 쓰입니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每個步驟都需要坐下來做。加一個能在碎片裡收尾的步驟，例如收集資料、寫一行筆記，原本白白流走的空檔就會用在這件事上。"
           }
         }
       }
@@ -526,6 +718,12 @@
             "state": "translated",
             "value": "몸으로 하는 일은 나눠 해도 쌓입니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "身體力行的事，分開做也會累積。"
+          }
         }
       }
     },
@@ -541,6 +739,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "몸으로 하는 일이라 시동이 없습니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是身體力行的事，不需要暖身。"
           }
         }
       }
@@ -558,6 +762,12 @@
             "state": "translated",
             "value": "무엇을 할지 정하기"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "決定要做什麼"
+          }
         }
       }
     },
@@ -573,6 +783,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "뭘 할지 고르는 동안 조각이 끝납니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還在挑要做什麼，碎片就結束了。"
           }
         }
       }
@@ -590,6 +806,12 @@
             "state": "translated",
             "value": "뭘 할지 고르는 동안 조각이 끝납니다. 결정은 덩어리에서 하고, 정해진 것만 조각 단계로 보내세요."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還在挑要做什麼，碎片就結束了。請在整塊時間做決定，只把已確定的事交給碎片步驟。"
+          }
         }
       }
     },
@@ -605,6 +827,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "배수구"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "排水孔"
           }
         }
       }
@@ -622,6 +850,12 @@
             "state": "translated",
             "value": "부분 달성"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分達成"
+          }
         }
       }
     },
@@ -637,6 +871,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有寫下時間，所以還不知道能否在五分鐘內收尾。"
           }
         }
       }
@@ -654,6 +894,12 @@
             "state": "translated",
             "value": "시동 없이 바로 시작되나요?"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不用暖身就能馬上開始嗎？"
+          }
         }
       }
     },
@@ -669,6 +915,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "심야"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深夜"
           }
         }
       }
@@ -686,6 +938,12 @@
             "state": "translated",
             "value": "심야 (23시 이후)"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深夜（23 點以後）"
+          }
         }
       }
     },
@@ -701,6 +959,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "아침"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "早上"
           }
         }
       }
@@ -718,6 +982,12 @@
             "state": "translated",
             "value": "아침 (06–12시)"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "早上（6–12 點）"
+          }
         }
       }
     },
@@ -733,6 +1003,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "안 정한 것이 먼저 막고 있습니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有尚未決定的事先擋在前面。"
           }
         }
       }
@@ -750,6 +1026,12 @@
             "state": "translated",
             "value": "안 정해진 게 남아 있으면 아래 단계가 전부 안 열립니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只要還有沒決定的事，下面的步驟就全都無法開始。"
+          }
         }
       }
     },
@@ -765,6 +1047,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "앞에서 막고 있는 것이 안 보입니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "看不出前面有東西擋著。"
           }
         }
       }
@@ -782,6 +1070,12 @@
             "state": "translated",
             "value": "어디까지 했는지 다시 읽어 와야 시작됩니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "得先重新讀回做到哪裡才能開始。"
+          }
         }
       }
     },
@@ -797,6 +1091,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "오후"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下午"
           }
         }
       }
@@ -814,6 +1114,12 @@
             "state": "translated",
             "value": "오후 (12–18시)"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下午（12–18 點）"
+          }
         }
       }
     },
@@ -829,6 +1135,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "이 일"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這件事"
           }
         }
       }
@@ -846,6 +1158,12 @@
             "state": "translated",
             "value": "이 페이지에서 가져왔습니다. 이름은 고쳐 쓸 수 있습니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從這個頁面帶入。名稱可以修改。"
+          }
         }
       }
     },
@@ -861,6 +1179,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "이건 할 일이 아니라 조각이 새어 나가는 곳입니다. 단계로 두면 진행률만 부풉니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這不是待辦事項，而是碎片流失的地方。放成步驟只會讓進度虛胖。"
           }
         }
       }
@@ -878,6 +1202,12 @@
             "state": "translated",
             "value": "저녁"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "晚上"
+          }
         }
       }
     },
@@ -893,6 +1223,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "저녁 (18–23시)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "晚上（18–23 點）"
           }
         }
       }
@@ -910,6 +1246,12 @@
             "state": "translated",
             "value": "조각"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "碎片"
+          }
         }
       }
     },
@@ -925,6 +1267,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "碎片時間無法換算成總量。十二次五分鐘不等於六十分鐘。所以最好一開始就把「有五分鐘時能拿起來做的步驟」和「只在預留時間做的步驟」分開。"
           }
         }
       }
@@ -942,6 +1290,12 @@
             "state": "translated",
             "value": "조각과 덩어리가 나뉘어 있습니다"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "碎片與整塊已分開"
+          }
         }
       }
     },
@@ -957,6 +1311,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "조각에서 집을 수 있는 단계가 %lld개, 지킨 시간에 할 단계가 %lld개입니다. 5분이 생기면 조각 단계를, 확보한 시간에는 덩어리 단계를 하시면 됩니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "能在碎片中做的步驟有 %lld 個，要在預留時間做的步驟有 %lld 個。有五分鐘時做碎片步驟，有預留時間時做整塊步驟即可。"
           }
         }
       }
@@ -974,6 +1334,12 @@
             "state": "translated",
             "value": "조각입니다. 5분이 나면 이걸 집으면 됩니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是碎片。有五分鐘時拿起來做就好。"
+          }
         }
       }
     },
@@ -989,6 +1355,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "주간 쿼터 (시간 유연)"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每週配額（時間彈性）"
           }
         }
       }
@@ -1006,6 +1378,12 @@
             "state": "translated",
             "value": "직접 정한 답입니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是你自己決定的答案。"
+          }
         }
       }
     },
@@ -1021,6 +1399,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "짧게 잡아 두어도 여기서 끝나지는 않습니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "就算時間設得很短，也不會在這裡結束。"
           }
         }
       }
@@ -1038,6 +1422,12 @@
             "state": "translated",
             "value": "짧게 잡힌 덩어리 작업이 %lld개 있습니다"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個整塊工作的時間設得太短"
+          }
         }
       }
     },
@@ -1053,6 +1443,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "짧은 덩어리"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "短整塊"
           }
         }
       }
@@ -1070,6 +1466,12 @@
             "state": "translated",
             "value": "짧은 덩어리입니다. 앉아야 하지만 한 자리에서 끝납니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是短整塊。需要坐下來做，但一次就能完成。"
+          }
         }
       }
     },
@@ -1085,6 +1487,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "쪼개기 전에 한 가지"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拆分之前先說一件事"
           }
         }
       }
@@ -1102,6 +1510,12 @@
             "state": "translated",
             "value": "추가"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加入"
+          }
         }
       }
     },
@@ -1117,6 +1531,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "취소"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消"
           }
         }
       }
@@ -1134,6 +1554,12 @@
             "state": "translated",
             "value": "판정 기준 3"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "判斷標準 3"
+          }
         }
       }
     },
@@ -1149,6 +1575,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "필요한 것 모아두기"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收集需要的東西"
           }
         }
       }
@@ -1166,6 +1598,12 @@
             "state": "translated",
             "value": "한 번에 못 끝내는 크기입니다. 끝이 닫히도록 더 쪼개지 않으면 '하다 만 상태'가 다음 시간까지 따라옵니다."
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這個大小無法一次完成。若不再拆分到能收尾的大小，「做到一半」的狀態會一路跟到下一個小時。"
+          }
         }
       }
     },
@@ -1181,6 +1619,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "할 것이 정해져 있어 바로 손이 갑니다."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要做什麼已經確定，可以馬上動手。"
           }
         }
       }
@@ -1198,6 +1642,12 @@
             "state": "translated",
             "value": "할 일"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "待辦事項"
+          }
         }
       }
     },
@@ -1214,6 +1664,12 @@
             "state": "translated",
             "value": "할 일로"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加到待辦"
+          }
         }
       }
     },
@@ -1229,6 +1685,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "할 일을 저장하지 못했습니다. 앱을 한 번 열고 다시 시도해 주세요."
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法儲存待辦事項。請先打開 App 一次，再試一次。"
           }
         }
       }

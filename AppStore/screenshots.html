@@ -45,6 +45,20 @@ body.ko .cap    { padding-top:42px; }
 body.ko .cap h1 { letter-spacing:-0.02em; line-height:1.2; }
 body.ko .cap p  { line-height:1.45; }
 body.ko .row .title, body.ko .steprow .sname { line-height:1.35; }
+/* Traditional Chinese (Taiwan) set: PingFang TC on device / macOS, Noto Sans
+   CJK TC elsewhere. The TC families come first so Han characters never pick
+   up Japanese or Korean glyph shapes; <html lang="zh-Hant"> is set for this
+   set too. Han breaks between any two characters, so no keep-all here —
+   line-break:strict keeps full-width punctuation off the start of a line. */
+body.zh-Hant, body.zh-Hant .screen {
+  font-family:"PingFang TC", "Noto Sans CJK TC", "Noto Sans TC",
+              -apple-system, "Heiti TC", sans-serif;
+  line-break:strict;
+}
+body.zh-Hant .cap    { padding-top:42px; }
+body.zh-Hant .cap h1 { letter-spacing:0.01em; line-height:1.22; }
+body.zh-Hant .cap p  { line-height:1.5; letter-spacing:0.01em; }
+body.zh-Hant .row .title, body.zh-Hant .steprow .sname { line-height:1.35; }
 
 /* ── artboard ─────────────────────────────────────────────── */
 .shot {
@@ -596,11 +610,117 @@ ko: {
      '무지개, 쪼개기, 두 질문.<br>값을 받는 건 곁다리 다섯뿐입니다.'],
   ],
 },
+
+/* Traditional Chinese (Taiwan). Translated from ko; the terms follow the
+   app's own zh-Hant glossary: 欲望彩虹 · 彩虹 · 待辦 · 步驟 · 碎片 · 整塊 ·
+   閃電 · 帳本 · 行程 · 小工具 · 主畫面 · 鎖定畫面 · 依序 · 不限順序. */
+'zh-Hant': {
+  tabs: { todo:'待辦', rainbow:'彩虹' },
+  grid: {
+    title:'行程密度', date:'日期',
+    wd:['週一','週二','週三','週四','週五','週六','週日'],
+    day:(m,d) => `${m}/${d}`,
+    work:'進行日', span:'延續到截止日',
+  },
+  list: {
+    title:'本週待辦',
+    lede:'現在就能動手的事——不必排隊等候。',
+    rows:[
+      ['bolt',  '報稅',            '拍下收據',                ''],
+      ['bolt',  '',                '回覆小娜週五的事',        ''],
+      ['donut', '第三季報告',      '打開上一季的檔案',        'due:週五'],
+      ['idle',  '',                '續借圖書館的書',          ''],
+      ['idle',  '',                '幫盆栽澆水',              ''],
+      ['step',  '廚房層架',        '打磨切面',                'today'],
+      ['plain', '',                '規劃釜山旅行',            'due:3/14'],
+      ['step0', '作品集網站',      '挑選要放的作品',          ''],
+    ],
+    todayBadge:'今天',
+    doneHead:'已完成 · 2 項',
+    done:[['', '預約牙醫'], ['廚房層架', '量牆面尺寸']],
+  },
+  q: {
+    task:'第三季報告', sheet:'步驟', done:'完成',
+    step:'打開上一季的檔案', dur:'約需 5 分鐘',
+    head:'這件事能在 5 分鐘內拿起來做嗎',
+    yes:'是', no:'否',
+    one:['不用暖身就能直接開始嗎？',
+         '需要重新讀回前後脈絡的事，在碎片時間裡只夠用來暖身。',
+         'Mark 2008'],
+    two:['5 分鐘內做得完嗎？',
+         '沒做完的事會留下殘餘，連下一段整塊時間也一併被吃掉。',
+         'Leroy 2009'],
+    verdict:'兩題都是「是」——這是碎片。',
+    verdictSub:'它會移到清單最上方，不必排隊等候。',
+    note:'寫下時，App 會先替你回答這兩個問題。答錯時再改過來就好。',
+    revert:'還原為 App 的判斷',
+  },
+  steps: {
+    back:'待辦', task:'第三季報告',
+    meta:['共 3 小時 20 分', '5 個步驟已完成 1 個'],
+    head:'步驟', order:'步驟之間<br>需要互相等待嗎？',
+    inOrder:'依序', anyOrder:'不限順序', pick:'5 分鐘可做',
+    rows:[
+      ['done', '整理 3 月的數字', '', '30 分'],
+      ['bolt', '打開上一季的檔案', '', '5 分'],
+      ['idle', '撰寫開頭',
+       '得先重讀上一季的內容，需要暖身。', '1 小時 30 分'],
+      ['idle', '繪製各地區圖表',
+       '超過 5 分鐘，需要預留整塊時間。', '1 小時'],
+      ['bolt', '寄給美娜', '', '5 分'],
+    ],
+    sumNote:'時間由下往上累加，不在上層另外填寫。',
+    total:'3 小時 20 分',
+    dragNote:'長按並拖曳即可調整順序。',
+  },
+  wg: {
+    bolt:'閃電 — 5 分鐘可做 3 件',
+    lines:[['拍下收據','5 分'],
+           ['打開上一季的檔案','5 分'],
+           ['回覆小娜週五的事','2 分']],
+    rainbow:'彩虹', today:'今天 3 件 · 4 小時', load:'已排滿 46%',
+    todo:'待辦', parent:'第三季報告', step:'打開上一季的檔案',
+    progress:'2/4 步 · 再 5 項',
+    apps:[['欲望彩虹','行事曆','備忘錄','健康'],
+          ['訊息','設定','照片','Podcast'],
+          ['音樂','天氣','檔案','地圖']],
+  },
+  price: {
+    title:'全部解鎖',
+    freeTag:'永久免費', freeHead:'這個 App 的核心功能',
+    free:[['彩虹', '看看接下來幾週排得有多滿。'],
+          ['拆分待辦', '切成步驟，直到小得可以動手。'],
+          ['兩個問題', '由 App 先判斷哪些是碎片，並說明原因。'],
+          ['步驟順序', '每組設定一次：步驟之間是否互相等待。']],
+    proTag:'全部解鎖', proHead:'五項附加功能',
+    pro:['主畫面與鎖定畫面<br>小工具','從行事曆匯入','分享行程',
+         '行程統計','帳本'],
+    buy:'全部解鎖', once:'非消耗型項目 · 一次購買，永久使用',
+  },
+  shots:[
+    ['彩虹', '這週有多滿<br>一眼就知道',
+     '每個行程各佔一欄。重疊越多，顏色越深。'],
+    ['待辦', '從現在<br>能做的開始',
+     '馬上能做的事排在最上面，<br>不必排隊等候。'],
+    ['兩個問題', '兩個問題<br>就能分辨',
+     '不用暖身就能開始？5 分鐘做得完？<br>兩題都是「是」，就是碎片。'],
+    ['步驟', '拆成步驟<br>時間自然累加',
+     '時間記在步驟上。<br>待辦的總時間就是各步驟的加總。'],
+    ['小工具', '有 5 分鐘時<br>可以做的事',
+     '在主畫面與鎖定畫面上，<br>只列出現在就能做的事。'],
+    ['免費與付費', '核心功能<br>不收費',
+     '彩虹、拆分、兩個問題。<br>需要付費的只有五項附加功能。'],
+  ],
+},
 };
 
 const LANG = new URLSearchParams(location.search).get('lang') || 'en';
 const S = STRINGS[LANG];
 document.body.classList.add(LANG);
+// lang drives CJK glyph selection: without zh-Hant, Han characters can fall
+// back to Japanese or Korean glyph variants. (Only the Chinese set gets it,
+// so the ko / en renders stay exactly as they were.)
+if (LANG === 'zh-Hant') document.documentElement.lang = 'zh-Hant';
 </script>
 <script>
 /* ═══ 1. THE RAINBOW — density grid ════════════════════════════

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>欲望彩虹 — 以五分鐘步驟規劃一週</title>
+<meta name="description" content="行程重疊得越多，顏色就越深的 iOS App。看出這週有多滿，並把待辦事項拆開，讓你隨時都有五分鐘內就能拿起來做的事。使用說明、常見問題、隱私權、聯絡方式。" />
+<meta property="og:title" content="欲望彩虹" />
+<meta property="og:description" content="一眼看出這週有多重，隨時都有一個五分鐘內就能拿起來做的步驟。" />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
+<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a></p>
+
+<header class="hero" style="padding-top:32px">
+  <span class="badge">iOS App</span>
+  <h1>欲望彩虹</h1>
+  <p class="tagline">行程重疊得越多，顏色就越深。一眼看出這週有多重，從現在真正能拿起來做的事開始。</p>
+</header>
+
+<main class="wrap">
+
+<section>
+  <h2><span class="dot" style="background:var(--red)"></span>彩虹——看的是密度，不是條目</h2>
+  <p class="lead">行事曆告訴你有沒有排事情；這裡讓你看到事情疊了多少層。</p>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">🌈</span>
+      <h3>重疊越多，顏色越深</h3>
+      <p>同一段日子堆得越多，格子的顏色就越深。光是捲動畫面，就能看出哪一週排得太滿。</p>
+    </div>
+    <div class="card">
+      <span class="emoji">📅</span>
+      <h3>看整段期間，不只是某一天</h3>
+      <p>設定開始與結束，線條就會一路延伸。真正要做的日子顏色深，其餘日子維持淡色——因為還沒做完的事，依然牽絆著你。</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔍</span>
+      <h3>哪裡還有餘裕</h3>
+      <p>它會建議放進新行程之後仍有餘裕的日子——而不只是最空的那幾天。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>待辦事項——拆到有一步能在五分鐘內做完</h2>
+  <p class="lead">清單一直不減少，通常不是因為懶惰，而是動手之前還有東西擋在前面。</p>
+
+  <p>把大的工作拆成步驟。每個步驟只用兩個問題來分類，就只有這兩個。</p>
+
+  <table class="attrs">
+    <tr><td class="k" style="color:var(--green)">問題一</td><td class="v">不用暖身就能開始嗎？如果得先重新想起上次做到哪裡，五分鐘的空檔就只夠暖身，什麼也做不成。</td></tr>
+    <tr><td class="k" style="color:var(--indigo)">問題二</td><td class="v">五分鐘內能一口氣做完嗎？做到一半放下的事，會跟著你進入下一個小時。</td></tr>
+  </table>
+
+  <p><b>只有兩題都答「是」的步驟才是碎片</b>——在五分鐘空出來時拿起來做的事。其餘都是整塊，屬於你特地留出來的時間。App 會先根據你寫下的文字和時間作答；只有它判斷錯時，你才需要介入。</p>
+
+  <h3 class="sub">為什麼這樣切</h3>
+  <ul class="plain">
+    <li>十二個五分鐘不等於一小時。零碎的時間不會累加成總量——切換的成本會吃掉差額——所以能塞進空檔的步驟，必須從一開始就另外標出來。</li>
+    <li>重新投入深度工作，平均大約要花二十三分鐘。代價不在中斷本身，而在重建脈絡。</li>
+    <li>開始比持續更費力。第一步離手邊越遠，就越容易被拖延。</li>
+    <li>體力活是例外——拆開來做依然會累積，所以不按大小來切。</li>
+  </ul>
+
+  <h3 class="sub">順序，每組決定一次</h3>
+  <p>步驟之間要不是彼此等待，就是互不相干；這件事整組只決定一次，不必一個一個設定相依關係。<b>依序</b>會讓第一個未完成的步驟站在前面；<b>不限順序</b>則讓任何一個你現在就能拿起來做的碎片站在前面。長按並拖曳步驟，就能在同一層的步驟之間移動位置。</p>
+
+  <h3 class="sub">閃電</h3>
+  <p>把一列往右滑，就能加上閃電——這是你自己的標記，表示這件事現在就能做。加上閃電的項目會插隊站到最上面，空檔出現時只要看最上面就好，不必把整份清單掃過一遍。再滑一次即可取消標記。</p>
+
+  <h3 class="sub">其他</h3>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">📲</span>
+      <h3>主畫面與鎖定畫面小工具</h3>
+      <p>共有三種——待辦事項、閃電和彩虹。閃電小工具只列出你現在五分鐘內就能拿起來做的事。</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔗</span>
+      <h3>從任何地方加入</h3>
+      <p>在其他 App 中分享時，這個 App 會出現在分享選單裡。只要一個小視窗，就能把它變成待辦事項。</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🖥</span>
+      <h3>延續到 Mac</h3>
+      <p>macOS App「彩虹工坊」使用同一個 iCloud 帳號。在一邊寫下，另一邊就會出現。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--purple)"></span>共享</h2>
+  <p class="lead">只把連結傳給需要的人。</p>
+  <div class="grid">
+    <div class="card">
+      <h3>行程（唯讀）</h3>
+      <p>傳送邀請連結後，對方就能看到你的行程，但無法修改。</p>
+    </div>
+    <div class="card">
+      <h3>待辦事項（共同編輯）</h3>
+      <p>你和受邀的人一起讀寫同一份清單。這與 Apple 的「家人共享」無關。</p>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:16px">任何持有邀請連結的人都能加入，所以請只傳給你想邀請的人。共享功能需要登入 iCloud。</p>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--blue)"></span>開始使用</h2>
+  <ol class="steps">
+    <li><b>畫出行程</b><span>在空白格上按住選擇開始日，再按住選擇結束日。輸入標題、實際要做的星期幾，以及每天的時數。</span></li>
+    <li><b>寫下待辦事項</b><span>在空白行輸入後按 Return，就這樣。</span></li>
+    <li><b>把大的事拆開</b><span>點開那一列，依照工作進行的順序寫下步驟。App 會告訴你哪些是碎片、哪些是整塊。</span></li>
+    <li><b>五分鐘空出來時，拿起一個碎片</b><span>現在就能做的事會站在清單最上面，其餘的不必看。</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--yellow)"></span>常見問題</h2>
+
+  <details>
+    <summary>一定要登入 iCloud 嗎？</summary>
+    <p>自己使用時不需要——所有資料都儲存在裝置上。若要與其他裝置或 Mac App 同步，或使用共享功能，才需要 iCloud。</p>
+  </details>
+
+  <details>
+    <summary>App 有我的語言嗎？</summary>
+    <p>提供韓文、英文和繁體中文。App 會跟隨裝置的語言。若只想更改這個 App 的語言，請到 iOS 的「設定」找到「欲望彩虹」，再選擇「語言」。</p>
+  </details>
+
+  <details>
+    <summary>App 判斷錯步驟怎麼辦？</summary>
+    <p>把那個步驟往左滑，自己回答那兩個問題。你的答案優先於 App 的推測，而且會一直維持。App 是讀你寫下的文字來判斷，所以對別人的工作常常會判斷錯——這是意料中的事。</p>
+  </details>
+
+  <details>
+    <summary>為什麼沒寫時間的待辦事項永遠不會成為碎片？</summary>
+    <p>因為沒有任何資訊說明它能在五分鐘內結束，而這份清單唯有裡面的事都真的能立刻動手，才有價值。寫上時間——例如十五分鐘——它就會被正確分類。</p>
+  </details>
+
+  <details>
+    <summary>可以在小工具裡打勾嗎？</summary>
+    <p>還不行——小工具目前只能檢視。點一下小工具，就會直接打開待辦事項畫面。</p>
+  </details>
+
+  <details>
+    <summary>哪些要付費？</summary>
+    <p>App 的核心功能免費：彩虹、拆分待辦事項、兩個問題，以及步驟順序。彩虹 Pro 是一次性購買，不是訂閱，會開放六項額外功能——與 Mac 搭配使用、主畫面與鎖定畫面小工具、從行事曆匯入、共享行程、行程統計，以及帳本。</p>
+  </details>
+
+  <details>
+    <summary>Mac App 需要另外購買嗎？</summary>
+    <p>彩虹工坊是另一個獨立的 macOS App。使用同一個 iCloud 帳號時，待辦事項與每週計畫會自動同步。</p>
+  </details>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>隱私權</h2>
+  <p class="lead">沒有伺服器。你寫下的內容只會留在你的裝置和你自己的 iCloud 中。</p>
+  <div class="note">
+    不使用廣告識別碼、沒有使用分析、不取用位置資訊，也不需要註冊。
+    詳細內容請見<a href="privacy.html">隱私權政策</a>。
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--indigo)"></span>更新內容</h2>
+  <p class="lead">每個版本的變更都有記錄。</p>
+  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">查看版本資訊</a></p>
+</section>
+
+<section>
+  <div class="contact">
+    <h2 style="margin-bottom:6px">支援</h2>
+    <p class="lead" style="margin-bottom:0">如果使用時遇到阻礙，或有看起來不對勁的地方，請告訴我們。App 內的「設定」裡也有聯絡項目。</p>
+    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 彩虹工坊</div>
+  <div class="fam">欲望彩虹 (iOS) · 彩虹工坊 (macOS)</div>
+  <div class="fam"><a href="privacy.html">隱私權政策</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a></div>
+</footer>
+</body>
+</html>

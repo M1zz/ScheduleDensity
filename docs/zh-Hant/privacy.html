@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>欲望彩虹 — 隱私權政策</title>
+<meta name="description" content="欲望彩虹（iOS）處理哪些資料、儲存在哪裡，以及絕不會做的事。" />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/privacy.html" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/privacy.html" />
+<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/privacy.html" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<main class="wrap">
+
+<p style="padding-top:28px"><a href="index.html">返回欲望彩虹</a> &nbsp;·&nbsp; <a href="../privacy.html">한국어</a> &nbsp;·&nbsp; <a href="../en/privacy.html">English</a></p>
+
+<header style="padding:8px 0 28px">
+  <h1 style="font-size:34px; text-align:left; margin:0 0 8px">隱私權政策</h1>
+  <p class="muted" style="margin:0">欲望彩虹 (iOS) · 最後更新：2026 年 9 月 28 日</p>
+</header>
+
+<section style="border-top:1px solid var(--line); padding-top:28px">
+  <p>欲望彩虹（以下稱「本 App」）是以本機為優先、沒有自己伺服器的 App。本文件說明本 App 處理哪些資料、儲存在哪裡，以及不會做哪些事。</p>
+  <div class="note">
+    重點摘要。本 App 不會蒐集或傳送個人資料。你寫下的內容只會儲存在你的裝置與你自己的 iCloud 私人資料庫中，開發者無法存取這些資料。只有無法識別個人身分的匿名使用統計會<strong>預設傳送</strong>，你可以隨時在「設定」中關閉。
+  </div>
+</section>
+
+<section>
+  <h2>1. 不蒐集的資料</h2>
+  <p class="lead">本 App 不會蒐集下列資料。</p>
+  <ul class="plain">
+    <li>姓名、電子郵件地址、電話號碼等帳號與聯絡資料</li>
+    <li>位置資訊</li>
+    <li>廣告識別碼或追蹤資料</li>
+    <li>使用分析（第 6 節的匿名使用統計除外）</li>
+    <li>裝置上的其他資料，例如聯絡人、照片或行事曆</li>
+  </ul>
+  <p>沒有註冊，也沒有登入。</p>
+</section>
+
+<section>
+  <h2>2. 你寫下的資料</h2>
+  <p class="lead">為了提供功能，本 App 會把你輸入的內容儲存在裝置上。</p>
+  <ul class="plain">
+    <li>行程（標題、顏色、期間、重複的星期、每天時數、重要程度）</li>
+    <li>待辦事項及其步驟（標題、判定結果、預估時間、是否完成、順序）</li>
+    <li>待辦事項分類（名稱、顏色、圖示）</li>
+    <li>從其他 App 分享進來的內容（標題與你選擇的判定）</li>
+  </ul>
+  <p>這些資料只用於提供本 App 的功能，絕不會傳送給開發者，也不會提供給第三方。</p>
+</section>
+
+<section>
+  <h2>3. 儲存位置</h2>
+  <p>所有資料都透過 Apple 的 SwiftData 儲存在你的裝置上。若你已登入 iCloud，資料會儲存在你自己的 iCloud 私人資料庫（容器 iCloud.com.devkoan.ScheduleDensity）中，並在使用同一個 iCloud 帳號的裝置之間自動同步。</p>
+  <p>透過 iCloud 進行的儲存與傳輸，適用 Apple 的隱私權政策。開發者無法存取你的 iCloud 私人資料庫。</p>
+  <p>主畫面與鎖定畫面小工具所顯示的清單，會另外寫入裝置上的 App 群組區域。這個檔案不會離開裝置。從其他 App 分享進來的內容，在本 App 取用之前，也會暫時存放在同一個區域。</p>
+</section>
+
+<section>
+  <h2>4. 與他人共享時</h2>
+  <p>如果你使用共享功能，收到你所建立邀請連結的人，就能看到該清單或行程。共享什麼、與誰共享，完全由你決定；停止共享後，對方就無法再看到。</p>
+  <p>任何持有邀請連結的人都能加入，所以請只傳給你想邀請的人。共享直接使用 Apple 的 CloudKit 共享功能，開發者不會在中間保管你的資料。</p>
+</section>
+
+<section>
+  <h2>5. 傳送意見回饋時</h2>
+  <p>如果你從「設定」向開發者傳送問題或意見回饋，你當時寫下的內容以及 App 版本資訊，會傳送到開發者營運的 iCloud 容器（iCloud.com.Ysoup.FeedbackHub）。這些內容只用於回覆你及修正本 App。</p>
+  <p>只有在你親自點選傳送時才會傳送。使用本 App 期間，不會自動傳送任何內容。如果你以電子郵件聯絡，該電子郵件地址只會用於回覆。</p>
+</section>
+
+<section>
+  <h2>6. 匿名使用統計（預設開啟，可以關閉）</h2>
+  <p>關於你如何使用本 App 的<strong>數字，以及少數以固定詞語記錄的事件</strong>，會傳送到開發者營運的 iCloud 容器（iCloud.com.Ysoup.FeedbackHub）。此項目<strong>預設為開啟</strong>。只要關閉「設定」&gt;「使用統計」中的<strong>「也匿名傳送給開發者」</strong>，就不會傳送任何內容。如果你之前曾經關閉，更新後也會維持關閉。</p>
+  <p class="lead">會傳送的內容</p>
+  <ul class="plain">
+    <li>連續開啟 App 的天數、最近 30 天內開啟的天數、啟動次數、安裝後經過的天數</li>
+    <li>待辦事項數量、拆分成步驟的待辦事項數量、拆分時的平均步驟數</li>
+    <li>完成率（包括拆分與未拆分分開計算的數值）</li>
+    <li>分類數量、已記下的所需時間總和、最大分類所占的比例</li>
+    <li>App 版本、作業系統版本、裝置類型（iOS/macOS）、語言設定</li>
+    <li><strong>在「彩虹 Pro」畫面上發生的事</strong>——你看過這個畫面、你是從哪個鎖定的功能進來的（例如小工具、行程統計等）、你開始購買、購買是否完成；若未完成，原因是取消、等待核准還是錯誤；以及你是否點了回復購買並成功取回。<strong>這些全都是 App 事先定好的詞語，不會傳送付款方式、收據或金額。</strong>付款由 Apple 處理，開發者無法看到其內容。</li>
+    <li><strong>你目前是否擁有「彩虹 Pro」</strong>——只表示有或沒有的單一數值，不包含你購買了哪個項目、何時購買或花了多少錢。這是為了了解免費使用者與已購買使用者在使用方式上的差異；在確認購買狀態之前，不會傳送任何內容。</li>
+  </ul>
+  <p class="lead">不會傳送的內容</p>
+  <ul class="plain">
+    <li>待辦事項標題、行程名稱、分類名稱等你寫下的<strong>所有文字</strong></li>
+    <li>行程的日期與時間</li>
+    <li>你的姓名、電子郵件、Apple 帳號、裝置識別碼、廣告識別碼或位置</li>
+    <li>付款方式、信用卡資訊、收據或付款金額</li>
+  </ul>
+  <p>傳送者只以安裝 App 時產生的隨機編號（UUID）來區分。這個編號與 Apple 帳號或裝置識別碼沒有關聯，無法與其他 App 或服務比對，刪除 App 後就會消失。每天傳送不超過一、兩次。</p>
+  <p>你可以隨時在「設定」&gt;「使用統計」中關閉。關閉後會立即停止傳送，裝置上記錄的「開啟 App 的日期」也會一併刪除。如果你希望刪除已經傳送的匿名統計資料，請寫信到下方的電子郵件地址。</p>
+</section>
+
+<section>
+  <h2>7. 保存與刪除</h2>
+  <p class="lead">資料會一直保存，直到你刪除它或移除本 App 為止。</p>
+  <ul class="plain">
+    <li>你可以在 App 內刪除個別項目。</li>
+    <li>刪除 App 後，該裝置上儲存的資料會被移除。</li>
+    <li>同步到 iCloud 的資料，可以在裝置的「設定」中依序進入 Apple 帳號、iCloud、管理儲存空間，進行管理或刪除。</li>
+    <li>如果你希望刪除已傳送的意見回饋，請寫信到下方的電子郵件地址。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. 兒童隱私</h2>
+  <p>本 App 並非以兒童為對象，也不會在知情的情況下向兒童蒐集任何個人資料。</p>
+</section>
+
+<section>
+  <h2>9. 政策變更</h2>
+  <p>本政策可能會因法規或 App 功能的變更而更新。若有重大變更，將在此頁面公告，並修改上方的最後更新日期。</p>
+</section>
+
+<section>
+  <h2>10. 聯絡方式</h2>
+  <p>關於隱私權的問題或請求，請與我們聯絡。</p>
+  <p>電子郵件：<a href="mailto:leeo@kakao.com">leeo@kakao.com</a></p>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 彩虹工坊</div>
+  <div class="fam">欲望彩虹 (iOS) · 彩虹工坊 (macOS)</div>
+</footer>
+
+</body>
+</html>
