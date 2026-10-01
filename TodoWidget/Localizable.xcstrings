@@ -740,6 +740,22 @@
         }
       }
     },
+    "분:초 (60:00)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minutes (60:00)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분:초 (60:00)"
+          }
+        }
+      }
+    },
     "비어 있어요" : {
       "localizations" : {
         "en" : {
@@ -768,6 +784,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "빈 줄을 열고 바로 적습니다."
+          }
+        }
+      }
+    },
+    "시:분:초 (1:00:00)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hours (1:00:00)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시:분:초 (1:00:00)"
           }
         }
       }

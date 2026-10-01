@@ -37,7 +37,7 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
     ///
     /// 맥앱 '무지개 공방'과 **같은 문장, 같은 사다리**다 — 연간(7일 체험) · 평생 · 월간.
     /// 1.1.x에서 4,900원에 한 번 사는 상품을 팔았고, 그 구매자는 평생 Pro로 인정한다
-    /// (`entitlementIDs`에 옛 상품이 함께 들어 있다 → ProEntitlement.legacyProductID).
+    /// (평생 이용권이 바로 그 상품이다 → ProEntitlement.lifetimeID).
     ///
     /// ⚠️ **여기 선언했다고 팔기 시작하는 게 아니다.** 실제로 파는지는
     ///    `ProEntitlement.sellsPro`가 정한다. 상품이 App Store Connect에 서기 전에 켜면

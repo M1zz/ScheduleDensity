@@ -25,6 +25,7 @@ import Observation
 import UIKit
 import UserNotifications
 import ActivityKit
+import WidgetKit
 
 // MARK: - 세고 있는 일
 
@@ -382,7 +383,20 @@ final class TaskTimer {
             endDate: Date().addingTimeInterval(remaining),
             startDate: Date().addingTimeInterval(-elapsed),
             isRunning: isRunning,
-            pausedRemaining: remaining)
+            pausedRemaining: remaining,
+            showsHours: countdownStyle.showsHours)
+    }
+
+    /// 한 시간이 넘는 숫자를 어떻게 적나 (→ CountdownStyle). 화면이 따라 그리도록 여기서도 든다.
+    private(set) var countdownStyle: CountdownStyle = CountdownStyle.current
+
+    /// 설정에서 바꾼다. 떠 있는 아일랜드와 위젯도 곧바로 같은 모양으로 다시 그린다.
+    func setCountdownStyle(_ style: CountdownStyle) {
+        guard style != countdownStyle else { return }
+        CountdownStyle.current = style
+        countdownStyle = style
+        updateActivity()
+        WidgetCenter.shared.reloadTimelines(ofKind: TimerWidgetBridge.widgetKind)
     }
 
     /// iOS 설정에서 이 앱의 '실시간 현황'이 켜져 있나. 꺼져 있으면 무엇을 해도 안 뜬다 — 화면이 그 사실을 말한다.

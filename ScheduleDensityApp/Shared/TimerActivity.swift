@@ -37,6 +37,9 @@ struct TaskTimerAttributes: ActivityAttributes {
         /// 멈춘 순간의 남은 시간(초). 음수면 계획을 넘긴 것이다.
         var pausedRemaining: TimeInterval
 
+        /// 한 시간이 넘으면 `1:00:00`으로 적나(→ CountdownStyle). 예전에 띄운 것에는 없으므로 옵셔널이다.
+        var showsHours: Bool?
+
         /// 계획을 넘겼나. 가는 중이면 끝 시각이 지났는지로, 멈춰 있으면 남은 시간으로 안다.
         func isOvertime(at now: Date = Date()) -> Bool {
             isRunning ? endDate < now : pausedRemaining < 0
@@ -56,19 +59,49 @@ struct TaskTimerAttributes: ActivityAttributes {
 
 // MARK: - 표기
 
-/// 남은 시간을 타이머 숫자로. 두 시간 미만은 분:초(1시간 → `60:00`),
-/// 그 위는 시:분:초로 적는다 — `180:00`은 사람이 한눈에 읽지 못한다.
+/// 한 시간이 넘는 남은 시간을 어떻게 적나. 설정 ▸ 타이머에서 고른다.
+///
+/// ⚠️ 값은 **App Group**에 둔다. 앱·다이나믹 아일랜드·홈 화면 위젯이 같은 숫자를 적어야 하는데,
+///    위젯은 앱의 UserDefaults를 못 본다. 아일랜드는 값을 상태에 실어 보낸다(`showsHours`).
+enum CountdownStyle: String, CaseIterable {
+    /// `1:00:00` — 한 시간이 넘으면 시를 앞에 단다. 기본.
+    case hours
+    /// `60:00` · `90:00` — 늘 분:초. 시스템 타이머의 `showsHours: false`와 같은 모양이다.
+    case minutes
+
+    var label: String {
+        switch self {
+        case .hours:   String(localized: "시:분:초 (1:00:00)")
+        case .minutes: String(localized: "분:초 (60:00)")
+        }
+    }
+
+    var showsHours: Bool { self == .hours }
+
+    private static let key = "timer.countdownStyle"
+    private static var defaults: UserDefaults {
+        UserDefaults(suiteName: TodoWidgetBridge.appGroupID) ?? .standard
+    }
+
+    static var current: CountdownStyle {
+        get { defaults.string(forKey: key).flatMap(CountdownStyle.init(rawValue:)) ?? .hours }
+        set { defaults.set(newValue.rawValue, forKey: key) }
+    }
+}
+
+/// 남은 시간을 타이머 숫자로. 한 시간이 넘으면 `1:00:00`, 아니면 `59:59` (→ CountdownStyle).
 /// 계획을 넘겼으면 앞에 `+`를 달아 초과분을 센다.
 ///
 /// ⚠️ **앱과 잠금화면이 같은 숫자를 적어야 한다.** 이 파일은 두 타깃에 함께 들어 있어서,
-///    규칙을 여기 한 벌만 두면 위젯이 복사본을 들 이유가 없다.
-///    (맥앱의 같은 이름 함수와도 규칙이 같다 → 무지개 공방 TaskTimer.swift)
-func formatCountdown(_ seconds: Double) -> String {
+///    규칙을 여기 한 벌만 두면 위젯이 복사본을 들 이유가 없다. 아일랜드·위젯이 저 혼자 세는
+///    `Text(timerInterval:showsHours:)`도 같은 모양을 낸다(시는 한 시간부터 붙는다).
+///    맥앱은 아직 '두 시간 미만은 분:초'다 (→ 무지개 공방 TaskTimer.swift).
+func formatCountdown(_ seconds: Double, style: CountdownStyle = .current) -> String {
     let over = seconds < 0
     let total = Int(abs(seconds).rounded())
     let h = total / 3600, m = (total % 3600) / 60, s = total % 60
-    let body = abs(seconds) < 7200
-        ? String(format: "%d:%02d", total / 60, s)
-        : String(format: "%d:%02d:%02d", h, m, s)
+    let body = (style.showsHours && total >= 3600)
+        ? String(format: "%d:%02d:%02d", h, m, s)
+        : String(format: "%d:%02d", total / 60, s)
     return over ? "+" + body : body
 }

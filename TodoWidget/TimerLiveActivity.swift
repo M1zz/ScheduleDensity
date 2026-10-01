@@ -110,19 +110,28 @@ struct TaskTimerLiveActivity: Widget {
                 //    폭이 0인 구간이 되어 숫자가 0:00에 선 채 움직이지 않았다.
                 // 데드라인을 지나면 0에 선다. 넘긴 시간은 세지 않는다 — 끝은 일정이 정한 것이다.
                 if Self.isOver(state, stale: stale) {
-                    Text(verbatim: formatCountdown(0))
+                    Text(verbatim: formatCountdown(0, style: Self.style(state)))
                 } else {
-                    Text(timerInterval: state.startDate...max(state.endDate, state.startDate.addingTimeInterval(1)),
-                         countsDown: true)
+                    // ⚠️ 아래 끝은 **지금보다 앞**이어야 한다. 아직 안 온 일정을 고르면 startDate가 미래라,
+                    //    그 구간을 그대로 넘기면 시작 전까지 숫자가 일정 길이에 선 채 움직이지 않았다.
+                    //    끝 시각(데드라인)까지 세는 타이머이므로 지금부터 줄어야 한다.
+                    let lower = min(state.startDate, Date())
+                    Text(timerInterval: lower...max(state.endDate, lower.addingTimeInterval(1)),
+                         countsDown: true,
+                         showsHours: state.showsHours ?? true)
                 }
             } else {
-                Text(verbatim: formatCountdown(state.pausedRemaining))
+                Text(verbatim: formatCountdown(state.pausedRemaining, style: Self.style(state)))
             }
         }
         .font(.system(size: size, weight: .semibold, design: .rounded))
         .monospacedDigit()
         .multilineTextAlignment(.trailing)
         .foregroundStyle(tint)
+    }
+
+    private static func style(_ state: TaskTimerAttributes.ContentState) -> CountdownStyle {
+        (state.showsHours ?? true) ? .hours : .minutes
     }
 
     /// 계획을 넘겼나. 가는 중이면 시스템이 '묵었다'고 알려 준 것까지 본다.

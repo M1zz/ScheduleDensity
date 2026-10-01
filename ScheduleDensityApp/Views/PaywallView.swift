@@ -32,6 +32,8 @@ struct PaywallView: View {
     @State private var selectedID: String = ProEntitlement.yearlyID
     /// 체험을 받을 수 있는 구독 상품들. 이미 한 번 받은 사람에게 '무료 체험'이라고 말하면 거짓말이다.
     @State private var trialEligible: Set<String> = []
+    /// 요금제를 불러오는 중인가. 못 불러온 채 끝났으면 도는 표시 대신 '다시 불러오기'를 세운다.
+    @State private var loadingProducts = true
 
     private var selectedProduct: Product? {
         purchases.products.first { $0.id == selectedID }
@@ -52,7 +54,9 @@ struct PaywallView: View {
                     freeSection
                     paidSection
                     plans
-                    if let message = purchases.failureMessage {
+                    // 요금제를 못 불러온 것은 요금제 칸이 직접 말한다(다시 불러오기 단추와 함께).
+                    // 같은 말을 여기 주황 경고로 또 띄우면 '결제가 고장 났다'로 읽힌다 — 1.1.8 심사 2.1(b).
+                    if let message = purchases.failureMessage, !purchases.products.isEmpty {
                         Label(message, systemImage: "exclamationmark.triangle")
                             .font(.callout)
                             .foregroundStyle(.orange)
@@ -86,7 +90,7 @@ struct PaywallView: View {
                 // 그 숫자만으로는 전환율의 분모가 되지 못한다 (→ UsageDiary).
                 UsageDiary.markPaywallSeen()
                 LeeoAnalyticsCenter.track(.paywallShown(reason: highlight?.rawValue ?? "settings"))
-                await purchases.loadProducts()
+                await loadPlans()
                 await loadTrialEligibility()
             }
         }
@@ -134,16 +138,29 @@ struct PaywallView: View {
     private var plans: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionTitle("요금제")
-            if purchases.products.isEmpty {
+            if purchases.products.isEmpty && loadingProducts {
                 HStack(spacing: 10) {
                     ProgressView().controlSize(.small)
                     Text("값을 불러오는 중…")
-                        .font(.system(size: 13))
+                        .font(.body)
                         .foregroundStyle(.secondary)
                     Spacer()
-                    // 한 번 실패하면 영영 죽은 단추로 남지 않게, 그 자리에서 다시 청한다.
-                    Button("다시 시도") { Task { await purchases.loadProducts() } }
-                        .font(.system(size: 13, weight: .semibold))
+                }
+                .padding(.vertical, 8)
+            } else if purchases.products.isEmpty {
+                // 한 번 실패하면 영영 죽은 단추로 남지 않게, 그 자리에서 다시 청한다.
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Button {
+                        Task { await loadPlans() }
+                    } label: {
+                        Label("다시 불러오기", systemImage: "arrow.clockwise")
+                            .font(.body.weight(.semibold))
+                    }
+                    .buttonStyle(.bordered)
                 }
                 .padding(.vertical, 8)
             } else {
@@ -252,6 +269,24 @@ struct PaywallView: View {
         .background(.bar)
     }
 
+    /// 요금제를 불러온다. 첫 조회가 비어 오면 한 번 더 청한다 — 샌드박스(심사 환경)는
+    /// 첫 조회가 빈손으로 돌아오는 일이 잦다.
+    ///
+    /// 고른 상품(처음엔 연간)이 목록에 없으면 있는 것 중 맨 앞을 고른다. 그러지 않으면
+    /// 한 상품만 빠져도 결제 단추가 '계속'인 채로 죽어 있다.
+    private func loadPlans() async {
+        loadingProducts = true
+        await purchases.loadProducts()
+        if purchases.products.isEmpty {
+            try? await Task.sleep(for: .seconds(1.5))
+            await purchases.loadProducts()
+        }
+        if selectedProduct == nil, let first = purchases.products.first {
+            selectedID = first.id
+        }
+        loadingProducts = false
+    }
+
     private var buyTitle: String {
         guard let product = selectedProduct else { return String(localized: "계속") }
         if trialEligible.contains(product.id) { return String(localized: "무료 체험 시작") }
@@ -260,12 +295,19 @@ struct PaywallView: View {
 
     // MARK: 약관 (구독을 파는 앱의 심사 필수 항목)
 
+    private var sellsSubscription: Bool {
+        purchases.products.contains { $0.subscription != nil }
+    }
+
     private var legal: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("구독은 기간이 끝나기 24시간 전까지 해지하지 않으면 같은 요금으로 자동 갱신되며, Apple 계정으로 결제됩니다. 무료 체험 중에 해지하면 요금이 나가지 않습니다. 해지와 관리는 App Store의 계정 설정에서 합니다. 평생 이용권은 구독이 아니라 한 번 결제입니다.")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-                .fixedSize(horizontal: false, vertical: true)
+            // 구독 안내는 구독을 팔 때만. 한 번 결제만 세운 판에 자동 갱신을 말하면 거짓말이다.
+            if sellsSubscription {
+                Text("구독은 기간이 끝나기 24시간 전까지 해지하지 않으면 같은 요금으로 자동 갱신되며, Apple 계정으로 결제됩니다. 무료 체험 중에 해지하면 요금이 나가지 않습니다. 해지와 관리는 App Store의 계정 설정에서 합니다. 평생 이용권은 구독이 아니라 한 번 결제입니다.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             HStack(spacing: 16) {
                 if let terms = ScheduleDensityAppSpec.monetization.subscriptionTermsURL {
                     Button("이용약관") { openURL(terms) }
@@ -322,7 +364,8 @@ struct PaywallView: View {
             return String(localized: "\(days)일 무료로 써 보고, 그 뒤에 결제됩니다.")
         }
         switch product.id {
-        case ProEntitlement.lifetimeID: return String(localized: "한 번 결제로 계속 씁니다. 구독이 아닙니다.")
+        case ProEntitlement.lifetimeID:
+            return String(localized: "한 번 결제로 계속 씁니다. 구독이 아닙니다.")
         case ProEntitlement.monthlyID: return String(localized: "달마다 결제되고 언제든 해지합니다.")
         default: return String(localized: "해마다 결제되고 언제든 해지합니다.")
         }
