@@ -59,6 +59,7 @@ struct DayTimeAnalysisView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         header
+                        if !day.allDay.isEmpty { allDayStrip }
                         if !day.carried.isEmpty { carriedSection }
                         if day.isAvailable {
                             clock
@@ -132,9 +133,10 @@ struct DayTimeAnalysisView: View {
             // 숫자는 표의 칸이 아니라 말랑한 알약 한마디로 읽힌다 (맥의 '남은 시간' 알약과 같은 결).
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
-                    statPill(icon: "hourglass",
+                    // 하루에 못 들어간 것이 있으면 빨강 — 맥의 '남은 시간' 알약과 같은 규칙.
+                    statPill(icon: day.isOverbooked ? "exclamationmark.circle.fill" : "hourglass",
                              label: String(localized: "남는 시간"), value: formatHours(day.freeHours),
-                             tint: day.freeHours < 1 ? .orange : .accentColor)
+                             tint: day.isOverbooked ? .red : (day.freeHours < 1 ? .orange : .accentColor))
                     statPill(icon: "clock.fill",
                              label: String(localized: "차 있는 시간"), value: formatHours(day.occupiedHours),
                              tint: .secondary)
@@ -164,6 +166,45 @@ struct DayTimeAnalysisView: View {
         .padding(.vertical, 6)
         .background(tint.opacity(0.12), in: Capsule())
         .animation(.snappy(duration: 0.25), value: value)
+        .accessibilityElement(children: .combine)
+    }
+
+    // MARK: - 종일
+
+    /// **종일.** 시간을 차지하지 않는 블록은 시계 위가 아니라 머리 밑 한 줄에 선다 (→ PlanBlock.isAllDay).
+    /// 맥 일간의 '종일' 줄과 같은 모양이다. 아이폰은 읽기만 한다 — 다듬거나 시각을 주는 것은 맥에서.
+    private var allDayStrip: some View {
+        HStack(spacing: 8) {
+            Text("종일")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.secondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(day.allDay) { item in
+                        allDayChip(item)
+                    }
+                }
+            }
+            .scrollClipDisabled()
+        }
+    }
+
+    /// 종일 한 알. 배경(공휴일·휴가)은 회색 달력, 할 일은 무지개 색 체크리스트.
+    private func allDayChip(_ item: AllDayItem) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: item.isBackground ? "calendar" : "checklist")
+            Text(item.title)
+                .lineLimit(1)
+            if !item.isBackground {
+                Text("오늘 안에")
+                    .opacity(0.7)
+            }
+        }
+        .font(.body.weight(.medium))
+        .foregroundStyle(item.isBackground ? Color.primary.opacity(0.75) : item.color)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background((item.isBackground ? Color.secondary : item.color).opacity(0.14), in: Capsule())
         .accessibilityElement(children: .combine)
     }
 
@@ -408,6 +449,13 @@ struct DayTimeAnalysisView: View {
         let upper = height > 0 ? min(0.5, max(flareTop, tuckTop + 6) / height) : 0
         let lower = height > 0 ? max(0.5, 1 - max(flareBottom, tuckBottom + 6) / height) : 1
         let showsLabel = c.hours >= 0.5 && gap >= 30
+        // 오늘이면 **지금 선 위쪽은 흐리게** — 이미 흘러가 쓸 수 없는 빈 시간이다 (맥과 같다).
+        let pastFraction: Double = {
+            guard isToday, height > 0 else { return 0 }
+            let topHour = day.window.start + Double((c.top - tuckTop) / Self.hourHeight)
+            let span = Double(height / Self.hourHeight)
+            return min(1, max(0, (nowHour - topHour) / max(0.01, span)))
+        }()
 
         return ZStack(alignment: .topLeading) {
             GooeyBridge(topFlare: flareTop, bottomFlare: flareBottom, neck: neck)
@@ -419,6 +467,14 @@ struct DayTimeAnalysisView: View {
                         .init(color: c.to.opacity(bottomOpacity), location: 1),
                     ],
                     startPoint: .top, endPoint: .bottom))
+                .mask {
+                    LinearGradient(stops: [
+                        .init(color: .black.opacity(0.45), location: 0),
+                        .init(color: .black.opacity(0.45), location: pastFraction),
+                        .init(color: .black, location: pastFraction),
+                        .init(color: .black, location: 1),
+                    ], startPoint: .top, endPoint: .bottom)
+                }
                 .frame(width: Self.pillWidth, height: height)
                 // 위 알약에서 아래로 쭉 늘어났다가 한 번 출렁이고 멎는다.
                 .scaleEffect(x: 1, y: drawn ? 1 : 0.15, anchor: .top)
@@ -815,11 +871,23 @@ struct DayTimeAnalysisView: View {
             colors[r.name] = paletteHex(r.colorName)
         }
 
-        // 맥에서 찍은 회고 표시. 조각 id는 "block:<블록>:<토막>" 이라 가운데 몫으로 찾는다.
+        // 맥에서 찍은 회고 표시와 알약 아이콘. 조각 id는 "block:<블록>:<토막>" 이라 가운데 몫으로 찾는다.
         var statuses: [String: ReviewStatus] = [:]
+        var blockIcons: [String: String] = [:]
         for blk in input.blocks {
-            if let status = blk.reviewStatus { statuses[String(describing: blk.persistentModelID)] = status }
+            let key = String(describing: blk.persistentModelID)
+            if let status = blk.reviewStatus { statuses[key] = status }
+            blockIcons[key] = blk.symbol
         }
+
+        // 종일 — 시계에 서지 않는 것들 (→ allDayStrip). 배경이 뒤로, 그 안에서는 이름 차례.
+        let allDay = input.blocks.filter(\.isAllDay)
+            .map { blk -> AllDayItem in
+                let key = String(describing: blk.persistentModelID)
+                return AllDayItem(id: key, title: blk.title, isBackground: blk.isBackground,
+                                  color: rainbowColors[key] ?? (blk.concreteVerified ? .accentColor : .orange))
+            }
+            .sorted { ($0.isBackground ? 1 : 0, $0.title) < ($1.isBackground ? 1 : 0, $1.title) }
 
         // 할 일 쪽 — 매여 있는 일이 무슨 일인지, 지금 집을 조각이 무엇인지.
         let todos = todoItems()
@@ -894,6 +962,8 @@ struct DayTimeAnalysisView: View {
                           routineIcons: icons,
                           routineColors: colors,
                           blockStatuses: statuses,
+                          blockIcons: blockIcons,
+                          allDay: allDay,
                           carried: carried,
                           pickups: pickups)
     }
@@ -983,6 +1053,14 @@ struct DayTimeAnalysisView: View {
     }
 
     /// 계산해 둔 하루.
+    /// 종일 한 알.
+    struct AllDayItem: Identifiable {
+        let id: String
+        let title: String
+        let isBackground: Bool
+        let color: Color
+    }
+
     struct DayContent {
         var segments: [TimeSegment] = []
         var unplaced: [TimelineLayout.FlexibleEvent] = []
@@ -995,6 +1073,10 @@ struct DayTimeAnalysisView: View {
         var routineColors: [String: String] = [:]
         /// 계획 블록 id → 맥에서 찍은 회고 표시.
         var blockStatuses: [String: ReviewStatus] = [:]
+        /// 계획 블록 id → 알약 아이콘 (→ PlanBlock.symbol, 맥과 같은 그림).
+        var blockIcons: [String: String] = [:]
+        /// 시계에 서지 않는 종일 블록.
+        var allDay: [AllDayItem] = []
         /// 마감까지 매여 있지만 오늘 시각은 없는 덩어리.
         var carried: [Carried] = []
         /// 오늘 빈 시간에 집을 수 있는 조각.
@@ -1002,11 +1084,15 @@ struct DayTimeAnalysisView: View {
 
         var freeHours: Double { max(0, 24 - occupiedHours) }
         var load: Double { occupiedHours / 24 }
+        /// 하루에 다 못 들어갔나 — 못 들어간 일정이 있거나, 하루가 꽉 찼다.
+        var isOverbooked: Bool { !unplaced.isEmpty || occupiedHours >= 24 }
 
         func icon(for seg: TimeSegment) -> String? {
             switch seg.kind {
             case .routine, .quota: routineIcons[seg.title]
-            case .planBlock, .rainbowEvent: nil
+            // 계획 블록도 아이콘이다. 한때 첫 글자였는데, 글자 하나로는 무엇인지가 안 읽혔다 (맥이 먼저 바꿨다).
+            case .planBlock: blockIcons[DayTimeAnalysisView.blockKey(ofSegment: seg.id)]
+            case .rainbowEvent: nil
             case .calendarEvent: "calendar"
             }
         }
@@ -1124,7 +1210,10 @@ private struct DaySegmentRow: View {
                     .foregroundStyle(segment.isFlexible ? tint : .white)
                     .frame(width: Self.pillWidth, height: Self.pillWidth)
             }
-            .opacity(isPast ? 0.5 : 1)
+            // **다 지나간 일정은 알약까지 빛을 뺀다** — 맥과 같은 값. 옅게만 하면 색 알약이 그대로 또렷해
+            // 지난 것과 남은 것이 한 무게로 읽혔다.
+            .saturation(isPast ? 0.25 : 1)
+            .opacity(isPast ? 0.45 : 1)
         }
         .frame(width: Self.pillWidth, height: max(Self.pillWidth, size.height))
         .shadow(color: segment.isFlexible ? .clear : tint.opacity(isPast ? 0.1 : 0.22), radius: 3, y: 2)

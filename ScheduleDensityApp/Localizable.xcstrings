@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "종일" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All day"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종일"
+          }
+        }
+      }
+    },
+    "오늘 안에" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 안에"
+          }
+        }
+      }
+    },
     "남은 시간 표시" : {
       "localizations" : {
         "en" : {

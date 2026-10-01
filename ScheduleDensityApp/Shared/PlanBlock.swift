@@ -114,3 +114,53 @@ final class PlanBlock {
         }
     }
 }
+
+// MARK: - 종일 (→ 맥 '무지개 공방' PlanBlock.swift — 규칙이 같아야 한다)
+
+extension PlanBlock {
+    /// `startHour`에 맥이 적는 '종일' 표시. 기념일·마감일처럼 '이 날의 일'이지 한 시간을 쓰는 일이 아니다.
+    ///
+    /// ⚠️ 새 필드가 아니라 기존 칸의 값이다(-1 '시각 미정'보다 아래). 예전 아이폰은 이걸 '시각 없음'으로 읽어
+    ///    시간대 근처 빈 자리에 알약으로 박았다 — 맥은 머리 밑 '종일' 줄에 세우는데. 같은 날이 두 앱에서 달랐다.
+    static let allDayHour: Double = -2
+
+    /// **배경 종일** — 공휴일·생일·휴가처럼 그날이 어떤 날인지만 말하는 것. 할 일로 세지 않는다.
+    static let backgroundHour: Double = -3
+
+    /// 시간을 차지하지 않고 그날 맨 위에 서는 블록인가. 루틴 안 일정은 늘 시각을 갖는다.
+    var isAllDay: Bool { startHour <= Self.allDayHour + 0.5 && !withinRoutine }
+
+    /// 배경 종일인가.
+    var isBackground: Bool { isAllDay && startHour <= Self.backgroundHour + 0.5 }
+}
+
+// MARK: - 알약 아이콘 (→ 맥 PlanBlock.symbol — 같은 블록이 두 앱에서 같은 아이콘이어야 한다)
+
+extension PlanBlock {
+    /// ⚠️ 맥의 목록과 **차례까지 같아야 한다.** 고른 아이콘이 없을 때 이 목록에서 뽑으므로,
+    ///    한 칸만 어긋나도 같은 블록이 두 앱에서 다른 그림이 된다.
+    static let symbolChoices: [String] = [
+        "star.fill", "leaf.fill", "flame.fill", "bolt.fill", "book.fill", "pencil",
+        "paintbrush.fill", "hammer.fill", "cup.and.saucer.fill", "fork.knife", "figure.walk",
+        "dumbbell.fill", "music.note", "gamecontroller.fill", "laptopcomputer", "phone.fill",
+        "envelope.fill", "cart.fill", "house.fill", "car.fill", "airplane", "heart.fill",
+        "brain.head.profile", "lightbulb.fill", "graduationcap.fill", "briefcase.fill",
+        "calendar", "checklist", "paperplane.fill", "camera.fill", "gift.fill", "pawprint.fill",
+        "sparkles", "moon.fill", "sun.max.fill", "drop.fill", "globe.asia.australia.fill",
+        "puzzlepiece.fill", "wrench.and.screwdriver.fill", "chart.bar.fill", "scissors",
+        "tshirt.fill", "bicycle", "tram.fill", "film.fill", "headphones", "mic.fill",
+        "bubble.left.fill", "person.2.fill", "cloud.fill",
+    ]
+
+    /// 그릴 아이콘. 맥에서 골라 둔 것이 있으면 그것, 없으면 **만든 시각**에서 늘 같은 하나를 뽑는다
+    /// (FNV-1a — 맥과 같은 셈). 아이폰은 읽기만 한다 — 바꾸는 것은 맥 몫이다.
+    var symbol: String {
+        if let iconName, !iconName.isEmpty { return iconName }
+        let ms = UInt64(max(0, createdAt.timeIntervalSince1970 * 1000))
+        var h: UInt64 = 0xcbf2_9ce4_8422_2325
+        withUnsafeBytes(of: ms.littleEndian) { bytes in
+            for b in bytes { h ^= UInt64(b); h &*= 0x0000_0100_0000_01b3 }
+        }
+        return Self.symbolChoices[Int(h % UInt64(Self.symbolChoices.count))]
+    }
+}
