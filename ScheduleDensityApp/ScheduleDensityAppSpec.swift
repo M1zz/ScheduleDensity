@@ -16,14 +16,22 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
     static let feedback = LeeoFeedbackConfig(containerIdentifier: "iCloud.com.Ysoup.FeedbackHub", appIdentifier: "com.example.ScheduleDensityApp")
 
     /// 소개·개인정보 페이지의 언어별 뿌리.
-    /// 한국어는 `docs/`, 영어는 `docs/en/` 에 있다 (GitHub Pages).
-    /// ⚠️ 여기 두 값은 **App Store Connect 의 지원 URL·개인정보 처리방침 URL 과 같아야 한다.**
+    /// 한국어는 `docs/`, 영어는 `docs/en/`, 번체 중국어는 `docs/zh-Hant/` 에 있다 (GitHub Pages).
+    /// ⚠️ 여기 값은 **App Store Connect 의 지원 URL·개인정보 처리방침 URL 과 같아야 한다.**
     ///    현지화마다 칸이 따로 있고, 심사자는 그 칸의 주소를 연다.
     private static var siteRoot: String {
-        let language = Locale.preferredLanguages.first ?? "en"
-        let isKorean = Locale(identifier: language).language.languageCode?.identifier == "ko"
-        return isKorean ? "https://m1zz.github.io/ScheduleDensity/"
-                        : "https://m1zz.github.io/ScheduleDensity/en/"
+        let base = "https://m1zz.github.io/ScheduleDensity/"
+        let language = Locale(identifier: Locale.preferredLanguages.first ?? "en").language
+        switch language.languageCode?.identifier {
+        case "ko":
+            return base
+        // 대만(zh-TW)·홍콩(zh-HK)도 여기로 온다 — 지역만 적힌 식별자도 스크립트는 Hant 로 채워진다.
+        // 간체(zh-Hans)는 앱이 번역돼 있지 않아 영어로 뜨므로 페이지도 영어로 보낸다.
+        case "zh" where language.script?.identifier == "Hant":
+            return base + "zh-Hant/"
+        default:
+            return base + "en/"
+        }
     }
 
     /// LeeoKit 3부터는 기본값이 없다 — 모든 앱이 한 번은 선언해야 하는 의무 링크.

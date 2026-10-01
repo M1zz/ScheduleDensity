@@ -1,11 +1,12 @@
 # App Store 스크린샷
 
-언어 두 벌 × 크기 세 벌 = 36장. `<언어>/<크기>/01-rainbow.png` … `06-free.png`.
+언어 세 벌 × 크기 세 벌 = 54장. `<언어>/<크기>/01-rainbow.png` … `06-free.png`.
 
 ```
 AppStore/
 ├── ko/       1290x2796/  1284x2778/  1242x2688/     ← 그대로 올리면 됩니다
-└── en-US/    1290x2796/  1284x2778/  1242x2688/     ← 앱 영어 현지화 후에
+├── en-US/    1290x2796/  1284x2778/  1242x2688/     ← 앱 영어 현지화 후에
+└── zh-Hant/  1290x2796/  1284x2778/  1242x2688/     ← 번체 중국어(대만), 앱 zh-Hant 현지화 후에
 ```
 
 | 픽셀 | App Store Connect 슬롯 | 기준 기기 |
@@ -18,30 +19,34 @@ AppStore/
 뜨면 `1284x2778/`이나 `1242x2688/`을 올리면 된다. 6.9" 슬롯에는 `1290x2796/`.
 이 앱은 `TARGETED_DEVICE_FAMILY: "1"` (iPhone 전용)이라 iPad 세트는 없다.
 
-| | 파일 | 무엇을 보여주나 | 한국어 헤드라인 |
-|---|---|---|---|
-| 1 | `01-rainbow` | 날짜 × 레인 밀도 격자 | 이번 주가 얼마나 빡빡한지 |
-| 2 | `02-list` | 할 일 목록, 맨 위 '바로 하면 되는 일' | 지금 집을 수 있는 것부터 |
-| 3 | `03-two-questions` | 단계 시트의 두 질문 | 물음 둘이면 갈립니다 |
-| 4 | `04-steps` | 단계 · 순서 스위치 · 아래에서 위로 쌓는 시간 | 쪼개면 시간이 쌓입니다 |
-| 5 | `05-widgets` | 홈 화면 위젯 세 개 (번개 · 무지개 · 할 일) | 5분 났을 때 집을 것 |
-| 6 | `06-free` | 무료인 본체와 '모두 열기' 다섯 | 본체는 값을 받지 않습니다 |
+| | 파일 | 무엇을 보여주나 | 한국어 헤드라인 | 번체 중국어(zh-Hant) 헤드라인 |
+|---|---|---|---|---|
+| 1 | `01-rainbow` | 날짜 × 레인 밀도 격자 | 이번 주가 얼마나 빡빡한지 | 這週有多滿　一眼就知道 |
+| 2 | `02-list` | 할 일 목록, 맨 위 '바로 하면 되는 일' | 지금 집을 수 있는 것부터 | 從現在　能做的開始 |
+| 3 | `03-two-questions` | 단계 시트의 두 질문 | 물음 둘이면 갈립니다 | 兩個問題　就能分辨 |
+| 4 | `04-steps` | 단계 · 순서 스위치 · 아래에서 위로 쌓는 시간 | 쪼개면 시간이 쌓입니다 | 拆成步驟　時間自然累加 |
+| 5 | `05-widgets` | 홈 화면 위젯 세 개 (번개 · 무지개 · 할 일) | 5분 났을 때 집을 것 | 有 5 分鐘時　可以做的事 |
+| 6 | `06-free` | 무료인 본체와 '모두 열기' 다섯 | 본체는 값을 받지 않습니다 | 核心功能　不收費 |
 
 ## 다시 만들기
 
 ```sh
-sudo apt-get install -y fonts-noto-cjk   # 한글 렌더링에 필요 (Noto Sans CJK KR)
+sudo apt-get install -y fonts-noto-cjk   # Linux에서만: 한글·한자 렌더링 (Noto Sans CJK KR/TC)
 npm i -D playwright                       # 전역 설치가 이미 있으면 생략 가능
-node AppStore/render.mjs                  # 36장을 한 번에 굽는다
+node AppStore/render.mjs                  # 54장을 한 번에 굽는다
+node AppStore/render.mjs zh-Hant          # 한 언어만 (lang 또는 폴더 이름, 여러 개 가능)
 ```
 
-한글 폰트가 없으면 한국어 세트의 글자가 두부(□)로 나온다. 영어 세트는 영향 없다.
+레포 밖에 설치한 playwright를 쓰려면 `PLAYWRIGHT_DIR=/경로/node_modules/playwright`를 앞에 붙인다.
+
+CJK 폰트가 없으면 한국어·중국어 세트의 글자가 두부(□)로 나온다. 영어 세트는 영향 없다.
+macOS에는 Apple SD Gothic Neo와 PingFang TC가 있어 따로 설치할 것이 없다.
 
 ## 구조
 
-`screenshots.html` 하나가 두 언어를 다 담는다. `?lang=ko` / `?lang=en`로 갈리고,
+`screenshots.html` 하나가 세 언어를 다 담는다. `?lang=ko` / `?lang=en` / `?lang=zh-Hant`로 갈리고,
 **화면에 나가는 글자는 전부 파일 위쪽 `STRINGS` 표에만** 있다 — 레이아웃을 고치면
-두 언어에 동시에 적용된다. 한국어 문자열은 앱의 것을 그대로 옮겨 왔다
+모든 언어에 동시에 적용된다. 한국어 문자열은 앱의 것을 그대로 옮겨 왔다
 (`TimelineDensityView` · `TodoView` · `TodoDetailView` · `TodoSplitAdvisor` · `FragmentMark`).
 
 `render.mjs`가 Chromium으로 `.shot` 요소마다 PNG를 굽는다. 아트보드는
@@ -60,6 +65,13 @@ node AppStore/render.mjs                  # 36장을 한 번에 굽는다
 
 한글은 라틴보다 세로로 크고 어절 중간에서 끊기면 안 되므로, `body.ko`에
 `word-break: keep-all`과 별도의 캡션 행간을 준다. 캡션 줄바꿈은 `<br>`로 직접 잡았다.
+
+번체 중국어 세트(`body.zh-Hant`)는 `PingFang TC` → `Noto Sans CJK TC` → `Noto Sans TC` 순으로
+글꼴을 잡고, 그 세트에서만 `<html lang="zh-Hant">`를 건다. 그래야 한자가 일본어·한국어
+자형으로 섞여 나오지 않는다. 한자는 글자 사이 어디서나 끊기므로 `keep-all`은 쓰지 않고,
+`line-break: strict`로 전각 구두점이 줄 첫머리에 오지 않게 한다. 용어는 앱 zh-Hant 번역과
+맞췄다 — 欲望彩虹 · 彩虹 · 待辦 · 步驟 · 碎片 · 整塊 · 閃電 · 帳本 · 行程 · 小工具 ·
+主畫面 · 鎖定畫面 · 依序 · 不限順序.
 
 문구·데이터를 고치려면 `STRINGS`를, 화면 구성을 고치려면 화면 함수
 (`rainbowScreen`, `todoScreen`, `questionsScreen`, `stepsScreen`,

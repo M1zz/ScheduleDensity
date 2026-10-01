@@ -16,6 +16,12 @@
             "state" : "translated",
             "value" : "할 일"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待辦事項"
+          }
         }
       }
     },
@@ -30,6 +36,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TodoWidgetExtension"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "TodoWidgetExtension"
