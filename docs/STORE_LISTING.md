@@ -10,6 +10,8 @@ App Store Connect 에 넣는 값을 여기 적어 둔다. **웹 화면이 원본
 
 ---
 
+<!-- 번체 중국어(zh-Hant) 문구는 레포 최상단 APPSTORE.md 에 있다 — DeployBar 가 그 파일을 읽어 스토어에 올린다. -->
+
 ## English (U.S.)
 
 ### 이름 (17자)
@@ -18,16 +20,20 @@ App Store Connect 에 넣는 값을 여기 적어 둔다. **웹 화면이 원본
 Rainbow of Desire
 ```
 
-### 부제 (28자)
+### 부제 (29자)
+
+<!-- 2026-09-30 ASO 로 바꿈. 전: Week planner, 5-minute steps — 근거는 APPSTORE.md -->
 
 ```
-Week planner, 5-minute steps
+Task Breakdown & Week Planner
 ```
 
-### 키워드 (99자)
+### 키워드 (95자)
+
+<!-- 2026-09-30 ASO 로 바꿈. 전: todo,list,task,manager,checklist,schedule,calendar,time,blocking,focus,adhd,workload,subtask,widget -->
 
 ```
-todo,list,task,manager,checklist,schedule,calendar,time,blocking,focus,adhd,workload,subtask,widget
+todo,list,adhd,weekly,overview,timeboxing,time,blocking,subtask,checklist,schedule,focus,widget
 ```
 
 ### 지원 URL
@@ -105,7 +111,7 @@ PRIVACY
 
 There is no server. What you write stays on your device and in your own private iCloud, where the developer cannot reach it. No advertising identifiers, no analytics, no location, no sign-up. Anonymous usage statistics exist as a switch in Settings, and it is off unless you turn it on.
 
-Korean and English. The app follows your device language.
+Korean, English, and Traditional Chinese. The app follows your device language.
 ```
 
 ---

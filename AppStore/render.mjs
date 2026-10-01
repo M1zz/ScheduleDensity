@@ -1,6 +1,7 @@
 // Renders AppStore/screenshots.html to App Store-sized PNGs.
 //
-//   node AppStore/render.mjs
+//   node AppStore/render.mjs                # every language
+//   node AppStore/render.mjs zh-Hant ko     # only these (lang or folder name)
 //
 // Each artboard is authored at 430x932 CSS px and captured at
 // deviceScaleFactor 3 -> 1290x2796, the 6.9" iPhone size App Store
@@ -18,8 +19,12 @@ async function loadPlaywright() {
     const mod = await import('playwright');
     return mod.chromium ? mod : mod.default;
   } catch {}
+  // PLAYWRIGHT_DIR=/some/node_modules/playwright points at a copy kept
+  // outside the repo.
   const globalRoot = execSync('npm root -g', { encoding: 'utf8' }).trim();
-  const entry = path.join(globalRoot, 'playwright', 'index.js');
+  const entry = process.env.PLAYWRIGHT_DIR
+    ? path.join(process.env.PLAYWRIGHT_DIR, 'index.js')
+    : path.join(globalRoot, 'playwright', 'index.js');
   if (!fs.existsSync(entry)) {
     throw new Error('playwright not found — run: npm i -D playwright');
   }
@@ -35,12 +40,23 @@ const NAMES = [
 ];
 // One artboard set per App Store localisation. The Korean set uses the app's
 // own strings; the English one needs the app localised before it can ship
-// (see README). Rendering Korean needs a Hangul font on the box —
+// (see README). Rendering Korean / Chinese needs CJK fonts on the box —
+// macOS ships Apple SD Gothic Neo and PingFang TC; on Linux
 // `apt-get install fonts-noto-cjk`.
-const LOCALES = [
+const ALL_LOCALES = [
   { lang: 'en', dir: 'en-US' },
   { lang: 'ko', dir: 'ko' },
+  { lang: 'zh-Hant', dir: 'zh-Hant' },   // Traditional Chinese (Taiwan)
 ];
+// Optional filter: `node AppStore/render.mjs zh-Hant` re-renders one set and
+// leaves the others' PNGs untouched.
+const only = process.argv.slice(2);
+const LOCALES = only.length
+  ? ALL_LOCALES.filter(l => only.includes(l.lang) || only.includes(l.dir))
+  : ALL_LOCALES;
+if (only.length && LOCALES.length !== only.length) {
+  throw new Error(`unknown language in ${only.join(' ')} — known: ${ALL_LOCALES.map(l => l.lang).join(', ')}`);
+}
 // App Store Connect validates the exact pixel size of each display slot, so
 // every slot the app targets gets its own folder. CSS px = pixels / 3.
 const SIZES = [
