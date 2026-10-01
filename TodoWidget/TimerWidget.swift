@@ -132,7 +132,10 @@ private struct TimerFace {
 
     /// 남은 시간 숫자. `Text`로 돌려준다 — 한 줄 위젯에서 제목과 한 글자로 붙여야 하기 때문이다.
     func number(at date: Date) -> Text {
-        Text(end, style: .timer)
+        // `Text(_:style: .timer)`는 시 표기를 고를 수 없다. 설정(→ CountdownStyle)을 따르려고 구간으로 센다.
+        // 끝을 지나면 0에 선다 — 이 타이머의 끝은 일정이 정한 것이다.
+        Text(timerInterval: date...max(end, date), countsDown: true,
+             showsHours: CountdownStyle.current.showsHours)
     }
 
     /// 남은 만큼 줄어드는 막대 (→ 앱의 고리와 같은 방향).

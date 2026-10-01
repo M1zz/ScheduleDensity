@@ -64,14 +64,14 @@ struct TimerBar: View {
                 if timer.isActive {
                     bar(icon: timer.isRunning ? (timer.target?.iconName ?? "timer") : "pause.fill",
                         title: timer.target?.title ?? "",
-                        time: formatCountdown(timer.remaining),
+                        time: formatCountdown(timer.remaining, style: timer.countdownStyle),
                         caption: timer.isOvertime ? String(localized: "초과") : String(localized: "남음"),
                         tint: timer.isOvertime ? .red : targetTint,
                         left: 1 - timer.progress)
                 } else if let slot {
                     bar(icon: slot.iconName,
                         title: slot.title,
-                        time: formatCountdown(slot.remaining(at: ctx.date)),
+                        time: formatCountdown(slot.remaining(at: ctx.date), style: timer.countdownStyle),
                         caption: String(localized: "일정 기준"),
                         tint: slot.colorHex.flatMap { Color(hex: $0) } ?? .accentColor,
                         left: 1 - slot.progress(at: ctx.date))
@@ -342,7 +342,7 @@ struct TimerSheet: View {
     private var runningHeader: some View {
         header(icon: timer.isRunning ? (timer.target?.iconName ?? "timer") : "pause.fill",
                title: timer.target?.title ?? "",
-               time: formatCountdown(timer.remaining),
+               time: formatCountdown(timer.remaining, style: timer.countdownStyle),
                caption: timer.isOvertime ? String(localized: "초과") : String(localized: "남음"),
                detail: String(localized: "\(formatClockTime(timer.projectedEnd))에 끝납니다"),
                color: tint,
@@ -358,7 +358,7 @@ struct TimerSheet: View {
         TimelineView(.periodic(from: .now, by: 1)) { ctx in
             header(icon: slot.iconName,
                    title: slot.title,
-                   time: formatCountdown(slot.remaining(at: ctx.date)),
+                   time: formatCountdown(slot.remaining(at: ctx.date), style: timer.countdownStyle),
                    caption: String(localized: "남음"),
                    detail: "\(formatClockTime(slot.start))–\(formatClockTime(slot.end)) · " + String(localized: "일정 기준"),
                    color: slot.colorHex.flatMap { Color(hex: $0) } ?? .accentColor,

@@ -1,66 +1,50 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "지금 겹친 일정" : {
+    "남은 시간 표시" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Happening now"
+            "value" : "Time left format"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지금 겹친 일정"
+            "value" : "남은 시간 표시"
           }
         }
       }
     },
-    "지금 겹친 일정으로 바꾸기" : {
+    "시:분:초 (1:00:00)" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Switch to another event now"
+            "value" : "Hours (1:00:00)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지금 겹친 일정으로 바꾸기"
+            "value" : "시:분:초 (1:00:00)"
           }
         }
       }
     },
-    "다시 불러오기" : {
+    "분:초 (60:00)" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reload"
+            "value" : "Minutes (60:00)"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다시 불러오기"
-          }
-        }
-      }
-    },
-    "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't load the plans. Check your internet connection and try again."
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요."
+            "value" : "분:초 (60:00)"
           }
         }
       }
@@ -2792,22 +2776,6 @@
         }
       }
     },
-    "건너뛰기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skip"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "건너뛰기"
-          }
-        }
-      }
-    },
     "건너뜀" : {
       "localizations" : {
         "en" : {
@@ -2820,6 +2788,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "건너뜀"
+          }
+        }
+      }
+    },
+    "건너뛰기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "건너뛰기"
           }
         }
       }
@@ -4461,6 +4445,22 @@
         }
       }
     },
+    "다시 불러오기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 불러오기"
+          }
+        }
+      }
+    },
     "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요." : {
       "localizations" : {
         "en" : {
@@ -4478,6 +4478,7 @@
       }
     },
     "다시 시도" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6403,22 +6404,6 @@
         }
       }
     },
-    "바로 하면 됨" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ready to go"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "바로 하면 됨"
-          }
-        }
-      }
-    },
     "바로 하면 되는 일로 표시" : {
       "localizations" : {
         "en" : {
@@ -6431,6 +6416,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "바로 하면 되는 일로 표시"
+          }
+        }
+      }
+    },
+    "바로 하면 됨" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to go"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "바로 하면 됨"
           }
         }
       }
@@ -7317,6 +7318,22 @@
         }
       }
     },
+    "상" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상"
+          }
+        }
+      }
+    },
     "사용 통계" : {
       "localizations" : {
         "en" : {
@@ -7393,22 +7410,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "삭제 완료"
-          }
-        }
-      }
-    },
-    "상" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "High"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "상"
           }
         }
       }
@@ -9979,6 +9980,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "요금제"
+          }
+        }
+      }
+    },
+    "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't load the plans. Check your internet connection and try again."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요금제를 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 불러와 주세요."
           }
         }
       }
@@ -12632,6 +12649,38 @@
         }
       }
     },
+    "지금 겹친 일정" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Happening now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 겹친 일정"
+          }
+        }
+      }
+    },
+    "지금 겹친 일정으로 바꾸기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch to another event now"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지금 겹친 일정으로 바꾸기"
+          }
+        }
+      }
+    },
     "지금 단계" : {
       "localizations" : {
         "en" : {
@@ -12761,6 +12810,22 @@
         }
       }
     },
+    "지나간 이벤트 보기" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show past events"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지나간 이벤트 보기"
+          }
+        }
+      }
+    },
     "지난 주" : {
       "localizations" : {
         "en" : {
@@ -12805,22 +12870,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지남"
-          }
-        }
-      }
-    },
-    "지나간 이벤트 보기" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show past events"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지나간 이벤트 보기"
           }
         }
       }

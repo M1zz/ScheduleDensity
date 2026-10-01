@@ -552,6 +552,16 @@ struct SettingsView: View {
                         Label("탭 위 타이머 줄", systemImage: "rectangle.bottomthird.inset.filled")
                     }
 
+                    // 한 시간이 넘는 숫자의 모양. 앱·아일랜드·위젯이 같이 따른다 (→ CountdownStyle).
+                    Picker(selection: Binding(get: { timer.countdownStyle },
+                                              set: { timer.setCountdownStyle($0) })) {
+                        ForEach(CountdownStyle.allCases, id: \.self) { style in
+                            Text(style.label).tag(style)
+                        }
+                    } label: {
+                        Label("남은 시간 표시", systemImage: "clock")
+                    }
+
                     // 다이나믹 아일랜드·잠금화면의 타이머. 둘은 하나의 라이브 액티비티라 함께 켜지고 꺼진다.
                     Toggle(isOn: Binding(get: { timer.showsLiveActivity },
                                          set: { timer.setShowsLiveActivity($0) })) {
