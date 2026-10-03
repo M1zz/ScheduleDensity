@@ -115,6 +115,13 @@ https://m1zz.github.io/ScheduleDensity/
 서버가 없습니다. 적은 내용은 내 기기와 내 개인 iCloud에만 있고, 개발자는 볼 수 없습니다. 광고 식별자도, 위치도, 가입도 없습니다. 익명 사용 통계를 개발자에게 보내며, 설정에서 끌 수 있습니다.
 
 한국어, 영어, 번체 중국어를 지원하며 기기 언어를 따릅니다.
+
+구독과 약관
+
+연간·월간 구독은 기간이 끝나기 24시간 전까지 해지하지 않으면 같은 요금으로 자동 갱신되며, Apple 계정으로 결제됩니다. 해지와 관리는 App Store의 계정 설정에서 합니다. 평생 이용권은 구독이 아닌 한 번 결제입니다.
+
+이용약관(EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+개인정보처리방침: https://m1zz.github.io/ScheduleDensity/privacy.html
 ```
 
 ## English (U.S.)
@@ -180,7 +187,7 @@ Press and hold an empty cell on the day something starts, then again on the day 
 
 Cells across a row are the jobs you are juggling that day. When the row fills up, one slip pushes the whole day.
 
-Events from the calendars you pick show up on the rainbow and in your day, too. Read only. Nothing is ever written back to your calendar.
+Events from the calendars you pick appear on the rainbow and in your day, read only. Nothing is written back.
 
 TWO QUESTIONS, AND ONLY TWO
 
@@ -222,13 +229,20 @@ Rainbow Pro opens the extras: Home and Lock Screen widgets, importing from Calen
 
 ON THE MAC
 
-Rainbow Craft is a separate macOS app. On the same iCloud account, to-dos and weekly plans carry across on their own.
+Rainbow Craft is a separate macOS app. On the same iCloud account, to-dos and weekly plans sync on their own.
 
 PRIVACY
 
 There is no server. What you write stays on your device and in your own private iCloud, where the developer cannot reach it. No advertising identifiers, no location, no sign-up. The app sends anonymous usage statistics to the developer, and you can turn that off in Settings.
 
-Available in English, Korean and Traditional Chinese. The app follows your device language.
+Available in English, Korean and Traditional Chinese, following your device language.
+
+SUBSCRIPTIONS AND TERMS
+
+Subscriptions renew automatically unless canceled at least 24 hours before the period ends, and are charged to your Apple Account. Manage or cancel them in App Store account settings.
+
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://m1zz.github.io/ScheduleDensity/en/privacy.html
 ```
 
 ## 중국어 번체 (zh-Hant)
@@ -337,4 +351,11 @@ App 的核心不收費。寫待辦、彩虹、拆成步驟、兩個問題和步�
 沒有伺服器。你寫下的內容只存在你的裝置和你自己的私人 iCloud，開發者無法取得。沒有廣告識別碼，不讀取位置，也不需要註冊。App 會傳送匿名使用統計給開發者，你可以在設定中關閉。
 
 支援繁體中文、韓文和英文，會跟隨裝置語言。
+
+訂閱與條款
+
+年訂閱和月訂閱若未在當期結束前至少 24 小時取消，會以相同價格自動續訂，並向你的 Apple 帳號收費。你可以隨時在 App Store 的帳號設定中管理或取消訂閱。永久使用權是一次性購買，不是訂閱。
+
+使用條款（EULA）：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+隱私權政策：https://m1zz.github.io/ScheduleDensity/zh-Hant/privacy.html
 ```
