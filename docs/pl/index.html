@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rainbow of Desire — planer tygodnia z krokami na 5 minut</title>
+<meta name="description" content="Aplikacja na iOS, w której kolor gęstnieje, gdy wydarzenia się nakładają. Zobacz, jak pełny jest tydzień, i dziel zadania tak, by zawsze było coś do zrobienia w pięć minut. Przewodnik, FAQ, prywatność, kontakt." />
+<meta property="og:title" content="Rainbow of Desire" />
+<meta property="og:description" content="Od razu zobacz, jak ciężki jest tydzień, i zawsze miej krok do zrobienia w pięć minut." />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
+<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
+<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
+<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
+<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
+<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
+<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
+<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
+<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
+<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
+<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
+<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
+<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
+<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
+<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
+<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
+<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
+<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
+<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
+<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
+<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
+<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
+<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/pl/" />
+<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></p>
+
+<header class="hero" style="padding-top:32px">
+  <span class="badge">Aplikacja na iOS</span>
+  <h1>Rainbow of Desire</h1>
+  <p class="tagline">Im bardziej nakładają się wydarzenia, tym głębszy kolor. Od razu widzisz, jak ciężki jest ten tydzień, i zaczynasz od tego, za co naprawdę możesz się wziąć teraz.</p>
+</header>
+
+<main class="wrap">
+
+<section>
+  <h2><span class="dot" style="background:var(--red)"></span>Tęcza — widzisz gęstość, a nie same wpisy</h2>
+  <p class="lead">Kalendarz mówi, czy coś jest zaplanowane. Tęcza pokazuje, ile tego piętrzy się jedno na drugim.</p>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">🌈</span>
+      <h3>Ciemniej tam, gdzie się nakłada</h3>
+      <p>Im więcej spiętrza się na te same dni, tym głębszy kolor komórek. Wystarczy przewinąć, by zobaczyć, który tydzień jest przeładowany.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">📅</span>
+      <h3>Cały okres, nie tylko jeden dzień</h3>
+      <p>Ustaw początek i koniec, a pasek pociągnie się przez cały ten czas. Dni, w które naprawdę nad tym pracujesz, są ciemne, reszta jasna — bo niedokończona sprawa wciąż Cię trzyma.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔍</span>
+      <h3>Tam, gdzie jest miejsce</h3>
+      <p>Podpowiada dni, w których po dodaniu nowego wydarzenia wciąż zostanie zapas — a nie po prostu te najbardziej puste.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>Zadania — dziel, aż coś zmieści się w pięciu minutach</h2>
+  <p class="lead">Lista, która nigdy się nie skraca, to zwykle nie lenistwo. Po prostu coś wciąż stoi na drodze, zanim w ogóle możesz się do tego zabrać.</p>
+
+  <p>Podziel duże zadanie na kroki. Każdy krok przechodzi potem przez dwa pytania — tylko dwa.</p>
+
+  <table class="attrs">
+    <tr><td class="k" style="color:var(--green)">Pytanie pierwsze</td><td class="v">Da się zacząć bez rozruchu? Jeśli najpierw trzeba sobie przypomnieć, gdzie się skończyło, pięć minut pójdzie na sam rozruch.</td></tr>
+    <tr><td class="k" style="color:var(--indigo)">Pytanie drugie</td><td class="v">Kończy się w pięć minut? Praca zostawiona w połowie ciągnie się za Tobą do następnej godziny.</td></tr>
+  </table>
+
+  <p><b>Tylko krok z dwiema odpowiedziami „tak” jest okruchem</b> — czymś do wzięcia, gdy pojawi się pięć minut. Wszystko inne to ciągły odcinek i należy do czasu, który rezerwujesz z góry. Aplikacja odpowiada pierwsza, na podstawie słów i czasu, które wpisałeś; poprawiasz ją tylko wtedy, gdy się pomyli.</p>
+
+  <h3 class="sub">Dlaczego dzielimy właśnie tak</h3>
+  <ul class="plain">
+    <li>Dwanaście pięciominutowych luk to nie godzina. Okruchy czasu nie sumują się w całość — różnicę zjada koszt przełączania — dlatego kroki mieszczące się w luce trzeba od początku oznaczać osobno.</li>
+    <li>Powrót do głębokiej pracy zajmuje średnio około dwudziestu trzech minut. Kosztuje nie samo przerwanie, tylko ponowne odtworzenie kontekstu.</li>
+    <li>Zacząć jest trudniej niż kontynuować. Im dalej pierwszy ruch jest od ręki, tym dłużej się go odkłada.</li>
+    <li>Wyjątkiem jest praca fizyczna — sumuje się, nawet gdy ją podzielisz, więc nie dzielimy jej według rozmiaru.</li>
+  </ul>
+
+  <h3 class="sub">Kolejność ustalana raz dla grupy</h3>
+  <p>Kroki albo czekają na siebie, albo nie — i decydujesz o tym raz dla całej grupy, zamiast łączyć zależności jedną po drugiej. <b>Po kolei</b> wystawia na górę pierwszy niedokończony krok; <b>Dowolnie</b> — ten okruch, który możesz wziąć teraz. Przytrzymaj krok i przeciągnij, by przesunąć go wśród pozostałych.</p>
+
+  <h3 class="sub">Błyskawica</h3>
+  <p>Przesuń wiersz w prawo, by dodać Błyskawicę — Twój własny znak, że to da się zrobić od razu. Wiersz z Błyskawicą omija kolejkę i staje na samej górze, więc gdy pojawia się luka, wystarczy spojrzeć w górę zamiast przeglądać całą listę. Przesuń jeszcze raz, by zdjąć znak.</p>
+
+  <h3 class="sub">A także</h3>
+  <div class="grid">
+    <div class="card">
+      <span class="emoji">📲</span>
+      <h3>Widżety na ekranie początkowym i blokady</h3>
+      <p>Są cztery — Zadania, Błyskawica, Tęcza i Timer. Widżet Błyskawica pokazuje tylko to, co możesz wziąć w pięć minut właśnie teraz.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🔗</span>
+      <h3>Dodawaj z dowolnego miejsca</h3>
+      <p>Udostępnij coś z innej aplikacji, a Rainbow of Desire pojawi się w arkuszu. Wystarczy małe okienko, by zamienić to w zadanie.</p>
+    </div>
+    <div class="card">
+      <span class="emoji">🖥</span>
+      <h3>Idzie za Tobą na Maca</h3>
+      <p>Rainbow Craft, aplikacja na macOS, korzysta z tego samego konta iCloud. Zapisz coś po jednej stronie, a pojawi się po drugiej.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--purple)"></span>Udostępnianie</h2>
+  <p class="lead">Wysyłaj link tylko tym, którzy go potrzebują.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Wydarzenia (tylko do odczytu)</h3>
+      <p>Wyślij link z zaproszeniem, a druga osoba zobaczy Twoje wydarzenia. Nie może ich zmieniać.</p>
+    </div>
+    <div class="card">
+      <h3>Zadania (wspólnie)</h3>
+      <p>Ty i zaproszone osoby czytacie i edytujecie jedną wspólną listę. Nie ma to nic wspólnego z Chmurą rodzinną Apple.</p>
+    </div>
+  </div>
+  <p class="muted" style="margin-top:16px">Dołączyć może każdy, kto ma link z zaproszeniem, więc wysyłaj go tylko osobom, które chcesz zaprosić. Udostępnianie wymaga zalogowania do iCloud.</p>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--blue)"></span>Pierwsze kroki</h2>
+  <ol class="steps">
+    <li><b>Narysuj wydarzenie</b><span>Przytrzymaj pustą komórkę w dniu początku, a potem w dniu końca. Nadaj tytuł, wybierz dni tygodnia, w które naprawdę nad tym pracujesz, i liczbę godzin dziennie.</span></li>
+    <li><b>Zapisz zadanie</b><span>Wpisz je w pustym wierszu i naciśnij Return. To wszystko.</span></li>
+    <li><b>Podziel to, co duże</b><span>Otwórz wiersz i zapisz kroki w kolejności, w jakiej toczy się praca. Aplikacja powie, które są okruchami, a które ciągłymi odcinkami.</span></li>
+    <li><b>Weź okruch, gdy pojawi się pięć minut</b><span>Wszystko, co da się zrobić od razu, stoi na górze listy. Reszty nie musisz czytać.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--yellow)"></span>Częste pytania</h2>
+
+  <details>
+    <summary>Czy muszę logować się do iCloud?</summary>
+    <p>Nie, jeśli korzystasz sam — wszystko jest zapisywane na urządzeniu. iCloud jest potrzebny do synchronizacji z innym urządzeniem lub z aplikacją na Maca oraz do udostępniania.</p>
+  </details>
+
+  <details>
+    <summary>Czy aplikacja jest po polsku?</summary>
+    <p>Tak. Aplikacja obsługuje 23 języki, w tym polski, i działa w języku urządzenia. Aby ustawić język tylko dla tej aplikacji, otwórz Ustawienia iOS, znajdź Rainbow of Desire i wybierz Język.</p>
+  </details>
+
+  <details>
+    <summary>Co, jeśli aplikacja źle oceni krok?</summary>
+    <p>Przesuń ten krok w lewo i sam odpowiedz na dwa pytania. Twoja odpowiedź ma pierwszeństwo przed zgadywaniem aplikacji i tak już zostaje. Aplikacja czyta słowa, które wpisałeś, więc przy cudzej pracy często się myli — to normalne.</p>
+  </details>
+
+  <details>
+    <summary>Dlaczego zadanie bez czasu nigdy nie staje się okruchem?</summary>
+    <p>Bo nic nie wskazuje, że zamknie się w pięć minut, a ta lista ma sens tylko wtedy, gdy to, co na niej stoi, naprawdę jest gotowe. Wpisz czas — na przykład piętnaście minut — a krok zostanie poprawnie przypisany.</p>
+  </details>
+
+  <details>
+    <summary>Czy mogę odhaczać zadania w widżecie?</summary>
+    <p>Jeszcze nie — widżety są tylko do odczytu. Stuknij widżet, a od razu otworzy się ekran zadań.</p>
+  </details>
+
+  <details>
+    <summary>Za co trzeba zapłacić?</summary>
+    <p>Rdzeń aplikacji jest darmowy: Tęcza, dzielenie zadań, dwa pytania i kolejność kroków. Rainbow Pro odblokowuje pięć dodatków: widżety na ekranie początkowym i blokady, import z Kalendarza, udostępnianie wydarzeń, statystyki wydarzeń i Rejestr odzyskanego czasu. Do wyboru: plan roczny z darmowym pierwszym tygodniem, miesięczny albo jednorazowy zakup dożywotni. Korzystanie razem z Makiem jest bezpłatne.</p>
+  </details>
+
+  <details>
+    <summary>Czy aplikację na Maca trzeba kupić osobno?</summary>
+    <p>Rainbow Craft to osobna aplikacja na macOS. Na tym samym koncie iCloud zadania i plany tygodnia przenoszą się same.</p>
+  </details>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--green)"></span>Prywatność</h2>
+  <p class="lead">Nie ma serwera. To, co zapisujesz, zostaje na Twoim urządzeniu i w Twoim własnym iCloud.</p>
+  <div class="note">
+    Bez identyfikatorów reklamowych, bez lokalizacji, bez rejestracji. Wysyłane są tylko anonimowe statystyki użycia, które nie pozwalają Cię zidentyfikować, i możesz je wyłączyć w Ustawieniach.
+    Szczegóły znajdziesz w <a href="privacy.html">polityce prywatności</a>.
+  </div>
+</section>
+
+<section>
+  <h2><span class="dot" style="background:var(--indigo)"></span>Co się zmieniło</h2>
+  <p class="lead">Każda wersja jest opisana.</p>
+  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Przeczytaj informacje o wersjach</a></p>
+</section>
+
+<section>
+  <div class="contact">
+    <h2 style="margin-bottom:6px">Pomoc</h2>
+    <p class="lead" style="margin-bottom:0">Jeśli coś przeszkadza albo wygląda źle, daj znać. W Ustawieniach aplikacji też jest opcja kontaktu.</p>
+    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 Rainbow Craft</div>
+  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
+  <div class="fam"><a href="privacy.html">Polityka prywatności</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></div>
+</footer>
+</body>
+</html>

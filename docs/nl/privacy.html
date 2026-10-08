@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rainbow of Desire — Privacybeleid</title>
+<meta name="description" content="Welke gegevens Rainbow of Desire (iOS) verwerkt, waar ze worden bewaard en wat de app nooit doet." />
+<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/privacy.html" />
+<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/privacy.html" />
+<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/privacy.html" />
+<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/privacy.html" />
+<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/privacy.html" />
+<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/privacy.html" />
+<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/privacy.html" />
+<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/privacy.html" />
+<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/privacy.html" />
+<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/privacy.html" />
+<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/privacy.html" />
+<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/privacy.html" />
+<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/privacy.html" />
+<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/privacy.html" />
+<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/privacy.html" />
+<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/privacy.html" />
+<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/privacy.html" />
+<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/privacy.html" />
+<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/privacy.html" />
+<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/privacy.html" />
+<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/privacy.html" />
+<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/privacy.html" />
+<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/privacy.html" />
+<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/nl/privacy.html" />
+<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/privacy.html" />
+<style>
+  :root {
+    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
+    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
+  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
+  header.hero { text-align:center; padding:72px 24px 56px; }
+  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
+  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
+  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
+  section { padding:40px 0; border-top:1px solid var(--line); }
+  section:first-of-type { border-top:none; }
+  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
+  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
+  .lead { color:var(--sub); margin:0 0 24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .card h3 { margin:0 0 6px; font-size:17px; }
+  .card p { margin:0; color:var(--sub); font-size:15px; }
+  .emoji { font-size:22px; display:block; margin-bottom:10px; }
+  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:none; }
+  ol.steps li::before {
+    counter-increment:s; content:counter(s);
+    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
+    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  ol.steps b { display:block; }
+  ol.steps span { color:var(--sub); font-size:15px; }
+  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
+  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
+  details[open] summary::after { content:"\2013"; }
+  details p { margin:0 0 16px; color:var(--sub); }
+  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
+  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
+  .contact a.btn:hover { opacity:.9; }
+  a { color:var(--blue); }
+  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
+  footer .fam { margin-top:6px; font-size:13px; }
+  .muted { color:var(--sub); font-size:14px; }
+  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
+  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
+  table.attrs tr:last-child td { border-bottom:none; }
+  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
+  table.attrs td.v { color:var(--sub); }
+  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
+  h3.sub { font-size:17px; margin:26px 0 6px; }
+  ul.plain { padding-left:20px; color:var(--sub); }
+  ul.plain li { margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="rainbow-bar"></div>
+
+<main class="wrap">
+
+<p style="padding-top:28px"><a href="index.html">Terug naar Rainbow of Desire</a> &nbsp;·&nbsp; <a href="../privacy.html">한국어</a> &nbsp;·&nbsp; <a href="../en/privacy.html">English</a> &nbsp;·&nbsp; <a href="../zh-Hant/privacy.html">繁體中文</a> &nbsp;·&nbsp; <a href="../zh-Hans/privacy.html">简体中文</a> &nbsp;·&nbsp; <a href="../ja/privacy.html">日本語</a> &nbsp;·&nbsp; <a href="../de/privacy.html">Deutsch</a> &nbsp;·&nbsp; <a href="../es/privacy.html">Español</a> &nbsp;·&nbsp; <a href="../fr/privacy.html">Français</a> &nbsp;·&nbsp; <a href="../it/privacy.html">Italiano</a> &nbsp;·&nbsp; <a href="../pt-BR/privacy.html">Português (Brasil)</a> &nbsp;·&nbsp; <a href="../ru/privacy.html">Русский</a> &nbsp;·&nbsp; <a href="../cs/privacy.html">Čeština</a> &nbsp;·&nbsp; <a href="../da/privacy.html">Dansk</a> &nbsp;·&nbsp; <a href="../el/privacy.html">Ελληνικά</a> &nbsp;·&nbsp; <a href="../fi/privacy.html">Suomi</a> &nbsp;·&nbsp; <a href="../id/privacy.html">Bahasa Indonesia</a> &nbsp;·&nbsp; <a href="../nb/privacy.html">Norsk bokmål</a> &nbsp;·&nbsp; <a href="../pl/privacy.html">Polski</a> &nbsp;·&nbsp; <a href="../sv/privacy.html">Svenska</a> &nbsp;·&nbsp; <a href="../th/privacy.html">ไทย</a> &nbsp;·&nbsp; <a href="../tr/privacy.html">Türkçe</a> &nbsp;·&nbsp; <a href="../vi/privacy.html">Tiếng Việt</a></p>
+
+<header style="padding:8px 0 28px">
+  <h1 style="font-size:34px; text-align:left; margin:0 0 8px">Privacybeleid</h1>
+  <p class="muted" style="margin:0">Rainbow of Desire (iOS) · Laatst bijgewerkt: 28 september 2026</p>
+</header>
+
+<section style="border-top:1px solid var(--line); padding-top:28px">
+  <p>Rainbow of Desire (de app) is een local-first app zonder eigen server. Dit document legt uit welke gegevens de app verwerkt, waar ze worden bewaard en wat de app niet doet.</p>
+  <div class="note">
+    In het kort: de app verzamelt en verstuurt geen persoonsgegevens. Wat je schrijft, blijft op je apparaat en in je eigen privé-iCloud-database. De ontwikkelaar kan niet bij die gegevens. Alleen anonieme gebruiksstatistieken die niet naar jou te herleiden zijn, worden <strong>standaard verstuurd</strong>, en die kun je op elk moment uitzetten in Instellingen.
+  </div>
+</section>
+
+<section>
+  <h2>1. Wat niet wordt verzameld</h2>
+  <p class="lead">De app verzamelt geen van de volgende gegevens.</p>
+  <ul class="plain">
+    <li>Account- of contactgegevens zoals je naam, e-mailadres of telefoonnummer</li>
+    <li>Locatie</li>
+    <li>Advertentie-ID’s of trackinggegevens</li>
+    <li>Gebruiksanalyses (behalve de anonieme statistieken uit punt 6)</li>
+    <li>Andere gegevens op je apparaat, zoals contacten, foto’s of agenda’s</li>
+  </ul>
+  <p>Er is geen registratie en geen login.</p>
+</section>
+
+<section>
+  <h2>2. Wat je zelf invoert</h2>
+  <p class="lead">Om te kunnen werken, bewaart de app wat je invoert op je apparaat.</p>
+  <ul class="plain">
+    <li>Activiteiten (titel, kleur, periode, terugkerende weekdagen, uren per dag, prioriteit)</li>
+    <li>Taken en hun stappen (titel, hoe ze zijn beoordeeld, geschatte tijd, of ze af zijn, volgorde)</li>
+    <li>Taakcategorieën (naam, kleur, symbool)</li>
+    <li>Alles wat je vanuit een andere app deelt (de titel en het oordeel dat je koos)</li>
+  </ul>
+  <p>Deze gegevens worden alleen gebruikt om de app te laten werken. Ze worden nooit naar de ontwikkelaar gestuurd of aan anderen gegeven.</p>
+</section>
+
+<section>
+  <h2>3. Waar het wordt bewaard</h2>
+  <p>Alles wordt op je apparaat bewaard via SwiftData van Apple. Ben je ingelogd bij iCloud, dan wordt het ook bewaard in je eigen privé-iCloud-database (container iCloud.com.devkoan.ScheduleDensity) en automatisch gesynchroniseerd tussen apparaten met hetzelfde iCloud-account.</p>
+  <p>Voor opslag en overdracht via iCloud geldt het privacybeleid van Apple. De ontwikkelaar kan niet bij je privé-iCloud-database.</p>
+  <p>De lijst die in de widgets op je beginscherm en toegangsscherm staat, wordt apart weggeschreven in een gedeelde app-groepsruimte op het apparaat. Dat bestand verlaat het apparaat nooit. Wat je vanuit een andere app deelt, wacht ook even in diezelfde ruimte tot de app het ophaalt.</p>
+</section>
+
+<section>
+  <h2>4. Als je iets met iemand deelt</h2>
+  <p>Gebruik je delen, dan kan iedereen die jouw uitnodigingslink krijgt die lijst of die activiteiten zien. Alleen jij bepaalt wat je deelt en met wie, en zodra je stopt met delen, kunnen zij het niet meer zien.</p>
+  <p>Iedereen met de uitnodigingslink kan meedoen, dus stuur hem alleen naar de mensen die je erbij wilt. Delen gebeurt rechtstreeks via CloudKit-delen van Apple; de ontwikkelaar bewaart je gegevens daar niet tussendoor.</p>
+</section>
+
+<section>
+  <h2>5. Als je feedback stuurt</h2>
+  <p>Stuur je vanuit Instellingen een vraag of feedback naar de ontwikkelaar, dan worden wat je op dat moment schreef en je appversie verstuurd naar een iCloud-container die de ontwikkelaar beheert (iCloud.com.Ysoup.FeedbackHub). Dit wordt alleen gebruikt om je te antwoorden en de app te verbeteren.</p>
+  <p>Dit gebeurt alleen als je zelf op versturen tikt. Tijdens het gebruik van de app wordt er niets automatisch verstuurd. Mail je de ontwikkelaar, dan wordt je e-mailadres alleen gebruikt om te antwoorden.</p>
+</section>
+
+<section>
+  <h2>6. Anonieme gebruiksstatistieken (standaard aan, kan uit)</h2>
+  <p><strong>Getallen, plus een paar gebeurtenissen vastgelegd als vaste woorden</strong>, over hoe je de app gebruikt, worden verstuurd naar een iCloud-container die de ontwikkelaar beheert (iCloud.com.Ysoup.FeedbackHub). Dit staat <strong>standaard aan</strong>. Zet <strong>Ook anoniem naar de ontwikkelaar sturen</strong> uit onder Instellingen &gt; Gebruiksstatistieken, dan wordt er niets verstuurd. Had je het eerder al uitgezet, dan blijft het na een update uit.</p>
+  <p class="lead">Wat er wordt verstuurd</p>
+  <ul class="plain">
+    <li>Aantal dagen op rij geopend, aantal dagen geopend in de afgelopen 30 dagen, aantal keer gestart, dagen sinds installatie</li>
+    <li>Aantal taken, aantal opgesplitst in stappen, gemiddeld aantal stappen per opsplitsing</li>
+    <li>Afrondpercentages (ook apart voor opgesplitste en niet-opgesplitste taken)</li>
+    <li>Aantal categorieën, totaal aantal ingevoerde uren, aandeel van de grootste categorie</li>
+    <li>Appversie, versie van het besturingssysteem, soort apparaat (iOS/macOS), taalinstelling</li>
+    <li><strong>Wat er op het &lsquo;Rainbow Pro&rsquo;-scherm gebeurde</strong> — dat je het zag, via welke vergrendelde functie je er kwam (widgets, statistieken enzovoort), dat je een aankoop startte, of die is voltooid en zo niet, of de reden annuleren, wachten op goedkeuring of een fout was, en of je op herstellen tikte en de aankoop terugkreeg. <strong>Dit zijn allemaal woorden die de app vooraf heeft vastgelegd; er wordt geen betaalmethode, bonnetje of bedrag verstuurd.</strong> De betaling loopt via Apple en de ontwikkelaar kan die niet zien.</li>
+    <li><strong>Of je op dit moment &lsquo;Rainbow Pro&rsquo; hebt</strong> — één waarde: ja of nee. Welk product je kocht, wanneer of voor hoeveel, zit er niet bij. Het wordt gebruikt om te zien hoe gebruikers van de gratis versie en kopers de app verschillend gebruiken, en er wordt niets verstuurd voordat je aankoopstatus is gecontroleerd.</li>
+  </ul>
+  <p class="lead">Wat er niet wordt verstuurd</p>
+  <ul class="plain">
+    <li><strong>Alle woorden die je hebt geschreven</strong> — titels van taken, namen van activiteiten, namen van categorieën</li>
+    <li>De datums en tijden van je activiteiten</li>
+    <li>Je naam, e-mailadres, Apple Account, apparaat-ID, advertentie-ID of locatie</li>
+    <li>Betaalmethoden, kaartgegevens, bonnetjes of betaalde bedragen</li>
+  </ul>
+  <p>Afzenders worden alleen onderscheiden door een willekeurig nummer (UUID) dat bij de installatie van de app is aangemaakt. Dat nummer is niet gekoppeld aan een Apple Account of apparaat-ID, kan niet worden gekoppeld aan een andere app of dienst en verdwijnt als je de app verwijdert. Er wordt hooguit een- of tweemaal per dag iets verstuurd.</p>
+  <p>Je kunt het op elk moment uitzetten onder Instellingen &gt; Gebruiksstatistieken. Het versturen stopt dan meteen, en de lijst met dagen waarop je de app opende, die op het apparaat wordt bijgehouden, wordt ook gewist. Wil je dat al verstuurde anonieme gegevens worden verwijderd, mail dan naar het e-mailadres hieronder.</p>
+</section>
+
+<section>
+  <h2>7. Bewaren en verwijderen</h2>
+  <p class="lead">Gegevens worden bewaard tot je ze verwijdert of de app verwijdert.</p>
+  <ul class="plain">
+    <li>Je kunt afzonderlijke items in de app verwijderen.</li>
+    <li>Verwijder je de app, dan worden de gegevens op dat apparaat verwijderd.</li>
+    <li>Gegevens die met iCloud zijn gesynchroniseerd, kun je op je apparaat beheren of verwijderen via Instellingen, Apple Account, iCloud, Beheer opslag.</li>
+    <li>Wil je dat verstuurde feedback wordt verwijderd, mail dan naar het e-mailadres hieronder.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. Privacy van kinderen</h2>
+  <p>De app is niet op kinderen gericht en verzamelt niet bewust persoonsgegevens van kinderen.</p>
+</section>
+
+<section>
+  <h2>9. Wijzigingen in dit beleid</h2>
+  <p>Dit beleid kan worden aangepast als de wet of de app verandert. Verandert er iets belangrijks, dan wordt dat op deze pagina gemeld en wordt de datum ‘Laatst bijgewerkt’ hierboven aangepast.</p>
+</section>
+
+<section>
+  <h2>10. Contact</h2>
+  <p>Heb je vragen of verzoeken over privacy, neem dan contact op.</p>
+  <p>E-mail: <a href="mailto:leeo@kakao.com">leeo@kakao.com</a></p>
+</section>
+
+</main>
+
+<footer>
+  <div>2026 Rainbow Craft</div>
+  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
+</footer>
+
+</body>
+</html>

@@ -389,19 +389,19 @@ App 的核心不收費。寫待辦、彩虹、拆成步驟、兩個問題和步�
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/zh-Hans/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/zh-Hans/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/zh-Hans/
 ```
 
 ### 설명
@@ -472,7 +472,7 @@ App 的核心功能不收费。写待办、彩虹、拆分步骤、两个问题�
 年订阅和月订阅如未在当期结束前至少 24 小时取消，将按相同价格自动续订，费用从你的 Apple 账户扣除。你可以在 App Store 的账户设置中管理或取消订阅。永久版为一次性购买，不是订阅。
 
 使用条款（EULA）：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-隐私政策：https://m1zz.github.io/ScheduleDensity/privacy.html
+隐私政策：https://m1zz.github.io/ScheduleDensity/zh-Hans/privacy.html
 ```
 
 ## 일본어 (ja)
@@ -504,19 +504,19 @@ ToDo,タスク管理,手帳,スケジュール,時間管理,タイムブロッ�
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/ja/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/ja/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/ja/
 ```
 
 ### 설명
@@ -587,7 +587,7 @@ Rainbow Craftは別のmacOSアプリです。同じiCloudアカウントなら�
 年額・月額のサブスクリプションは、期間終了の24時間前までに解約しない限り同じ料金で自動更新され、Apple Accountに請求されます。解約と管理はApp Storeのアカウント設定から行えます。買い切りはサブスクリプションではなく1回限りの支払いです。
 
 利用規約（EULA）: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-プライバシーポリシー: https://m1zz.github.io/ScheduleDensity/privacy.html
+プライバシーポリシー: https://m1zz.github.io/ScheduleDensity/ja/privacy.html
 ```
 
 ## 독일어 (de)
@@ -619,19 +619,19 @@ Sieh an der Farbe, wie voll deine Woche ist, bevor sie losgeht. Was in fünf fre
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/de/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/de/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/de/
 ```
 
 ### 설명
@@ -702,7 +702,7 @@ Abos und Bedingungen
 Jahres- und Monatsabos verlängern sich automatisch zum gleichen Preis, wenn sie nicht mindestens 24 Stunden vor Ende des Zeitraums gekündigt werden, und werden über deinen Apple Account abgerechnet. Verwalten und kündigen kannst du sie in den App Store-Accounteinstellungen. Der Kauf für immer ist eine Einmalzahlung, kein Abo.
 
 Nutzungsbedingungen (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Datenschutzrichtlinie: https://m1zz.github.io/ScheduleDensity/privacy.html
+Datenschutzrichtlinie: https://m1zz.github.io/ScheduleDensity/de/privacy.html
 ```
 
 ## 스페인어 (es)
@@ -734,19 +734,19 @@ Mira por colores cuánto se llena tu semana antes de empezarla. Lo que cabe en c
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/es/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/es/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/es/
 ```
 
 ### 설명
@@ -817,7 +817,7 @@ Suscripciones y condiciones
 Las suscripciones anual y mensual se renuevan automáticamente salvo que las canceles al menos 24 horas antes del fin del periodo, y se cobran en tu cuenta de Apple. Gestiónalas en los ajustes de tu cuenta del App Store. El acceso de por vida es un pago único.
 
 Condiciones de uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Política de privacidad: https://m1zz.github.io/ScheduleDensity/privacy.html
+Política de privacidad: https://m1zz.github.io/ScheduleDensity/es/privacy.html
 ```
 
 ## 프랑스어 (fr)
@@ -849,19 +849,19 @@ Voyez d’un coup d’œil si votre semaine est pleine, avant d’y entrer. Ce q
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/fr/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/fr/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/fr/
 ```
 
 ### 설명
@@ -932,7 +932,7 @@ ABONNEMENTS ET CONDITIONS
 Les abonnements annuel et mensuel se renouvellent automatiquement au même tarif, sauf résiliation au moins 24 heures avant la fin de la période, et sont facturés sur votre compte Apple. Gérez-les dans les réglages de votre compte App Store. L’accès à vie est un achat unique, pas un abonnement.
 
 Conditions d’utilisation (EULA) : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Politique de confidentialité : https://m1zz.github.io/ScheduleDensity/privacy.html
+Politique de confidentialité : https://m1zz.github.io/ScheduleDensity/fr/privacy.html
 ```
 
 ## 이탈리아어 (it)
@@ -964,19 +964,19 @@ Guarda quanto è piena la settimana prima di entrarci. Ciò che si fa in cinque 
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/it/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/it/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/it/
 ```
 
 ### 설명
@@ -1034,7 +1034,7 @@ Rainbow Pro sblocca gli extra: widget per Home e schermata di blocco, importazio
 
 Sul Mac
 
-Rainbow Craft è un’app macOS a parte. Con lo stesso account iCloud, attività e piani settimanali si sincronizzano da soli.
+Rainbow Craft è un’app macOS. Con lo stesso account iCloud, attività e piani settimanali si sincronizzano da soli.
 
 Privacy
 
@@ -1047,7 +1047,7 @@ Abbonamenti e condizioni
 Gli abbonamenti annuale e mensile si rinnovano automaticamente allo stesso prezzo se non disdetti almeno 24 ore prima della fine del periodo, con addebito sul tuo Apple Account. Gestiscili o disdicili nelle impostazioni dell’account App Store. L’accesso a vita è un pagamento unico, non un abbonamento.
 
 Condizioni d’uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Informativa sulla privacy: https://m1zz.github.io/ScheduleDensity/privacy.html
+Informativa sulla privacy: https://m1zz.github.io/ScheduleDensity/it/privacy.html
 ```
 
 ## 포르투갈어(브라질) (pt-BR)
@@ -1079,19 +1079,19 @@ Veja pela cor o quanto sua semana está cheia antes de ela começar. O que cabe 
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/pt-BR/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/pt-BR/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/pt-BR/
 ```
 
 ### 설명
@@ -1162,7 +1162,7 @@ Assinaturas e termos
 As assinaturas anual e mensal são renovadas automaticamente, a menos que sejam canceladas pelo menos 24 horas antes do fim do período, e são cobradas na sua Conta Apple. Gerencie nos ajustes da sua conta na App Store. O acesso vitalício é um pagamento único.
 
 Termos de Uso (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Política de Privacidade: https://m1zz.github.io/ScheduleDensity/privacy.html
+Política de Privacidade: https://m1zz.github.io/ScheduleDensity/pt-BR/privacy.html
 ```
 
 ## 러시아어 (ru)
@@ -1194,19 +1194,19 @@ Rainbow of Desire: список дел
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/ru/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/ru/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/ru/
 ```
 
 ### 설명
@@ -1277,7 +1277,7 @@ Rainbow Craft — отдельное приложение для macOS. С од�
 Годовая и ежемесячная подписки продлеваются автоматически по той же цене, если не отменить их не позднее чем за 24 часа до конца периода. Оплата списывается с вашего Apple Account. Управлять подпиской и отменить её можно в настройках учётной записи App Store. Покупка навсегда — разовый платёж, а не подписка.
 
 Условия использования (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Политика конфиденциальности: https://m1zz.github.io/ScheduleDensity/privacy.html
+Политика конфиденциальности: https://m1zz.github.io/ScheduleDensity/ru/privacy.html
 ```
 
 ## 체코어 (cs)
@@ -1309,19 +1309,19 @@ Barvy vám předem ukážou, jak nabitý je váš týden. To, co stihnete za pě
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/cs/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/cs/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/cs/
 ```
 
 ### 설명
@@ -1392,7 +1392,7 @@ Předplatné a podmínky
 Roční a měsíční předplatné se automaticky obnovuje za stejnou cenu, pokud ho nezrušíte alespoň 24 hodin před koncem období. Platba se strhává z vašeho Apple účtu. Předplatné spravujete a rušíte v nastavení účtu v App Storu. Doživotní nákup není předplatné, platíte ho jen jednou.
 
 Podmínky použití (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Zásady ochrany soukromí: https://m1zz.github.io/ScheduleDensity/privacy.html
+Zásady ochrany soukromí: https://m1zz.github.io/ScheduleDensity/cs/privacy.html
 ```
 
 ## 덴마크어 (da)
@@ -1424,19 +1424,19 @@ Se med farver, hvor fyldt ugen er, før du går ind i den. Det, du kan nå på f
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/da/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/da/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/da/
 ```
 
 ### 설명
@@ -1505,7 +1505,7 @@ Abonnementer og vilkår
 Årlige og månedlige abonnementer fornyes automatisk til samme pris, medmindre de opsiges senest 24 timer før periodens udløb, og de opkræves via din Apple-konto. Du administrerer og opsiger dem i dine kontoindstillinger i App Store. Livstidsadgang er en engangsbetaling, ikke et abonnement.
 
 Brugsbetingelser (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Anonymitetspolitik: https://m1zz.github.io/ScheduleDensity/privacy.html
+Anonymitetspolitik: https://m1zz.github.io/ScheduleDensity/da/privacy.html
 ```
 
 ## 그리스어 (el)
@@ -1537,19 +1537,19 @@ todo,λίστα,ατζέντα,ημερολόγιο,πρόγραμμα,οργά�
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/el/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/el/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/el/
 ```
 
 ### 설명
@@ -1620,7 +1620,7 @@ https://m1zz.github.io/ScheduleDensity/en/
 Οι ετήσιες και μηνιαίες συνδρομές ανανεώνονται αυτόματα με την ίδια τιμή, εκτός αν ακυρωθούν τουλάχιστον 24 ώρες πριν λήξει η περίοδος, και χρεώνονται στον Λογαριασμό Apple. Διαχείριση και ακύρωση γίνονται στις ρυθμίσεις λογαριασμού του App Store. Η αγορά εφ’ όρου ζωής είναι εφάπαξ πληρωμή, όχι συνδρομή.
 
 Όροι χρήσης (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Πολιτική απορρήτου: https://m1zz.github.io/ScheduleDensity/privacy.html
+Πολιτική απορρήτου: https://m1zz.github.io/ScheduleDensity/el/privacy.html
 ```
 
 ## 핀란드어 (fi)
@@ -1652,19 +1652,19 @@ Näe väreistä, kuinka täynnä viikkosi on, ennen kuin astut siihen. Viiteen m
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/fi/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/fi/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/fi/
 ```
 
 ### 설명
@@ -1735,7 +1735,7 @@ Tilaukset ja ehdot
 Vuosi- ja kuukausitilaukset uusiutuvat automaattisesti samaan hintaan, ellei niitä peruta viimeistään 24 tuntia ennen jakson loppua, ja ne veloitetaan Apple-tililtäsi. Hallitse tai peru tilauksia App Storen tiliasetuksissa. Elinikäinen käyttöoikeus on kertaosto, ei tilaus.
 
 Käyttöehdot (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Tietosuojakäytäntö: https://m1zz.github.io/ScheduleDensity/privacy.html
+Tietosuojakäytäntö: https://m1zz.github.io/ScheduleDensity/fi/privacy.html
 ```
 
 ## 인도네시아어 (id)
@@ -1767,19 +1767,19 @@ Lihat dulu sepadat apa minggu Anda lewat warna. Hal yang bisa selesai dalam lima
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/id/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/id/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/id/
 ```
 
 ### 설명
@@ -1850,7 +1850,7 @@ Langganan dan ketentuan
 Langganan tahunan dan bulanan diperpanjang otomatis dengan harga sama kecuali dibatalkan paling lambat 24 jam sebelum periode berakhir, dan ditagihkan ke Akun Apple Anda. Kelola atau batalkan di pengaturan akun App Store. Paket seumur hidup adalah pembayaran satu kali, bukan langganan.
 
 Ketentuan Penggunaan (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Kebijakan Privasi: https://m1zz.github.io/ScheduleDensity/privacy.html
+Kebijakan Privasi: https://m1zz.github.io/ScheduleDensity/id/privacy.html
 ```
 
 ## 노르웨이어(보크말) (nb)
@@ -1882,19 +1882,19 @@ Se i farger hvor full uken er før du går inn i den. Det du rekker på fem minu
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/nb/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/nb/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/nb/
 ```
 
 ### 설명
@@ -1963,7 +1963,7 @@ Abonnementer og vilkår
 Årlige og månedlige abonnementer fornyes automatisk til samme pris med mindre de sies opp senest 24 timer før perioden utløper, og de belastes Apple-kontoen din. Du administrerer og sier dem opp i kontoinnstillingene i App Store. Livstidstilgang er en engangsbetaling, ikke et abonnement.
 
 Bruksvilkår (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Personvernerklæring: https://m1zz.github.io/ScheduleDensity/privacy.html
+Personvernerklæring: https://m1zz.github.io/ScheduleDensity/nb/privacy.html
 ```
 
 ## 네덜란드어 (nl)
@@ -1995,19 +1995,19 @@ Zie aan de kleur hoe vol je week is voordat je erin stapt. Wat in vijf minuten k
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/nl/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/nl/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/nl/
 ```
 
 ### 설명
@@ -2078,7 +2078,7 @@ Abonnementen en voorwaarden
 Abonnementen worden automatisch tegen dezelfde prijs verlengd, tenzij je uiterlijk 24 uur voor het einde van de periode opzegt. Ze worden afgerekend via je Apple Account. Beheren of opzeggen doe je in je accountinstellingen van de App Store. Levenslang is een eenmalige betaling, geen abonnement.
 
 Gebruiksvoorwaarden (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Privacybeleid: https://m1zz.github.io/ScheduleDensity/privacy.html
+Privacybeleid: https://m1zz.github.io/ScheduleDensity/nl/privacy.html
 ```
 
 ## 폴란드어 (pl)
@@ -2110,19 +2110,19 @@ Kolory pokażą Ci, jak zapełniony jest tydzień, zanim w niego wejdziesz. To, 
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/pl/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/pl/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/pl/
 ```
 
 ### 설명
@@ -2193,7 +2193,7 @@ Subskrypcje i warunki
 Subskrypcja roczna i miesięczna odnawia się automatycznie w tej samej cenie, jeśli nie anulujesz jej co najmniej 24 godziny przed końcem okresu. Opłata jest pobierana z Twojego Apple Account. Zarządzasz nią w ustawieniach konta App Store. Dostęp dożywotni to jednorazowa płatność, nie subskrypcja.
 
 Warunki korzystania (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Polityka prywatności: https://m1zz.github.io/ScheduleDensity/privacy.html
+Polityka prywatności: https://m1zz.github.io/ScheduleDensity/pl/privacy.html
 ```
 
 ## 스웨덴어 (sv)
@@ -2225,19 +2225,19 @@ Se i färg hur full veckan är innan du kliver in i den. Det du hinner på fem m
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/sv/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/sv/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/sv/
 ```
 
 ### 설명
@@ -2308,7 +2308,7 @@ Prenumerationer och villkor
 Års- och månadsprenumerationer förnyas automatiskt till samma pris om de inte sägs upp senast 24 timmar innan perioden tar slut, och debiteras ditt Apple-konto. Hantera eller säg upp dem i kontoinställningarna i App Store. Livstidsköpet är en engångsbetalning, inte en prenumeration.
 
 Användarvillkor (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Integritetspolicy: https://m1zz.github.io/ScheduleDensity/privacy.html
+Integritetspolicy: https://m1zz.github.io/ScheduleDensity/sv/privacy.html
 ```
 
 ## 태국어 (th)
@@ -2340,19 +2340,19 @@ Rainbow of Desire: แพลนเนอร์
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/th/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/th/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/th/
 ```
 
 ### 설명
@@ -2423,7 +2423,7 @@ Rainbow Craft เป็นแอป macOS แยกต่างหาก เม�
 การสมัครสมาชิกรายปีและรายเดือนจะต่ออายุอัตโนมัติในราคาเดิม เว้นแต่จะยกเลิกอย่างน้อย 24 ชั่วโมงก่อนสิ้นสุดรอบ และเรียกเก็บเงินผ่านบัญชี Apple ของคุณ จัดการหรือยกเลิกได้ในการตั้งค่าบัญชีของ App Store แบบตลอดชีพเป็นการชำระครั้งเดียว ไม่ใช่การสมัครสมาชิก
 
 ข้อกำหนดการใช้งาน (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-นโยบายความเป็นส่วนตัว: https://m1zz.github.io/ScheduleDensity/privacy.html
+นโยบายความเป็นส่วนตัว: https://m1zz.github.io/ScheduleDensity/th/privacy.html
 ```
 
 ## 튀르키예어 (tr)
@@ -2455,19 +2455,19 @@ Haftanızın ne kadar dolu olduğunu önce renklerle görün. Beş dakikalık bi
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/tr/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/tr/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/tr/
 ```
 
 ### 설명
@@ -2538,7 +2538,7 @@ ABONELİK VE KOŞULLAR
 Yıllık ve aylık abonelikler, dönem bitmeden en az 24 saat önce iptal edilmezse aynı fiyattan otomatik olarak yenilenir ve Apple Hesabınızdan ücretlendirilir. Yönetim ve iptal App Store hesap ayarlarından yapılır. Ömür boyu satın alma abonelik değil, tek seferlik ödemedir.
 
 Kullanım Koşulları (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Gizlilik Politikası: https://m1zz.github.io/ScheduleDensity/privacy.html
+Gizlilik Politikası: https://m1zz.github.io/ScheduleDensity/tr/privacy.html
 ```
 
 ## 베트남어 (vi)
@@ -2570,19 +2570,19 @@ Nhìn màu là biết tuần này kín đến đâu. Việc làm được trong 
 ### 지원 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/vi/
 ```
 
 ### 개인정보처리방침 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/privacy.html
+https://m1zz.github.io/ScheduleDensity/vi/privacy.html
 ```
 
 ### 마케팅 URL
 
 ```
-https://m1zz.github.io/ScheduleDensity/en/
+https://m1zz.github.io/ScheduleDensity/vi/
 ```
 
 ### 설명
@@ -2646,12 +2646,12 @@ Quyền riêng tư
 
 Không có máy chủ. Những gì bạn ghi chỉ nằm trên thiết bị và trong iCloud riêng của bạn, nhà phát triển không thể xem. Không có mã định danh quảng cáo, không dùng vị trí, không cần đăng ký. Ứng dụng gửi thống kê sử dụng ẩn danh cho nhà phát triển, và bạn có thể tắt trong Cài đặt.
 
-Hỗ trợ 23 ngôn ngữ, trong đó có tiếng Việt, và tự hiển thị theo ngôn ngữ của thiết bị.
+Hỗ trợ 23 ngôn ngữ, có tiếng Việt, và tự theo ngôn ngữ của thiết bị.
 
 Gói đăng ký và điều khoản
 
 Gói năm và gói tháng tự động gia hạn với cùng mức giá nếu không hủy ít nhất 24 giờ trước khi kỳ hạn kết thúc, và được tính phí vào Tài khoản Apple của bạn. Bạn quản lý hoặc hủy trong phần cài đặt tài khoản App Store. Gói trọn đời là thanh toán một lần, không phải gói đăng ký.
 
 Điều khoản sử dụng (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Chính sách quyền riêng tư: https://m1zz.github.io/ScheduleDensity/privacy.html
+Chính sách quyền riêng tư: https://m1zz.github.io/ScheduleDensity/vi/privacy.html
 ```

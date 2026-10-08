@@ -53865,7 +53865,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show Rainbow Workshop plans"
+            "value" : "Show Rainbow Craft plans"
           }
         },
         "es" : {
@@ -70485,7 +70485,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fixed routines like sleep and commuting are read over iCloud from what you wrote in Rainbow Workshop on the Mac. Check that you're signed in to iCloud."
+            "value" : "Fixed routines like sleep and commuting are read over iCloud from what you wrote in Rainbow Craft on the Mac. Check that you're signed in to iCloud."
           }
         },
         "es" : {
@@ -85544,7 +85544,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "What you need to get through today stays free — including syncing with Rainbow Workshop on the Mac."
+            "value" : "What you need to get through today stays free — including syncing with Rainbow Craft on the Mac."
           }
         },
         "es" : {
@@ -106569,7 +106569,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A dashed pill has no fixed time — it's just been dropped into an open slot. Drag it to an exact time in Rainbow Workshop on the Mac."
+            "value" : "A dashed pill has no fixed time — it's just been dropped into an open slot. Drag it to an exact time in Rainbow Craft on the Mac."
           }
         },
         "es" : {
