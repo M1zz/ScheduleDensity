@@ -15,6 +15,12 @@
             "value" : ", %@의 단계"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，%@ 的步骤"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -35,6 +41,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", %lld단계 중 %lld번째, 지금 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，第 %2$lld 步，共 %1$lld 步，目前为 %3$@"
           }
         },
         "zh-Hant" : {
@@ -59,6 +71,12 @@
             "value" : ", %lld분"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，%lld 分钟"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -79,6 +97,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", 5분에 집을 수 있음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，五分钟内可完成"
           }
         },
         "zh-Hant" : {
@@ -103,6 +127,12 @@
             "value" : ", 지금 %@"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，目前为 %@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -123,6 +153,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : ", 직접 표시함"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，由你标记"
           }
         },
         "zh-Hant" : {
@@ -147,6 +183,12 @@
             "value" : "‘욕망의 무지개’를 열고 빈 줄에 바로 적습니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开“欲望彩虹”，直接在空白行写下。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -167,6 +209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.0f시간"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f 小时"
           }
         },
         "zh-Hant" : {
@@ -191,6 +239,12 @@
             "value" : "%.1f시간"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f 小时"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -211,6 +265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 위젯이 잠겨 있습니다. 눌러서 무지개 Pro를 여십시오."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 小组件已锁定。轻点以解锁彩虹 Pro。"
           }
         },
         "zh-Hant" : {
@@ -236,6 +296,12 @@
             "value" : "%@ 위젯이 잠겨 있습니다. 앱의 설정에서 무지개 Pro를 사면 열립니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 小组件已锁定。在 App 的设置中购买彩虹 Pro 即可打开。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -256,6 +322,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, 오늘"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@，今天"
           }
         },
         "zh-Hant" : {
@@ -280,6 +352,12 @@
             "value" : "%@에 끝남"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 结束"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -297,6 +375,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -324,6 +408,12 @@
             "value" : "%lld/%lld"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/%lld"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -341,6 +431,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%%"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld%%"
@@ -368,6 +464,12 @@
             "value" : "%lld개"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 项"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -390,6 +492,12 @@
             "value" : "%lld분"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 分钟"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -407,6 +515,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "+%lld"
@@ -434,6 +548,12 @@
             "value" : "⚡︎ %lld · %@"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ %lld · %@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -454,6 +574,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⚡︎ 집을 조각 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ 没有可做的碎片"
           }
         },
         "zh-Hant" : {
@@ -478,6 +604,12 @@
             "value" : "🔒 무지개 Pro"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 彩虹 Pro"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -498,6 +630,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🔒 번개 — 무지개 Pro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 闪电 — 彩虹 Pro"
           }
         },
         "zh-Hant" : {
@@ -522,6 +660,12 @@
             "value" : "🔒 할 일 — 무지개 Pro"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 待办事项 — 彩虹 Pro"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -542,6 +686,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "0분"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 分钟"
           }
         },
         "zh-Hant" : {
@@ -566,6 +716,12 @@
             "value" : "5분에 집을 수 있는 단계 %lld개. "
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "五分钟内可完成的步骤有 %lld 个。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -588,6 +744,12 @@
             "value" : "5분이면 %lld개"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "五分钟可做 %lld 个"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -608,6 +770,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "개발"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工作"
           }
         },
         "zh-Hant" : {
@@ -633,6 +801,12 @@
             "value" : "계획을 넘겼습니다"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已超出计划"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -653,6 +827,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "기획서 초안 작성"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "撰写企划书初稿"
           }
         },
         "zh-Hant" : {
@@ -677,6 +857,12 @@
             "value" : "끝났습니다"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已结束"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -697,6 +883,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "남은 할 일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有剩下的待办"
           }
         },
         "zh-Hant" : {
@@ -721,6 +913,12 @@
             "value" : "남은 할 일이 없어요"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有剩下的待办事项"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -741,6 +939,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "내 일정을 읽기 전용으로 나눠 봅니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以只读方式与他人共享你的日程。"
           }
         },
         "zh-Hant" : {
@@ -765,6 +969,12 @@
             "value" : "눌러서 열기"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轻点以解锁"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -785,6 +995,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "다음 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一个：%@"
           }
         },
         "zh-Hant" : {
@@ -809,6 +1025,12 @@
             "value" : "다음 %@ %@"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一个：%1$@ %2$@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -831,6 +1053,12 @@
             "value" : "단계를 5분에 닫히는 크기로 잘라 두면 여기 섭니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把步骤切成五分钟内能收尾的大小，就会出现在这里。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -851,6 +1079,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "러닝 30분"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跑步 30 分钟"
           }
         },
         "zh-Hant" : {
@@ -876,6 +1110,12 @@
             "value" : "맥과 함께 쓰기"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搭配 Mac 使用"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -896,6 +1136,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "멈춤"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已暂停"
           }
         },
         "zh-Hant" : {
@@ -920,6 +1166,12 @@
             "value" : "목차 잡기"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拟定目录"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -940,6 +1192,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "무지개"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彩虹"
           }
         },
         "zh-Hant" : {
@@ -964,6 +1222,12 @@
             "value" : "무지개 위젯이 잠겨 있습니다"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彩虹小组件已锁定"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -984,6 +1248,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "번개"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闪电"
           }
         },
         "zh-Hant" : {
@@ -1008,6 +1278,12 @@
             "value" : "번개 위젯이 잠겨 있습니다"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闪电小组件已锁定"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1028,6 +1304,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "분:초 (60:00)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分:秒（60:00）"
           }
         },
         "zh-Hant" : {
@@ -1052,6 +1334,12 @@
             "value" : "비어 있어요"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里是空的"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1072,6 +1360,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "빈 줄을 열고 바로 적습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开空白行，直接写下。"
           }
         },
         "zh-Hant" : {
@@ -1096,6 +1390,12 @@
             "value" : "시:분:초 (1:00:00)"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时:分:秒（1:00:00）"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1116,6 +1416,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "시스템 캘린더의 일정을 무지개로 들여옵니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将系统日历的日程带入彩虹。"
           }
         },
         "zh-Hant" : {
@@ -1140,6 +1446,12 @@
             "value" : "쌓인 일정을 통째로 들여다봅니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一次查看累积的所有日程。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1160,6 +1472,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "아직 그은 줄이 없어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有画上的线"
           }
         },
         "zh-Hant" : {
@@ -1184,6 +1502,12 @@
             "value" : "아직 안 한 일을 홈 화면과 잠금 화면에서 바로 봅니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在主屏幕和锁定屏幕直接查看还没做的事。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1204,6 +1528,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "앞으로 며칠이 얼마나 차 있는지 한눈에 봅니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一眼看出接下来几天有多满。"
           }
         },
         "zh-Hant" : {
@@ -1229,6 +1559,12 @@
             "value" : "앱의 설정에서 ‘무지개 Pro’"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App 的设置 ▸ 彩虹 Pro"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1249,6 +1585,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "업체 예약 전화"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打电话预约搬家公司"
           }
         },
         "zh-Hant" : {
@@ -1274,6 +1616,12 @@
             "value" : "여기서 적은 할 일이 맥에서도 보입니다. 적는 것 자체는 무료입니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这里写下的待办事项也会显示在 Mac 上。写下本身是免费的。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1294,6 +1642,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오늘"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天"
           }
         },
         "zh-Hant" : {
@@ -1318,6 +1672,12 @@
             "value" : "오늘 %lld개 · %@"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天 %lld 项 · %@"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1338,6 +1698,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오늘 비어 있음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天没有安排"
           }
         },
         "zh-Hant" : {
@@ -1362,6 +1728,12 @@
             "value" : "운동"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运动"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1382,6 +1754,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "위젯 스냅샷 정리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整理小组件快照"
           }
         },
         "zh-Hant" : {
@@ -1406,6 +1784,12 @@
             "value" : "이번 주에 무엇을 되찾았는지 셉니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计算这周找回了什么。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1426,6 +1810,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이사 준비"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搬家准备"
           }
         },
         "zh-Hant" : {
@@ -1450,6 +1840,12 @@
             "value" : "일정 공유"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日程共享"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1470,6 +1866,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "일정 기준"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按日程"
           }
         },
         "zh-Hant" : {
@@ -1494,6 +1896,12 @@
             "value" : "일정 통계"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日程统计"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1514,6 +1922,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "자료 링크 하나 챙기기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "存下一个参考链接"
           }
         },
         "zh-Hant" : {
@@ -1538,6 +1952,12 @@
             "value" : "장보기 — 우유, 계란"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "采购 — 牛奶、鸡蛋"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1558,6 +1978,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금 5분에 집을 수 있는 단계 %lld개"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前有 %lld 个五分钟内可完成的步骤"
           }
         },
         "zh-Hant" : {
@@ -1582,6 +2008,12 @@
             "value" : "지금 5분에 집을 수 있는 단계만 모아 봅니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只集中显示现在五分钟内可完成的步骤。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1602,6 +2034,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금 일정 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前没有日程"
           }
         },
         "zh-Hant" : {
@@ -1626,6 +2064,12 @@
             "value" : "지금 집을 조각 없음"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前没有可做的碎片"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1646,6 +2090,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금 집을 조각이 없어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前没有可做的碎片"
           }
         },
         "zh-Hant" : {
@@ -1670,6 +2120,12 @@
             "value" : "지금 하는 일정에 얼마 남았는지 봅니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看目前进行中的日程还剩多少时间。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1690,6 +2146,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지금 할 단계와 무지개를 앱을 안 열고도 봅니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不用打开 App，也能查看目前的步骤与彩虹。"
           }
         },
         "zh-Hant" : {
@@ -1714,6 +2176,12 @@
             "value" : "집안일"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家务"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1734,6 +2202,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "책 한 챕터 읽기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读一章书"
           }
         },
         "zh-Hant" : {
@@ -1758,6 +2232,12 @@
             "value" : "캘린더에서 가져오기"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从日历导入"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1778,6 +2258,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "타이머"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计时器"
           }
         },
         "zh-Hant" : {
@@ -1802,6 +2288,12 @@
             "value" : "타이머 위젯이 잠겨 있습니다"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计时器小组件已锁定"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1822,6 +2314,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "할 일"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待办事项"
           }
         },
         "zh-Hant" : {
@@ -1846,6 +2344,12 @@
             "value" : "할 일 없음"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有待办事项"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1866,6 +2370,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "할 일 적기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写下待办事项"
           }
         },
         "zh-Hant" : {
@@ -1890,6 +2400,12 @@
             "value" : "할 일. "
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待办事项。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1912,6 +2428,12 @@
             "value" : "홈·잠금 화면 위젯"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主屏幕与锁定屏幕小组件"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1932,6 +2454,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "회수 장부"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找回账本"
           }
         },
         "zh-Hant" : {

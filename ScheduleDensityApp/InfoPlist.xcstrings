@@ -16,6 +16,12 @@
             "value" : "욕망의 무지개"
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欲望彩虹"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -34,6 +40,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ScheduleDensityApp"
@@ -62,6 +74,12 @@
             "value" : "고른 캘린더의 일정을 무지개에 함께 보여 드리려고 읽습니다. 캘린더에는 아무것도 쓰지 않으며, 일정은 외부로 전송되지 않습니다."
           }
         },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取你选择的日历，让其中的日程显示在彩虹上。不会写入你的日历，日程也不会发送到任何地方。"
+          }
+        },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
@@ -83,6 +101,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "일정 밀도를 분석하기 위해 캘린더 일정을 가져옵니다. 데이터는 기기에만 저장되며 외부로 전송되지 않습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取你的日历日程，用来分析每天的日程密度。数据只存储在此设备上，不会发送到外部。"
           }
         },
         "zh-Hant" : {
