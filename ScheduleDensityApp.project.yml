@@ -10,10 +10,13 @@ options:
   #    번들 ID를 바꾸면 기존 앱의 업데이트가 아니라 별개의 새 앱이 되어
   #    기존 사용자에게 도달하지 못한다. (placeholder 도메인처럼 보이지만 그대로 유지)
   bundleIdPrefix: com.example
-  # 원문의 언어. 각 타겟의 Localizable.xcstrings 의 sourceLanguage 와 같아야 한다.
+  # 개발 언어(= 기기 언어가 지원 밖일 때 iOS 가 고르는 표)는 영어다.
+  # xcstrings 의 sourceLanguage(ko — 키가 한국어 문장)와는 별개다: 한국어 표는 키로 채워지고,
+  # 지원하지 않는 언어의 사용자는 한국어가 아니라 영어를 본다. ko 로 되돌리지 말 것.
+  # 각 타깃 Info.plist 의 CFBundleDevelopmentRegion 도 en 이다.
   # ⚠️ knownRegions 는 여기 적지 않는다 — xcodegen 이 .xcstrings 를 읽어 스스로 채운다
   #    (전에 적어 봤는데 조용히 무시됐다). 언어를 늘리는 자리는 그 파일 하나뿐이다.
-  developmentLanguage: ko
+  developmentLanguage: en
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true

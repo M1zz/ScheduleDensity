@@ -12,6 +12,7 @@
 이제 23개 언어로 쓸 수 있습니다
 간체 중국어, 일본어, 독일어 등 20개 언어가 새로 들어왔습니다
 위젯과 공유 화면도 기기 언어로 보입니다
+지원하지 않는 언어의 기기에서는 영어로 보입니다
 ```
 
 ### 앱스토어 (English)
@@ -20,6 +21,7 @@
 Now available in 23 languages
 Now in Japanese, German and 18 more
 Widgets and sharing follow your language
+Other device languages now show English
 ```
 
 ### 앱스토어 (중국어 번체)
@@ -28,6 +30,7 @@ Widgets and sharing follow your language
 現在支援 23 種語言
 新增簡體中文、日文、德文等 20 種語言
 小工具和分享畫面也會跟隨裝置語言
+不支援的語言將改以英文顯示
 ```
 
 ### 앱스토어 (중국어 간체)
@@ -36,6 +39,7 @@ Widgets and sharing follow your language
 现已支持 23 种语言
 新增简体中文、日语、德语等 20 种语言
 小组件和共享页面也会跟随设备语言
+不支持的语言将改用英文显示
 ```
 
 ### 앱스토어 (일본어)
@@ -44,6 +48,7 @@ Widgets and sharing follow your language
 23の言語で使えるようになりました
 日本語、簡体字中国語、ドイツ語など20の言語が加わりました
 ウィジェットと共有画面もデバイスの言語で表示されます
+未対応の言語の端末では英語で表示されます
 ```
 
 ### 앱스토어 (독일어)
@@ -52,6 +57,7 @@ Widgets and sharing follow your language
 Jetzt in 23 Sprachen verfügbar
 20 neue Sprachen, darunter Deutsch
 Auch Widgets und Teilen sind auf Deutsch
+Andere Gerätesprachen zeigen nun Englisch
 ```
 
 ### 앱스토어 (스페인어)
@@ -60,6 +66,7 @@ Auch Widgets und Teilen sind auf Deutsch
 Ahora disponible en 23 idiomas
 Llegan español, japonés, alemán y 17 más
 Widgets y Compartir, ya en tu idioma
+Otros idiomas del dispositivo: en inglés
 ```
 
 ### 앱스토어 (프랑스어)
@@ -68,6 +75,7 @@ Widgets y Compartir, ya en tu idioma
 L’app parle désormais 23 langues
 Français, japonais et 18 autres langues
 Widgets et partage parlent votre langue
+Autres langues de l’appareil : en anglais
 ```
 
 ### 앱스토어 (이탈리아어)
@@ -76,6 +84,7 @@ Widgets et partage parlent votre langue
 Ora disponibile in 23 lingue
 20 nuove lingue, tra cui l’italiano
 Widget e condivisione ora in italiano
+Con altre lingue del dispositivo: inglese
 ```
 
 ### 앱스토어 (포르투갈어(브라질))
@@ -84,6 +93,7 @@ Widget e condivisione ora in italiano
 Agora disponível em 23 idiomas
 Chegam português, japonês, alemão e mais
 Widgets e compartilhamento no seu idioma
+Outros idiomas do aparelho: em inglês
 ```
 
 ### 앱스토어 (러시아어)
@@ -92,6 +102,7 @@ Widgets e compartilhamento no seu idioma
 Теперь приложение доступно на 23 языках
 Добавлено 20 языков, включая русский
 Виджеты и меню отправки тоже на русском
+На других языках устройства — английский
 ```
 
 ### 앱스토어 (체코어)
@@ -100,6 +111,7 @@ Widgets e compartilhamento no seu idioma
 Aplikace je teď ve 23 jazycích
 Nově čeština, polština, němčina a další
 Widgety a sdílení jsou v jazyce zařízení
+Jiné jazyky zařízení nyní v angličtině
 ```
 
 ### 앱스토어 (덴마크어)
@@ -108,6 +120,7 @@ Widgety a sdílení jsou v jazyce zařízení
 Nu kan du bruge appen på 23 sprog
 20 nye sprog, bl.a. dansk, norsk og tysk
 Widgets og deling vises nu på dansk
+Andre enhedssprog viser nu engelsk
 ```
 
 ### 앱스토어 (그리스어)
@@ -116,6 +129,7 @@ Widgets og deling vises nu på dansk
 Τώρα διαθέσιμο σε 23 γλώσσες
 Ήρθαν ελληνικά, ιαπωνικά και 18 ακόμη
 Widget και κοινή χρήση στη γλώσσα σου
+Σε άλλες γλώσσες συσκευής: αγγλικά
 ```
 
 ### 앱스토어 (핀란드어)
@@ -124,6 +138,7 @@ Widget και κοινή χρήση στη γλώσσα σου
 Nyt käytettävissä 23 kielellä
 20 uutta kieltä, mm. suomi ja ruotsi
 Widgetit ja jako näkyvät omalla kielellä
+Muilla laitteen kielillä näkyy englanti
 ```
 
 ### 앱스토어 (인도네시아어)
@@ -132,6 +147,7 @@ Widgetit ja jako näkyvät omalla kielellä
 Kini tersedia dalam 23 bahasa
 Hadir 20 bahasa baru, termasuk Indonesia
 Widget dan berbagi kini ikut bahasa Anda
+Bahasa lain kini memakai bahasa Inggris
 ```
 
 ### 앱스토어 (노르웨이어(보크말))
@@ -140,6 +156,7 @@ Widget dan berbagi kini ikut bahasa Anda
 Nå kan du bruke appen på 23 språk
 20 nye språk, blant annet norsk og dansk
 Widgeter og deling vises nå på norsk
+Andre enhetsspråk viser nå engelsk
 ```
 
 ### 앱스토어 (네덜란드어)
@@ -148,6 +165,7 @@ Widgeter og deling vises nå på norsk
 De app is nu beschikbaar in 23 talen
 Nu ook in het Nederlands, Duits en meer
 Widgets en delen nu ook in je eigen taal
+Andere apparaattalen tonen nu Engels
 ```
 
 ### 앱스토어 (폴란드어)
@@ -156,6 +174,7 @@ Widgets en delen nu ook in je eigen taal
 Aplikacja działa teraz w 23 językach
 Nowe języki to m.in. polski i niemiecki
 Widżety i udostępnianie mówią po polsku
+Inne języki urządzenia: teraz angielski
 ```
 
 ### 앱스토어 (스웨덴어)
@@ -164,6 +183,7 @@ Widżety i udostępnianie mówią po polsku
 Nu finns appen på 23 språk
 20 nya språk, bl.a. svenska och tyska
 Widgetar och delning visas på ditt språk
+Andra enhetsspråk visar nu engelska
 ```
 
 ### 앱스토어 (태국어)
@@ -172,6 +192,7 @@ Widgetar och delning visas på ditt språk
 ตอนนี้ใช้งานได้ 23 ภาษาแล้ว
 เพิ่มใหม่ 20 ภาษา รวมถึงไทยและญี่ปุ่น
 วิดเจ็ตและหน้าแชร์แสดงตามภาษาของอุปกรณ์
+ภาษาอื่นที่ยังไม่รองรับจะแสดงเป็นอังกฤษ
 ```
 
 ### 앱스토어 (튀르키예어)
@@ -180,6 +201,7 @@ Widgetar och delning visas på ditt språk
 Artık 23 dilde kullanılabilir
 Türkçe, Japonca gibi 20 yeni dil eklendi
 Araç takımları ve paylaşım artık Türkçe
+Diğer cihaz dillerinde artık İngilizce
 ```
 
 ### 앱스토어 (베트남어)
@@ -188,6 +210,7 @@ Araç takımları ve paylaşım artık Türkçe
 Giờ đây ứng dụng có 23 ngôn ngữ
 Thêm 20 ngôn ngữ mới, có cả tiếng Việt
 Tiện ích và chia sẻ theo ngôn ngữ máy
+Ngôn ngữ chưa hỗ trợ sẽ hiện tiếng Anh
 ```
 
 ### 욕망의 무지개 (iOS) 개발 메모
