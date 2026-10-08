@@ -53,7 +53,7 @@ struct UsageStatsView: View {
     private var steadinessSection: some View {
         Section {
             bigRow(title: String(localized: "연속으로 여신 날"),
-                   value: "\(stats.streakDays)일",
+                   value: String(localized: "\(stats.streakDays)일"),
                    note: stats.streakDays >= 2 ? String(localized: "끊기지 않고 이어지는 중입니다.") : String(localized: "오늘부터 셉니다."))
             row(String(localized: "최근 30일 중"), String(localized: "\(stats.activeDaysLast30)일"))
             row(String(localized: "쓰신 지"), String(localized: "\(stats.daysSinceInstall)일째"))
