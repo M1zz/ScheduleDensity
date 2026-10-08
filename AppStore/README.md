@@ -1,6 +1,6 @@
 # App Store 스크린샷
 
-언어 세 벌 × 크기 세 벌 = 54장. `<언어>/<크기>/01-rainbow.png` … `06-free.png`.
+언어 스물세 벌 × 크기 세 벌 = 414장. 언어 목록은 `render.mjs` 의 `ALL_LOCALES`. `<언어>/<크기>/01-rainbow.png` … `06-free.png`.
 
 ```
 AppStore/

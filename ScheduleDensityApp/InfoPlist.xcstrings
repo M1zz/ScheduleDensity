@@ -4,7 +4,67 @@
     "CFBundleDisplayName" : {
       "comment" : "Bundle display name",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rainbow of Desire"
@@ -14,6 +74,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "욕망의 무지개"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
           }
         },
         "zh-Hans" : {
@@ -33,13 +147,127 @@
     "CFBundleName" : {
       "comment" : "Bundle name",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ScheduleDensityApp"
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
+        "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ScheduleDensityApp"
@@ -62,16 +290,130 @@
     "NSCalendarsFullAccessUsageDescription" : {
       "comment" : "Privacy - Calendars Full Access Usage Description",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Čte vybrané kalendáře, aby se jejich události mohly zobrazit ve vaší duze. Do kalendářů nic nezapisuje a události nikam neodesílá."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Læser de kalendere, du vælger, så deres begivenheder kan vises på din regnbue. Der skrives intet i dine kalendere, og begivenhederne sendes aldrig nogen steder hen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liest die Kalender, die du auswählst, damit ihre Termine auf deinem Regenbogen erscheinen. In deine Kalender wird nichts geschrieben, und Termine werden nirgendwohin gesendet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διαβάζει τα ημερολόγια που επιλέγεις, ώστε τα συμβάντα τους να εμφανίζονται στο ουράνιο τόξο σου. Δεν γράφεται τίποτα στα ημερολόγιά σου και τα συμβάντα δεν αποστέλλονται πουθενά."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reads the calendars you pick so their events can show on your rainbow. Nothing is written to your calendars, and events are never sent anywhere."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee los calendarios que elijas para mostrar sus eventos en tu arcoíris. No escribe nada en tus calendarios y los eventos nunca se envían a ninguna parte."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lukee valitsemiasi kalentereita, jotta niiden tapahtumat näkyvät sateenkaaressasi. Kalentereihisi ei kirjoiteta mitään, eikä tapahtumia lähetetä minnekään."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’app lit les calendriers que vous choisissez pour afficher leurs événements sur votre arc-en-ciel. Rien n’est écrit dans vos calendriers et vos événements ne sont jamais envoyés ailleurs."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membaca kalender yang Anda pilih agar acaranya tampil di pelangi Anda. Tidak ada yang ditulis ke kalender Anda, dan acara tidak pernah dikirim ke mana pun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’app legge i calendari che scegli per mostrarne gli eventi sull’Arcobaleno. Nei tuoi calendari non viene scritto nulla e gli eventi non vengono mai inviati altrove."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選んだカレンダーの予定を虹に一緒に表示するために読み取ります。カレンダーには何も書き込まず、予定が外部に送信されることもありません。"
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "고른 캘린더의 일정을 무지개에 함께 보여 드리려고 읽습니다. 캘린더에는 아무것도 쓰지 않으며, 일정은 외부로 전송되지 않습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leser kalenderne du velger, slik at hendelsene der kan vises på regnbuen din. Ingenting skrives til kalenderne dine, og hendelsene sendes aldri noe sted."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leest de agenda's die je kiest, zodat hun activiteiten op je regenboog verschijnen. Er wordt niets in je agenda's gezet en activiteiten worden nergens naartoe gestuurd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplikacja odczytuje wybrane przez Ciebie kalendarze, aby pokazać ich wydarzenia na tęczy. Niczego nie zapisuje w kalendarzach, a wydarzenia nigdy nie są nigdzie wysyłane."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lê os calendários que você escolher para mostrar os eventos no seu arco-íris. Nada é gravado nos seus calendários, e os eventos nunca são enviados para lugar nenhum."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложение читает выбранные вами календари, чтобы показывать их события на радуге. В календари ничего не записывается, и события никуда не отправляются."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Läser de kalendrar du väljer så att deras händelser kan visas i din regnbåge. Inget skrivs till dina kalendrar och händelserna skickas aldrig någonstans."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อ่านปฏิทินที่คุณเลือกเพื่อแสดงกิจกรรมบนสายรุ้ง แอปจะไม่เขียนสิ่งใดลงในปฏิทิน และจะไม่ส่งกิจกรรมออกไปที่ใด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seçtiğiniz takvimlerdeki etkinlikleri gökkuşağınızda göstermek için bu takvimleri okur. Takvimlerinize hiçbir şey yazılmaz ve etkinlikler hiçbir yere gönderilmez."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ứng dụng đọc các lịch bạn chọn để hiển thị sự kiện trên cầu vồng. Ứng dụng không ghi gì vào lịch của bạn và không gửi sự kiện đi bất cứ đâu."
           }
         },
         "zh-Hans" : {
@@ -91,16 +433,130 @@
     "NSCalendarsUsageDescription" : {
       "comment" : "Privacy - Calendars Usage Description",
       "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Čte události z kalendáře, aby mohla změřit, jak plné máte dny. Data zůstávají jen v tomto zařízení a nikam se neodesílají."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Læser dine kalenderbegivenheder for at måle, hvor fyldte dine dage er. Dataene bliver på denne enhed og sendes aldrig nogen steder hen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Liest deine Kalendertermine, um zu messen, wie voll deine Tage sind. Die Daten bleiben auf diesem Gerät und werden nirgendwohin gesendet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Διαβάζει τα συμβάντα του ημερολογίου σου για να μετρήσει πόσο γεμάτες είναι οι μέρες σου. Τα δεδομένα μένουν σε αυτή τη συσκευή και δεν αποστέλλονται πουθενά."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reads your calendar events so it can measure how full your days are. The data stays on this device and is never sent anywhere."
           }
         },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lee los eventos de tu calendario para medir qué tan llenos están tus días. Los datos se quedan en este dispositivo y nunca se envían a ninguna parte."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lukee kalenterisi tapahtumat, jotta päiviesi täyttöaste voidaan laskea. Tiedot pysyvät tällä laitteella eikä niitä lähetetä minnekään."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’app lit vos événements de calendrier pour mesurer à quel point vos journées sont remplies. Les données restent sur cet appareil et ne sont jamais envoyées ailleurs."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Membaca acara kalender Anda untuk mengukur seberapa padat hari-hari Anda. Data hanya disimpan di perangkat ini dan tidak pernah dikirim ke mana pun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’app legge gli eventi del calendario per misurare quanto sono pieni i tuoi giorni. I dati restano su questo dispositivo e non vengono mai inviati altrove."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予定の密度を分析するために、カレンダーの予定を読み取ります。データはこのデバイスにのみ保存され、外部に送信されることはありません。"
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "일정 밀도를 분석하기 위해 캘린더 일정을 가져옵니다. 데이터는 기기에만 저장되며 외부로 전송되지 않습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leser kalenderhendelsene dine for å måle hvor fulle dagene dine er. Dataene blir på denne enheten og sendes aldri noe sted."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leest je agenda-activiteiten om te meten hoe vol je dagen zijn. De gegevens blijven op dit apparaat en worden nergens naartoe gestuurd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplikacja odczytuje wydarzenia z kalendarza, aby ocenić, jak bardzo zapełnione są Twoje dni. Dane zostają na tym urządzeniu i nigdy nie są nigdzie wysyłane."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lê os eventos do seu calendário para medir o quanto seus dias estão cheios. Os dados ficam neste dispositivo e nunca são enviados para lugar nenhum."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приложение читает события календаря, чтобы оценить, насколько заполнены ваши дни. Данные хранятся только на этом устройстве и никуда не отправляются."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Läser dina kalenderhändelser för att mäta hur fulla dina dagar är. Datan stannar på den här enheten och skickas aldrig någonstans."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "อ่านกิจกรรมในปฏิทินเพื่อวัดว่าแต่ละวันแน่นแค่ไหน ข้อมูลจะเก็บไว้ในอุปกรณ์นี้เท่านั้นและไม่ถูกส่งออกไปที่ใด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Günlerinizin ne kadar dolu olduğunu ölçmek için takvim etkinliklerinizi okur. Veriler yalnızca bu aygıtta kalır ve hiçbir yere gönderilmez."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ứng dụng đọc sự kiện trong lịch để đo mức độ dày đặc của các ngày. Dữ liệu chỉ lưu trên thiết bị này và không được gửi đi bất cứ đâu."
           }
         },
         "zh-Hans" : {

@@ -1,5 +1,203 @@
 # 릴리즈 노트
 
+## 1.1.10
+
+### 앱스토어 (한국어)
+
+<!-- App Store Connect '이 버전의 새로운 기능' 에 그대로 올라가는 글이다.
+     DeployBar 가 이 코드펜스 안을 읽어 쓴다 (→ RepoNotes.swift).
+     글머리표·번호·이모지·마크다운은 넣지 않는다. 줄바꿈으로만 가른다. -->
+
+```
+이제 23개 언어로 쓸 수 있습니다
+간체 중국어, 일본어, 독일어 등 20개 언어가 새로 들어왔습니다
+위젯과 공유 화면도 기기 언어로 보입니다
+```
+
+### 앱스토어 (English)
+
+```
+Now available in 23 languages
+Now in Japanese, German and 18 more
+Widgets and sharing follow your language
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+現在支援 23 種語言
+新增簡體中文、日文、德文等 20 種語言
+小工具和分享畫面也會跟隨裝置語言
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+现已支持 23 种语言
+新增简体中文、日语、德语等 20 种语言
+小组件和共享页面也会跟随设备语言
+```
+
+### 앱스토어 (일본어)
+
+```
+23の言語で使えるようになりました
+日本語、簡体字中国語、ドイツ語など20の言語が加わりました
+ウィジェットと共有画面もデバイスの言語で表示されます
+```
+
+### 앱스토어 (독일어)
+
+```
+Jetzt in 23 Sprachen verfügbar
+20 neue Sprachen, darunter Deutsch
+Auch Widgets und Teilen sind auf Deutsch
+```
+
+### 앱스토어 (스페인어)
+
+```
+Ahora disponible en 23 idiomas
+Llegan español, japonés, alemán y 17 más
+Widgets y Compartir, ya en tu idioma
+```
+
+### 앱스토어 (프랑스어)
+
+```
+L’app parle désormais 23 langues
+Français, japonais et 18 autres langues
+Widgets et partage parlent votre langue
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Ora disponibile in 23 lingue
+20 nuove lingue, tra cui l’italiano
+Widget e condivisione ora in italiano
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Agora disponível em 23 idiomas
+Chegam português, japonês, alemão e mais
+Widgets e compartilhamento no seu idioma
+```
+
+### 앱스토어 (러시아어)
+
+```
+Теперь приложение доступно на 23 языках
+Добавлено 20 языков, включая русский
+Виджеты и меню отправки тоже на русском
+```
+
+### 앱스토어 (체코어)
+
+```
+Aplikace je teď ve 23 jazycích
+Nově čeština, polština, němčina a další
+Widgety a sdílení jsou v jazyce zařízení
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Nu kan du bruge appen på 23 sprog
+20 nye sprog, bl.a. dansk, norsk og tysk
+Widgets og deling vises nu på dansk
+```
+
+### 앱스토어 (그리스어)
+
+```
+Τώρα διαθέσιμο σε 23 γλώσσες
+Ήρθαν ελληνικά, ιαπωνικά και 18 ακόμη
+Widget και κοινή χρήση στη γλώσσα σου
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Nyt käytettävissä 23 kielellä
+20 uutta kieltä, mm. suomi ja ruotsi
+Widgetit ja jako näkyvät omalla kielellä
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Kini tersedia dalam 23 bahasa
+Hadir 20 bahasa baru, termasuk Indonesia
+Widget dan berbagi kini ikut bahasa Anda
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Nå kan du bruke appen på 23 språk
+20 nye språk, blant annet norsk og dansk
+Widgeter og deling vises nå på norsk
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+De app is nu beschikbaar in 23 talen
+Nu ook in het Nederlands, Duits en meer
+Widgets en delen nu ook in je eigen taal
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Aplikacja działa teraz w 23 językach
+Nowe języki to m.in. polski i niemiecki
+Widżety i udostępnianie mówią po polsku
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Nu finns appen på 23 språk
+20 nya språk, bl.a. svenska och tyska
+Widgetar och delning visas på ditt språk
+```
+
+### 앱스토어 (태국어)
+
+```
+ตอนนี้ใช้งานได้ 23 ภาษาแล้ว
+เพิ่มใหม่ 20 ภาษา รวมถึงไทยและญี่ปุ่น
+วิดเจ็ตและหน้าแชร์แสดงตามภาษาของอุปกรณ์
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Artık 23 dilde kullanılabilir
+Türkçe, Japonca gibi 20 yeni dil eklendi
+Araç takımları ve paylaşım artık Türkçe
+```
+
+### 앱스토어 (베트남어)
+
+```
+Giờ đây ứng dụng có 23 ngôn ngữ
+Thêm 20 ngôn ngữ mới, có cả tiếng Việt
+Tiện ích và chia sẻ theo ngôn ngữ máy
+```
+
+### 욕망의 무지개 (iOS) 개발 메모
+
+**20개 언어를 더해 23개 언어로.**
+
+- 앱·위젯·공유 확장 xcstrings 1131개 문자열을 zh-Hans 외 19개 언어(ja de es fr it pt-BR ru cs da el fi id nb nl pl sv th tr vi)로. 용어는 맥 앱 무지개 공방 번역에 맞췄다.
+- 영어 '%@ of the %lld you wrote.' 의 인자 순서가 한국어(%lld, %@)와 거꾸로라 값이 뒤바뀌어 찍히던 것을 위치 지정(%2$@ … %1$lld)으로 바로잡음.
+- 스토어 문구(APPSTORE.md), 스크린샷(AppStore/screenshots.html STRINGS), 제품 페이지 헤더·검색 결과 그림을 새 언어마다.
+
 ## 1.1.9
 
 ### 앱스토어 (한국어)

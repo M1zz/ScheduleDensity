@@ -22,10 +22,10 @@ SHOTS = ROOT / "docs" / "screenshots" / "marketing"
 OUT = ROOT / "docs" / "screenshots" / "creative"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-# 앱 언어 코드 → App Store Connect 로케일 (deploy.env LOCALES=ko,en,zh-Hant)
+# 앱 언어 코드 → App Store Connect 로케일 (deploy.env LOCALES). 같으면 적지 않는다.
 STORE = {"en": "en-US"}
-# 마케팅 스크린샷 폴더 이름
-SHOT_DIR = {"ko": "ko", "en": "en", "zh-Hant": "zh-Hant"}
+# 마케팅 스크린샷 폴더 이름 (언어 코드와 같으면 적지 않는다)
+SHOT_DIR = {}
 
 # (가로, 세로, 안전 영역 left, top, right, bottom)
 SPEC = {
@@ -39,6 +39,26 @@ SEARCH = {
     "ko":      ("일정관리", "이번 주가<br>얼마나 빽빽한지", "일정이 겹칠수록 색이 진해집니다"),
     "en":      ("Weekly planner", "See the week<br>before it lands", "The more plans overlap, the deeper the color"),
     "zh-Hant": ("行事曆", "這週有多滿<br>一眼就知道", "行程重疊越多，顏色就越深"),
+    "zh-Hans": ("日程管理", "这周有多满<br>一眼就知道", "日程重叠越多，颜色就越深"),
+    "ja": ("週間プランナー", "今週の混み具合が<br>ひと目でわかる", "予定が重なるほど、色が濃くなる"),
+    "de": ("Wochenplaner", "Sieh die Woche,<br>bevor sie kommt", "Je mehr sich überschneidet, desto kräftiger die Farbe"),
+    "es": ("Planificador semanal", "Mira tu semana<br>antes de vivirla", "Cuanto más se cruzan los planes, más intenso el color"),
+    "fr": ("Planning semaine", "La semaine,<br>vue d’avance", "Plus les projets se chevauchent, plus la couleur fonce"),
+    "it": ("Agenda settimanale", "Guarda la settimana<br>prima che arrivi", "Più gli impegni si sovrappongono, più il colore si fa intenso"),
+    "pt-BR": ("Planner semanal", "Veja a semana<br>antes de ela chegar", "Quanto mais os planos se cruzam, mais forte a cor"),
+    "ru": ("Ежедневник", "Насколько плотная<br>эта неделя", "Чем больше дела пересекаются, тем гуще цвет"),
+    "cs": ("Týdenní plánovač", "Uvidíte, jak plný<br>bude váš týden", "Čím víc se plány překrývají, tím sytější barva"),
+    "da": ("Ugeplan", "Se ugen,<br>før den rammer", "Jo mere planerne overlapper, jo mørkere farve"),
+    "el": ("Εβδομαδιαίο πλάνο", "Δες την εβδομάδα<br>πριν έρθει", "Όσο επικαλύπτονται τα πλάνα, τόσο βαθαίνει το χρώμα"),
+    "fi": ("Viikkosuunnittelu", "Näe viikko<br>ennen kuin se alkaa", "Mitä enemmän päällekkäin, sitä tummempi väri"),
+    "id": ("Planner mingguan", "Lihat minggu Anda<br>sebelum tiba", "Makin banyak jadwal bertumpuk, makin pekat warnanya"),
+    "nb": ("Ukeplan", "Se uken<br>før den treffer", "Jo mer planene overlapper, desto mørkere farge"),
+    "nl": ("Weekplanner", "Zie je week<br>voordat hij begint", "Hoe meer plannen overlappen, hoe dieper de kleur"),
+    "pl": ("Planer tygodniowy", "Zobacz tydzień,<br>zanim nadejdzie", "Im więcej planów się nakłada, tym ciemniejszy kolor"),
+    "sv": ("Veckoplanerare", "Se veckan<br>innan den kommer", "Ju mer som överlappar, desto djupare färg"),
+    "th": ("วางแผนรายสัปดาห์", "สัปดาห์นี้แน่นแค่ไหน<br>เห็นได้ทันที", "ยิ่งงานซ้อนกัน สียิ่งเข้ม"),
+    "tr": ("Haftalık planlayıcı", "Haftayı gelmeden<br>önce görün", "Planlar çakıştıkça renk koyulaşır"),
+    "vi": ("Lập kế hoạch tuần", "Tuần này kín cỡ nào?<br>Nhìn là biết", "Lịch càng chồng, màu càng đậm"),
 }
 
 # 헤더는 한 가지 약속: 빡빡한 주를 들어서기 전에 색으로 먼저 본다.
@@ -47,6 +67,26 @@ HEADER = {
     "ko":      ("주간 플래너", "빡빡한 한 주,<br>색으로 먼저 봅니다"),
     "en":      ("Week planner", "Know a busy week<br>before you're in it"),
     "zh-Hant": ("週計畫", "忙碌的一週，<br>先用顏色看見"),
+    "zh-Hans": ("周计划", "忙碌的一周，<br>先用颜色看清"),
+    "ja": ("週間プランナー", "忙しい1週間を、<br>先に色で見る"),
+    "de": ("Wochenplaner", "Die volle Woche<br>vorher sehen"),
+    "es": ("Agenda semanal", "Una semana cargada,<br>vista antes en color"),
+    "fr": ("Planning hebdo", "Une semaine chargée ?<br>Voyez-la venir"),
+    "it": ("Planner settimanale", "Una settimana piena,<br>prima la vedi a colori"),
+    "pt-BR": ("Agenda semanal", "Semana cheia?<br>Veja antes, pela cor"),
+    "ru": ("Планер недели", "Плотная неделя?<br>Видно по цвету"),
+    "cs": ("Týdenní plánovač", "Nabitý týden<br>poznáte předem"),
+    "da": ("Ugeplanlægger", "Se en travl uge,<br>før du er i den"),
+    "el": ("Πλάνο εβδομάδας", "Η γεμάτη εβδομάδα,<br>πρώτα σε χρώμα"),
+    "fi": ("Viikkoplanneri", "Näe kiireinen viikko<br>etukäteen"),
+    "id": ("Planner mingguan", "Minggu padat,<br>terlihat lebih dulu"),
+    "nb": ("Ukeplanlegger", "Se en travel uke<br>før du er i den"),
+    "nl": ("Weekplanner", "Een drukke week?<br>Zie het aan de kleur"),
+    "pl": ("Planer tygodnia", "Pełny tydzień?<br>Zobacz go w kolorach"),
+    "sv": ("Veckoplanerare", "Se en tung vecka<br>innan du är i den"),
+    "th": ("แพลนเนอร์รายสัปดาห์", "สัปดาห์ที่ยุ่ง<br>เห็นก่อนด้วยสี"),
+    "tr": ("Haftalık ajanda", "Yoğun haftayı<br>önceden görün"),
+    "vi": ("Kế hoạch tuần", "Tuần bận rộn,<br>nhìn màu là thấy trước"),
 }
 
 # 무지개 격자 색(앱 RainbowPalette, AppStore/screenshots.html 과 같다)
@@ -60,13 +100,18 @@ body { background:linear-gradient(175deg,#f2f6ff 0%%,#dfe8ff 100%%); position:re
   -webkit-font-smoothing:antialiased;
   font-family:-apple-system, "SF Pro Display", "Apple SD Gothic Neo", sans-serif; }
 :lang(zh-Hant) body, body:lang(zh-Hant) { font-family:"PingFang TC", -apple-system, sans-serif; line-break:strict; }
+:lang(zh-Hans) body, body:lang(zh-Hans) { font-family:"PingFang SC", -apple-system, sans-serif; line-break:strict; }
+:lang(ja) body, body:lang(ja) { font-family:"Hiragino Sans", -apple-system, sans-serif; line-break:strict; }
+:lang(th) body, body:lang(th) { font-family:-apple-system, "Thonburi", sans-serif; }
 .wash { position:absolute; left:0; right:0; bottom:0; background:linear-gradient(180deg, transparent, rgba(0,122,255,.20)); }
 .glow { position:absolute; border-radius:50%%; filter:blur(160px); pointer-events:none; }
 .text { position:absolute; display:flex; flex-direction:column; justify-content:center; }
 .eyebrow { font-weight:700; color:#007AFF; letter-spacing:.02em; line-height:1.15; }
 .headline { font-weight:800; color:#101534; letter-spacing:-0.02em; line-height:1.14; text-wrap:balance; }
 .sub { font-weight:500; color:#4b5578; letter-spacing:-0.01em; line-height:1.4; text-wrap:balance; }
-:lang(zh) .headline, :lang(zh) .eyebrow, :lang(zh) .sub { letter-spacing:.01em; }
+:lang(zh) .headline, :lang(zh) .eyebrow, :lang(zh) .sub, :lang(ja) .headline, :lang(ja) .eyebrow, :lang(ja) .sub { letter-spacing:.01em; }
+:lang(th) .headline { line-height:1.32; letter-spacing:0; }
+:lang(th) .sub { line-height:1.55; }
 :lang(ko) .headline { line-height:1.2; }
 :lang(ko) .headline, :lang(ko) .sub, :lang(ko) .eyebrow { word-break:keep-all; }
 .phone { position:absolute;
@@ -114,7 +159,7 @@ PROFILE = TMP / "chrome-profile"
 def screen(lang, name):
     """마케팅 스크린샷에서 기기 화면만 잘라 낸다. 기기는 언어마다 자리가 조금 달라 픽셀로 찾는다:
     가운데 줄에서 검은 테두리 안쪽(밝은 화면)의 좌우, 가운데 세로줄에서 테두리 아래 화면 위끝."""
-    src = SHOTS / SHOT_DIR[lang] / f"{name}.png"
+    src = SHOTS / SHOT_DIR.get(lang, lang) / f"{name}.png"
     im = Image.open(src).convert("RGB")
     W, H = im.size
     row = [sum(im.getpixel((x, 1500))) for x in range(W)]

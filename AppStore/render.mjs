@@ -47,6 +47,8 @@ const ALL_LOCALES = [
   { lang: 'en', dir: 'en-US' },
   { lang: 'ko', dir: 'ko' },
   { lang: 'zh-Hant', dir: 'zh-Hant' },   // Traditional Chinese (Taiwan)
+  ...['zh-Hans', 'ja', 'de', 'es', 'fr', 'it', 'pt-BR', 'ru', 'cs', 'da', 'el',
+      'fi', 'id', 'nb', 'nl', 'pl', 'sv', 'th', 'tr', 'vi'].map(lang => ({ lang, dir: lang })),
 ];
 // Optional filter: `node AppStore/render.mjs zh-Hant` re-renders one set and
 // leaves the others' PNGs untouched.
