@@ -142,11 +142,14 @@ final class TodoEventBridge {
     /// (→ `TodoWhen`). 예전에는 끝나는 날만 읽어 갔는데, 그러면 "오늘부터 시작하는 일"과
     /// "다음 주에 시작해서 다음 주에 끝나는 일"이 화면에서 구분되지 않는다.
     func periodsByToken() -> [String: (start: Date, end: Date)] {
-        var result: [String: (start: Date, end: Date)] = [:]
+        var byToken: [String: [Event]] = [:]
         for event in storedEvents() {
-            if let token = event.todoToken { result[token] = (event.startDate, event.endDate) }
+            if let token = event.todoToken { byToken[token, default: []].append(event) }
         }
-        return result
+        // 같은 할 일에 줄이 여럿이면 event(for:)와 같은 하나를 고른다 — 목록과 상세가 다른 기한을 말하지 않게.
+        return byToken.compactMapValues { events in
+            pick(events).map { ($0.startDate, $0.endDate) }
+        }
     }
 
     /// 무지개에는 그어져 있는데 아직 할 일로 안 가져온 일들 — 그중 이번 주에 걸친 것만.
@@ -233,8 +236,18 @@ final class TodoEventBridge {
         return (try? context.fetch(descriptor)) ?? []
     }
 
+    /// 이 할 일에 이어진 줄.
+    ///
+    /// ⚠️ 하나라고 믿지 않는다. A 폰이 정한 기한이 B에 오기 전에 B에서도 같은 할 일에 기한을 정하면,
+    ///    다리가 A 것을 받아 세우는 순간 B에 줄이 둘이다. 다리는 곧 사본 uuid가 작은 쪽 하나로 합치는데
+    ///    (→ RainbowBridge 7번), 그 사이에 '먼저 찾은 것'을 고치면 지워질 쪽을 고친 셈이 된다.
+    ///    그래서 다리가 남길 쪽을 같은 규칙으로 고른다.
     private func event(for item: BacklogItem) -> Event? {
-        storedEvents().first { $0.todoToken == item.dragToken }
+        pick(storedEvents().filter { $0.todoToken == item.dragToken })
+    }
+
+    private func pick(_ events: [Event]) -> Event? {
+        RainbowBridge.shared.preferred(among: events)
     }
 
     private func todo(withToken token: String) -> BacklogItem? {

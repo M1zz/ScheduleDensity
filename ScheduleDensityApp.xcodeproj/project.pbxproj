@@ -13,6 +13,7 @@
 		07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */; };
 		07FF2CA8DD7C9425D2D6F95B /* TodoWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F72F9EC4C2F155B4FA16D8 /* TodoWidgetSnapshot.swift */; };
 		0B6581ED5CA549E4585C7B2A /* FragmentWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9554167B35E0F3AE9A560 /* FragmentWidget.swift */; };
+		0EA6A29B497C2A262A6E0DB1 /* DeletionMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14BACF1AC9F509E8472DF879 /* DeletionMark.swift */; };
 		15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */; };
 		15BD1FF9295E0253422A35FA /* TodoSplitOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */; };
 		15BEC2A471176C1A6388C507 /* todo.md in Resources */ = {isa = PBXBuildFile; fileRef = A16BC621C70AAA92574B4346 /* todo.md */; };
@@ -175,6 +176,7 @@
 		0CFC92E1EC2EDB41AF3C0551 /* TimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerWidget.swift; sourceTree = "<group>"; };
 		0EA73C01E663B2E7E1A5958A /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
+		14BACF1AC9F509E8472DF879 /* DeletionMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionMark.swift; sourceTree = "<group>"; };
 		1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSchemaPrimer.swift; sourceTree = "<group>"; };
 		21B9E11A1412D10BA1E0617A /* TodoDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoDeletion.swift; sourceTree = "<group>"; };
@@ -493,6 +495,7 @@
 				2E623D45F3D5901AF972B0CA /* BacklogItem+StepOrder.swift */,
 				5CCA231C8EF9417E46288EC6 /* ColorHex.swift */,
 				30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */,
+				14BACF1AC9F509E8472DF879 /* DeletionMark.swift */,
 				AE4F89BB87CEC698A7C04740 /* FamilyShareStore.swift */,
 				AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */,
 				E0A2F8F7F90B5C18D0D0905E /* Models.swift */,
@@ -758,6 +761,7 @@
 				18554C8EA4088D5836DAC51C /* DateExtensions.swift in Sources */,
 				57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */,
 				8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */,
+				0EA6A29B497C2A262A6E0DB1 /* DeletionMark.swift in Sources */,
 				1A9DF801882FB2C7865CD0F6 /* DensityCalculator.swift in Sources */,
 				8C481777010B7DB840761A77 /* DensityChartView.swift in Sources */,
 				C5A8628CA718CEF5D0C15249 /* DoneTodosView.swift in Sources */,

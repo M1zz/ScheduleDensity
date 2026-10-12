@@ -122,10 +122,33 @@ enum TodoArchive {
         let now = (try? context.fetchCount(FetchDescriptor<BacklogItem>())) ?? 0
         guard now == 0, let snapshot = load(), !snapshot.items.isEmpty else { return }
 
-        print("🚑 [Archive] 스토어가 비어 있다 — 떠 둔 \(snapshot.items.count)개를 되돌린다")
+        // ⚠️ 비어 있다고 다 되돌리지 않는다. 기기가 넷이라 '빈 스토어'는 두 가지일 수 있다.
+        //    · 다른 기기에서 사람이 지웠다 → 지움 표(DeletionMark)가 함께 내려와 있다. 되살리면 안 된다.
+        //    · 아직 내려받는 중이다 → 넣는 사이에 같은 할 일이 내려와 둘이 된다.
+        //    그래서 표가 있는 것은 빼고, 넣기 직전에 같은 토큰 · 같은 uuid가 이미 있는지 다시 본다.
+        let marked = DeletionLog.marks(in: context)
+        let haveTokens = Set(((try? context.fetch(FetchDescriptor<BacklogItem>())) ?? []).map(\.dragToken))
+        let haveCategories = Set(((try? context.fetch(FetchDescriptor<BacklogCategory>())) ?? []).map(\.uuid))
+        let deletedTokens = Set(snapshot.items.map(\.dragToken).filter { marked.contains("item:\($0)") })
+        let items = snapshot.items.filter { i in
+            !deletedTokens.contains(i.dragToken)
+                // 지운 할 일의 단계도 따라 지워졌을 것이다 — 뿌리 없이 단계만 되살리지 않는다.
+                && !(i.parentToken.map(deletedTokens.contains) ?? false)
+                && !haveTokens.contains(i.dragToken)
+        }
+        let categories = snapshot.categories.filter {
+            !marked.contains("category:\($0.uuid)") && !haveCategories.contains($0.uuid)
+        }
+        // 떠 둔 꼴에는 프로젝트가 없다 ('project:' 표는 여기서 걸 것이 없다).
+        guard !items.isEmpty else {
+            print("🚑 [Archive] 스토어가 비었지만 떠 둔 것이 전부 지운 것(표 있음)이거나 이미 있다 — 되돌리지 않는다")
+            return
+        }
+
+        print("🚑 [Archive] 스토어가 비어 있다 — 떠 둔 \(snapshot.items.count)개 중 \(items.count)개를 되돌린다")
 
         var byUUID: [String: BacklogCategory] = [:]
-        for c in snapshot.categories {
+        for c in categories {
             let category = BacklogCategory(name: c.name, colorName: c.colorName,
                                            iconName: c.iconName, sortIndex: c.sortIndex)
             category.uuid = c.uuid
@@ -134,7 +157,7 @@ enum TodoArchive {
             byUUID[c.uuid] = category
         }
 
-        for i in snapshot.items {
+        for i in items {
             let item = BacklogItem(title: i.title, durationHours: i.durationHours,
                                    sortIndex: i.sortIndex, categoryID: i.categoryID,
                                    weekStartDate: i.weekStartDate)
@@ -144,6 +167,8 @@ enum TodoArchive {
             item.completedAt = i.completedAt
             item.parentToken = i.parentToken
             item.labelRaw = i.labelRaw
+            // 지운 범주를 가리키면 끊는다 — 없는 범주에 매달린 할 일은 목록에서 길을 잃는다.
+            if let cid = i.categoryID, marked.contains("category:\(cid)") { item.categoryID = nil }
             context.insert(item)
         }
         try? context.save()

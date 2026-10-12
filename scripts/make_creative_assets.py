@@ -168,8 +168,9 @@ def screen(lang, name):
     right = max(x for x in range(W // 2, dark[-1]) if row[x] > 300)
     cx = (left + right) // 2
     col = [sum(im.getpixel((cx, y))) for y in range(H)]
+    # 테두리는 33px 두께의 검은 띠다. 15px 로 찾으면 굵은 글자(태국어 헤드라인 16px)를 테두리로 잡는다.
     y = 500
-    while not all(v < 200 for v in col[y:y + 15]):
+    while not all(v < 200 for v in col[y:y + 28]):
         y += 1
     while col[y] < 200:
         y += 1

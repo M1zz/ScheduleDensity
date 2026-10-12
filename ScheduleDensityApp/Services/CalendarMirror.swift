@@ -177,8 +177,10 @@ final class CalendarMirror {
     /// 무지개는 한 칸 더 진해지고, 하루 화면은 한 회의를 반쪽 둘로 가른다.
     ///
     /// 알아보는 길은 둘이다.
-    ///  1. 블록에 적힌 `calendarEventID` — 맥이 `"<eventIdentifier>|<시작 시각 초>"`로 적는다
-    ///     (→ WeekBlocks/CalendarImport.key). 같은 기기 캘린더라면 이것으로 정확히 맞는다.
+    ///  1. 블록에 적힌 `calendarEventID` — 맥이 `"ext:<calendarItemExternalIdentifier>|<시작 시각 초>"`로,
+    ///     외부 id가 없는 캘린더면 옛 꼴 `"<eventIdentifier>|<시작 시각 초>"`로 적는다
+    ///     (→ WeekBlocks/CalendarImport.key). 외부 id(CalDAV UID)는 같은 계정 기기끼리 같아서
+    ///     아이폰에서도 그대로 맞는다. 옛 꼴은 같은 기기 캘린더일 때만 맞는다.
     ///  2. **같은 날 · 같은 시작 분 · 같은 제목.** `eventIdentifier`는 기기마다 다를 수 있어서
     ///     1만으로는 모자란다. 시각까지 같아야 하므로, 이름만 같은 다른 날·다른 시각 일정은 안 걸린다.
     struct PlannedCopies {
@@ -193,8 +195,11 @@ final class CalendarMirror {
         static let allDayMinute = -1
 
         func contains(_ event: EKEvent) -> Bool {
-            if let id = event.eventIdentifier,
-               ids.contains("\(id)|\(Int(event.startDate.timeIntervalSince1970))") { return true }
+            let start = Int(event.startDate.timeIntervalSince1970)
+            // ⚠️ 맥의 새 이름과 글자까지 같게 짓는다 — "ext:" 머리 + 외부 id + "|" + 시작 초.
+            if let ext = event.calendarItemExternalIdentifier, !ext.isEmpty,
+               ids.contains("ext:\(ext)|\(start)") { return true }
+            if let id = event.eventIdentifier, ids.contains("\(id)|\(start)") { return true }
             guard !slots.isEmpty else { return false }
             if event.isAllDay {
                 return slots.contains(Self.slot(day: event.startDate, minute: Self.allDayMinute, title: event.title ?? ""))

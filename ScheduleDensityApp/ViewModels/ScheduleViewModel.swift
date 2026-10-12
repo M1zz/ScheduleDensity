@@ -443,6 +443,9 @@ class ScheduleViewModel {
 
     // 증분 동기화: CloudKit에 개별 이벤트 저장 (즉시 실행)
     private func syncEventToCloudKit(_ event: Event) {
+        // ⚠️ 옛 수동 iCloud 일정 DB는 쉰다 — 맥·다른 폰과는 RainbowEvent로 오간다 (→ LegacyEventCloud).
+        guard !LegacyEventCloud.isRetired else { return }
+
         // 동기화가 비활성화되어 있으면 CloudKit 저장 안함
         guard SyncSettingsManager.shared.isSyncEnabled else {
             print("⏭️ [ViewModel] Sync disabled, skipping CloudKit save")

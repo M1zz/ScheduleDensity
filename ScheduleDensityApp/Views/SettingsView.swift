@@ -675,6 +675,9 @@ struct SettingsView: View {
                 // 적은 것을 잃지 않게 — 백업이 어디 몇 벌 있는지, 고른 벌에서 되살리기 (→ DataVault.swift).
                 VaultSettingsSection()
 
+                // ⚠️ 옛 수동 iCloud 일정 백업/복원은 숨긴다. 복원이 일정을 통째로 갈아 끼우면 다리가
+                //    '한꺼번에 사라짐'으로 보고 되살려 네 기기에 두 벌이 선다 (→ LegacyEventCloud).
+                if !LegacyEventCloud.isRetired {
                 Group {
                     // iCloud 동기화 섹션
                     Section {
@@ -802,6 +805,7 @@ struct SettingsView: View {
                     Text("iCloud 백업")
                 } footer: {
                     Text("동기화를 켜면 일정 추가/수정/삭제 시 자동으로 iCloud에 백업됩니다.\n• 수동 백업: 현재 로컬 데이터를 iCloud에 업로드\n• iCloud에서 복원: 앱 재설치 후 백업 데이터 복원")
+                }
                 }
                 }
 

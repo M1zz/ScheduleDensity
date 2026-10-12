@@ -89,10 +89,11 @@ final class WeekBlocksStore {
     /// ⚠️ `ProMark`는 일곱 번째 타입이다 — "한쪽에서 샀다"는 표 (→ ProMark.swift).
     /// ⚠️ `Project`는 할 일을 끝이 있는 일로 묶는다 (→ BacklogCategory.swift). 맥에도 같이 있다.
     /// ⚠️ `RainbowEvent`는 아홉 번째 — 아이폰 무지개 일정을 맥과 함께 쓰는 사본 (→ RainbowEvent.swift).
+    /// ⚠️ `DeletionMark`는 열 번째 — 사람이 지운 것의 표 (→ DeletionMark.swift).
     ///    맥 스토어의 같은 목록과 **글자 하나까지 같아야 한다.**
     static let schema = Schema([Routine.self, PlanBlock.self, BacklogItem.self,
                                 RoutineOccurrence.self, BacklogCategory.self, QuotaPlacement.self,
-                                ProMark.self, Project.self, RainbowEvent.self])
+                                ProMark.self, Project.self, RainbowEvent.self, DeletionMark.self])
 
     /// 앱 전체가 함께 쓰는 단 하나의 컨테이너. 할 일 화면도 이것을 꽂아 쓴다.
     /// (→ ScheduleDensityApp.todoContainer)

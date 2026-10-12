@@ -9,6 +9,19 @@ import Foundation
 import CloudKit
 import SwiftData
 
+/// **옛 수동 iCloud 일정 백업/복원(이 파일)은 쉰다.**
+///
+/// 일정은 이제 맥·다른 아이폰과 공용 스토어의 `RainbowEvent`로 오간다 (→ RainbowBridge.swift).
+/// 이 길을 같이 열어 두면 둘이 서로를 망가뜨린다.
+///  · 'iCloud에서 복원'은 이 기기 일정을 `willDelete` 없이 통째로 지우고 다시 넣는다 → 다리는 그걸
+///    '한꺼번에 사라짐'으로 보고 사본에서 되살린다 → 복원한 것까지 더해 두 벌, 지웠던 일정이 네 기기에 돌아온다.
+///  · 일정을 고칠 때마다 올리는 레코드는 기기마다 따로 쌓인다(B 폰이 고친 일정은 B의 레코드가 하나 더).
+/// 그래서 설정의 백업/복원 칸을 숨기고 저장 때 올리기도 멈춘다. 코드는 지우지 않는다 —
+/// 이미 올라가 있는 레코드를 지우는 길(일정 삭제)은 그대로 쓰고, 되돌려야 하면 이 값만 바꾸면 된다.
+enum LegacyEventCloud {
+    static let isRetired = true
+}
+
 @Observable
 class CloudKitManager {
     static let shared = CloudKitManager()

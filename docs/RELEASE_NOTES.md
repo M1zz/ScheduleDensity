@@ -1,5 +1,237 @@
 # 릴리즈 노트
 
+## 1.1.11
+
+### 앱스토어 (한국어)
+
+```
+기록을 자동으로 백업하고 사라지면 되살려 줍니다
+맥과 같은 할 일, 루틴, 캘린더 일정이 보입니다
+무지개 일정을 맥과 함께 쓸 수 있습니다
+하루 화면에서 일정을 누르면 자세히 보입니다
+같은 일정이 두 번 생기지 않게 미리 알려 드립니다
+```
+
+### 앱스토어 (English)
+
+```
+Automatic backups bring back lost items
+Same to-dos, routines and events as Mac
+Share Rainbow Schedules with your Mac
+Tap an event in Day view for details
+Get warned before creating a duplicate
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+自動備份紀錄，遺失時可以救回
+與 Mac 顯示相同的待辦事項、作息和行事曆
+彩虹行程可以和 Mac 一起使用
+在一天畫面點選行程即可查看詳情
+重複建立相同行程前會先提醒你
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+自动备份记录，丢失时可以恢复
+与 Mac 显示相同的待办事项、作息和日历
+彩虹日程可以和 Mac 一起使用
+在一天页面轻点日程即可查看详情
+重复创建相同日程前会先提醒你
+```
+
+### 앱스토어 (일본어)
+
+```
+記録を自動でバックアップし、消えても戻せます
+Macと同じやること、ルーティン、予定を表示
+虹の予定をMacと一緒に使えます
+1日画面で予定をタップすると詳細が見られます
+同じ予定を重ねて作る前にお知らせします
+```
+
+### 앱스토어 (독일어)
+
+```
+Sicherung holt verlorene Einträge zurück
+Aufgaben, Routinen, Termine wie am Mac
+Regenbogen-Pläne gemeinsam mit dem Mac
+Tagesansicht zeigt Details per Tippen
+Warnung vor doppelt angelegten Terminen
+```
+
+### 앱스토어 (스페인어)
+
+```
+Copias automáticas para recuperar datos
+Mismas tareas, rutinas y eventos del Mac
+Comparte tus planes arcoíris con el Mac
+Toca un evento en Día para ver detalles
+Aviso antes de crear un evento repetido
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Vos données sauvegardées et récupérables
+Tâches, routines et agenda comme sur Mac
+Plans arc-en-ciel partagés avec le Mac
+Touchez un événement pour voir le détail
+Alerte avant de créer un doublon
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Backup automatico per recuperare i dati
+Attività, routine ed eventi come sul Mac
+Piani arcobaleno condivisi con il Mac
+Tocca un evento in Giorno per i dettagli
+Avviso prima di creare un doppione
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Backup automático para recuperar dados
+Mesmas tarefas, rotinas e eventos do Mac
+Use planos arco-íris junto com o Mac
+Toque no evento em Dia para ver detalhes
+Aviso antes de criar um evento repetido
+```
+
+### 앱스토어 (러시아어)
+
+```
+Автокопии помогут вернуть пропавшее
+Задачи, рутины и события как на Mac
+Радужные планы теперь вместе с Mac
+Детали события на экране дня по нажатию
+Предупредим, если событие уже есть
+```
+
+### 앱스토어 (체코어)
+
+```
+Automatické zálohy vrátí ztracená data
+Stejné úkoly, rutiny a události jako Mac
+Duhové plány společně s Macem
+Detail události klepnutím v přehledu dne
+Upozornění před vytvořením duplicity
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Automatisk backup henter tabte data
+Opgaver, rutiner og aftaler som på Mac
+Brug regnbueplaner sammen med din Mac
+Tryk på en aftale for at se detaljer
+Advarsel før du opretter en dublet
+```
+
+### 앱스토어 (그리스어)
+
+```
+Αυτόματα αντίγραφα, τίποτα δεν χάνεται
+Εργασίες και ρουτίνες όπως στο Mac
+Κοινά προγράμματα ουράνιου τόξου με Mac
+Πάτα ένα συμβάν για να δεις λεπτομέρειες
+Ειδοποίηση πριν φτιάξεις διπλό συμβάν
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Varmuuskopiot palauttavat kadonneen
+Samat tehtävät ja rutiinit kuin Macissa
+Sateenkaarisuunnitelmat myös Macissa
+Napauta tapahtumaa nähdäksesi tiedot
+Varoitus ennen kuin luot tuplatapahtuman
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Cadangan otomatis memulihkan data hilang
+Tugas, rutinitas, acara sama dengan Mac
+Jadwal pelangi kini dipakai bersama Mac
+Ketuk acara di Hari untuk lihat detail
+Peringatan sebelum membuat acara ganda
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Sikkerhetskopi henter tilbake tapte data
+Oppgaver, rutiner og avtaler som på Mac
+Bruk regnbueplaner sammen med Mac
+Trykk på en avtale for å se detaljer
+Varsel før du lager en dobbel avtale
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Back-ups halen verloren items terug
+Taken, routines en afspraken als op Mac
+Regenboogplanningen samen met je Mac
+Tik op een afspraak voor alle details
+Waarschuwing voor dubbele afspraken
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Kopie zapasowe przywrócą utracone dane
+Zadania, rutyny i wydarzenia jak na Macu
+Plany tęczowe razem z Makiem
+Stuknij wydarzenie, by poznać szczegóły
+Ostrzeżenie przed duplikatem wydarzenia
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Säkerhetskopior tar tillbaka förlorat
+Samma uppgifter och rutiner som på Mac
+Använd regnbågsplaner med din Mac
+Tryck på en händelse för att se detaljer
+Varning innan du skapar en dubblett
+```
+
+### 앱스토어 (태국어)
+
+```
+สำรองข้อมูลอัตโนมัติ กู้คืนได้เมื่อหาย
+งาน กิจวัตร และปฏิทินตรงกับบน Mac
+ใช้ตารางสายรุ้งร่วมกับ Mac ได้
+แตะกิจกรรมในหน้าวันเพื่อดูรายละเอียด
+เตือนก่อนสร้างกิจกรรมซ้ำ
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Otomatik yedekle kaybolanı geri getirin
+Mac ile aynı görevler ve rutinler
+Gökkuşağı planları Mac ile ortak
+Ayrıntılar için etkinliğe dokunun
+Aynı etkinliği tekrar eklerken uyarı
+```
+
+### 앱스토어 (베트남어)
+
+```
+Tự động sao lưu, khôi phục khi bị mất
+Việc cần làm và thói quen giống trên Mac
+Dùng lịch cầu vồng cùng với Mac
+Chạm vào sự kiện để xem chi tiết
+Báo trước khi tạo sự kiện trùng lặp
+```
+
 ## 1.1.10
 
 ### 앱스토어 (한국어)

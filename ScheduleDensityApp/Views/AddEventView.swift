@@ -37,6 +37,8 @@ struct AddEventView: View {
     @State private var showingExceptionDatePicker = false
     @State private var newExceptionDate = Date()
     @State private var currentExceptions: Set<Date> = []
+    /// 같은 제목 · 같은 기간의 일정이 이미 있어서 한 번 더 묻는 중.
+    @State private var confirmingTwin = false
 
     init(viewModel: ScheduleViewModel, initialDate: Date? = nil, initialStartDate: Date? = nil,
          initialEndDate: Date? = nil, eventToEdit: Event? = nil, showsFieldGuide: Bool = false) {
@@ -529,6 +531,14 @@ struct AddEventView: View {
                 }
             }
             .confirmsEventDeletion($deletionRequest)
+            // 다른 기기(맥 · 다른 아이폰)에서 이미 적은 일정을 또 적는 일을 미리 막는다.
+            // 무지개 일정은 기기 사이를 오가서, 같은 일을 두 기기에서 따로 적으면 두 줄이 된다.
+            .confirmationDialog("같은 일정이 이미 있어요", isPresented: $confirmingTwin, titleVisibility: .visible) {
+                Button("그래도 추가") { saveEvent() }
+                Button("취소", role: .cancel) { }
+            } message: {
+                Text("같은 제목과 같은 기간의 일정이 이미 무지개에 있습니다. 다른 기기에서 적은 것일 수 있어요.")
+            }
             }
         }
     }
@@ -811,7 +821,24 @@ struct AddEventView: View {
             }
             return
         }
+        if eventToEdit == nil, hasTwin() {
+            confirmingTwin = true
+            return
+        }
         saveEvent()
+    }
+
+    /// 지금 적는 것과 제목 · 시작일 · 종료일이 같은 일정이 이미 있는가 (새로 적을 때만 본다).
+    private func hasTwin() -> Bool {
+        let cal = Calendar.current
+        let name = title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let first = cal.startOfDay(for: startDate), last = cal.startOfDay(for: endDate)
+        return viewModel.fetchEvents().contains { e in
+            !e.isInfinite
+                && e.title.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name
+                && cal.startOfDay(for: e.startDate) == first
+                && cal.startOfDay(for: e.endDate) == last
+        }
     }
 
 

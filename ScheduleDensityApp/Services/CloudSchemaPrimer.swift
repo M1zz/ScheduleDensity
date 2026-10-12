@@ -90,7 +90,10 @@ enum CloudSchemaPrimer {
         // 알약 아이콘 칸 (→ PlanBlock.iconName). 맥에서 아이콘을 누른 사람에게서만 생긴다.
         block.iconName = "star.fill"
 
-        for model in [category as any PersistentModel, project, item, block, rainbow] {
+        // 지운 것의 표 (→ DeletionMark.swift). 무엇을 지워 봐야 생기는 타입이라 표본으로 세운다.
+        let tomb = DeletionMark(key: "item:\(marker)", originInstallID: "schema-sample-install")
+
+        for model in [category as any PersistentModel, project, item, block, rainbow, tomb] {
             context.insert(model)
         }
         do {
@@ -104,7 +107,7 @@ enum CloudSchemaPrimer {
 
         // ── 치운다. 스키마는 남는다. ────────────────────────────────────────
         var deleted = 0
-        for model in [category as any PersistentModel, project, item, block, rainbow] {
+        for model in [category as any PersistentModel, project, item, block, rainbow, tomb] {
             context.delete(model)
             deleted += 1
         }
@@ -119,7 +122,7 @@ enum CloudSchemaPrimer {
         } else {
             note = String(localized: "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요.")
         }
-        return Report(created: 5, deleted: deleted, note: note)
+        return Report(created: 6, deleted: deleted, note: note)
     }
 }
 

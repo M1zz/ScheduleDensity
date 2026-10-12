@@ -3,6 +3,21 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 기기 넷(아이폰 2 · 아이맥 · 맥북)에서 무지개 일정 · 할 일이 두 벌 되거나 되살아나던 것 (2026-10-12, 빌드 성공 · 커밋 안 함 · 실기기 확인 안 함)
+- [x] RainbowBridge: 두 폰이 이미 같은 일정을 갖고 저마다 사본을 세우면 서로의 사본을 새 일정으로 세워 두 벌 → 처음 보는 사본이
+      **내 사본과 이어진 원본**과 같은 내용(또는 같은 할 일 기한)이면 uuid 작은 사본 하나로 잇고 진 사본 행은 표 없이 걷는다(6-0).
+      장부 knownUUIDs에 올려 상대 폰이 3번으로 잠깐 되살려도 다시 세우지 않음 · 3번보다 먼저 해서 핑퐁 없음
+- [x] 같은 할 일에 짝이 둘 넘으면 uuid 작은 것만 남기고 나머지 사본에 지움 표(7번) · TodoEventBridge.event(for:)/periodsByToken도 같은 쪽을 고름
+- [x] 같은 uuid 행이 둘이면 지움 표 → 나중 updatedAt → 내용 순으로 고정해 고름 (기기마다 다른 행을 보던 것)
+- [x] 동시 수정: '이 기기 것이 이긴다'는 틀린 말이었다(폰 둘이면 iCloud에 나중 닿은 쪽). 내가 올린 값이 덮일 때 RainbowBridge/Conflicts/에 JSON으로 떠 둠, 덮는 쪽도 저쪽 값을 떠 둠
+- [x] 시간대: 사본 날짜를 읽을 때 '가장 가까운 0시'로(±12시간 안 차이는 같은 날). 저장 꼴(적은 기기의 0시)은 맥과 맞춰 그대로
+- [ ] 맥 쪽: RainbowEvent.spans/occurs/excludedDates와 RainbowLane.load도 같은 '가장 가까운 0시'로 읽어야 양쪽이 같다 (공용 파일이라 두 앱 같이)
+- [x] 옛 수동 iCloud 일정 백업/복원 숨김 · 일정 저장 때 옛 CloudKit 레코드 올리기 멈춤 (`LegacyEventCloud.isRetired`, 코드는 남김)
+- [x] TodoArchive 되돌리기: 지움 표('item:' 'category:') 있는 것과 그 단계는 빼고, 넣기 직전에 같은 토큰·uuid가 이미 있으면 뺌
+- [x] 캘린더 미러: 맥의 새 블록 이름 `ext:<외부 id>|<시작 초>`도 알아봄 (옛 `<eventIdentifier>|<초>`도 그대로)
+- [x] 시험: scratchpad bt — 두 폰 시뮬레이션 7가지(같은 일정 두 벌·경주·할 일 기한 둘·옛 두 벌·동시 수정·같은 uuid 두 행·시간대) 통과
+- [ ] 실기기 두 대: 업데이트 직후 처음 켤 때 두 벌이 안 생기는지, Conflicts 폴더가 생기는지
+
 ## ▶ 맥 ↔ 아이폰 데이터를 합집합으로 (2026-10-12, 두 앱 빌드 성공 · 커밋 안 함 · 실기기 두 대 확인 안 함)
 - [x] 원인: `TodoSharing.isVisible = isShared || isMine` 커튼이 남아, 상대 기기에서 `isShared=false`로 찍힌 줄을 숨겼다.
       아이폰은 결제했을 때만, 그것도 할 일만 `openMyItems` → 잠긴 채 적은 아이폰 줄은 맥에서 안 보였다
@@ -16,7 +31,7 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
       시험 21개 통과 (scratchpad bridgetest: 양쪽 고치기·만들기·지우기·동시 수정·스토어 비움·장부 잃음·원본 통째 사라짐)
 - [x] 금고 백업에 무지개 일정, CloudSchemaPrimer 표본에 RainbowEvent
 - [ ] 🚢 **출시 전 반드시: CloudKit Production 스키마 배포 (CD_RainbowEvent)** — 안 하면 Production 미러링이 멈춘다
-- [ ] 옛 수동 iCloud 일정 동기화(CloudKitManager '복원' 등) 정리 — 이제 맥과는 RainbowEvent로 오간다
+- [x] 옛 수동 iCloud 일정 동기화(CloudKitManager '복원' 등) 정리 — 이제 맥과는 RainbowEvent로 오간다 (→ 아래 '기기 넷' 절, `LegacyEventCloud.isRetired`)
 - [ ] 실기기 두 대 확인
 - [x] 할 일 목록: 다음 주 이후 주차의 안 한 할 일도 목록에 선다 (맥이 다음 주를 펴 놓고 적은 줄)
 - [x] 루틴: 맥에서 그날만 뺀 고정 루틴을 하루 화면 종일 줄에 흐리게 '· 오늘은 뺌'으로 (맥의 유령 블록과 짝). 눌러서 상세
