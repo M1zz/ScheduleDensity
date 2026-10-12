@@ -95,7 +95,15 @@ final class WeekBlocksStore {
 
     /// 앱 전체가 함께 쓰는 단 하나의 컨테이너. 할 일 화면도 이것을 꽂아 쓴다.
     /// (→ ScheduleDensityApp.todoContainer)
+    /// 이 스토어의 파일들 (→ DataVault). ModelConfiguration(storeName, groupContainer: .none)이 두는 자리.
+    static var storeFileURLs: [URL] {
+        let base = URL.applicationSupportDirectory.appending(path: "\(storeName).store")
+        return ["", "-wal", "-shm"].map { URL(fileURLWithPath: base.path + $0) }
+    }
+
     static let sharedContainer: ModelContainer? = {
+        // 열기 **전에** 파일을 통째로 떠 둔다 — 업데이트 뒤 첫 실행이면 반드시 (→ DataVault.swift).
+        DataVault.copyStoreFilesBeforeOpen(storeFileURLs)
         resetMirrorIfTokenChanged()
         do {
             let container = try makeContainer(schema)
@@ -151,20 +159,15 @@ final class WeekBlocksStore {
             return
         }
 
-        // SwiftData가 store 옆에 만드는 부속 파일까지 함께 지워야 잔여 상태가 남지 않는다.
+        // SwiftData가 store 옆에 만드는 부속 파일까지 함께 치워야 잔여 상태가 남지 않는다.
+        // ⚠️ 지우지 않고 금고로 옮긴다 (→ DataVault.swift). 못 옮기면 그대로 두고 다음 실행에 다시 본다.
         let targets = ["\(legacyMirrorStoreName).store",
                        "\(legacyMirrorStoreName).store-wal",
-                       "\(legacyMirrorStoreName).store-shm"]
-        var removed: [String] = []
-        for name in targets {
-            let url = supportURL.appendingPathComponent(name)
-            guard fm.fileExists(atPath: url.path) else { continue }
-            do {
-                try fm.removeItem(at: url)
-                removed.append(name)
-            } catch {
-                print("⚠️ [WeekBlocks] 미러 파일 삭제 실패(\(name)): \(error)")
-            }
+                       "\(legacyMirrorStoreName).store-shm"].map { supportURL.appendingPathComponent($0) }
+        let removed = targets.filter { fm.fileExists(atPath: $0.path) }.map(\.lastPathComponent)
+        guard DataVault.moveStoreFilesAside(targets, reason: "mirror-reset") else {
+            print("⚠️ [WeekBlocks] 미러 파일을 금고로 옮기지 못했다 — 그대로 둔다")
+            return
         }
 
         defaults.set(mirrorResetToken, forKey: mirrorResetKey)

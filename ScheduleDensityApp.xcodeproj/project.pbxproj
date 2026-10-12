@@ -28,6 +28,7 @@
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
 		2DA6447E5C4C977781B3F105 /* TodoSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */; };
 		311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */; };
+		31C7139EBCB034E2866D9D08 /* VaultViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3FDA9765ACBDE371849435F /* VaultViews.swift */; };
 		328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */; };
 		34A0EC8B0A706939563B6C1D /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB99E2E5FB474F18ADACDB3E /* TimerView.swift */; };
 		34DAD7231133774754F5C9F2 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 66F83109177C87ECC54FC849 /* InfoPlist.xcstrings */; };
@@ -40,6 +41,7 @@
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
+		547A221FF041BCA043444F1A /* VaultMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4674AA473A6F359F710CB6 /* VaultMonitor.swift */; };
 		57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */; };
 		5B21D07248C94CD8FDB8A629 /* WeekDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4588973A0D03582D8296C3 /* WeekDensityView.swift */; };
 		5BD084E0CFCA79A3B76131DF /* CategoryManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */; };
@@ -91,6 +93,7 @@
 		AB94E876F923B0260638DBC7 /* BoltOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FABE19E747350732827346E /* BoltOnboarding.swift */; };
 		AD981FACEF11D81D10379ADC /* TimerWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F614A05FBCBB13C8329E44 /* TimerWidgetSync.swift */; };
 		ADA02A8205E892FA137A4C81 /* ScheduleShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC3A6E73464097A7DEA1703 /* ScheduleShareView.swift */; };
+		AFD23F567B79F354DD08A2A9 /* DataVault.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D97CF58280A9DF67BC1FFB /* DataVault.swift */; };
 		B0B763F0084160170439EBAA /* QuickTodoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EAF9C0B39BD23B314B2ED9 /* QuickTodoControl.swift */; };
 		B5FE28F6F4B786FC24726537 /* ProMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768AABFA2BC54DE2C39ABC03 /* ProMark.swift */; };
 		B67EDB1755C156A2C3F4D788 /* ShareTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF61B6ED54A0AFF6E6BEBA31 /* ShareTodoView.swift */; };
@@ -220,6 +223,7 @@
 		88CFB5D8A2281DBA1DBC8ABB /* TodoDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoDetailView.swift; sourceTree = "<group>"; };
 		8BD6C1CBF9A87B23F80F9269 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTimelineView.swift; sourceTree = "<group>"; };
+		8E4674AA473A6F359F710CB6 /* VaultMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultMonitor.swift; sourceTree = "<group>"; };
 		9034F91023F0FAA93436F32D /* UsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageAnalytics.swift; sourceTree = "<group>"; };
 		910FBBD73ECA9E9527512FE8 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		979A4AF622853CA818289703 /* TodoWidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidgetSync.swift; sourceTree = "<group>"; };
@@ -246,6 +250,7 @@
 		B68A9B5FCF4CBFCC699EEEA5 /* TodoWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodoWidget.entitlements; sourceTree = "<group>"; };
 		B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		BEB91B4FD6D2CC7AA5218EDE /* RainbowWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowWidget.swift; sourceTree = "<group>"; };
+		C3FDA9765ACBDE371849435F /* VaultViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultViews.swift; sourceTree = "<group>"; };
 		C54CBC40BDBC7F3EEC31FF92 /* TodoWhen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWhen.swift; sourceTree = "<group>"; };
 		C612D8C00BFD0642D31F33A4 /* TodoTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTips.swift; sourceTree = "<group>"; };
 		C6DF589326498AA250AB8FAE /* QuickTodoControlIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickTodoControlIntent.swift; sourceTree = "<group>"; };
@@ -277,6 +282,7 @@
 		EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoShareInbox.swift; sourceTree = "<group>"; };
 		F1DFC2876EC6FE5666C43486 /* TodoTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTree.swift; sourceTree = "<group>"; };
 		F2DFFB40BB030A552DC9AC4C /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
+		F4D97CF58280A9DF67BC1FFB /* DataVault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataVault.swift; sourceTree = "<group>"; };
 		FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrencePattern.swift; sourceTree = "<group>"; };
 		FD190E36511B72612020479E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -386,6 +392,7 @@
 				1E94B60D141B90FB148EE46B /* CloudSchemaPrimer.swift */,
 				B152BA511813FF0AD6412A7C /* CloudSchemaProbe.swift */,
 				059E898FF838C334CC121045 /* CloudSyncLog.swift */,
+				F4D97CF58280A9DF67BC1FFB /* DataVault.swift */,
 				EA829919C711830D349E106C /* EventKitManager.swift */,
 				771562271827FDCDA952A709 /* PurchaseManager.swift */,
 				7A696AAEE492018F406A9411 /* RainbowWidgetSync.swift */,
@@ -397,6 +404,8 @@
 				979A4AF622853CA818289703 /* TodoWidgetSync.swift */,
 				9034F91023F0FAA93436F32D /* UsageAnalytics.swift */,
 				B330E760ABA84DFA92851926 /* UsageReporting.swift */,
+				8E4674AA473A6F359F710CB6 /* VaultMonitor.swift */,
+				C3FDA9765ACBDE371849435F /* VaultViews.swift */,
 				CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */,
 			);
 			path = Services;
@@ -739,6 +748,7 @@
 				CB298C12B23FF6BBBD9B23DD /* CloudSyncLog.swift in Sources */,
 				DC4C3509F9BE51C95311F272 /* ColorHex.swift in Sources */,
 				98BCB99BABFB85C47A516837 /* ContentView.swift in Sources */,
+				AFD23F567B79F354DD08A2A9 /* DataVault.swift in Sources */,
 				18554C8EA4088D5836DAC51C /* DateExtensions.swift in Sources */,
 				57DA5A107C68B1D4D0778FF8 /* DayTimelineLayout.swift in Sources */,
 				8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */,
@@ -806,6 +816,8 @@
 				F6775F776DC09C9C978F3F6D /* UsageReporting.swift in Sources */,
 				8EF8F4891903181E79113CB2 /* UsageStats.swift in Sources */,
 				ED911D951C40FF849E750D08 /* UsageStatsView.swift in Sources */,
+				547A221FF041BCA043444F1A /* VaultMonitor.swift in Sources */,
+				31C7139EBCB034E2866D9D08 /* VaultViews.swift in Sources */,
 				F4F25E886B69178DEA982727 /* WeekBlocksAdapter.swift in Sources */,
 				90C1D4525B32902DF10923FB /* WeekBlocksStore.swift in Sources */,
 				5B21D07248C94CD8FDB8A629 /* WeekDensityView.swift in Sources */,

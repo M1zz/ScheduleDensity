@@ -70,7 +70,7 @@ enum AppSettingsKey {
 
 /// 루트 TabView의 탭. 위젯 딥링크가 특정 탭을 열 수 있도록 태그를 붙인다.
 enum AppTab: Hashable {
-    case rainbow, share, todo
+    case rainbow, day, share, todo
 }
 
 /// 할 일 스토어가 지금 **어디에** 쓰고 있는지.
@@ -132,6 +132,14 @@ struct ScheduleDensityApp: App {
     }
 
     var sharedModelContainer: ModelContainer = {
+        // 이 기기에만 있는 일정(Event) 스토어. iCloud 사본이 없는 유일본이라 열기 **전에** 통째로 떠 둔다
+        // (→ DataVault.swift). 아래 복구 갈래가 새 파일을 만들기 전의 바이트가 남는다.
+        let support = URL.applicationSupportDirectory
+        for (name, label) in [("default.store", "events"), ("ScheduleDensity_v2.store", "events-v2")] {
+            let base = support.appending(path: name).path
+            DataVault.copyStoreFilesBeforeOpen(["", "-wal", "-shm"].map { URL(fileURLWithPath: base + $0) },
+                                               label: label)
+        }
         // 1단계: 기존 데이터베이스 로드 시도 (하위 호환성)
         // ⚠️ cloudKitDatabase: .none 을 명시한다. 앱에 CloudKit 컨테이너(WeekBlocks 연동용)가
         //    추가되면 기본값 .automatic 이 Event 스토어까지 CloudKit을 켜려다 실패한다
@@ -307,6 +315,8 @@ struct ScheduleDensityApp: App {
 
         if let shared = WeekBlocksStore.sharedContainer {
             CloudDiagnostics.todoContainer = shared
+            // 연 **직후**, 어떤 화면이 무엇을 정리하기도 전에 지난번 마지막 벌과 견준다 (→ VaultMonitor.swift).
+            MainActor.assumeIsolated { VaultMonitor.shared.start(container: shared) }
             return shared
         }
         // 여기까지 오면 로컬 전용도 실패한 것이다. 할 일을 못 적는 것보다는
@@ -332,6 +342,11 @@ struct ScheduleDensityApp: App {
                     .timerBar()
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)
+                // 하루 타임라인은 무지개 칸을 눌러야만 뜨는 시트였다. 매일 보는 화면이라 탭으로 따로 둔다.
+                DayTab(viewModel: schedule)
+                    .timerBar()
+                    .tabItem { Label("하루", systemImage: "clock") }
+                    .tag(AppTab.day)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
                 // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
                 // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
@@ -343,6 +358,8 @@ struct ScheduleDensityApp: App {
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
+            // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).
+            .vaultRecoveryPrompt()
             // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
             .timerNotifyAsk()
             .paywall(for: .widget, isPresented: $widgetPaywall)
@@ -424,6 +441,8 @@ struct ScheduleDensityApp: App {
                 if phase == .background {
                     // 쓰던 것을 안전망에 반영해 둔다. 다음에 스토어가 비어도 여기까지는 남는다.
                     TodoArchive.write(from: todoContainer.mainContext)
+                    // 모든 것을 한 벌 — 같은 내용이면 금고가 알아서 건너뛴다 (→ DataVault.swift).
+                    VaultMonitor.shared.snapshotNow(reason: "background")
                 }
                 if phase == .active {
                     // 며칠 켜 둔 채 돌아온 날도 '연 날'이다 (→ UsageReporting.logOpenIfAllowed).

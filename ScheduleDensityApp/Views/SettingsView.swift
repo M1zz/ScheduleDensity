@@ -672,6 +672,9 @@ struct SettingsView: View {
                 }
                 }
 
+                // 적은 것을 잃지 않게 — 백업이 어디 몇 벌 있는지, 고른 벌에서 되살리기 (→ DataVault.swift).
+                VaultSettingsSection()
+
                 Group {
                     // iCloud 동기화 섹션
                     Section {

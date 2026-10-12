@@ -28,6 +28,13 @@
 	<key>com.apple.developer.icloud-services</key>
 	<array>
 		<string>CloudKit</string>
+		<!-- 백업 JSON을 iCloud Drive에도 둔다 (→ DataVault.swift). CloudKit 미러링과 다른 길이라
+		     미러가 지운 것도 여기는 남는다. -->
+		<string>CloudDocuments</string>
+	</array>
+	<key>com.apple.developer.ubiquity-container-identifiers</key>
+	<array>
+		<string>iCloud.com.devkoan.ScheduleDensity</string>
 	</array>
 	<!-- 할 일 위젯(TodoWidget)에 스냅샷을 넘겨주는 통로.
 	     ⚠️ TodoWidget/TodoWidget.entitlements의 값과 반드시 같아야 한다. -->

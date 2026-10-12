@@ -28,6 +28,9 @@ import UIKit
 struct DayTimeAnalysisView: View {
     let date: Date
     @Bindable var viewModel: ScheduleViewModel
+    /// '하루' 탭에서 띄울 때만 준다 — 닫기 대신 전날·다음 날로 넘기는 단추가 선다.
+    /// 무지개에서 시트로 띄울 때는 nil이다.
+    var onStep: ((Int) -> Void)? = nil
     @Environment(\.dismiss) var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -52,6 +55,10 @@ struct DayTimeAnalysisView: View {
     @State private var nowHour: Double = 0
     /// 일정이 다 드러났는가. 하루가 설 때 위에서부터 하나씩 톡톡 선다.
     @State private var drawn = false
+    /// 눌러 본 일정. 알약이 좁아 제목이 잘려도 이 카드에서는 다 읽힌다.
+    @State private var inspected: DetailSubject?
+    /// 상세 카드에서 '수정'을 누른 무지개 일정 (→ AddEventView).
+    @State private var editingEvent: Event?
 
     var body: some View {
         NavigationStack {
@@ -102,9 +109,42 @@ struct DayTimeAnalysisView: View {
                     }
                     .accessibilityLabel(hideSleep ? "수면 시간 펴기" : "수면 시간 접기")
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("닫기") { dismiss() }
+                if let onStep {
+                    ToolbarItemGroup(placement: .navigationBarTrailing) {
+                        if !isToday {
+                            Button("오늘") { onStep(0) }
+                        }
+                        Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
+                            .accessibilityLabel("전날")
+                        Button { onStep(1) } label: { Image(systemName: "chevron.right") }
+                            .accessibilityLabel("다음 날")
+                    }
+                } else {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("닫기") { dismiss() }
+                    }
                 }
+            }
+            .sheet(item: $inspected) { subject in
+                SegmentDetailCard(subject: subject,
+                                  onStartTimer: subject.segment.flatMap { seg in
+                                      isPast(seg) ? nil : {
+                                          inspected = nil
+                                          startTimer(for: seg)
+                                      }
+                                  },
+                                  onEdit: subject.event.map { event in
+                                      {
+                                          inspected = nil
+                                          editingEvent = event
+                                      }
+                                  })
+                // 적힌 것이 없으면 낮게, 있으면 반쯤 — 더 길면 끌어 올려 다 읽는다.
+                .presentationDetents(subject.details.isEmpty ? [.height(280), .medium] : [.medium, .large])
+                .presentationDragIndicator(.visible)
+            }
+            .sheet(item: $editingEvent, onDismiss: { day = load() }) { event in
+                AddEventView(viewModel: viewModel, eventToEdit: event)
             }
         }
     }
@@ -205,7 +245,11 @@ struct DayTimeAnalysisView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 4)
         .background((item.isBackground ? Color.secondary : item.color).opacity(0.14), in: Capsule())
+        .contentShape(Capsule())
+        // 종일도 눌러서 무엇이 적혀 있는지 본다 — 시계 위 알약과 같은 카드.
+        .onTapGesture { inspected = day.subject(forAllDay: item) }
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
     }
 
     private var loadColor: Color {
@@ -253,9 +297,10 @@ struct DayTimeAnalysisView: View {
                                       symbol: day.icon(for: seg),
                                       status: day.status(for: seg),
                                       isPast: isPast(seg))
-                            // 누르면 그 일로 타이머가 선다 (→ TimerView.swift).
-                            // 길이는 일정에 적힌 그대로, 오늘이면 남은 만큼부터 센다.
-                            .onTapGesture { startTimer(for: seg) }
+                            // 누르면 무슨 일인지부터 보인다 — 칸이 좁으면 알약만 서서, 바로 타이머가 서면
+                            // 무엇을 눌렀는지 알 길이 없었다. 타이머는 그 카드에서 켠다 (→ TimerView.swift).
+                            .contentShape(Rectangle())
+                            .onTapGesture { inspected = day.subject(for: seg) }
                             .offset(x: Self.gutter + box.minX, y: box.minY)
                             .zIndex(seg.isNested || seg.isFlexible ? 2 : 1)
                             // 하루가 설 때 위에서부터 하나씩 톡톡 튀어 오른다.
@@ -954,6 +999,15 @@ struct DayTimeAnalysisView: View {
             }.map(\.element)
         }
 
+        // 눌렀을 때 상세를 꺼내 올 자리 (→ DayContent.subject).
+        var blocksByKey: [String: PlanBlock] = [:]
+        for blk in input.blocks { blocksByKey[String(describing: blk.persistentModelID)] = blk }
+        var routinesByName: [String: Routine] = [:]
+        for r in input.fixedRoutines + input.quotaRoutines { routinesByName[r.name] = r }
+        var eventsByKey: [String: Event] = [:]
+        for e in stored { eventsByKey[e.laneKey] = e }
+        let todoTitles = Dictionary(todos.map { ($0.dragToken, $0.title) }, uniquingKeysWith: { first, _ in first })
+
         return DayContent(segments: result.segments,
                           unplaced: result.unplaced,
                           window: window,
@@ -965,7 +1019,11 @@ struct DayTimeAnalysisView: View {
                           blockIcons: blockIcons,
                           allDay: allDay,
                           carried: carried,
-                          pickups: pickups)
+                          pickups: pickups,
+                          blocksByKey: blocksByKey,
+                          routinesByName: routinesByName,
+                          eventsByKey: eventsByKey,
+                          todoTitles: todoTitles)
     }
 
     /// 할 일 전부 — 남이 잠근 채 적은 줄은 뺀다 (할 일 목록과 같은 거름).
@@ -1081,6 +1139,117 @@ struct DayTimeAnalysisView: View {
         var carried: [Carried] = []
         /// 오늘 빈 시간에 집을 수 있는 조각.
         var pickups: [Pickup] = []
+        /// 눌렀을 때 상세를 꺼내 오는 자리. 블록 id → 블록, 루틴 이름 → 루틴, 일정 레인 키 → 일정.
+        var blocksByKey: [String: PlanBlock] = [:]
+        var routinesByName: [String: Routine] = [:]
+        var eventsByKey: [String: Event] = [:]
+        /// 할 일 토큰 → 제목. 일정에 이어진 할 일을 말할 때.
+        var todoTitles: [String: String] = [:]
+
+        /// 시계 위 알약 하나를 눌렀을 때 카드에 세울 것.
+        func subject(for seg: TimeSegment) -> DetailSubject {
+            var subject = DetailSubject(id: seg.id, title: seg.title, subtitle: seg.subtitle,
+                                        color: seg.color, symbol: icon(for: seg), dashed: seg.isFlexible,
+                                        timeText: "\(formatClock(seg.start))–\(formatClock(seg.end)) · \(formatHours(seg.hours))",
+                                        status: status(for: seg), segment: seg)
+            switch seg.kind {
+            case .planBlock:
+                if let blk = blocksByKey[DayTimeAnalysisView.blockKey(ofSegment: seg.id)] {
+                    subject.details = Self.details(of: blk)
+                }
+            case .routine, .quota:
+                if let r = routinesByName[seg.title] { subject.details = Self.details(of: r) }
+            case .rainbowEvent:
+                let key = seg.id.hasPrefix("event:") ? String(seg.id.dropFirst("event:".count)) : seg.id
+                if let e = eventsByKey[key] {
+                    subject.details = details(of: e)
+                    subject.event = e
+                }
+            case .calendarEvent:
+                subject.details = [DetailLine(icon: "calendar", label: String(localized: "출처"),
+                                              value: String(localized: "캘린더 일정"))]
+            }
+            return subject
+        }
+
+        /// 종일 칩 하나를 눌렀을 때.
+        func subject(forAllDay item: AllDayItem) -> DetailSubject {
+            var subject = DetailSubject(id: "allday:\(item.id)", title: item.title, subtitle: nil,
+                                        color: item.isBackground ? .secondary : item.color,
+                                        symbol: item.isBackground ? "calendar" : "checklist", dashed: false,
+                                        timeText: item.isBackground ? String(localized: "종일 · 배경") : String(localized: "종일 · 오늘 안에"),
+                                        status: nil, segment: nil)
+            if let blk = blocksByKey[item.id] {
+                subject.status = blk.reviewStatus
+                subject.details = Self.details(of: blk)
+            }
+            return subject
+        }
+
+        /// 맥에서 블록에 적어 둔 것. 빈 칸은 세우지 않는다.
+        static func details(of blk: PlanBlock) -> [DetailLine] {
+            var lines: [DetailLine] = []
+            func add(_ icon: String, _ label: String, _ value: String?) {
+                guard let value, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                lines.append(DetailLine(icon: icon, label: label, value: value))
+            }
+            add("target", String(localized: "성공 기준"), blk.successCriteria)
+            add("shippingbox", String(localized: "산출물"), blk.deliverable)
+            add("arrow.uturn.forward", String(localized: "다음 첫 동작"), blk.nextAction)
+            add("text.bubble", String(localized: "회고 메모"), blk.reviewNote)
+            if blk.withinRoutine {
+                add("square.stack", String(localized: "자리"), String(localized: "루틴 시간 안에서"))
+            }
+            if blk.calendarEventID != nil {
+                add("calendar", String(localized: "출처"), String(localized: "캘린더에서 가져옴"))
+            }
+            return lines
+        }
+
+        static func details(of r: Routine) -> [DetailLine] {
+            var lines = [DetailLine(icon: "repeat", label: String(localized: "반복"), value: r.scheduleDescription)]
+            func add(_ icon: String, _ label: String, _ value: String) {
+                guard !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                lines.append(DetailLine(icon: icon, label: label, value: value))
+            }
+            add("note.text", String(localized: "실행 메모"), r.executionNotes)
+            add("exclamationmark.triangle", String(localized: "실패할 장면"), r.premortemFailScenario)
+            add("shield", String(localized: "막는 법"), r.premortemPrevention)
+            return lines
+        }
+
+        func details(of e: Event) -> [DetailLine] {
+            let f = DateFormatter()
+            f.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMd", options: 0, locale: .autoupdatingCurrent)
+            f.locale = .autoupdatingCurrent
+            var lines: [DetailLine] = []
+            let period = e.isInfinite
+                ? String(localized: "\(f.string(from: e.startDate))부터 끝없이")
+                : "\(f.string(from: e.startDate)) – \(f.string(from: e.endDate))"
+            lines.append(DetailLine(icon: "calendar", label: String(localized: "기간"), value: period))
+            lines.append(DetailLine(icon: "clock", label: String(localized: "하루에"), value: formatHours(e.hoursPerDay)))
+            if e.weeklyPattern != nil {
+                lines.append(DetailLine(icon: "square.grid.3x3", label: String(localized: "요일"),
+                                        value: String(localized: "5주 패턴")))
+            } else if let days = e.selectedWeekdays, !days.isEmpty, days.count < 7 {
+                let symbols = Calendar.current.veryShortWeekdaySymbols
+                // 월요일부터 — 1=일요일이라 일요일을 맨 뒤로.
+                let ordered = days.sorted { ($0 + 5) % 7 < ($1 + 5) % 7 }
+                lines.append(DetailLine(icon: "square.grid.3x3", label: String(localized: "요일"),
+                                        value: ordered.compactMap { (1...7).contains($0) ? symbols[$0 - 1] : nil }
+                                            .joined(separator: "·")))
+            }
+            lines.append(DetailLine(icon: "flag", label: String(localized: "중요도"), value: e.importance.displayName))
+            if let token = e.todoToken, let title = todoTitles[token] {
+                lines.append(DetailLine(icon: "checklist", label: String(localized: "이어진 할 일"), value: title))
+            }
+            let skipped = e.getFutureExceptions().count
+            if skipped > 0 {
+                lines.append(DetailLine(icon: "calendar.badge.minus", label: String(localized: "빼 둔 날"),
+                                        value: String(localized: "앞으로 \(skipped)일")))
+            }
+            return lines
+        }
 
         var freeHours: Double { max(0, 24 - occupiedHours) }
         var load: Double { occupiedHours / 24 }
@@ -1146,11 +1315,12 @@ private struct DaySegmentRow: View {
 
     var body: some View {
         // 넓으면 알약 + 시각·제목 + 표시, 좁으면 알약 + 제목, 아주 좁으면 알약만.
-        let showsText = size.width >= Self.pillWidth + 44
+        // 겹친 일정이 나란히 서면 칸이 좁아진다. 두 글자라도 보이면 무엇인지 짐작이 서므로 문턱을 낮춘다.
+        let showsText = size.width >= Self.pillWidth + 22
         let showsTime = size.width >= Self.pillWidth + 110
         let showsStatus = status != nil && size.width >= Self.pillWidth + 90
 
-        HStack(alignment: .top, spacing: 10) {
+        HStack(alignment: .top, spacing: size.width < Self.pillWidth + 80 ? 5 : 10) {
             pill
 
             if showsText {
@@ -1166,7 +1336,8 @@ private struct DaySegmentRow: View {
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .strikethrough(done, color: .secondary)
                         .foregroundStyle(done ? .secondary : .primary)
-                        .lineLimit(size.height >= 60 ? 2 : 1)
+                        .lineLimit(max(1, Int((size.height - 6) / 18)))
+                        .minimumScaleFactor(0.8)
                 }
                 .padding(.top, 3)
                 .padding(.trailing, showsStatus ? 30 : 4)
@@ -1233,6 +1404,125 @@ private struct DaySegmentRow: View {
     /// "9:00–18:00 · 9시간".
     private var timeRange: String {
         "\(formatClock(segment.start))–\(formatClock(segment.end)) · \(formatHours(segment.hours))"
+    }
+}
+
+// MARK: - 눌러 본 일정
+
+/// 알약을 누르면 뜨는 카드. 무엇인지·언제인지를 다 적고, 타이머는 여기서 켠다.
+/// 눌러 본 것 하나 — 시계 위 알약이든 종일 칩이든 같은 카드에 선다.
+struct DetailSubject: Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String?
+    let color: Color
+    let symbol: String?
+    let dashed: Bool
+    let timeText: String
+    var status: ReviewStatus?
+    /// 시계 위 알약일 때만 — 타이머를 켤 수 있다.
+    let segment: TimeSegment?
+    /// 맥이나 이 앱에서 적어 둔 것들.
+    var details: [DetailLine] = []
+    /// 이 앱의 무지개 일정이면 — 여기서 고칠 수 있다.
+    var event: Event? = nil
+}
+
+struct DetailLine: Identifiable {
+    let icon: String
+    let label: String
+    let value: String
+    var id: String { label }
+}
+
+private struct SegmentDetailCard: View {
+    let subject: DetailSubject
+    /// nil이면 단추를 안 세운다(이미 끝났거나 종일).
+    let onStartTimer: (() -> Void)?
+    /// 이 앱의 일정일 때만.
+    let onEdit: (() -> Void)?
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top, spacing: 12) {
+                    DayGlyph(symbol: subject.symbol, title: subject.title, color: subject.color,
+                             size: 40, dashed: subject.dashed)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(subject.title)
+                            .font(.title3.weight(.bold))
+                            .fixedSize(horizontal: false, vertical: true)
+                        if let subtitle = subject.subtitle, !subtitle.isEmpty {
+                            Text(subtitle)
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                Label {
+                    Text(verbatim: subject.timeText)
+                        .monospacedDigit()
+                } icon: {
+                    Image(systemName: "clock")
+                }
+                .font(.body)
+                if let status = subject.status {
+                    Text(status.label)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+
+                if !subject.details.isEmpty {
+                    Divider()
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(subject.details) { line in
+                            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                                Image(systemName: line.icon)
+                                    .foregroundStyle(subject.color)
+                                    .frame(width: 22)
+                                    .accessibilityHidden(true)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(line.label)
+                                        .font(.body.weight(.semibold))
+                                    Text(line.value)
+                                        .font(.body)
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                        .textSelection(.enabled)
+                                }
+                            }
+                            .accessibilityElement(children: .combine)
+                        }
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    if let onEdit {
+                        Button(action: onEdit) {
+                            Label("수정", systemImage: "pencil")
+                                .font(.body.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(subject.color)
+                    }
+                    if let onStartTimer {
+                        Button(action: onStartTimer) {
+                            Label("타이머 시작", systemImage: "timer")
+                                .font(.body.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 6)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(subject.color)
+                    }
+                }
+                .padding(.top, 4)
+            }
+            .padding(20)
+            .padding(.top, 8)
+        }
     }
 }
 
@@ -1388,4 +1678,30 @@ fileprivate func formatHours(_ hours: Double) -> String {
     if h == 0 { return String(localized: "\(m)분") }
     if m == 0 { return String(localized: "\(h)시간") }
     return String(localized: "\(h)시간 \(m)분")
+}
+
+// MARK: - 하루 탭
+
+/// 무지개와 따로 선 '하루' 탭. 오늘에서 시작해 전날·다음 날로 넘긴다.
+/// 날이 바뀌면 화면을 통째로 새로 세운다 — 하루 화면은 처음 설 때 한 번 읽고 그린다.
+struct DayTab: View {
+    @Bindable var viewModel: ScheduleViewModel
+    @State private var date = Calendar.current.startOfDay(for: Date())
+    @Environment(\.scenePhase) private var scenePhase
+
+    var body: some View {
+        DayTimeAnalysisView(date: date, viewModel: viewModel) { step in
+            let cal = Calendar.current
+            date = step == 0
+                ? cal.startOfDay(for: Date())
+                : cal.date(byAdding: .day, value: step, to: date) ?? date
+        }
+        .id(date)
+        // 자정을 넘겨 다시 열었으면 어제를 보고 있게 된다 — 돌아올 때 하루가 지났으면 오늘로.
+        .onChange(of: scenePhase) { old, phase in
+            guard phase == .active, old == .background else { return }
+            let today = Calendar.current.startOfDay(for: Date())
+            if date < today { date = today }
+        }
+    }
 }
