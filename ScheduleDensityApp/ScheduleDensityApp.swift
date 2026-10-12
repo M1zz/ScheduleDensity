@@ -107,6 +107,8 @@ struct ScheduleDensityApp: App {
     /// 곁다리 다섯을 열었는가 (→ ProEntitlement.swift).
     @State private var purchases = PurchaseManager.shared
     @State private var selectedTab: AppTab = .todo
+    /// '하루' 탭이 보고 있는 날. 무지개에서 날짜를 누르면 여기를 바꾸고 그 탭으로 넘긴다.
+    @State private var dayTabDate = Calendar.current.startOfDay(for: Date())
     /// 잠긴 위젯을 눌러 들어왔나. 그 자리에서 페이월을 낸다.
     @State private var widgetPaywall = false
     /// 타이머 위젯을 눌러 들어왔다 (→ TimerWidget.swift).
@@ -343,9 +345,10 @@ struct ScheduleDensityApp: App {
                     .tabItem { Label("무지개", systemImage: "rainbow") }
                     .tag(AppTab.rainbow)
                 // 하루 타임라인은 무지개 칸을 눌러야만 뜨는 시트였다. 매일 보는 화면이라 탭으로 따로 둔다.
-                DayTab(viewModel: schedule)
+                // 무지개에서 날짜를 눌러도 시트가 아니라 이 탭이 그 날로 열린다.
+                DayTab(viewModel: schedule, date: $dayTabDate)
                     .timerBar()
-                    .tabItem { Label("하루", systemImage: "clock") }
+                    .tabItem { Label("하루", systemImage: "calendar.day.timeline.left") }
                     .tag(AppTab.day)
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
                 // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
@@ -419,6 +422,10 @@ struct ScheduleDensityApp: App {
             }
             .onReceive(NotificationCenter.default.publisher(for: .openTodoTabRequested)) { _ in
                 selectedTab = .todo
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .openDayTabRequested)) { note in
+                if let date = note.object as? Date { dayTabDate = date }
+                selectedTab = .day
             }
             // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.

@@ -31,8 +31,6 @@ struct TimelineDensityView: View {
     @State private var showToast = false
     @State private var toastMessage = ""
 
-    // 날짜별 시간 분석 상태
-    @State private var selectedDateForTimeAnalysis: DateWrapper?
 
     // 일정 빠른 보기(탭) 상태 — 수정은 길게 탭(컨텍스트 메뉴) 또는 보기 시트의 수정 버튼으로
     @State private var eventToView: Event?
@@ -193,9 +191,6 @@ struct TimelineDensityView: View {
                         }
                     }
                 }
-            }
-            .sheet(item: $selectedDateForTimeAnalysis) { dateWrapper in
-                DayTimeAnalysisView(date: dateWrapper.date, viewModel: viewModel)
             }
     }
 
@@ -534,10 +529,9 @@ struct TimelineDensityView: View {
     }
 
     private func handleDateLabelTap(_ date: Date) {
-        // 날짜 레이블을 탭하면 시간 분석 화면 열기
-        let calendar = Calendar.current
-        let normalizedDate = calendar.startOfDay(for: date)
-        selectedDateForTimeAnalysis = DateWrapper(date: normalizedDate)
+        // 날짜 레이블을 탭하면 그 날을 '하루' 탭에서 연다. 무지개 위에 시트로 덮지 않는다.
+        NotificationCenter.default.post(name: .openDayTabRequested,
+                                        object: Calendar.current.startOfDay(for: date))
     }
 
     private var emptyStateView: some View {
@@ -1768,12 +1762,6 @@ struct EventQuickLookView: View {
                                                     locale: .autoupdatingCurrent)
         return formatter.string(from: date)
     }
-}
-
-// DateWrapper for sheet(item:) - Identifiable wrapper around Date
-struct DateWrapper: Identifiable {
-    let id = UUID()
-    let date: Date
 }
 
 // Color(hex:)는 공용 Theme.swift에 있다.

@@ -264,6 +264,8 @@ final class TodoEventBridge {
 extension Notification.Name {
     /// 무지개에서 할 일 묶음 줄을 눌렀다. 할 일 탭으로 넘어간다.
     static let openTodoTabRequested = Notification.Name("openTodoTabRequested")
+    /// 무지개에서 날짜를 눌렀다. '하루' 탭으로 넘어가 그 날을 연다. object 는 그 날의 Date.
+    static let openDayTabRequested = Notification.Name("openDayTabRequested")
 }
 
 /// 기간을 안 정한 할 일을 **오늘 칸에 묶어서** 세운다.

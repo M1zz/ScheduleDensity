@@ -28,10 +28,9 @@ import UIKit
 struct DayTimeAnalysisView: View {
     let date: Date
     @Bindable var viewModel: ScheduleViewModel
-    /// '하루' 탭에서 띄울 때만 준다 — 닫기 대신 전날·다음 날로 넘기는 단추가 선다.
-    /// 무지개에서 시트로 띄울 때는 nil이다.
-    var onStep: ((Int) -> Void)? = nil
-    @Environment(\.dismiss) var dismiss
+    /// 전날·다음 날로 넘기는 단추. 0이면 오늘로. 하루 화면은 '하루' 탭에만 선다 —
+    /// 무지개에서 날짜를 눌러도 시트로 덮지 않고 이 탭으로 넘어온다.
+    let onStep: (Int) -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// 한 시간의 키. 알약과 글씨가 숨 쉴 자리가 있어야 말랑하게 읽힌다 (맥과 같은 값).
@@ -109,20 +108,14 @@ struct DayTimeAnalysisView: View {
                     }
                     .accessibilityLabel(hideSleep ? "수면 시간 펴기" : "수면 시간 접기")
                 }
-                if let onStep {
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        if !isToday {
-                            Button("오늘") { onStep(0) }
-                        }
-                        Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
-                            .accessibilityLabel("전날")
-                        Button { onStep(1) } label: { Image(systemName: "chevron.right") }
-                            .accessibilityLabel("다음 날")
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    if !isToday {
+                        Button("오늘") { onStep(0) }
                     }
-                } else {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("닫기") { dismiss() }
-                    }
+                    Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
+                        .accessibilityLabel("전날")
+                    Button { onStep(1) } label: { Image(systemName: "chevron.right") }
+                        .accessibilityLabel("다음 날")
                 }
             }
             .sheet(item: $inspected) { subject in
@@ -1703,10 +1696,12 @@ fileprivate func formatHours(_ hours: Double) -> String {
 // MARK: - 하루 탭
 
 /// 무지개와 따로 선 '하루' 탭. 오늘에서 시작해 전날·다음 날로 넘긴다.
+/// 무지개에서 날짜를 누르면 그 날을 연 채로 이 탭으로 넘어온다 (→ openDayTabRequested).
 /// 날이 바뀌면 화면을 통째로 새로 세운다 — 하루 화면은 처음 설 때 한 번 읽고 그린다.
 struct DayTab: View {
     @Bindable var viewModel: ScheduleViewModel
-    @State private var date = Calendar.current.startOfDay(for: Date())
+    /// 앱이 들고 있는다 — 무지개에서 날짜를 누르면 앱이 이 값을 그 날로 바꾸고 이 탭을 연다.
+    @Binding var date: Date
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
