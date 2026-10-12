@@ -422,21 +422,11 @@ struct ScheduleDensityApp: App {
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
             .task {
                 await PurchaseManager.shared.refresh()
-                // ⚠️ `.onChange` 만으로는 모자란다. 다른 기기에서 샀거나, 지웠다 다시
-                //    깔았거나, 개발 빌드라면 앱이 **이미 열린 채로 뜨므로** 전환이
-                //    일어나지 않는다. 그러면 잠겨 있을 때 적어 둔 줄들이 영영
-                //    도장을 못 받아 맥에서 안 보인다 (→ TodoSharing.swift).
-                //    비어 있으면 아무 일도 안 하므로 켤 때마다 불러도 된다.
-                if PurchaseManager.shared.isUnlocked {
-                    TodoSharing.openMyItems(in: todoContainer.mainContext)
-                }
             }
-            // 값을 치르면 이 기기에서 적어 둔 것이 상대에게도 보이게 열린다
-            // (→ TodoSharing.swift). 그때부터 올라가는 게 아니라 이미 올라가 있던 것이
-            // 그제서야 보이는 것이라 기다림이 없다.
-            .onChange(of: purchases.isUnlocked) { _, unlocked in
-                if unlocked { TodoSharing.openMyItems(in: todoContainer.mainContext) }
-            }
+            // 맥과 아이폰은 서로 가진 것을 **다** 보여 준다(합집합). 동기화는 무료라 결제와
+            // 상관없이, 잠겨 있던 때 닫힌 채 찍힌 이 기기의 줄을 켤 때마다 연다 (→ TodoSharing.swift).
+            // 비어 있으면 아무 일도 안 하므로 켤 때마다 불러도 된다.
+            .task { TodoSharing.openMyItems(in: todoContainer.mainContext) }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .background {
                     // 쓰던 것을 안전망에 반영해 둔다. 다음에 스토어가 비어도 여기까지는 남는다.

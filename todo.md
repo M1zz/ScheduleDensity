@@ -3,6 +3,15 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 맥 ↔ 아이폰 데이터를 합집합으로 (2026-10-12, 두 앱 빌드 성공 · 커밋 안 함 · 실기기 두 대 확인 안 함)
+- [x] 원인: `TodoSharing.isVisible = isShared || isMine` 커튼이 남아, 상대 기기에서 `isShared=false`로 찍힌 줄을 숨겼다.
+      아이폰은 결제했을 때만, 그것도 할 일만 `openMyItems` → 잠긴 채 적은 아이폰 줄은 맥에서 안 보였다
+- [x] 두 앱 `isVisible` → 언제나 true (맥 WeekBlocks/TodoSharing.swift도 같이)
+- [x] 아이폰 `openMyItems`: 결제와 상관없이 켤 때마다, 할 일·계획 블록·루틴 세 모델 (맥 `flipMine`과 같은 범위)
+- [ ] 실기기: 맥에만 있던 줄 / 아이폰에만 있던 줄이 서로 보이는지
+- [ ] 무지개 일정(Event)은 여전히 아이폰 로컬 전용 — 맥에 안 감 (RainbowEvent 옮기기에서)
+- [x] 데이터 금고 시뮬레이터 확인: 1층 스토어 사본(update · update-events) · 2층 JSON 스냅숏(launch) 생김. 빈 스토어라 되살리기 창은 못 봄, iCloud Drive 3층은 확인 못 함
+
 ## ▶ 하루 화면: 일정을 눌러 상세 보기 (2026-10-12, 빌드 성공 · 커밋 안 함 · 시뮬레이터/실기기 확인 안 함)
 - [x] 시계 위 알약을 누르면 뜨던 카드(제목·시각·타이머)에 적힌 것을 다 세움 (`DetailSubject`, `DetailLine`)
       계획 블록: 성공 기준 · 산출물 · 다음 첫 동작 · 회고 메모 · 루틴 안 · 캘린더에서 가져옴 / 루틴: 반복 · 실행 메모 · 실패할 장면 · 막는 법

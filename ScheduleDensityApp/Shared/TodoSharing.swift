@@ -69,12 +69,15 @@ enum TodoSharing {
         item.originInstallID.isEmpty || item.originInstallID == installID
     }
 
-    /// **화면에 그릴 줄인가.** 거르는 규칙은 여기 하나뿐이다.
+    /// **화면에 그릴 줄인가 — 언제나 그린다.**
     ///
-    /// 감추는 것은 **남이 잠긴 채로 적어 둔 줄** 하나뿐이다.
-    /// 내 줄은 잠겨 있어도 내 화면에서는 그대로 보인다.
+    /// 한때 '남이 잠긴 채로 적어 둔 줄'(`!isShared && !isMine`)을 감췄다. 동기화가 무료가 된 뒤에도
+    /// 그 커튼이 남아, 잠겨 있던 때 적은 줄은 상대 기기에서 영영 안 보였다 — 맥과 아이폰이 서로
+    /// **둘 다 가진 것만** 보여 주는 꼴이었다. 이제 스토어에 내려온 것은 전부 그린다(합집합).
+    /// ⚠️ 맥('무지개 공방')의 같은 이름 함수도 같은 값을 돌려준다. 한쪽만 다시 거르면 또 어긋난다.
+    /// 부르는 자리는 그대로 둔다 — 거르는 곳을 다시 한 군데로 찾을 수 있게.
     static func isVisible(_ item: some SharedRecord) -> Bool {
-        item.isShared || isMine(item)
+        true
     }
 
     /// 새로 적는 줄에 지금 상태를 새긴다.
@@ -86,17 +89,25 @@ enum TodoSharing {
 
     // MARK: - 열리고 잠길 때
 
-    /// **결제했다.** 이 기기에서 난 줄들을 상대에게도 보이게 한다.
+    /// **이 기기에서 난 줄을 모두 연다.** 켤 때마다 부른다 — 결제와 상관없다.
     ///
-    /// 값을 치른 순간 예전에 적어 둔 것까지 함께 열리는 게 맞다. 그때부터 올라가는
-    /// 것이 아니라 **이미 올라가 있던 것이 그제서야 보이는** 것이라, 기다림이 없다.
+    /// 화면은 이제 깃발을 안 보지만(→ `isVisible`), 아직 업데이트 안 한 상대 앱은 본다.
+    /// 잠겨 있던 때 `false`로 찍힌 줄을 열어 두어야 그쪽에서도 다 보인다.
+    /// 할 일·계획 블록·루틴 세 모델을 모두 연다 — 맥의 `flipMine`과 같은 범위.
     static func openMyItems(in context: ModelContext) {
-        let mine = ((try? context.fetch(FetchDescriptor<BacklogItem>())) ?? [])
-            .filter { !$0.isShared && isMine($0) }
-        guard !mine.isEmpty else { return }
-        for item in mine { item.isShared = true }
+        let n = open(BacklogItem.self, in: context)
+            + open(PlanBlock.self, in: context)
+            + open(Routine.self, in: context)
+        guard n > 0 else { return }
         try? context.save()
-        print("🔓 [Sharing] 이 기기의 할 일 \(mine.count)개를 함께 쓰기로 열었다")
+        print("🔓 [Sharing] 이 기기의 것 \(n)개를 함께 쓰기로 열었다")
+    }
+
+    private static func open<T: PersistentModel & SharedRecord>(_ type: T.Type, in context: ModelContext) -> Int {
+        let mine = ((try? context.fetch(FetchDescriptor<T>())) ?? [])
+            .filter { !$0.isShared && isMine($0) }
+        for item in mine { item.isShared = true }
+        return mine.count
     }
 
     /// 이 기기에서 난 줄 중 상대에게 **아직 안 보이는** 것의 수.
