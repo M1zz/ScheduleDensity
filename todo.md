@@ -9,11 +9,19 @@ iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝�
 - [x] 두 앱 `isVisible` → 언제나 true (맥 WeekBlocks/TodoSharing.swift도 같이)
 - [x] 아이폰 `openMyItems`: 결제와 상관없이 켤 때마다, 할 일·계획 블록·루틴 세 모델 (맥 `flipMine`과 같은 범위)
 - [ ] 실기기: 맥에만 있던 줄 / 아이폰에만 있던 줄이 서로 보이는지
-- [ ] 무지개 일정(Event)은 여전히 아이폰 로컬 전용 — 맥에 안 감 (RainbowEvent 옮기기에서)
+- [x] 무지개 일정을 맥과 함께 — `Event`(이 기기 유일본)는 그대로 두고 공용 스토어에 사본 `RainbowEvent`
+      다리 `RainbowBridge`: 장부(Application Support/RainbowBridge/links.json)로 짝을 짓고 바뀐 쪽을 옮긴다
+      맥에서 지운 것은 지우기 전에 RainbowBridge/Removed/에 JSON 백업 · 사본이 표 없이 사라지면 다시 세움 ·
+      원본이 한꺼번에 사라지면(4개 넘게, 절반 넘게) 지움으로 보지 않고 사본에서 되살림 · 장부를 잃어도 같은 내용끼리 다시 이음
+      시험 21개 통과 (scratchpad bridgetest: 양쪽 고치기·만들기·지우기·동시 수정·스토어 비움·장부 잃음·원본 통째 사라짐)
+- [x] 금고 백업에 무지개 일정, CloudSchemaPrimer 표본에 RainbowEvent
+- [ ] 🚢 **출시 전 반드시: CloudKit Production 스키마 배포 (CD_RainbowEvent)** — 안 하면 Production 미러링이 멈춘다
+- [ ] 옛 수동 iCloud 일정 동기화(CloudKitManager '복원' 등) 정리 — 이제 맥과는 RainbowEvent로 오간다
+- [ ] 실기기 두 대 확인
 - [x] 할 일 목록: 다음 주 이후 주차의 안 한 할 일도 목록에 선다 (맥이 다음 주를 펴 놓고 적은 줄)
 - [x] 루틴: 맥에서 그날만 뺀 고정 루틴을 하루 화면 종일 줄에 흐리게 '· 오늘은 뺌'으로 (맥의 유령 블록과 짝). 눌러서 상세
 - [x] 캘린더: 맥이 가져온 **종일** 일정도 두 번 세지 않는다 (같은 날 · 같은 제목). 예전엔 시각 있는 것만 맞췄다
-- [ ] 새 문구 두 개 번역: "%@ · 오늘은 뺌", "맥에서 오늘은 뺀 루틴"
+- [ ] 새 문구 번역: "%@ · 오늘은 뺌", "맥에서 오늘은 뺀 루틴", "무지개 일정" (진행 중)
 - [x] 데이터 금고 시뮬레이터 확인: 1층 스토어 사본(update · update-events) · 2층 JSON 스냅숏(launch) 생김. 빈 스토어라 되살리기 창은 못 봄, iCloud Drive 3층은 확인 못 함
 
 ## ▶ 하루 화면: 일정을 눌러 상세 보기 (2026-10-12, 빌드 성공 · 커밋 안 함 · 시뮬레이터/실기기 확인 안 함)

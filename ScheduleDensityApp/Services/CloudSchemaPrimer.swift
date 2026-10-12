@@ -55,6 +55,17 @@ enum CloudSchemaPrimer {
         project.isCompleted = true
         project.completedAt = now
 
+        // 함께 쓰는 무지개 일정 (→ RainbowEvent.swift). 새 타입이라 타입부터 없다.
+        // 옵셔널 다섯 칸을 다 채운다. **'지움' 표도 찍는다** — 표본이 아이폰 다리(RainbowBridge)를
+        // 타고 진짜 일정으로 세워지면 안 되고, deletedAt 칸도 이렇게 해야 생긴다.
+        let rainbow = RainbowEvent(title: marker)
+        rainbow.selectedWeekdays = [2, 4]
+        rainbow.weeklyPattern = Array(repeating: true, count: 35)
+        rainbow.excludedDates = [now]
+        rainbow.todoToken = "schema-sample-todo"
+        rainbow.deletedAt = now
+        rainbow.originInstallID = "schema-sample-install"
+
         let item = BacklogItem(title: marker, durationHours: 1, sortIndex: 9_999,
                                categoryID: category.uuid, weekStartDate: week)
         item.projectID = project.uuid
@@ -79,7 +90,7 @@ enum CloudSchemaPrimer {
         // 알약 아이콘 칸 (→ PlanBlock.iconName). 맥에서 아이콘을 누른 사람에게서만 생긴다.
         block.iconName = "star.fill"
 
-        for model in [category as any PersistentModel, project, item, block] {
+        for model in [category as any PersistentModel, project, item, block, rainbow] {
             context.insert(model)
         }
         do {
@@ -93,7 +104,7 @@ enum CloudSchemaPrimer {
 
         // ── 치운다. 스키마는 남는다. ────────────────────────────────────────
         var deleted = 0
-        for model in [category as any PersistentModel, project, item, block] {
+        for model in [category as any PersistentModel, project, item, block, rainbow] {
             context.delete(model)
             deleted += 1
         }
@@ -108,7 +119,7 @@ enum CloudSchemaPrimer {
         } else {
             note = String(localized: "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요.")
         }
-        return Report(created: 4, deleted: deleted, note: note)
+        return Report(created: 5, deleted: deleted, note: note)
     }
 }
 

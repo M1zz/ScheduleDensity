@@ -551,6 +551,8 @@ class ScheduleViewModel {
             }
         }
 
+        // 맥과 함께 쓰는 사본에도 '지움' 표를 찍게 미리 알린다 (→ RainbowBridge).
+        await RainbowBridge.shared.willDelete([event])
         context.delete(event)
         do {
             try context.save()
@@ -1985,6 +1987,7 @@ class ScheduleViewModel {
             }
         }
 
+        await RainbowBridge.shared.willDelete(events)
         for event in events { context.delete(event) }
 
         do {

@@ -110,6 +110,7 @@
 		CD908E0CA926627D15F997E8 /* ScheduleClock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9986D50F72A622E5CA223199 /* ScheduleClock.swift */; };
 		CE7FE05558DFF907334BCA7B /* TimelineDensityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8973EFA9E7CD5B49DB80C2 /* TimelineDensityView.swift */; };
 		CFF51ED63E41C1792E020ACB /* BacklogItem+Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6807B831C31B6729BEC0EA53 /* BacklogItem+Fragment.swift */; };
+		D0C6DF9286AFF069495CAE23 /* RainbowBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A761FED28034AACAFC314C /* RainbowBridge.swift */; };
 		D47C20672572FF11F707EA78 /* Routine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675833C6A34143CC8C6F5 /* Routine.swift */; };
 		D612196C2C64EE0CE26CAD09 /* CalendarMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D120CAE185088043839C7E /* CalendarMirror.swift */; };
 		DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7888B38D33FAED0E1BA5D74 /* SettingsView.swift */; };
@@ -127,6 +128,7 @@
 		F6775F776DC09C9C978F3F6D /* UsageReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B330E760ABA84DFA92851926 /* UsageReporting.swift */; };
 		F87263CC4CC579F6FB9B845A /* ScheduleShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */; };
 		F9A50FFB68444FE788B5CED7 /* TodoTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DFC2876EC6FE5666C43486 /* TodoTree.swift */; };
+		FB55A604A2B9C3F1D484365C /* RainbowEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF011048734C0513008149AB /* RainbowEvent.swift */; };
 		FDD795001175EF2B314A3484 /* TimerActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD55D4646CC08F9037882688 /* TimerActivity.swift */; };
 		FEC04360BC23FA65C85A607D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FD190E36511B72612020479E /* Localizable.xcstrings */; };
 		FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F27359D56BF2678D1330BE /* AddEventView.swift */; };
@@ -279,10 +281,12 @@
 		EA829919C711830D349E106C /* EventKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitManager.swift; sourceTree = "<group>"; };
 		EDF674923A141F19CD56EF10 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManagerView.swift; sourceTree = "<group>"; };
+		EF011048734C0513008149AB /* RainbowEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowEvent.swift; sourceTree = "<group>"; };
 		EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoShareInbox.swift; sourceTree = "<group>"; };
 		F1DFC2876EC6FE5666C43486 /* TodoTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoTree.swift; sourceTree = "<group>"; };
 		F2DFFB40BB030A552DC9AC4C /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		F4D97CF58280A9DF67BC1FFB /* DataVault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataVault.swift; sourceTree = "<group>"; };
+		F9A761FED28034AACAFC314C /* RainbowBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowBridge.swift; sourceTree = "<group>"; };
 		FB910CD74ACF09D41CD1873A /* RecurrencePattern.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrencePattern.swift; sourceTree = "<group>"; };
 		FD190E36511B72612020479E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -395,6 +399,7 @@
 				F4D97CF58280A9DF67BC1FFB /* DataVault.swift */,
 				EA829919C711830D349E106C /* EventKitManager.swift */,
 				771562271827FDCDA952A709 /* PurchaseManager.swift */,
+				F9A761FED28034AACAFC314C /* RainbowBridge.swift */,
 				7A696AAEE492018F406A9411 /* RainbowWidgetSync.swift */,
 				4164272EB750B716814E94EB /* SyncSettingsManager.swift */,
 				A5F614A05FBCBB13C8329E44 /* TimerWidgetSync.swift */,
@@ -496,6 +501,7 @@
 				82AA5977A04ACF9EED7C7BCA /* ProEntitlement.swift */,
 				768AABFA2BC54DE2C39ABC03 /* ProMark.swift */,
 				DFA9D06B8B9BC4E7C22163E5 /* QuickTodoBridge.swift */,
+				EF011048734C0513008149AB /* RainbowEvent.swift */,
 				D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */,
 				4CD675833C6A34143CC8C6F5 /* Routine.swift */,
 				09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */,
@@ -773,6 +779,8 @@
 				AA15127F8F1E0D1096C59870 /* PurchaseManager.swift in Sources */,
 				F5864088574A9EBB94C3ECDF /* QuickTodoBridge.swift in Sources */,
 				24CCB060110F59A56D7CAAA3 /* QuickTodoControlIntent.swift in Sources */,
+				D0C6DF9286AFF069495CAE23 /* RainbowBridge.swift in Sources */,
+				FB55A604A2B9C3F1D484365C /* RainbowEvent.swift in Sources */,
 				BC68BF99407F9A341428D899 /* RainbowMeaningView.swift in Sources */,
 				41D7EB4840F00B281ADBFCF9 /* RainbowOnboardingView.swift in Sources */,
 				012D94967CCA41C793AA7181 /* RainbowWidgetSnapshot.swift in Sources */,

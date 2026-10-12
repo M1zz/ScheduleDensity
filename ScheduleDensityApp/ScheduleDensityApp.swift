@@ -377,6 +377,8 @@ struct ScheduleDensityApp: App {
                 TodoEventBridge.shared.attach(schedule: schedule)
                 TodoEventBridge.shared.attach(todoContainer: todoContainer)
                 TodoEventBridge.shared.attach(eventContainer: sharedModelContainer)
+                // 무지개 일정을 맥과 함께 쓰는 사본과 맞춘다 (→ RainbowBridge.swift).
+                RainbowBridge.shared.attach(eventContainer: sharedModelContainer, sharedContainer: todoContainer)
                 // 무지개 탭을 한 번도 안 열어도 위젯은 채워져 있어야 한다.
                 RainbowWidgetSync.refresh(from: schedule)
             }
