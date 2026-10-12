@@ -933,6 +933,13 @@ struct DayTimeAnalysisView: View {
                                   color: rainbowColors[key] ?? (blk.concreteVerified ? .accentColor : .orange))
             }
             .sorted { ($0.isBackground ? 1 : 0, $0.title) < ($1.isBackground ? 1 : 0, $1.title) }
+            // 맥에서 오늘만 뺀 루틴 — 맥은 유령 블록으로 남겨 둔다. 여기서는 종일 줄 맨 뒤에 흐리게.
+            + input.hiddenRoutines.map { r in
+                AllDayItem(id: DayContent.hiddenRoutinePrefix + r.name,
+                           title: String(localized: "\(r.name) · 오늘은 뺌"),
+                           isBackground: true,
+                           color: paletteColor(r.colorName))
+            }
 
         // 할 일 쪽 — 매여 있는 일이 무슨 일인지, 지금 집을 조각이 무엇인지.
         let todos = todoItems()
@@ -1003,7 +1010,7 @@ struct DayTimeAnalysisView: View {
         var blocksByKey: [String: PlanBlock] = [:]
         for blk in input.blocks { blocksByKey[String(describing: blk.persistentModelID)] = blk }
         var routinesByName: [String: Routine] = [:]
-        for r in input.fixedRoutines + input.quotaRoutines { routinesByName[r.name] = r }
+        for r in input.fixedRoutines + input.quotaRoutines + input.hiddenRoutines { routinesByName[r.name] = r }
         var eventsByKey: [String: Event] = [:]
         for e in stored { eventsByKey[e.laneKey] = e }
         let todoTitles = Dictionary(todos.map { ($0.dragToken, $0.title) }, uniquingKeysWith: { first, _ in first })
@@ -1173,7 +1180,20 @@ struct DayTimeAnalysisView: View {
         }
 
         /// 종일 칩 하나를 눌렀을 때.
+        /// 맥에서 그날만 뺀 루틴의 종일 칩 id 앞머리.
+        static let hiddenRoutinePrefix = "hiddenRoutine:"
+
         func subject(forAllDay item: AllDayItem) -> DetailSubject {
+            if item.id.hasPrefix(Self.hiddenRoutinePrefix) {
+                let name = String(item.id.dropFirst(Self.hiddenRoutinePrefix.count))
+                let routine = routinesByName[name]
+                var subject = DetailSubject(id: "allday:\(item.id)", title: name, subtitle: nil,
+                                            color: item.color, symbol: routine?.iconName ?? "repeat", dashed: true,
+                                            timeText: String(localized: "맥에서 오늘은 뺀 루틴"),
+                                            status: nil, segment: nil)
+                if let routine { subject.details = Self.details(of: routine) }
+                return subject
+            }
             var subject = DetailSubject(id: "allday:\(item.id)", title: item.title, subtitle: nil,
                                         color: item.isBackground ? .secondary : item.color,
                                         symbol: item.isBackground ? "calendar" : "checklist", dashed: false,

@@ -189,10 +189,16 @@ final class CalendarMirror {
             "\(Int(Calendar.current.startOfDay(for: day).timeIntervalSince1970))|\(minute)|\(title)"
         }
 
+        /// 종일 블록·종일 일정의 '시작 분' 자리. 시각이 없으니 같은 날 · 같은 제목으로만 맞춘다.
+        static let allDayMinute = -1
+
         func contains(_ event: EKEvent) -> Bool {
             if let id = event.eventIdentifier,
                ids.contains("\(id)|\(Int(event.startDate.timeIntervalSince1970))") { return true }
             guard !slots.isEmpty else { return false }
+            if event.isAllDay {
+                return slots.contains(Self.slot(day: event.startDate, minute: Self.allDayMinute, title: event.title ?? ""))
+            }
             let c = Calendar.current.dateComponents([.hour, .minute], from: event.startDate)
             let minute = (c.hour ?? 0) * 60 + (c.minute ?? 0)
             return slots.contains(Self.slot(day: event.startDate, minute: minute, title: event.title ?? ""))

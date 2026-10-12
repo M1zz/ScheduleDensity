@@ -234,6 +234,9 @@ final class WeekBlocksStore {
     struct DayInput {
         var fixedRoutines: [Routine] = []
         var quotaRoutines: [Routine] = []
+        /// 맥에서 그날만 뺀 고정 루틴. 시계에는 안 서고 종일 줄에 흐리게 선다 — 맥이 유령 블록으로
+        /// 보여 주는 것을 아이폰에서만 지우면 두 화면이 다른 하루를 말한다(합집합).
+        var hiddenRoutines: [Routine] = []
         var blocks: [PlanBlock] = []
         var routineStartOverride: [String: Double] = [:]
         var quotaPlacement: [String: [Int: Double]] = [:]
@@ -243,8 +246,8 @@ final class WeekBlocksStore {
     }
 
     /// 그 날짜의 루틴·계획·요일별 배치를 한 번에 읽는다.
-    /// 맥에서 숨긴 루틴/끼니는 처음부터 빼고 준다 — iOS에는 '되살리기'가 없어서
-    /// 유령 블록을 보여줄 이유가 없다.
+    /// 맥에서 그날 뺀 고정 루틴은 시계에서 빼고 `hiddenRoutines`로 따로 준다 —
+    /// 맥이 유령 블록으로 남겨 보여 주는 것이라 아이폰도 흐리게나마 보여 준다.
     func dayInput(for date: Date) -> DayInput {
         guard let container else { return DayInput() }
         let key = Self.dayKey(for: date)
@@ -279,7 +282,10 @@ final class WeekBlocksStore {
         for routine in allRoutines {
             switch routine.kind {
             case .fixed:
-                guard !hiddenNames.contains(routine.name) else { continue }
+                if hiddenNames.contains(routine.name) {
+                    input.hiddenRoutines.append(routine)
+                    continue
+                }
                 let onThisDay = hasOccurrences
                     ? placedNames.contains(routine.name)
                     : routine.selectedDays.contains(weekday)
@@ -321,20 +327,26 @@ final class WeekBlocksStore {
         return (routines, blocks)
     }
 
-    /// 맥 계획표에 **시각까지 적혀 있는** 블록들 → 캘린더 미러가 두 번 세지 않을 목록
-    /// (→ CalendarMirror.PlannedCopies). 시각이 없는 블록은 캘린더 일정과 겹칠 수가 없어 뺀다.
+    /// 맥 계획표에 옮겨 적힌 블록들 → 캘린더 미러가 두 번 세지 않을 목록
+    /// (→ CalendarMirror.PlannedCopies).
+    ///
+    /// 종일 블록(시각 없음, `startHour < 0`)도 넣는다. 예전에는 빼서, 맥이 가져온 종일 일정
+    /// (연차·휴가 같은 것)이 아이폰에서는 맥 블록 하나 + 캘린더 한 줄로 두 번 섰다.
+    /// 종일은 시작 분 대신 `PlannedCopies.allDayMinute`로 같은 날 · 같은 제목을 맞춘다.
     func plannedCalendarCopies() -> CalendarMirror.PlannedCopies {
         guard let container else { return .init() }
         let context = ModelContext(container)
         let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
-            .filter { TodoSharing.isVisible($0) && $0.startHour >= 0 }
+            .filter(TodoSharing.isVisible)
         var copies = CalendarMirror.PlannedCopies()
         for block in blocks {
             if let id = block.calendarEventID { copies.ids.insert(id) }
             guard let day = Calendar.current.date(byAdding: .day, value: block.dayRaw, to: block.weekStartDate)
             else { continue }
-            copies.slots.insert(CalendarMirror.PlannedCopies.slot(
-                day: day, minute: Int((block.startHour * 60).rounded()), title: block.title))
+            let minute = block.startHour < 0
+                ? CalendarMirror.PlannedCopies.allDayMinute
+                : Int((block.startHour * 60).rounded())
+            copies.slots.insert(CalendarMirror.PlannedCopies.slot(day: day, minute: minute, title: block.title))
         }
         return copies
     }

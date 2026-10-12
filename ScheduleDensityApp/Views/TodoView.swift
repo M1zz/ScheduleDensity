@@ -114,9 +114,15 @@ struct TodoView: View {
         return carryoverItems(tree) + openItems(tree)
     }
 
-    /// 이번 주, 아직 안 한 일.
+    /// 이번 주와 그 뒤 주, 아직 안 한 일.
+    ///
+    /// ⚠️ 다음 주 이후 것도 넣는다. 맥은 보고 있는 주에 할 일을 적으므로, 맥이 다음 주를
+    ///    펴 놓고 적은 줄은 주차가 미래다. 이번 주만 세우면 맥에는 있고 아이폰에는 없는
+    ///    줄이 생긴다 — 맥의 할 일 칸처럼 주차와 상관없이 안 한 것은 다 세운다(합집합).
     private func openItems(_ tree: TodoTree) -> [BacklogItem] {
-        tree.roots.filter { !$0.isCompleted && cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+        tree.roots.filter {
+            !$0.isCompleted && ($0.weekStartDate >= weekStart || cal.isDate($0.weekStartDate, inSameDayAs: weekStart))
+        }
     }
 
     /// 이번 주에 완료한 일 (최근 완료가 위).
