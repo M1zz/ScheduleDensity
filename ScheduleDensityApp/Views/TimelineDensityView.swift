@@ -1732,10 +1732,13 @@ struct EventQuickLookView: View {
     }
 
     private var weekdaysText: String {
+        let sessionCount = event.sessions.count
+        if sessionCount > 0 { return String(localized: "회차 \(sessionCount)개") }
         if event.weeklyPattern != nil { return String(localized: "맞춤 패턴") }
-        guard let days = event.selectedWeekdays, !days.isEmpty, days.count < 7 else { return String(localized: "매일") }
+        let every = event.repeatWeeks > 1 ? RainbowEvent.repeatLabel(event.repeatWeeks) + " " : ""
+        guard let days = event.selectedWeekdays, !days.isEmpty, days.count < 7 else { return every + String(localized: "매일") }
         let labels = Calendar.current.shortWeekdaySymbols
-        return days.sorted().compactMap { $0 >= 1 && $0 <= labels.count ? labels[$0 - 1] : nil }
+        return every + days.sorted().compactMap { $0 >= 1 && $0 <= labels.count ? labels[$0 - 1] : nil }
             .joined(separator: "·")
     }
 

@@ -162,14 +162,19 @@ final class RainbowBridge {
     /// 날짜는 이미 이 기기의 그날 0시로 맞춰 넘긴다 (원본은 `startOfDay`, 사본은 `sharedDay`).
     static func fingerprint(title: String, start: Date, end: Date, color: String, hours: Double,
                             weekdays: [Int]?, pattern: [Bool]?, importance: String,
-                            infinite: Bool, excluded: Set<Date>, todo: String?) -> String {
+                            infinite: Bool, excluded: Set<Date>, todo: String?, repeatWeeks: Int = 1,
+                            sessions: Data? = nil) -> String {
         func day(_ d: Date) -> String { String(Int(d.timeIntervalSince1970)) }
+        // ⚠️ 매주(1)는 글자에 넣지 않는다 — 장부에 남은 옛 지문과 그대로 같아야 '고쳤다'로 읽지 않는다.
+        let weekdaysText = (weekdays.map { $0.sorted().map(String.init).joined(separator: ",") } ?? "-")
+            + (pattern == nil && repeatWeeks > 1 ? "/\(repeatWeeks)w" : "")
+            + (sessions.map { "/s:" + $0.base64EncodedString() } ?? "")
         return [
             title,
             day(start), infinite ? "inf" : day(end),
             color.uppercased(),
             String(format: "%.4f", hours),
-            weekdays.map { $0.sorted().map(String.init).joined(separator: ",") } ?? "-",
+            weekdaysText,
             pattern.map { $0.map { $0 ? "1" : "0" }.joined() } ?? "-",
             importance,
             excluded.map(day).sorted().joined(separator: ","),
@@ -182,14 +187,16 @@ final class RainbowBridge {
         return fingerprint(title: e.title, start: cal.startOfDay(for: e.startDate), end: cal.startOfDay(for: e.endDate),
                            color: e.color, hours: e.hoursPerDay,
                            weekdays: e.selectedWeekdays, pattern: e.weeklyPattern, importance: e.importanceRaw,
-                           infinite: e.isInfinite, excluded: e.excludedDates, todo: e.todoToken)
+                           infinite: e.isInfinite, excluded: e.excludedDates, todo: e.todoToken,
+                           repeatWeeks: e.repeatWeeks, sessions: e.sessionsData)
     }
 
     static func fingerprint(_ r: RainbowEvent) -> String {
         fingerprint(title: r.title, start: sharedDay(r.startDate), end: sharedDay(r.endDate),
                     color: r.colorHex, hours: r.hoursPerDay,
                     weekdays: r.selectedWeekdays, pattern: r.weeklyPattern, importance: r.importanceRaw,
-                    infinite: r.isInfinite, excluded: sharedExcluded(r), todo: r.todoToken)
+                    infinite: r.isInfinite, excluded: sharedExcluded(r), todo: r.todoToken,
+                    repeatWeeks: r.repeatWeeks, sessions: r.sessionsData)
     }
 
     // MARK: 날짜 — 시간대
@@ -221,6 +228,8 @@ final class RainbowBridge {
         r.hoursPerDay = e.hoursPerDay
         r.selectedWeekdays = e.selectedWeekdays
         r.weeklyPattern = e.weeklyPattern
+        r.repeatWeeks = e.repeatWeeks
+        r.sessionsData = e.sessionsData
         r.importanceRaw = e.importanceRaw
         r.isInfinite = e.isInfinite
         r.excludedDates = e.excludedDates
@@ -236,6 +245,8 @@ final class RainbowBridge {
         e.hoursPerDay = r.hoursPerDay
         e.selectedWeekdays = r.selectedWeekdays
         e.weeklyPattern = r.weeklyPattern
+        e.repeatWeeks = max(1, r.repeatWeeks)
+        e.sessionsData = r.sessionsData
         e.importanceRaw = r.importanceRaw
         e.isInfinite = r.isInfinite
         e.excludedDates = sharedExcluded(r)
@@ -256,7 +267,7 @@ final class RainbowBridge {
         [r.title, String(r.startDate.timeIntervalSince1970), String(r.endDate.timeIntervalSince1970),
          r.colorHex, String(r.hoursPerDay), r.importanceRaw, String(r.isInfinite), r.todoToken ?? "-",
          r.selectedWeekdaysData?.base64EncodedString() ?? "-", r.weeklyPatternData?.base64EncodedString() ?? "-",
-         r.excludedDatesData?.base64EncodedString() ?? "-", r.originInstallID,
+         String(r.repeatWeeks), r.sessionsData?.base64EncodedString() ?? "-", r.excludedDatesData?.base64EncodedString() ?? "-", r.originInstallID,
          String(r.createdAt.timeIntervalSince1970)].joined(separator: "|")
     }
 
@@ -547,6 +558,9 @@ final class RainbowBridge {
         var title: String, startDate: Date, endDate: Date, color: String, hoursPerDay: Double
         var selectedWeekdays: [Int]?, weeklyPattern: [Bool]?, importanceRaw: String
         var isInfinite: Bool, excludedDates: [Date], todoToken: String?, cloudKitRecordName: String?
+        /// 옛 백업에는 없다 (없으면 매주).
+        var repeatWeeks: Int? = nil
+        var sessionsData: Data? = nil
         /// 사본에서 뜬 것이면 그 uuid.
         var uuid: String? = nil
 
@@ -555,7 +569,7 @@ final class RainbowBridge {
             hoursPerDay = e.hoursPerDay; selectedWeekdays = e.selectedWeekdays; weeklyPattern = e.weeklyPattern
             importanceRaw = e.importanceRaw; isInfinite = e.isInfinite
             excludedDates = Array(e.excludedDates).sorted(); todoToken = e.todoToken
-            cloudKitRecordName = e.cloudKitRecordName
+            cloudKitRecordName = e.cloudKitRecordName; repeatWeeks = e.repeatWeeks; sessionsData = e.sessionsData
         }
 
         init(_ r: RainbowEvent) {
@@ -563,7 +577,7 @@ final class RainbowBridge {
             hoursPerDay = r.hoursPerDay; selectedWeekdays = r.selectedWeekdays; weeklyPattern = r.weeklyPattern
             importanceRaw = r.importanceRaw; isInfinite = r.isInfinite
             excludedDates = Array(sharedExcluded(r)).sorted(); todoToken = r.todoToken
-            cloudKitRecordName = nil; uuid = r.uuid
+            cloudKitRecordName = nil; uuid = r.uuid; repeatWeeks = r.repeatWeeks; sessionsData = r.sessionsData
         }
     }
 

@@ -40,6 +40,21 @@ final class Event {
     var hoursPerDay: Double // 하루당 소요시간 (시간 단위)
     var selectedWeekdays: [Int]? // 선택된 요일 (1=일요일, 2=월요일, ..., 7=토요일), nil이면 모든 요일
     var weeklyPatternData: Data? = nil // 5주×7일(35일) 패턴 데이터 (CloudKit 호환)
+    /// 몇 주마다 하는가 — 1 = 매주, 2 = 격주 (→ RainbowEvent.repeatWeeks와 같은 뜻).
+    /// 시작일부터 7일씩 세어 그 주에만 요일이 선다. 35일 패턴이 있으면 보지 않는다.
+    var repeatWeeks: Int = 1
+    /// 회차 `[RainbowSession]` JSON (→ RainbowEvent.sessionsData와 같은 꼴). 있으면 이 날들만 하는 날이다.
+    /// 맥에서 적는다 — 아이폰은 읽어서 그리기만 한다.
+    var sessionsData: Data? = nil
+
+    var sessions: [RainbowSession] { RainbowSession.decode(sessionsData) }
+
+    /// 이 블록(맥 계획 미러)이 이 일정의 회차를 옮겨 적은 것인가 (→ RainbowEvent.carriesSession).
+    func carriesSession(blockTitle: String, on date: Date) -> Bool {
+        guard sessionsData != nil, blockTitle.hasPrefix(title) else { return false }
+        let d = Calendar.current.startOfDay(for: date)
+        return sessions.contains { RainbowEvent.day($0.date) == d }
+    }
     var cloudKitRecordName: String? // CloudKit record ID (동기화용)
     var importanceRaw: String = EventImportance.medium.rawValue // 중요도 (EventImportance enum의 rawValue), 기본값: medium
     var isInfinite: Bool = false // 무한 반복 일정 여부 (true면 종료일 없이 최대 365일까지 표시)
@@ -159,6 +174,15 @@ final class Event {
         return endDate
     }
 
+    /// **종료일까지 매여 있는 줄인가** — 무지개·위젯·하루 화면이 한 기준으로 쓴다.
+    ///
+    /// 이 앱에 적은, 끝이 있는 일정만 그렇다.
+    ///  - 캘린더·맥 계획을 비춘 줄(`mirrorKey`)은 **그 날 열리는 것**이 전부다. 매주 월요일 회의를
+    ///    한 줄로 묶으면 첫 회차~마지막 회차가 기간이 되는데, 그 사이 화~일을 옅게 칠하면 회의가
+    ///    취소되고 옮겨져도 무지개는 꽉 찬 채다. 하루 화면은 그 날 열리는 회의만 세운다.
+    ///  - 끝없이 반복하는 일정은 마감이 없어 매여 있는 게 아니라 습관이다.
+    var carriesSpan: Bool { mirrorKey == nil && !isInfinite }
+
     /// 이 날짜가 이 일정의 '기간 안'인지 — 시작일부터 종료일(=마감·공연일)까지.
     ///
     /// `occursOn`과 다르다. 바이올린 연습이 주 1회라도 공연이 두 달 뒤라면,
@@ -169,6 +193,7 @@ final class Event {
     /// 요일·35일 패턴은 보지 않는다. 다만 '이 날짜만 제외'로 직접 뺀 날은 빼준다 —
     /// 사용자가 손으로 지운 날까지 이어 칠하면 지운 뜻이 사라진다.
     func spansOn(date: Date) -> Bool {
+        guard carriesSpan else { return false }
         let calendar = Calendar.current
         let checkDate = calendar.startOfDay(for: date)
         guard checkDate >= startDate && checkDate <= effectiveEndDate() else { return false }
@@ -186,6 +211,12 @@ final class Event {
             return false
         }
 
+        // 회차가 있으면 그 날들만 (패턴 · 요일보다 먼저)
+        let sessionList = sessions
+        if !sessionList.isEmpty {
+            return sessionList.contains { RainbowEvent.day($0.date) == checkDate } && !excludedDates.contains(checkDate)
+        }
+
         // 35일 패턴 체크 (우선순위 높음)
         if let pattern = weeklyPattern {
             // 시작일로부터 며칠 지났는지 계산
@@ -199,11 +230,19 @@ final class Event {
                 }
             }
         }
-        // 요일 체크 (selectedWeekdays가 nil이면 모든 요일 허용)
-        else if let weekdays = selectedWeekdays, !weekdays.isEmpty {
-            let weekday = calendar.component(.weekday, from: checkDate)
-            if !weekdays.contains(weekday) {
-                return false
+        // 요일 체크 (selectedWeekdays가 nil이면 모든 요일 허용) + N주마다
+        else {
+            if let weekdays = selectedWeekdays, !weekdays.isEmpty {
+                let weekday = calendar.component(.weekday, from: checkDate)
+                if !weekdays.contains(weekday) {
+                    return false
+                }
+            }
+            if repeatWeeks > 1 {
+                let daysSinceStart = calendar.dateComponents([.day], from: startDate, to: checkDate).day ?? 0
+                if (daysSinceStart / 7) % repeatWeeks != 0 {
+                    return false
+                }
             }
         }
 

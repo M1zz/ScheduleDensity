@@ -598,7 +598,12 @@ class ScheduleViewModel {
             let ownEvents = try context.fetch(descriptor)
             // Mac WeekBlocks 계획(읽기 전용·메모리). 같은 밀도 파이프라인에 투입하되,
             // '지나간 이벤트' 필터는 적용하지 않는다 — 아래 주석 참조.
-            let weekBlocks = weekBlocksEvents()
+            // 장기 플랜의 회차를 맥이 블록으로 옮겨 적은 것은 빼고 센다 — 같은 회차가 두 칸이 되지 않게.
+            // 회차는 장기 플랜 줄에 진하게 서 있다 (→ Event.carriesSession).
+            let sessionPlans = ownEvents.filter { $0.sessionsData != nil }
+            let weekBlocks = sessionPlans.isEmpty ? weekBlocksEvents() : weekBlocksEvents().filter { m in
+                !sessionPlans.contains { $0.carriesSession(blockTitle: m.title, on: m.startDate) }
+            }
             // 기간 없는 할 일은 오늘 칸에 묶어서 선다. 오늘뿐이라 지나간 필터와 상관없다.
             let todoBundles = todoBundleEvents(ownEvents: ownEvents)
             // 캘린더 미러도 맥 계획처럼 지나간 필터에서 면제한다 — 캘린더에 있는 그대로 보인다.
@@ -1322,7 +1327,11 @@ class ScheduleViewModel {
         }
 
         // 기간 전체가 칸을 차지한다 — 범위가 겹치면 그것으로 끝이다.
-        if fillSpanToEndDate { return true }
+        // 기간을 안 칠하는 줄(캘린더·맥 계획·끝없는 반복 → Event.carriesSpan)은 하는 날만 칸을 쓴다.
+        if fillSpanToEndDate && event1.carriesSpan && event2.carriesSpan { return true }
+        func claims(_ event: Event, _ date: Date) -> Bool {
+            event.occursOn(date: date) || (fillSpanToEndDate && event.spansOn(date: date))
+        }
 
         // 💡 개선: 실제로 두 일정이 동시에 활성화되는 날짜가 있는지 확인
         let calendar = Calendar.current
@@ -1333,7 +1342,7 @@ class ScheduleViewModel {
         var currentDate = overlapStart
         while currentDate <= overlapEnd {
             // 두 일정이 모두 이 날짜에 활성화되는지 확인
-            if event1.occursOn(date: currentDate) && event2.occursOn(date: currentDate) {
+            if claims(event1, currentDate) && claims(event2, currentDate) {
                 return true  // 실제로 겹치는 날짜 발견!
             }
 

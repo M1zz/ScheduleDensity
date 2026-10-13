@@ -951,7 +951,7 @@ struct DayTimeAnalysisView: View {
         // 기간 안인데 오늘은 손대는 날이 아닌 줄. 끝낸 일, 쪼개지 않은 조각 하나짜리는 매여 있지 않다.
         // 끝없이 반복하는 일정은 마감이 없어 '매여 있다'가 아니라 습관이다 — 여기 세우면 늘 떠 있는 잡음이 된다.
         var carried: [Carried] = []
-        for event in stored where !event.isInfinite && event.spansOn(date: date) && !event.occursOn(date: date) {
+        for event in stored where event.spansOn(date: date) && !event.occursOn(date: date) {
             let todo = event.todoToken.flatMap { todoByToken[$0] }
             if let todo {
                 if todo.isCompleted { continue }
@@ -1023,7 +1023,8 @@ struct DayTimeAnalysisView: View {
                           blocksByKey: blocksByKey,
                           routinesByName: routinesByName,
                           eventsByKey: eventsByKey,
-                          todoTitles: todoTitles)
+                          todoTitles: todoTitles,
+                          day: calendar.startOfDay(for: date))
     }
 
     /// 할 일 전부 — 남이 잠근 채 적은 줄은 뺀다 (할 일 목록과 같은 거름).
@@ -1145,6 +1146,8 @@ struct DayTimeAnalysisView: View {
         var eventsByKey: [String: Event] = [:]
         /// 할 일 토큰 → 제목. 일정에 이어진 할 일을 말할 때.
         var todoTitles: [String: String] = [:]
+        /// 이 내용이 그린 날 (0시). 장기 플랜의 그날 회차를 찾을 때.
+        var day: Date = Calendar.current.startOfDay(for: Date())
 
         /// 시계 위 알약 하나를 눌렀을 때 카드에 세울 것.
         func subject(for seg: TimeSegment) -> DetailSubject {
@@ -1241,16 +1244,30 @@ struct DayTimeAnalysisView: View {
                 : "\(f.string(from: e.startDate)) – \(f.string(from: e.endDate))"
             lines.append(DetailLine(icon: "calendar", label: String(localized: "기간"), value: period))
             lines.append(DetailLine(icon: "clock", label: String(localized: "하루에"), value: formatHours(e.hoursPerDay)))
-            if e.weeklyPattern != nil {
+            let sessions = e.sessions
+            if let i = sessions.firstIndex(where: { RainbowEvent.day($0.date) == day }) {
+                // 이날의 회차 — 이름 · 시간 · 메모.
+                let s = sessions[i]
+                let note = s.note.isEmpty ? "" : " · \(s.note)"
+                lines.append(DetailLine(icon: "list.number", label: String(localized: "회차"),
+                                        value: "\(s.displayTitle(index: i)) · \(formatHours(s.hours))\(note)"))
+            } else if !sessions.isEmpty {
+                lines.append(DetailLine(icon: "list.number", label: String(localized: "회차"),
+                                        value: String(localized: "회차 \(sessions.count)개")))
+            } else if e.weeklyPattern != nil {
                 lines.append(DetailLine(icon: "square.grid.3x3", label: String(localized: "요일"),
                                         value: String(localized: "5주 패턴")))
             } else if let days = e.selectedWeekdays, !days.isEmpty, days.count < 7 {
                 let symbols = Calendar.current.veryShortWeekdaySymbols
                 // 월요일부터 — 1=일요일이라 일요일을 맨 뒤로.
                 let ordered = days.sorted { ($0 + 5) % 7 < ($1 + 5) % 7 }
+                let every = e.repeatWeeks > 1 ? RainbowEvent.repeatLabel(e.repeatWeeks) + " " : ""
                 lines.append(DetailLine(icon: "square.grid.3x3", label: String(localized: "요일"),
-                                        value: ordered.compactMap { (1...7).contains($0) ? symbols[$0 - 1] : nil }
+                                        value: every + ordered.compactMap { (1...7).contains($0) ? symbols[$0 - 1] : nil }
                                             .joined(separator: "·")))
+            } else if e.repeatWeeks > 1 {
+                lines.append(DetailLine(icon: "square.grid.3x3", label: String(localized: "요일"),
+                                        value: RainbowEvent.repeatLabel(e.repeatWeeks)))
             }
             lines.append(DetailLine(icon: "flag", label: String(localized: "중요도"), value: e.importance.displayName))
             if let token = e.todoToken, let title = todoTitles[token] {

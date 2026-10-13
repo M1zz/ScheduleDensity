@@ -26,6 +26,8 @@ struct AddEventView: View {
     @State private var deletionRequest: EventDeletionRequest?
     @State private var selectedWeekdays: Set<Int> = [2, 3, 4, 5, 6]  // 기본값: 월~금 선택
     @State private var useAdvancedPattern: Bool = false  // 5×7 그리드 패턴 사용 여부
+    /// 몇 주마다 (→ Event.repeatWeeks). 간단한 요일 선택에서만 쓴다.
+    @State private var repeatWeeks: Int = 1
     @State private var weeklyPattern: [Bool] = Array(repeating: false, count: 35)  // 5주×7일 패턴
     @State private var importance: EventImportance = .medium
     @State private var showRecommendations = false
@@ -67,6 +69,7 @@ struct AddEventView: View {
                 _useAdvancedPattern = State(initialValue: false)
                 // selectedWeekdays가 nil이면 모든 요일로 초기화
                 _selectedWeekdays = State(initialValue: Set(event.selectedWeekdays ?? [1, 2, 3, 4, 5, 6, 7]))
+                _repeatWeeks = State(initialValue: max(1, event.repeatWeeks))
             }
 
             _importance = State(initialValue: event.importance)
@@ -138,6 +141,30 @@ struct AddEventView: View {
                     Text(useAdvancedPattern
                         ? "5주 단위로 반복되는 패턴을 설정하세요. 격주 스터디처럼 홀수/짝수 주가 다른 일도 적을 수 있습니다."
                         : "기간 안에서 실제로 시간을 쓰는 요일만 고르세요. 고르지 않은 날도 기간 안이면 무지개에 옅게 남습니다.")
+                }
+
+                // 맥에서 적은 회차 — 여기서는 보기만 한다. 회차가 있으면 요일 대신 이 날들만 진하게 선다.
+                if let event = eventToEdit, !event.sessions.isEmpty {
+                    Section {
+                        ForEach(Array(event.sessions.enumerated()), id: \.element.id) { i, session in
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Text(session.displayTitle(index: i)).font(.body.weight(.semibold))
+                                    Spacer()
+                                    Text(RainbowEvent.day(session.date).formatted(.dateTime.month().day().weekday()))
+                                        .font(.body)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Text(hourText(session.hours) + (session.note.isEmpty ? "" : " · \(session.note)"))
+                                    .font(.body)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } header: {
+                        Text("회차")
+                    } footer: {
+                        Text("회차는 맥에서 고칩니다. 회차가 있으면 요일 대신 이 날들만 진하게 섭니다.")
+                    }
                 }
 
                 hoursSection
@@ -558,6 +585,7 @@ struct AddEventView: View {
             existingEvent.hoursPerDay = hoursPerDay
             existingEvent.selectedWeekdays = weekdaysToSave
             existingEvent.weeklyPattern = patternToSave
+            existingEvent.repeatWeeks = useAdvancedPattern ? 1 : repeatWeeks
             existingEvent.importance = importance
             // 끝이 없던 일정은 여기서 끝나는 날이 있는 일정으로 굳는다.
             existingEvent.isInfinite = false
@@ -578,6 +606,7 @@ struct AddEventView: View {
                 importance: importance,
                 excludedDates: currentExceptions
             )
+            event.repeatWeeks = useAdvancedPattern ? 1 : repeatWeeks
             viewModel.addEvent(event)
         }
         dismiss()
@@ -890,6 +919,10 @@ struct AddEventView: View {
             let index = ((daysSinceStart % 35) + 35) % 35
             return weeklyPattern.indices.contains(index) ? weeklyPattern[index] : false
         }
+        if repeatWeeks > 1 {
+            let daysSinceStart = calendar.dateComponents([.day], from: start, to: date).day ?? 0
+            if (daysSinceStart / 7) % repeatWeeks != 0 { return false }
+        }
         if selectedWeekdays.isEmpty { return true }  // 아무것도 안 고르면 매일로 저장된다
         return selectedWeekdays.contains(calendar.component(.weekday, from: date))
     }
@@ -1086,6 +1119,14 @@ struct AddEventView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+
+            // 격주 수업처럼 — 기간 내내 옅은 줄이 이어지고, 하는 주의 그 요일만 진하게 선다.
+            Picker("반복", selection: $repeatWeeks) {
+                ForEach(1...4, id: \.self) { n in
+                    Text(RainbowEvent.repeatLabel(n)).tag(n)
+                }
+            }
+            .onChange(of: repeatWeeks) { _, _ in updateAnalysis() }
 
             if selectedWeekdays.count == 7 {
                 Text("모든 요일")
