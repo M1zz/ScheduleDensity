@@ -308,7 +308,7 @@ final class WeekBlocksStore {
             }
         }
 
-        input.blocks = allBlocks.filter { Self.matches($0, key: key) }
+        input.blocks = allBlocks.filter { Self.matches($0, key: key) && !Self.isStaleCalendarCopy($0) }
         return input
     }
 
@@ -327,6 +327,13 @@ final class WeekBlocksStore {
         let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
             .filter(TodoSharing.isVisible).count
         return (routines, blocks)
+    }
+
+    /// 캘린더에서 옮겨 간 일정인데 맥이 아직 블록을 안 옮겼다 → 화면에서 뺀다 (→ CalendarMirror.isStale).
+    /// 캘린더를 비추고 있을 때(Pro)만 — 안 비추면 블록이 유일한 표시라 빼면 아예 사라진다.
+    static func isStaleCalendarCopy(_ block: PlanBlock) -> Bool {
+        guard ProEntitlement.isUnlocked, let key = block.calendarEventID else { return false }
+        return CalendarMirror.shared.isStale(calendarEventID: key)
     }
 
     /// 맥 계획표에 옮겨 적힌 블록들 → 캘린더 미러가 두 번 세지 않을 목록
@@ -381,7 +388,7 @@ final class WeekBlocksStore {
         let routines = ((try? context.fetch(FetchDescriptor<Routine>())) ?? [])
             .filter(TodoSharing.isVisible)
         let blocks = ((try? context.fetch(FetchDescriptor<PlanBlock>())) ?? [])
-            .filter(TodoSharing.isVisible)
+            .filter { TodoSharing.isVisible($0) && !Self.isStaleCalendarCopy($0) }
 
         // 어디서 비는지 한 줄로 판별하기 위한 계측:
         //  - 0/0 이면 미러가 아직 안 내려왔거나(첫 동기화 대기) CloudKit 환경/계정이 다른 것.

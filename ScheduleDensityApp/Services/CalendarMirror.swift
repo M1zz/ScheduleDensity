@@ -170,6 +170,32 @@ final class CalendarMirror {
             : "\(keyPrefix)\(event.calendarItemIdentifier)@\(Int(event.startDate.timeIntervalSince1970))"
     }
 
+    /// **맥이 가져온 블록이 캘린더보다 뒤처졌는가.**
+    ///
+    /// 캘린더에서 회의를 옮기면 이 기기 캘린더 줄은 바로 새 시각에 선다. 그런데 맥이 가져온 블록은
+    /// 맥이 다시 가져올 때(맥이 켜져 있을 때)에야 따라 옮겨진다. 그 사이에는 옛 시각의 블록과 새 시각의
+    /// 캘린더 줄이 둘 다 서서, 같은 회의가 두 번 보인다. 이 기기가 그 일정을 비추고 있고 시작 시각이
+    /// 달라졌으면 블록을 **화면에서만** 뺀다 — 블록은 그대로 두고 맥이 옮기면 다시 선다.
+    ///
+    /// 블록 이름 꼴은 맥이 정한다 (→ WeekBlocks/CalendarImport.key): `"ext:<외부 id>|<시작 초>"` 또는
+    /// `"<eventIdentifier>|<시작 초>"`. 반복 일정은 회차를 가릴 수 없어 보지 않는다.
+    func isStale(calendarEventID key: String) -> Bool {
+        guard isActive, let bar = key.lastIndex(of: "|"),
+              let start = Int(key[key.index(after: bar)...]) else { return false }
+        let head = String(key[..<bar])
+        let events: [EKEvent]
+        if head.hasPrefix("ext:") {
+            events = store.calendarItems(withExternalIdentifier: String(head.dropFirst(4))).compactMap { $0 as? EKEvent }
+        } else {
+            events = store.event(withIdentifier: head).map { [$0] } ?? []
+        }
+        let shown = events.filter {
+            !$0.hasRecurrenceRules && selectedIDs.contains($0.calendar?.calendarIdentifier ?? "")
+        }
+        guard !shown.isEmpty else { return false }
+        return !shown.contains { Int($0.startDate?.timeIntervalSince1970 ?? -1) == start }
+    }
+
     /// **맥이 이미 계획표에 옮겨 적은 캘린더 일정.**
     ///
     /// 맥 '무지개 공방'의 캘린더 가져오기는 회의를 계획 블록으로 **베껴** 둔다. 그 블록은 무지개와
