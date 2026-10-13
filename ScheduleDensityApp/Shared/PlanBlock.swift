@@ -60,6 +60,10 @@ final class PlanBlock {
     /// ⚠️ 맥 PlanBlock 에도 같은 칸이 있다. CloudKit 스키마가 늘어나는 필드 (→ README).
     var iconName: String? = nil
 
+    /// 실제로 걸린 분 — 맥에서 '걸린 시간 재기'를 켜고 타이머로 센 만큼. 아이폰은 아직 안 쓴다.
+    /// ⚠️ 맥 PlanBlock 에도 같은 칸이 있다. CloudKit 스키마가 늘어나는 필드 (→ README).
+    var actualMinutes: Double? = nil
+
     init(day: DayOfWeek,
          timeBand: TimeBand,
          durationHours: Double,

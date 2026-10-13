@@ -91,6 +91,8 @@ enum CloudSchemaPrimer {
         block.originInstallID = "schema-sample-install"
         // 알약 아이콘 칸 (→ PlanBlock.iconName). 맥에서 아이콘을 누른 사람에게서만 생긴다.
         block.iconName = "star.fill"
+        // 걸린 시간 칸 (→ PlanBlock.actualMinutes). 맥에서 '걸린 시간 재기'로 잰 사람에게서만 생긴다.
+        block.actualMinutes = 1
 
         // 지운 것의 표 (→ DeletionMark.swift). 무엇을 지워 봐야 생기는 타입이라 표본으로 세운다.
         let tomb = DeletionMark(key: "item:\(marker)", originInstallID: "schema-sample-install")
