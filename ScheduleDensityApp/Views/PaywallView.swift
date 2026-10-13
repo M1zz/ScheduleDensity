@@ -167,6 +167,11 @@ struct PaywallView: View {
                 ForEach(purchases.products, id: \.id) { product in
                     planRow(product)
                 }
+                // 두 앱은 서로 다른 앱이지만, 한쪽에서 산 것이 다른 쪽도 연다 (→ ProMark.swift).
+                // 두 번 사는 줄 알고 망설이는 사람이 가장 오래 쓸 사람이다 — 값 앞에서 말해 둔다.
+                Label("한 번 사면 맥 앱도 함께 Pro로 열립니다.", systemImage: "laptopcomputer")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
             }
         }
     }

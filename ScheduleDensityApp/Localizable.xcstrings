@@ -145569,6 +145569,142 @@
           }
         }
       }
+    },
+    "한 번 사면 맥 앱도 함께 Pro로 열립니다." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buy once and the Mac app unlocks Pro too."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買一次，Mac App 也會一起解鎖 Pro。"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买一次，Mac App 也会一起解锁 Pro。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一度購入すると、MacアプリでもProが使えます。"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmal kaufen – Pro gilt auch in der Mac-App."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra una vez y la app de Mac también desbloquea Pro."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un seul achat débloque aussi Pro dans l’app Mac."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquista una volta e Pro si sblocca anche nell’app per Mac."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compre uma vez e o app do Mac também libera o Pro."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Одна покупка открывает Pro и в приложении для Mac."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stačí koupit jednou a Pro se odemkne i v aplikaci pro Mac."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Køb én gang, så låses Pro også op i Mac-appen."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Με μία αγορά, το Pro ξεκλειδώνει και στην εφαρμογή Mac."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yksi osto avaa Pron myös Mac-apissa."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beli sekali, Pro juga terbuka di app Mac."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kjøp én gang, så låses Pro også opp i Mac-appen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eén keer kopen ontgrendelt Pro ook in de Mac-app."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden zakup odblokowuje Pro także w aplikacji na Maca."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Köp en gång så låses Pro upp även i Mac-appen."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซื้อครั้งเดียว แอปบน Mac ก็ปลดล็อก Pro ด้วย"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bir kez al, Mac uygulamasında da Pro açılsın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mua một lần, ứng dụng Mac cũng mở khóa Pro."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

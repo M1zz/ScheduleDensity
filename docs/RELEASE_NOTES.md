@@ -1,5 +1,214 @@
 # 릴리즈 노트
 
+## 1.1.12
+
+### 앱스토어 (한국어)
+
+```
+무지개에서 날짜를 누르면 그날 화면으로 갑니다
+격주와 회차가 있는 일정을 맥과 함께 씁니다
+캘린더에서 옮긴 회의가 두 번 보이지 않습니다
+한 번 사면 맥 앱도 함께 Pro로 열립니다
+```
+
+### 앱스토어 (English)
+
+```
+Tap a date in Rainbow to open that day
+Biweekly plans now sync with your Mac
+Moved calendar meetings no longer double
+One purchase unlocks Pro on Mac too
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+在彩虹中點日期，直接打開那一天
+隔週與分次行程可與 Mac 一起使用
+從行事曆移過來的會議不再重複顯示
+購買一次，Mac 也一起解鎖 Pro
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+在彩虹中点日期，直接打开那一天
+隔周与分次日程可与 Mac 一起使用
+从日历移过来的会议不再重复显示
+购买一次，Mac 也一起解锁 Pro
+```
+
+### 앱스토어 (일본어)
+
+```
+虹で日付をタップするとその日の画面へ
+隔週や回数のある予定をMacと共有できます
+カレンダーから移した会議が二重に出ません
+一度の購入でMacでもProが使えます
+```
+
+### 앱스토어 (독일어)
+
+```
+Datum im Regenbogen öffnet den Tag
+Zweiwochenpläne laufen mit dem Mac
+Übernommene Termine nicht mehr doppelt
+Ein Kauf schaltet auch den Mac frei
+```
+
+### 앱스토어 (스페인어)
+
+```
+Toca una fecha y abre ese día
+Planes quincenales compartidos con Mac
+Las reuniones movidas ya no salen dobles
+Una compra activa Pro también en Mac
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Touchez une date pour ouvrir ce jour
+Plans bimensuels partagés avec le Mac
+Plus de réunions déplacées en double
+Un achat débloque aussi Pro sur Mac
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Tocca una data per aprire quel giorno
+Piani bisettimanali condivisi col Mac
+Le riunioni spostate non appaiono doppie
+Un acquisto sblocca Pro anche su Mac
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Toque numa data para abrir aquele dia
+Planos quinzenais junto com o Mac
+Reuniões movidas não aparecem duplicadas
+Uma compra libera o Pro também no Mac
+```
+
+### 앱스토어 (러시아어)
+
+```
+Нажмите на дату, чтобы открыть день
+Планы раз в две недели вместе с Mac
+Перенесённые встречи больше не двоятся
+Одна покупка откроет Pro и на Mac
+```
+
+### 앱스토어 (체코어)
+
+```
+Klepnutím na datum otevřete daný den
+Plány po dvou týdnech sdílíte s Macem
+Přesunuté schůzky se už nezdvojují
+Jeden nákup odemkne Pro i na Macu
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Tryk på en dato for at åbne dagen
+Planer hver anden uge deles med Mac
+Flyttede møder vises ikke dobbelt
+Ét køb låser også Pro op på Mac
+```
+
+### 앱스토어 (그리스어)
+
+```
+Πάτα μια ημερομηνία για εκείνη τη μέρα
+Πλάνα ανά δύο εβδομάδες κοινά με το Mac
+Οι συσκέψεις δεν εμφανίζονται διπλές
+Μία αγορά ανοίγει το Pro και στο Mac
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Napauta päivää avataksesi sen
+Kahden viikon suunnitelmat myös Macissa
+Siirretyt palaverit eivät tuplaannu
+Yksi osto avaa Pron myös Macissa
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Ketuk tanggal untuk membuka hari itu
+Rencana dua mingguan dipakai bersama Mac
+Rapat yang dipindah tak muncul ganda
+Sekali beli, Pro juga terbuka di Mac
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Trykk på en dato for å åpne dagen
+Planer annenhver uke deles med Mac
+Flyttede møter vises ikke dobbelt
+Ett kjøp låser opp Pro på Mac også
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Tik op een datum om die dag te openen
+Tweewekelijkse plannen delen met de Mac
+Verplaatste afspraken niet meer dubbel
+Eén aankoop geeft ook Pro op je Mac
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Stuknij datę, by otworzyć ten dzień
+Plany co dwa tygodnie wspólne z Makiem
+Przeniesione spotkania się nie dublują
+Jeden zakup odblokuje Pro też na Macu
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Tryck på ett datum för att öppna dagen
+Planer varannan vecka delas med Mac
+Flyttade möten visas inte dubbelt
+Ett köp låser upp Pro även på Mac
+```
+
+### 앱스토어 (태국어)
+
+```
+แตะวันที่ในสายรุ้งเพื่อเปิดวันนั้น
+แผนแบบสองสัปดาห์ครั้งใช้ร่วมกับ Mac ได้
+การประชุมที่ย้ายมาไม่แสดงซ้ำอีก
+ซื้อครั้งเดียว Mac ก็ได้ Pro ด้วย
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+O günü açmak için tarihe dokun
+İki haftalık planlar Mac ile paylaşılır
+Taşınan toplantılar artık çift görünmez
+Tek satın alma Mac’te de Pro’yu açar
+```
+
+### 앱스토어 (베트남어)
+
+```
+Chạm vào ngày để mở ngày đó
+Lịch cách tuần dùng chung với Mac
+Cuộc họp đã chuyển không bị lặp
+Mua một lần, Mac cũng mở khóa Pro
+```
+
 ## 1.1.11
 
 ### 앱스토어 (한국어)
