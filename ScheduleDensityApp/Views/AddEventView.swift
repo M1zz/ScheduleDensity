@@ -155,7 +155,7 @@ struct AddEventView: View {
                                         .font(.body)
                                         .foregroundStyle(.secondary)
                                 }
-                                Text(hourText(session.hours) + (session.note.isEmpty ? "" : " · \(session.note)"))
+                                Text((session.timeRangeText ?? hourText(session.hours)) + (session.note.isEmpty ? "" : " · \(session.note)"))
                                     .font(.body)
                                     .foregroundStyle(.secondary)
                             }

@@ -1249,8 +1249,9 @@ struct DayTimeAnalysisView: View {
                 // 이날의 회차 — 이름 · 시간 · 메모.
                 let s = sessions[i]
                 let note = s.note.isEmpty ? "" : " · \(s.note)"
+                // 맥에서 시각을 정했으면 몇 시간 대신 시작 ~ 끝 시각.
                 lines.append(DetailLine(icon: "list.number", label: String(localized: "회차"),
-                                        value: "\(s.displayTitle(index: i)) · \(formatHours(s.hours))\(note)"))
+                                        value: "\(s.displayTitle(index: i)) · \(s.timeRangeText ?? formatHours(s.hours))\(note)"))
             } else if !sessions.isEmpty {
                 lines.append(DetailLine(icon: "list.number", label: String(localized: "회차"),
                                         value: String(localized: "회차 \(sessions.count)개")))
