@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+import LeeoKit
 import SwiftData
 import TipKit
 import CoreData  // NSPersistentStoreRemoteChange (맥에서 온 계획 변경 감지)
@@ -29,6 +30,7 @@ struct TodoView: View {
 
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.foldLayout) private var fold
 
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]
@@ -243,6 +245,18 @@ struct TodoView: View {
         }
         .navigationDestination(item: $pushedTodo) { item in
             TodoDetailView(root: item)
+        }
+        // 아이폰 듀오: 펴고 접어도 보던 할 일을 잃지 않는다 (→ FoldPanes.swift).
+        // 펴면 밀어 넣었던 상세를 오른쪽 판으로 옮기고, 접으면 오른쪽 판의 것을 밀어 넣는다.
+        .onChange(of: fold.isUnfolded) { _, unfolded in
+            let selection = FoldTodoSelection.shared
+            if unfolded, let item = pushedTodo {
+                pushedTodo = nil
+                selection.root = item
+            } else if !unfolded, let item = selection.root {
+                selection.root = nil
+                pushedTodo = item
+            }
         }
         .task {
             pullForwardOverdueWeeks()
@@ -504,6 +518,15 @@ struct TodoView: View {
     // 아래 줄들을 그만큼 내리는 움직임이라, 목록에 한 칸이 새로 생겼다는 것이
     // 설명 없이 읽힌다. 버튼과 그 자리가 같은 쪽 위라 눈이 따라갈 거리도 짧다.
 
+    /// 할 일 하나의 상세를 연다. 접혀 있으면 밀어 넣고, 펼쳐져 있으면 오른쪽 판에 연다.
+    private func open(_ item: BacklogItem) {
+        if fold.isUnfolded {
+            FoldTodoSelection.shared.root = item
+        } else {
+            pushedTodo = item
+        }
+    }
+
     /// 제어센터에서 온 요청을 거둔다. **플래그를 거두는 곳은 여기 하나뿐이다** —
     /// 콜드 런치의 `.task` 와 이미 떠 있을 때의 알림이 둘 다 도착해도 한 번만 열린다.
     ///
@@ -513,6 +536,7 @@ struct TodoView: View {
     private func consumeQuickAddRequest() {
         guard QuickTodoBridge.consumePendingAdd() else { return }
         pushedTodo = nil
+        FoldTodoSelection.shared.root = nil
         showingBoltMeaning = false
         tab = .mine
         // 목록이 실제로 그려진 다음에 빈 줄을 밀어 넣어야 스크롤이 걸린다.
@@ -964,7 +988,7 @@ struct TodoView: View {
                         guard let item = TodoEventBridge.shared.makeTodo(for: event) else { return }
                         refreshRainbowPending()
                         refreshPeriods()
-                        pushedTodo = item
+                        open(item)
                     } label: {
                         rainbowPendingRow(event)
                     }
@@ -1419,9 +1443,8 @@ struct TodoRow: View {
             }
             .buttonStyle(.plain)
 
-            NavigationLink {
-                TodoDetailView(root: item)
-            } label: {
+            // 접혀 있으면 밀고, 펼쳐져 있으면 오른쪽 판에 연다 (→ FoldPanes.swift).
+            TodoDetailLink(root: item) {
                 content
                     // 글자에만 탭이 먹으면 제목이 짧을수록 누를 자리가 좁아진다.
                     // 줄 폭을 다 차지하게 한 뒤 그 사각형 전체를 탭 영역으로 삼는다
@@ -1623,9 +1646,7 @@ private struct MarkedRow: View {
             .buttonStyle(.plain)
             .accessibilityLabel("\(item.title) 끝내기")
 
-            NavigationLink {
-                TodoDetailView(root: root)
-            } label: {
+            TodoDetailLink(root: root) {
                 VStack(alignment: .leading, spacing: 2) {
                     if let parentTitle {
                         Text(parentTitle)

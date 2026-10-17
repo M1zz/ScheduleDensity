@@ -3035,7 +3035,7 @@ function priceScreen() {
     ${tabbar('todo')}<div class="homebar"></div>`;
 }
 
-/* ═══ render the six artboards ═════════════════════════════════ */
+/* ═══ render the five artboards ═════════════════════════════════ */
 const SKINS = [
   { bg:'linear-gradient(175deg,#f2f6ff 0%,#dfe8ff 100%)', wash:'rgba(0,122,255,.20)',
     ink:'#101534', sub:'#4b5578', kick:'#007AFF', screen:rainbowScreen },
@@ -3047,8 +3047,8 @@ const SKINS = [
     ink:'#16123d', sub:'#4d4a86', kick:'#5856D6', screen:stepsScreen },
   { bg:'linear-gradient(175deg,#1a1d33 0%,#0a0b14 100%)', wash:'rgba(140,240,166,.14)',
     ink:'#ffffff', sub:'#a9adcb', kick:'#8CF0A6', screen:widgetScreen },
-  { bg:'linear-gradient(175deg,#f7f8fb 0%,#e8ebf2 100%)', wash:'rgba(52,199,89,.16)',
-    ink:'#14171f', sub:'#575d6b', kick:'#34C759', screen:priceScreen },
+  // 가격 장(priceScreen)은 싣지 않는다 — '무료' · '무료 체험'도 가격 표기라
+  // 2.3.7로 리젝된다 (1.1.13, 2026-10-17). 가격 이야기는 설명글에만.
 ];
 document.getElementById('sheets').innerHTML = SKINS.map((skin, i) => {
   const [kicker, head, sub2] = S.shots[i];
@@ -3059,7 +3059,7 @@ document.getElementById('sheets').innerHTML = SKINS.map((skin, i) => {
    App Store Connect wants a different pixel size per display slot,
    and Hangul captions set taller than Latin ones, so neither the
    artboard nor the caption height is a constant. Measure the tallest
-   caption of the six, park every device the same distance below it,
+   caption of the five, park every device the same distance below it,
    and scale the 393x852 screen to whatever height is left. One pass,
    after layout — so a size or a language can change without anyone
    re-deriving these numbers by hand.

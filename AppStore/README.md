@@ -1,6 +1,6 @@
 # App Store 스크린샷
 
-언어 스물세 벌 × 크기 세 벌 = 414장. 언어 목록은 `render.mjs` 의 `ALL_LOCALES`. `<언어>/<크기>/01-rainbow.png` … `06-free.png`.
+언어 스물세 벌 × 크기 세 벌 × 다섯 장 = 345장. 언어 목록은 `render.mjs` 의 `ALL_LOCALES`. `<언어>/<크기>/01-rainbow.png` … `05-widgets.png`.
 
 ```
 AppStore/
@@ -26,7 +26,6 @@ AppStore/
 | 3 | `03-two-questions` | 단계 시트의 두 질문 | 물음 둘이면 갈립니다 | 兩個問題　就能分辨 |
 | 4 | `04-steps` | 단계 · 순서 스위치 · 아래에서 위로 쌓는 시간 | 쪼개면 시간이 쌓입니다 | 拆成步驟　時間自然累加 |
 | 5 | `05-widgets` | 홈 화면 위젯 세 개 (번개 · 무지개 · 할 일) | 5분 났을 때 집을 것 | 有 5 分鐘時　可以做的事 |
-| 6 | `06-free` | 무료인 본체와 '모두 열기' 다섯 | 본체는 값을 받지 않습니다 | 核心功能　不收費 |
 
 ## 다시 만들기
 
@@ -55,7 +54,7 @@ macOS에는 Apple SD Gothic Neo와 PingFang TC가 있어 따로 설치할 것이
 폴더 이름과 실제 픽셀이 맞는지 확인하고, 어긋나면 거기서 멈춘다.
 
 크기가 바뀌면 캡션 높이와 기기 크기도 따라 바뀌어야 한다. 그 숫자를 손으로
-다시 재지 않도록 `fitLayout()`이 레이아웃이 끝난 뒤 **여섯 장 중 가장 높은 캡션**을
+다시 재지 않도록 `fitLayout()`이 레이아웃이 끝난 뒤 **다섯 장 중 가장 높은 캡션**을
 재서 기기를 그 아래 같은 간격에 세우고, 남은 높이에 화면을 맞춘다.
 크기를 하나 더 넣으려면 `SIZES`에 CSS px(픽셀 ÷ 3)만 적으면 된다.
 
@@ -75,7 +74,11 @@ macOS에는 Apple SD Gothic Neo와 PingFang TC가 있어 따로 설치할 것이
 
 문구·데이터를 고치려면 `STRINGS`를, 화면 구성을 고치려면 화면 함수
 (`rainbowScreen`, `todoScreen`, `questionsScreen`, `stepsScreen`,
-`widgetScreen`, `priceScreen`)를 고친다.
+`widgetScreen`)를 고친다.
+
+⚠️ 가격 장(`06-free`)은 뺐다. '무료' · '무료 체험' · '평생' 같은 말도 가격 표기로 보고
+2.3.7(Accurate Metadata)로 리젝한다 (1.1.13, 2026-10-17). 스크린샷 · 미리보기 영상 · 앱 이름 ·
+부제에는 넣지 않고, 가격 이야기는 설명글에만 쓴다. `priceScreen`과 `S.price`는 남아 있지만 싣지 않는다.
 
 ## ⚠️ 영어 세트는 아직 올리면 안 된다
 
