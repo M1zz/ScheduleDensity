@@ -42,7 +42,7 @@
           "adHocOffers": [],
           "codeOffers": [],
           "displayPrice": "22000",
-          "familyShareable": false,
+          "familyShareable": true,
           "groupNumber": 1,
           "internalID": "8D916837-79DA-4E35-B742-B1293393B958",
           "introductoryOffer": {
@@ -74,7 +74,7 @@
           "adHocOffers": [],
           "codeOffers": [],
           "displayPrice": "4400",
-          "familyShareable": false,
+          "familyShareable": true,
           "groupNumber": 2,
           "internalID": "AC09DA92-CC4A-4303-A7A2-92F9FC531EEE",
           "introductoryOffer": null,
