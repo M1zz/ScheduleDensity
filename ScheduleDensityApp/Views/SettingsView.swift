@@ -66,6 +66,10 @@ struct SettingsView: View {
     /// 타이머 설정을 보여주고 바꾸는 자리 (→ TaskTimer.swift).
     @State private var timer = TaskTimer.shared
     @State private var paywallFeature: ProFeature?
+    /// App Store 의 '코드 사용' 시트 (할인·무료 기간 오퍼 코드).
+    @State private var redeemingCode = false
+    /// 업데이트 때 한 번 떴던 "새로 생긴 것"을 다시 본다 (→ WhatsNewView.swift).
+    @State private var showingWhatsNew = false
     /// 할 일 분류를 만들고 고치는 시트 (→ CategoryManagerView.swift).
     @State private var showingCategoryManager = false
     @AppStorage("showInsightCards") private var showInsightCards = false
@@ -198,6 +202,12 @@ struct SettingsView: View {
 
                         Button("구매 복원") {
                             Task { await purchases.restore() }
+                        }
+                        .disabled(purchases.isWorking)
+
+                        // 받은 코드(할인·무료 기간)를 넣는 자리. 페이월까지 들어가지 않아도 된다.
+                        Button("코드 사용") {
+                            redeemingCode = true
                         }
                         .disabled(purchases.isWorking)
                     }
@@ -1117,6 +1127,12 @@ struct SettingsView: View {
 
                 Section {
                     // 앞으로 만들 기능 — 원본은 ScheduleDensityAppRoadmap.swift
+                    // 업데이트 때 닫아 버린 안내를 다시 본다.
+                    Button {
+                        showingWhatsNew = true
+                    } label: {
+                        Label("새로 생긴 것", systemImage: "sparkles")
+                    }
                     NavigationLink(LeeoRoadmapText.entry) { RoadmapScreen() }
                     LeeoSupportSection<ScheduleDensityAppSpec>()
                 } header: {
@@ -1163,6 +1179,16 @@ struct SettingsView: View {
         }
         .sheet(item: $paywallFeature) { feature in
             PaywallView(highlight: feature)
+        }
+        .sheet(isPresented: $showingWhatsNew) {
+            WhatsNewView()
+                .presentationDragIndicator(.visible)
+        }
+        .offerCodeRedemption(isPresented: $redeemingCode) { _ in
+            Task {
+                await purchases.refresh()
+                if purchases.isUnlocked { RainbowFunnel.reach(.purchased) }
+            }
         }
         .sheet(isPresented: $showingCategoryManager) {
             // ⚠️ 이 설정 화면은 **일정 스토어**에서 돈다. 분류는 할 일 스토어에 있으므로

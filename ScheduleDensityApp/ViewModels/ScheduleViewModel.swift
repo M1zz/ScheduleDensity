@@ -252,7 +252,7 @@ class ScheduleViewModel {
                 guard let self else { return }
                 self.weekBlocksCacheToken = nil
                 self.dataRefreshTrigger = UUID()
-                print("🔄 [WeekBlocks] 원격 변경 감지 → 데이터 갱신")
+                AppLog.schedule.debug("🔄 [WeekBlocks] 원격 변경 감지 → 데이터 갱신")
             }
             self.remoteChangeDebounce = work
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: work)
@@ -294,7 +294,7 @@ class ScheduleViewModel {
             guard let self else { return }
             self.weekBlocksCacheToken = nil
             self.dataRefreshTrigger = UUID()
-            print("🔄 [WeekBlocks] 계획 변경(앱 내) → 데이터 갱신")
+            AppLog.schedule.debug("🔄 [WeekBlocks] 계획 변경(앱 내) → 데이터 갱신")
         }
     }
 
@@ -321,7 +321,7 @@ class ScheduleViewModel {
         currentStartDate = calendar.date(byAdding: .month, value: -monthsToShow, to: today) ?? today
         currentEndDate = calendar.date(byAdding: .month, value: monthsToShow, to: today) ?? today
 
-        print("📅 [ViewModel] 날짜 범위 업데이트: ±\(monthsToShow)개월 (\(currentStartDate) ~ \(currentEndDate))")
+        AppLog.schedule.debug("📅 [ViewModel] 날짜 범위 업데이트: ±\(self.monthsToShow)개월 (\(self.currentStartDate) ~ \(self.currentEndDate))")
     }
 
     // 설정 업데이트
@@ -399,7 +399,7 @@ class ScheduleViewModel {
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
-        print("📌 [ViewModel] ModelContext 설정됨")
+        AppLog.schedule.debug("📌 [ViewModel] ModelContext 설정됨")
     }
 
     // MARK: - Week Navigation
@@ -448,23 +448,23 @@ class ScheduleViewModel {
 
         // 동기화가 비활성화되어 있으면 CloudKit 저장 안함
         guard SyncSettingsManager.shared.isSyncEnabled else {
-            print("⏭️ [ViewModel] Sync disabled, skipping CloudKit save")
+            AppLog.schedule.notice("⏭️ [ViewModel] Sync disabled, skipping CloudKit save")
             return
         }
 
         // iCloud 사용 불가능하면 CloudKit 저장 안함
         guard CloudKitManager.shared.isAvailable else {
-            print("⏭️ [ViewModel] iCloud not available, skipping CloudKit save")
+            AppLog.schedule.notice("⏭️ [ViewModel] iCloud not available, skipping CloudKit save")
             return
         }
 
-        print("🔄 [ViewModel] Syncing event to CloudKit: \"\(event.title)\"")
+        AppLog.schedule.debug("🔄 [ViewModel] Syncing event to CloudKit: \"\(event.title)\"")
 
         CloudKitManager.shared.saveEvent(event) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let recordName):
-                    print("✅ [ViewModel] Event synced to CloudKit: \(recordName)")
+                    AppLog.schedule.notice("✅ [ViewModel] Event synced to CloudKit: \(recordName)")
 
                     // recordName을 Event에 저장
                     event.cloudKitRecordName = recordName
@@ -473,13 +473,13 @@ class ScheduleViewModel {
                     guard let context = self?.modelContext else { return }
                     do {
                         try context.save()
-                        print("✅ [ViewModel] CloudKit recordName saved to local Event")
+                        AppLog.schedule.notice("✅ [ViewModel] CloudKit recordName saved to local Event")
                     } catch {
-                        print("❌ [ViewModel] Failed to save recordName: \(error)")
+                        AppLog.schedule.error("❌ [ViewModel] Failed to save recordName: \(String(describing: error), privacy: .public)")
                     }
 
                 case .failure(let error):
-                    print("❌ [ViewModel] CloudKit sync failed: \(error.localizedDescription)")
+                    AppLog.schedule.error("❌ [ViewModel] CloudKit sync failed: \(error.localizedDescription, privacy: .public)")
                 }
             }
         }
@@ -487,21 +487,22 @@ class ScheduleViewModel {
 
     func addEvent(_ event: Event) {
         guard let context = modelContext else {
-            print("⚠️ [ViewModel] addEvent 실패: modelContext가 nil")
+            AppLog.schedule.warning("⚠️ [ViewModel] addEvent 실패: modelContext가 nil")
             return
         }
         context.insert(event)
         do {
             try context.save()
-            print("✅ [ViewModel] 이벤트 추가됨: \"\(event.title)\" (\(event.startDate) ~ \(event.endDate))")
+            AppLog.schedule.notice("✅ [ViewModel] 이벤트 추가됨: \"\(event.title)\" (\(event.startDate) ~ \(event.endDate))")
 
             // 마지막 추가된 일정의 시작일 저장 (스크롤 용도)
             lastAddedEventDate = event.startDate
+            RainbowFunnel.reach(.firstEvent)
 
             // 증분 동기화: CloudKit에 개별 저장
             syncEventToCloudKit(event)
         } catch {
-            print("❌ [ViewModel] 이벤트 저장 실패: \(error)")
+            AppLog.schedule.error("❌ [ViewModel] 이벤트 저장 실패: \(String(describing: error), privacy: .public)")
         }
     }
 
@@ -535,13 +536,13 @@ class ScheduleViewModel {
     @discardableResult
     func deleteEvent(_ event: Event) async -> Result<Void, Error> {
         guard let context = modelContext else {
-            print("⚠️ [ViewModel] deleteEvent 실패: modelContext가 nil")
+            AppLog.schedule.warning("⚠️ [ViewModel] deleteEvent 실패: modelContext가 nil")
             return .failure(EventDeletionError.noStore)
         }
 
         let plan = deletionPlan(for: event)
         guard plan.isAllowed else {
-            print("⛔️ [ViewModel] iCloud 에 닿지 못해 삭제를 멈춘다: \"\(event.title)\"")
+            AppLog.schedule.error("⛔️ [ViewModel] iCloud 에 닿지 못해 삭제를 멈춘다: \"\(event.title)\"")
             return .failure(EventDeletionError.cloudUnreachable)
         }
 
@@ -549,7 +550,7 @@ class ScheduleViewModel {
             do {
                 try await CloudKitManager.shared.deleteEvent(recordName: recordName)
             } catch {
-                print("❌ [ViewModel] CloudKit 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription)")
+                AppLog.schedule.error("❌ [ViewModel] CloudKit 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription, privacy: .public)")
                 return .failure(error)
             }
         }
@@ -559,9 +560,9 @@ class ScheduleViewModel {
         context.delete(event)
         do {
             try context.save()
-            print("🗑️ [ViewModel] 이벤트 삭제됨: \"\(event.title)\"")
+            AppLog.schedule.notice("🗑️ [ViewModel] 이벤트 삭제됨: \"\(event.title)\"")
         } catch {
-            print("❌ [ViewModel] 이벤트 삭제 실패: \(error)")
+            AppLog.schedule.error("❌ [ViewModel] 이벤트 삭제 실패: \(String(describing: error), privacy: .public)")
             return .failure(error)
         }
         dataRefreshTrigger = UUID()
@@ -570,23 +571,23 @@ class ScheduleViewModel {
 
     func updateEvent(_ event: Event) {
         guard let context = modelContext else {
-            print("⚠️ [ViewModel] updateEvent 실패: modelContext가 nil")
+            AppLog.schedule.warning("⚠️ [ViewModel] updateEvent 실패: modelContext가 nil")
             return
         }
         do {
             try context.save()
-            print("🔄 [ViewModel] 이벤트 업데이트됨: \"\(event.title)\"")
+            AppLog.schedule.debug("🔄 [ViewModel] 이벤트 업데이트됨: \"\(event.title)\"")
 
             // 증분 동기화: CloudKit에 개별 업데이트
             syncEventToCloudKit(event)
         } catch {
-            print("❌ [ViewModel] 이벤트 업데이트 실패: \(error)")
+            AppLog.schedule.error("❌ [ViewModel] 이벤트 업데이트 실패: \(String(describing: error), privacy: .public)")
         }
     }
 
     func fetchEvents() -> [Event] {
         guard let context = modelContext else {
-            print("⚠️ [ViewModel] fetchEvents 실패: modelContext가 nil")
+            AppLog.schedule.warning("⚠️ [ViewModel] fetchEvents 실패: modelContext가 nil")
             return []
         }
 
@@ -630,17 +631,15 @@ class ScheduleViewModel {
                     return event.effectiveEndDate() >= today
                 }
 
-                print("📊 [ViewModel] 이벤트 조회됨: 내 일정 \(ownEvents.count)개 중 활성 \(activeOwnEvents.count)개"
-                      + " + WB 미러 \(weekBlocks.count)개(필터 면제) + 할 일 묶음 \(todoBundles.count)줄"
-                      + " + 캘린더 \(calendarMirror.count)줄")
+                AppLog.schedule.debug("📊 [ViewModel] 이벤트 조회됨: 내 일정 \(ownEvents.count)개 중 활성 \(activeOwnEvents.count)개 + WB 미러 \(weekBlocks.count)개(필터 면제) + 할 일 묶음 \(todoBundles.count)줄 + 캘린더 \(calendarMirror.count)줄")
                 return activeOwnEvents + weekBlocks + todoBundles + calendarMirror
             } else {
                 let allEvents = ownEvents + weekBlocks + todoBundles + calendarMirror
-                print("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
+                AppLog.schedule.debug("📊 [ViewModel] 이벤트 조회됨: \(allEvents.count)개 (지나간 이벤트·WB 포함)")
                 return allEvents
             }
         } catch {
-            print("❌ [ViewModel] 이벤트 조회 실패: \(error)")
+            AppLog.schedule.error("❌ [ViewModel] 이벤트 조회 실패: \(String(describing: error), privacy: .public)")
             return []
         }
     }
@@ -663,7 +662,7 @@ class ScheduleViewModel {
         }
 
         if cleanedCount > 0 {
-            print("🧹 [ViewModel] 30일 지난 예외 \(cleanedCount)개 정리 완료")
+            AppLog.schedule.notice("🧹 [ViewModel] 30일 지난 예외 \(cleanedCount)개 정리 완료")
         }
     }
 
@@ -736,16 +735,19 @@ class ScheduleViewModel {
     // MARK: - Density Calculation
 
     func getAllDensityData() -> [DayDensity] {
-        print("🔄 [ViewModel] getAllDensityData 호출됨")
-        let events = fetchEvents()
+        AppLog.schedule.debug("🔄 [ViewModel] getAllDensityData 호출됨")
+        // 무지개 탭을 열 때마다 도는 가장 무거운 계산 — 조회와 밀도 계산을 따로 잰다.
+        let events = AppLog.measure("FetchEvents") { fetchEvents() }
 
         // 이벤트가 없어도 날짜 범위는 생성
-        let densities = DensityCalculator.calculateRangeDensity(
-            from: currentStartDate,
-            to: currentEndDate,
-            events: events
-        )
-        print("📈 [ViewModel] 밀도 데이터 계산 완료: \(densities.count)일치 (이벤트 \(events.count)개)")
+        let densities = AppLog.measure("DensityCalculation") {
+            DensityCalculator.calculateRangeDensity(
+                from: currentStartDate,
+                to: currentEndDate,
+                events: events
+            )
+        }
+        AppLog.schedule.debug("📈 [ViewModel] 밀도 데이터 계산 완료: \(densities.count)일치 (이벤트 \(events.count)개)")
         return densities
     }
 
@@ -1392,7 +1394,9 @@ class ScheduleViewModel {
                 result[index] = (event: lanes[index].event, lane: renumbered[lanes[index].lane] ?? lanes[index].lane)
             }
             let titles = cluster.map { lanes[$0].event.title }.prefix(3).joined(separator: ", ")
-            print("   ⬅️  묶음(\(cluster.count)개: \(titles)…) 레인 \(used.map { $0 + 1 }) → \(used.indices.map { $0 + 1 })")
+            let fromLanes = used.map { $0 + 1 }
+            let toLanes = used.indices.map { $0 + 1 }
+            AppLog.schedule.debug("   ⬅️  묶음(\(cluster.count)개: \(titles)…) 레인 \(fromLanes) → \(toLanes)")
         }
         return result
     }
@@ -1636,8 +1640,8 @@ class ScheduleViewModel {
             }
         }
 
-        print("📊 [Balance] 평균 부하: \(avgLoad), 임계값: \(threshold)")
-        print("🔴 [Balance] 과부하 날짜: \(overloadedDates.count)개")
+        AppLog.schedule.debug("📊 [Balance] 평균 부하: \(avgLoad), 임계값: \(threshold)")
+        AppLog.schedule.notice("🔴 [Balance] 과부하 날짜: \(overloadedDates.count)개")
 
         // 과부하 날짜의 일정 중 이동 가능한 것 찾기
         for date in overloadedDates {
@@ -1662,7 +1666,7 @@ class ScheduleViewModel {
                 // 원래 날짜와 다른 추천 찾기
                 if let bestSlot = recommendations.first(where: { $0.startDate != event.startDate }) {
                     suggestions[event] = bestSlot.startDate
-                    print("💡 [Balance] '\(event.title)' 이동 제안: \(event.startDate) → \(bestSlot.startDate)")
+                    AppLog.schedule.debug("💡 [Balance] '\(event.title)' 이동 제안: \(event.startDate) → \(bestSlot.startDate)")
                 }
             }
         }
@@ -1680,7 +1684,7 @@ class ScheduleViewModel {
                 continue
             }
 
-            print("🔄 [Balance] '\(event.title)' 이동 적용: \(event.startDate) → \(newStartDate)")
+            AppLog.schedule.debug("🔄 [Balance] '\(event.title)' 이동 적용: \(event.startDate) → \(newStartDate)")
             event.startDate = calendar.startOfDay(for: newStartDate)
             event.endDate = calendar.startOfDay(for: newEndDate)
         }
@@ -1690,9 +1694,9 @@ class ScheduleViewModel {
         do {
             try context.save()
             dataRefreshTrigger = UUID()
-            print("✅ [Balance] 일정 분산 완료: \(suggestions.count)개 일정 이동")
+            AppLog.schedule.notice("✅ [Balance] 일정 분산 완료: \(suggestions.count)개 일정 이동")
         } catch {
-            print("❌ [Balance] 저장 실패: \(error)")
+            AppLog.schedule.error("❌ [Balance] 저장 실패: \(String(describing: error), privacy: .public)")
         }
     }
 
@@ -1888,7 +1892,7 @@ class ScheduleViewModel {
     // MARK: - Sample Data
 
     func addSampleEvents() {
-        print("🎯 [ViewModel] 샘플 데이터 추가 시작")
+        AppLog.schedule.notice("🎯 [ViewModel] 샘플 데이터 추가 시작")
 
         // 기존 샘플 데이터가 있으면 중복 추가 방지
         let existingEvents = fetchEvents()
@@ -1898,7 +1902,7 @@ class ScheduleViewModel {
         let existingSampleEvents = existingEvents.filter { sampleTitles.contains($0.title) }
 
         if !existingSampleEvents.isEmpty {
-            print("⚠️ [ViewModel] 샘플 데이터가 이미 존재합니다. 중복 추가를 건너뜁니다.")
+            AppLog.schedule.warning("⚠️ [ViewModel] 샘플 데이터가 이미 존재합니다. 중복 추가를 건너뜁니다.")
             return
         }
 
@@ -1964,7 +1968,7 @@ class ScheduleViewModel {
         )
         addEvent(conference)
 
-        print("✅ [ViewModel] 샘플 데이터 5개 추가 완료")
+        AppLog.schedule.notice("✅ [ViewModel] 샘플 데이터 5개 추가 완료")
 
         // 데이터 새로고침 트리거
         dataRefreshTrigger = UUID()
@@ -1974,19 +1978,19 @@ class ScheduleViewModel {
     /// 저쪽을 못 비우면 이쪽도 건드리지 않는다.
     @discardableResult
     func deleteAllEvents() async -> Result<Void, Error> {
-        print("🗑️ [ViewModel] 모든 이벤트 삭제 시작")
+        AppLog.schedule.notice("🗑️ [ViewModel] 모든 이벤트 삭제 시작")
         guard let context = modelContext else {
-            print("⚠️ [ViewModel] deleteAllEvents 실패: modelContext가 nil")
+            AppLog.schedule.warning("⚠️ [ViewModel] deleteAllEvents 실패: modelContext가 nil")
             return .failure(EventDeletionError.noStore)
         }
 
         let events = fetchEvents()
         let eventCount = events.count
-        print("📊 [ViewModel] 삭제할 이벤트: \(eventCount)개")
+        AppLog.schedule.debug("📊 [ViewModel] 삭제할 이벤트: \(eventCount)개")
 
         let plan = deletionPlan(for: events)
         guard plan.isAllowed else {
-            print("⛔️ [ViewModel] iCloud 에 닿지 못해 전체 삭제를 멈춘다")
+            AppLog.schedule.error("⛔️ [ViewModel] iCloud 에 닿지 못해 전체 삭제를 멈춘다")
             return .failure(EventDeletionError.cloudUnreachable)
         }
 
@@ -1994,7 +1998,7 @@ class ScheduleViewModel {
             do {
                 try await CloudKitManager.shared.deleteAllEvents()
             } catch {
-                print("❌ [ViewModel] CloudKit 전체 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription)")
+                AppLog.schedule.error("❌ [ViewModel] CloudKit 전체 삭제 실패, 로컬도 두고 멈춘다: \(error.localizedDescription, privacy: .public)")
                 return .failure(error)
             }
         }
@@ -2004,9 +2008,9 @@ class ScheduleViewModel {
 
         do {
             try context.save()
-            print("✅ [ViewModel] 모든 이벤트(\(eventCount)개) 삭제 완료")
+            AppLog.schedule.notice("✅ [ViewModel] 모든 이벤트(\(eventCount)개) 삭제 완료")
         } catch {
-            print("❌ [ViewModel] 이벤트 삭제 실패: \(error)")
+            AppLog.schedule.error("❌ [ViewModel] 이벤트 삭제 실패: \(String(describing: error), privacy: .public)")
             return .failure(error)
         }
 

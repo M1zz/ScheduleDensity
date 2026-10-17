@@ -34,6 +34,8 @@ struct PaywallView: View {
     @State private var trialEligible: Set<String> = []
     /// 요금제를 불러오는 중인가. 못 불러온 채 끝났으면 도는 표시 대신 '다시 불러오기'를 세운다.
     @State private var loadingProducts = true
+    /// App Store 의 '코드 사용' 시트. 받은 할인·무료 기간 코드(오퍼 코드)를 여기서 넣는다.
+    @State private var redeemingCode = false
 
     private var selectedProduct: Product? {
         purchases.products.first { $0.id == selectedID }
@@ -83,6 +85,16 @@ struct PaywallView: View {
                 }
             }
             .safeAreaInset(edge: .bottom) { buyBar }
+            // 코드를 넣고 돌아오면 영수증을 다시 읽는다. 열렸으면 이 화면은 할 일이 끝났다.
+            .offerCodeRedemption(isPresented: $redeemingCode) { _ in
+                Task {
+                    await purchases.refresh()
+                    if purchases.isUnlocked {
+                        RainbowFunnel.reach(.purchased)
+                        dismiss()
+                    }
+                }
+            }
             // ⚠️ `.onAppear`가 아니라 `.task`다. NavigationStack 안의 onAppear는 재진입·레이아웃
             //    변화로 여러 번 불려서, 페이월 조회수(=전환율의 분모)를 부풀린다.
             .task {
@@ -90,6 +102,7 @@ struct PaywallView: View {
                 // 그 숫자만으로는 전환율의 분모가 되지 못한다 (→ UsageDiary).
                 UsageDiary.markPaywallSeen()
                 LeeoAnalyticsCenter.track(.paywallShown(reason: highlight?.rawValue ?? "settings"))
+                RainbowFunnel.reach(.paywallShown)
                 await loadPlans()
                 await loadTrialEligibility()
             }
@@ -258,6 +271,7 @@ struct PaywallView: View {
                     await purchases.purchase(product, using: purchaseAction)
                     if purchases.isUnlocked {
                         UsageDiary.markPaywallBought()
+                        RainbowFunnel.reach(.purchased)
                         dismiss()
                     }
                 }
@@ -285,7 +299,8 @@ struct PaywallView: View {
         .padding(.horizontal, 20)
         .padding(.top, 10)
         .padding(.bottom, 8)
-        .background(.bar)
+        // 투명도 줄이기를 켜면 뒤로 비치는 요금제 글자 없이 불투명한 바가 선다.
+        .adaptiveBarBackground()
     }
 
     /// 요금제를 불러온다. 첫 조회가 비어 오면 한 번 더 청한다 — 샌드박스(심사 환경)는
@@ -334,6 +349,14 @@ struct PaywallView: View {
                 Button("개인정보 처리방침") { openURL(ScheduleDensityAppSpec.legal.privacyURL) }
             }
             .font(.caption)
+            // 할인·체험 코드를 받은 사람이 넣을 자리. 없으면 코드를 받고도 쓸 데를 못 찾는다.
+            Button {
+                redeemingCode = true
+            } label: {
+                Label("코드 사용", systemImage: "ticket")
+            }
+            .font(.caption)
+            .disabled(purchases.isWorking)
         }
     }
 

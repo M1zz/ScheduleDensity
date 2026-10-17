@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    PrivacyInfo.xcprivacy - 욕망의 무지개 (본 앱)
+
+    ⚠️ App Store Connect 의 App Privacy 설문, docs/privacy.html 6항과 어긋나면 안 된다.
+       하나를 바꾸면 나머지도 같이 바꾼다.
+
+    수집 근거 (2026-10-17 코드 실사)
+      · 사용 통계 → Services/UsageReporting.swift · UsageAnalytics.swift · RainbowFunnel.swift
+        FeedbackHub(CloudKit 공개 DB)로 숫자(UsageStats.metrics)와 앱이 정해 둔 이벤트 이름만 보낸다.
+        통계 화면에서 끄면 한 바이트도 안 나간다(기본 켬).
+      · Pro 보유 여부 → UsageReporting.entitlementMetrics 의 `flag.isPaid` 0/1 한 비트.
+      · 설치 식별자 → LeeoUsageReporter.installID (무작위 UUID, 앱을 지우면 사라진다).
+      · 피드백 → LeeoFeedbackView (설정 ▸ 지원). 본문 · 고른 스크린샷 · 선택 입력한 이름/메일.
+
+    수집하지 **않는** 것
+      · 일정·할 일 제목과 내용 → 사용자 **개인** iCloud(private DB)와 기기 안에만 있다. 개발자는 볼 수 없다.
+      · 크래시 진단(MetricKit) → 이 앱은 LeeoKit.bootstrap 을 쓰지 않아 켜지지 않는다.
+      · IDFA, 위치, 연락처, 캘린더(캘린더는 기기 안에서 무지개에 비추기만 한다) → 수집 안 함. 추적 없음.
+-->
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+        <!-- 제품 상호작용: 앱을 연 날, 정해 둔 이벤트 이름(페이월·퍼널), 설치당 집계 숫자. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeProductInteraction</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+            </array>
+        </dict>
+        <!-- 구매 이력: Pro 를 샀는가 0/1 한 비트. 금액·영수증은 보내지 않는다. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypePurchaseHistory</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+            </array>
+        </dict>
+        <!-- 기기 ID: 앱이 만든 무작위 설치 UUID. 한 설치의 이벤트를 묶는 지속 값이라 신고한다. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeDeviceID</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+            </array>
+        </dict>
+        <!-- 고객 지원: 사용자가 직접 쓴 피드백 본문과 고른 스크린샷. 연락처를 남기면 신원과 이어질 수 있다. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeCustomerSupport</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- 이메일: 피드백에 답장을 원할 때만 사용자가 직접 입력(선택). -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeEmailAddress</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- 이름: 위와 같이 피드백의 선택 입력값. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeName</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+    </array>
+
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array>
+        <!-- UserDefaults: 앱 자체 설정(CA92.1) + 위젯·공유 확장과 함께 쓰는 App Group(1C8F.1). -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string>
+                <string>1C8F.1</string>
+            </array>
+        </dict>
+        <!-- 남은 저장 공간: 사용자가 버그를 보낼 때 고른 분류의 진단 줄에 붙인다(LeeoBugProbe, 7D9E.1). -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>7D9E.1</string>
+            </array>
+        </dict>
+    </array>
+</dict>
+</plist>

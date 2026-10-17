@@ -43,7 +43,8 @@ final class CalendarMirror {
 
     var isAuthorized: Bool { status == .fullAccess }
     /// 무지개에 실제로 무언가를 비추는 중인가.
-    var isActive: Bool { isAuthorized && !selectedIDs.isEmpty }
+    /// 원격 스위치(`RainbowFlag.calendarMirror`)로 꺼 두면 고른 캘린더는 기억한 채 비추기만 멈춘다.
+    var isActive: Bool { isAuthorized && !selectedIDs.isEmpty && RainbowFlag.calendarMirror.isOn }
 
     private init() {
         selectedIDs = Set(UserDefaults.standard.stringArray(forKey: Self.selectionKey) ?? [])

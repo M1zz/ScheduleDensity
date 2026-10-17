@@ -93,9 +93,20 @@ enum TodoArchive {
                          iconName: $0.iconName, sortIndex: $0.sortIndex, createdAt: $0.createdAt)
             })
 
-        guard let url = fileURL, let data = try? JSONEncoder().encode(snapshot) else { return }
-        try? data.write(to: url, options: .atomic)
-        print("🧷 [Archive] 할 일 \(snapshot.items.count)개 떠 둠")
+        guard let url = fileURL else { return }
+        // 백그라운드로 갈 때마다 도는 일이라, 길어지면 앱이 내려가다 끊긴다 — 잰다.
+        let written = AppLog.measure("TodoArchiveWrite") { () -> Bool in
+            guard let data = try? JSONEncoder().encode(snapshot) else { return false }
+            do {
+                try data.write(to: url, options: .atomic)
+                return true
+            } catch {
+                AppLog.store.error("❌ [Archive] 떠 두기 실패: \(String(describing: error), privacy: .public)")
+                return false
+            }
+        }
+        guard written else { return }
+        AppLog.store.notice("🧷 [Archive] 할 일 \(snapshot.items.count)개 떠 둠")
     }
 
     static func load() -> Snapshot? {
@@ -141,11 +152,11 @@ enum TodoArchive {
         }
         // 떠 둔 꼴에는 프로젝트가 없다 ('project:' 표는 여기서 걸 것이 없다).
         guard !items.isEmpty else {
-            print("🚑 [Archive] 스토어가 비었지만 떠 둔 것이 전부 지운 것(표 있음)이거나 이미 있다 — 되돌리지 않는다")
+            AppLog.store.notice("🚑 [Archive] 스토어가 비었지만 떠 둔 것이 전부 지운 것(표 있음)이거나 이미 있다 — 되돌리지 않는다")
             return
         }
 
-        print("🚑 [Archive] 스토어가 비어 있다 — 떠 둔 \(snapshot.items.count)개 중 \(items.count)개를 되돌린다")
+        AppLog.store.notice("🚑 [Archive] 스토어가 비어 있다 — 떠 둔 \(snapshot.items.count)개 중 \(items.count)개를 되돌린다")
 
         var byUUID: [String: BacklogCategory] = [:]
         for c in categories {

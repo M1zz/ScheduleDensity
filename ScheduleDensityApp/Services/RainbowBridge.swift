@@ -275,6 +275,11 @@ final class RainbowBridge {
     private static let massLossThreshold = 3
 
     func reconcile() {
+        // 원격으로 꺼 두면 양쪽 스토어를 건드리지 않는다. 다시 켜면 다음 저장 때 밀린 만큼 맞춘다.
+        guard RainbowFlag.macBridge.isOn else {
+            AppLog.sync.notice("⏸ [RainbowBridge] 원격 스위치로 꺼져 있어 맞추지 않는다")
+            return
+        }
         guard let eventContext = eventContainer?.mainContext,
               let sharedContext = sharedContainer?.mainContext else { return }
         applying = true

@@ -1201,6 +1201,8 @@ struct TodoDetailView: View {
         // 새 단계는 아직 안 한 일이므로 부모가 완료 상태였다면 풀린다.
         updated.rollUp(from: step)
         withAnimation { save() }
+        // 이 앱의 핵심 — 할 일을 단계로 쪼갠 첫 순간 (→ RainbowFunnel).
+        RainbowFunnel.reach(.firstStep)
         return true
     }
 

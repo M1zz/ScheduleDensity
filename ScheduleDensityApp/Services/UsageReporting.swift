@@ -44,6 +44,10 @@ enum UsageReporting {
         }
     }
 
+    /// 지금 보내도 되는가 — 사람이 켜 두었고(**동의**), 원격으로 막아 두지도 않았다.
+    /// ⚠️ 원격 스위치는 사람의 선택을 바꾸지 않는다. 꺼져 있는 동안 안 보낼 뿐, 스위치 값은 그대로다.
+    static var canSend: Bool { isEnabled && RainbowFlag.usageReporting.isOn }
+
     /// 한 번이라도 스위치를 만진 적이 있는가.
     static var hasAnswered: Bool { defaults.bool(forKey: askedKey) }
 
@@ -51,7 +55,7 @@ enum UsageReporting {
     /// 하나라도 있었는지로 세서, 이게 없으면 페이월 같은 드문 일이 있던 날만 잡힌다.
     /// 이름은 다른 앱과 같은 `app_open` 이어야 허브가 알아본다.
     static func logOpenIfAllowed(_ now: Date = Date()) {
-        guard isEnabled else { return }
+        guard canSend else { return }
         let key = "usage.lastOpenSent"
         let today = Calendar.current.startOfDay(for: now)
         if let last = defaults.object(forKey: key) as? Date,
@@ -63,7 +67,7 @@ enum UsageReporting {
     /// 앱을 켤 때. 켜 두었으면 스냅샷을 갱신한다.
     /// 보내는 간격은 LeeoUsageReporter 가 12시간으로 막아 두어 매번 나가지 않는다.
     static func reportIfAllowed(_ stats: UsageStats) {
-        guard isEnabled else { return }
+        guard canSend else { return }
         var metrics = stats.metrics
         metrics.merge(entitlementMetrics()) { _, new in new }
         LeeoUsageReporter(spec: ScheduleDensityAppSpec.self)
@@ -97,7 +101,7 @@ enum UsageReporting {
     /// 드물게 일어나는 큰 행동 하나. 고빈도 동작에는 쓰지 않는다 —
     /// 줄마다 레코드를 하나씩 만들면 그건 통계가 아니라 감시다.
     static func logIfAllowed(_ event: String) {
-        guard isEnabled else { return }
+        guard canSend else { return }
         LeeoUsageReporter(spec: ScheduleDensityAppSpec.self).logEventInBackground(event)
     }
 }

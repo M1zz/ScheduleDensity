@@ -114,11 +114,14 @@ enum DataVault {
                 if a != b { ok = false }
             } catch {
                 ok = false
-                print("⚠️ [Vault] 스토어 파일 사본 실패(\(url.lastPathComponent)): \(error)")
+                AppLog.store.warning("⚠️ [Vault] 스토어 파일 사본 실패(\(url.lastPathComponent)): \(String(describing: error), privacy: .public)")
             }
         }
-        print(ok ? "🧱 [Vault] 스토어 파일 사본(\(reason)) → \(dir.lastPathComponent)"
-                 : "⚠️ [Vault] 스토어 파일 사본이 온전하지 않다(\(reason)) — 폴더는 남겨 둔다")
+        if ok {
+            AppLog.store.notice("🧱 [Vault] 스토어 파일 사본(\(reason, privacy: .public)) → \(dir.lastPathComponent, privacy: .public)")
+        } else {
+            AppLog.store.warning("⚠️ [Vault] 스토어 파일 사본이 온전하지 않다(\(reason, privacy: .public)) — 폴더는 남겨 둔다")
+        }
         return ok ? dir : nil
     }
 
@@ -132,12 +135,12 @@ enum DataVault {
         // 옮기기 전에 먼저 베낀다. 옮기다 반쯤 실패해도 원래 자리에 남은 것과 사본이 함께 있다.
         for url in existing {
             do { try fm.copyItem(at: url, to: dir.appending(path: url.lastPathComponent)) } catch {
-                print("⚠️ [Vault] 옮기기 전 사본 실패 — 버리지 않는다: \(error)")
+                AppLog.store.warning("⚠️ [Vault] 옮기기 전 사본 실패 — 버리지 않는다: \(String(describing: error), privacy: .public)")
                 return false
             }
         }
         for url in existing { try? fm.removeItem(at: url) }
-        print("📦 [Vault] 스토어 파일을 금고로 옮겼다(\(reason)) → \(dir.lastPathComponent)")
+        AppLog.store.notice("📦 [Vault] 스토어 파일을 금고로 옮겼다(\(reason)) → \(dir.lastPathComponent)")
         return true
     }
 
@@ -214,11 +217,11 @@ enum DataVault {
         do {
             try encoder.encode(snap).write(to: url, options: .atomic)
         } catch {
-            print("⚠️ [Vault] 스냅숏 쓰기 실패: \(error)")
+            AppLog.store.warning("⚠️ [Vault] 스냅숏 쓰기 실패: \(String(describing: error), privacy: .public)")
             return nil
         }
         UserDefaults.standard.set(digest, forKey: lastDigestKey)
-        print("🗄 [Vault] 스냅숏(\(reason)) — 할 일 \(snap.items.count) · 프로젝트 \(snap.projects.count) · 블록 \(snap.blocks.count)")
+        AppLog.store.notice("🗄 [Vault] 스냅숏(\(reason)) — 할 일 \(snap.items.count) · 프로젝트 \(snap.projects.count) · 블록 \(snap.blocks.count)")
         pruneSnapshots()
         mirrorToICloudDrive(url)
         return url
@@ -418,11 +421,11 @@ enum DataVault {
         do {
             try context.save()
         } catch {
-            print("⚠️ [Vault] 되살리기 저장 실패: \(error)")
+            AppLog.store.warning("⚠️ [Vault] 되살리기 저장 실패: \(String(describing: error), privacy: .public)")
             return 0
         }
         writeSnapshot(context, reason: "after-restore", force: true)
-        print("🚑 [Vault] \(m.total)개를 되살렸다 (기준: \(m.base.lastPathComponent))")
+        AppLog.store.notice("🚑 [Vault] \(m.total)개를 되살렸다 (기준: \(m.base.lastPathComponent))")
         return m.total
     }
 

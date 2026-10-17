@@ -66,6 +66,27 @@ enum AppSettingsKey {
     static let hasSeenSplitOnboarding = "hasSeenSplitOnboarding"
     /// 번개(‘바로 하면 되는 일’) 안내를 이미 봤는지. 할 일이 한 줄이라도 생기면 한 번 뜬다.
     static let hasSeenBoltOnboarding = "hasSeenBoltOnboarding"
+    /// 마지막으로 본 "새로 생긴 것"의 버전 (→ WhatsNewView.swift).
+    static let lastSeenWhatsNewVersion = "lastSeenWhatsNewVersion"
+}
+
+/// 켤 때마다 같은 자리에서 죽는 일을 알아채고 다음 실행을 **세이프 모드**로 연다 (LeeoCrashLoopGuard).
+///
+/// 세이프 모드에서 건너뛰는 것은 **뜨는 데 꼭 필요하지 않은 일**뿐이다 — 맥과 맞추기(RainbowBridge),
+/// 공유로 받은 할 일 들이기, 위젯·제어센터 새로 그리기, 사용 통계. 스토어를 여는 것과
+/// 할 일 안전망(TodoArchive · VaultMonitor)은 그대로 돈다: 데이터를 지키는 쪽은 끄지 않는다.
+/// 세이프 모드로 무사히 뜨면 다음 실행은 평소대로 연다.
+enum LaunchSafety {
+    static let launchGuard = LeeoCrashLoopGuard(name: "app", defaults: .standard)
+
+    /// 이번 실행이 세이프 모드인가. 처음 읽는 순간 한 번만 판정한다(앱 init 에서 읽는다).
+    static let isSafeMode: Bool = {
+        let safe = launchGuard.beginLaunch()
+        if safe {
+            AppLog.launch.error("🛟 [Launch] 연달아 끝나지 못해 세이프 모드로 연다 — 곁다리 시작 작업을 건너뛴다")
+        }
+        return safe
+    }()
 }
 
 /// 루트 TabView의 탭. 위젯 딥링크가 특정 탭을 열 수 있도록 태그를 붙인다.
@@ -113,12 +134,24 @@ struct ScheduleDensityApp: App {
     @State private var widgetPaywall = false
     /// 타이머 위젯을 눌러 들어왔다 (→ TimerWidget.swift).
     @State private var timerSheet = false
+    /// 업데이트 뒤 처음 열었을 때 "새로 생긴 것" (→ WhatsNewView.swift).
+    @State private var showWhatsNew = false
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
     @State private var schedule = ScheduleViewModel()
 
     init() {
+        _ = LaunchSafety.isSafeMode
         LeeoEngagement.shared.registerLaunch()
+        #if DEBUG
+        // `LeeoKit.bootstrap` 을 쓰지 않으므로(아래 주석) 그 안에서 돌던 DEBUG 계약 감사도 여기서 직접 돌린다.
+        // 단위 시험(ScheduleDensityAppTests)은 같은 감사의 오류가 0인지 따로 지킨다.
+        LeeoPreflight.report(ScheduleDensityAppSpec.self)
+        #endif
+        // 새로 설치한 사람이 어디까지 와 보는지 (→ RainbowFunnel.swift). 처음 연 기기에서만 남는다.
+        RainbowFunnel.noteLaunch(isFirstLaunch: LeeoEngagement.shared.launchCount <= 1)
+        // 원격 킬스위치 값을 받아 둔다. 읽는 쪽은 캐시만 보므로 뜨는 속도에 영향이 없다 (→ RainbowFlags.swift).
+        RainbowRemoteFlags.refresh()
         // 페이월·피드백 이벤트가 나갈 창구를 연다. 등록 안 하면 LeeoKit 은 조용히
         // 아무 데도 안 보내므로(no-op), 계약에 싱크를 적어 두는 것만으로는 안 켜진다.
         //
@@ -156,11 +189,11 @@ struct ScheduleDensityApp: App {
                                             groupContainer: .none,
                                             cloudKitDatabase: .none)
             let container = try ModelContainer(for: Event.self, configurations: config)
-            print("✅ [Migration] Using existing database successfully (local-only)")
+            AppLog.launch.notice("✅ [Migration] Using existing database successfully (local-only)")
             return container
         } catch {
-            print("⚠️ [Migration] Failed to load existing database: \(error)")
-            print("🔄 [Migration] Attempting to recover data...")
+            AppLog.launch.warning("⚠️ [Migration] Failed to load existing database: \(String(describing: error), privacy: .public)")
+            AppLog.launch.debug("🔄 [Migration] Attempting to recover data...")
 
             // 2단계: 기존 데이터 복구 시도
             let fileManager = FileManager.default
@@ -179,7 +212,7 @@ struct ScheduleDensityApp: App {
             for oldLocation in possibleOldLocations {
                 guard fileManager.fileExists(atPath: oldLocation.path) else { continue }
 
-                print("🔍 [Migration] Found old database at: \(oldLocation)")
+                AppLog.launch.notice("🔍 [Migration] Found old database at: \(oldLocation)")
 
                 do {
                     // 기존 DB를 읽기 전용으로 열기
@@ -195,7 +228,7 @@ struct ScheduleDensityApp: App {
                     let events = try context.fetch(descriptor)
 
                     if !events.isEmpty {
-                        print("📚 [Migration] Found \(events.count) events in old database")
+                        AppLog.launch.notice("📚 [Migration] Found \(events.count) events in old database")
                         // 데이터 복사 (새 인스턴스 생성)
                         for event in events {
                             let newEvent = Event(
@@ -211,11 +244,11 @@ struct ScheduleDensityApp: App {
                             )
                             recoveredEvents.append(newEvent)
                         }
-                        print("✅ [Migration] Recovered \(recoveredEvents.count) events with importance field")
+                        AppLog.launch.notice("✅ [Migration] Recovered \(recoveredEvents.count) events with importance field")
                         break // 성공하면 중단
                     }
                 } catch {
-                    print("⚠️ [Migration] Could not read from \(oldLocation): \(error)")
+                    AppLog.launch.warning("⚠️ [Migration] Could not read from \(oldLocation): \(String(describing: error), privacy: .public)")
                     continue
                 }
             }
@@ -229,7 +262,7 @@ struct ScheduleDensityApp: App {
                 )
 
                 let newContainer = try ModelContainer(for: Event.self, configurations: newConfig)
-                print("✅ [Migration] Created new database at: \(newConfig.url)")
+                AppLog.launch.notice("✅ [Migration] Created new database at: \(newConfig.url)")
 
                 // 복구된 데이터 저장
                 if !recoveredEvents.isEmpty {
@@ -238,15 +271,15 @@ struct ScheduleDensityApp: App {
                         context.insert(event)
                     }
                     try? context.save()
-                    print("💾 [Migration] Successfully migrated \(recoveredEvents.count) events to new database")
+                    AppLog.launch.notice("💾 [Migration] Successfully migrated \(recoveredEvents.count) events to new database")
                 } else {
-                    print("ℹ️ [Migration] No events to migrate - starting fresh")
+                    AppLog.launch.notice("ℹ️ [Migration] No events to migrate - starting fresh")
                 }
 
                 return newContainer
 
             } catch {
-                print("❌ [Migration] Failed to create new database: \(error)")
+                AppLog.launch.error("❌ [Migration] Failed to create new database: \(String(describing: error), privacy: .public)")
 
                 // 4단계: 최후의 수단 - 임시 위치에 새 DB
                 do {
@@ -260,7 +293,7 @@ struct ScheduleDensityApp: App {
                     )
 
                     let emergencyContainer = try ModelContainer(for: Event.self, configurations: emergencyConfig)
-                    print("⚠️ [Migration] Using emergency temporary database")
+                    AppLog.launch.warning("⚠️ [Migration] Using emergency temporary database")
 
                     // 복구된 데이터라도 저장
                     if !recoveredEvents.isEmpty {
@@ -269,7 +302,7 @@ struct ScheduleDensityApp: App {
                             context.insert(event)
                         }
                         try? context.save()
-                        print("💾 [Migration] Saved \(recoveredEvents.count) events to emergency database")
+                        AppLog.launch.notice("💾 [Migration] Saved \(recoveredEvents.count) events to emergency database")
                     }
 
                     return emergencyContainer
@@ -282,7 +315,7 @@ struct ScheduleDensityApp: App {
                             isStoredInMemoryOnly: true
                         )
                         let memoryContainer = try ModelContainer(for: Event.self, configurations: memoryConfig)
-                        print("❌ [Migration] Using in-memory database (data will not persist)")
+                        AppLog.launch.error("❌ [Migration] Using in-memory database (data will not persist)")
 
                         // 복구된 데이터라도 로드
                         if !recoveredEvents.isEmpty {
@@ -291,7 +324,7 @@ struct ScheduleDensityApp: App {
                                 context.insert(event)
                             }
                             try? context.save()
-                            print("💾 [Migration] Loaded \(recoveredEvents.count) events to memory")
+                            AppLog.launch.notice("💾 [Migration] Loaded \(recoveredEvents.count) events to memory")
                         }
 
                         return memoryContainer
@@ -315,7 +348,8 @@ struct ScheduleDensityApp: App {
         // iOS 샌드박스에는 Application Support 디렉터리가 없을 수 있어 먼저 만들어 둔다.
         try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
 
-        if let shared = WeekBlocksStore.sharedContainer {
+        // 할 일 스토어를 여는 시간 — 앱이 뜨는 길에서 가장 무거운 한 걸음이다.
+        if let shared = AppLog.measure("OpenTodoStore", { WeekBlocksStore.sharedContainer }) {
             CloudDiagnostics.todoContainer = shared
             // 연 **직후**, 어떤 화면이 무엇을 정리하기도 전에 지난번 마지막 벌과 견준다 (→ VaultMonitor.swift).
             MainActor.assumeIsolated { VaultMonitor.shared.start(container: shared) }
@@ -323,7 +357,7 @@ struct ScheduleDensityApp: App {
         }
         // 여기까지 오면 로컬 전용도 실패한 것이다. 할 일을 못 적는 것보다는
         // 이번 실행 동안만이라도 남는 편이 낫다.
-        print("⚠️ [Todo] 스토어를 못 열었다 — 메모리 전용으로 뜬다")
+        AppLog.launch.warning("⚠️ [Todo] 스토어를 못 열었다 — 메모리 전용으로 뜬다")
         CloudDiagnostics.todoStoreMode = .memory
         let memory = ModelConfiguration(schema: WeekBlocksStore.schema, isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: WeekBlocksStore.schema, configurations: [memory])
@@ -395,6 +429,20 @@ struct ScheduleDensityApp: App {
                 TimerSheet(slot: ScheduleClockStore.shared.current())
                     .presentationDragIndicator(.visible)
             }
+            .sheet(isPresented: $showWhatsNew) {
+                WhatsNewView()
+                    .presentationDragIndicator(.visible)
+            }
+            // 첫 화면이 섰다. 몇 초 버티면 이번 실행은 무사히 뜬 것으로 적는다 (→ LaunchSafety).
+            .task {
+                LaunchSafety.launchGuard.markLaunchSucceededAfterSurvivalDelay()
+                // 지난번에 못 뜬 횟수는 사용 통계를 켜 둔 사람에게서만 허브로 간다.
+                if UsageReporting.canSend {
+                    await LaunchSafety.launchGuard.reportIncompleteLaunches(
+                        to: LeeoUsageReporter(spec: ScheduleDensityAppSpec.self))
+                }
+            }
+            .task { await presentWhatsNewIfNeeded() }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
             .task { KeyboardDismissOnTap.install() }
@@ -404,6 +452,8 @@ struct ScheduleDensityApp: App {
                 TodoEventBridge.shared.attach(schedule: schedule)
                 TodoEventBridge.shared.attach(todoContainer: todoContainer)
                 TodoEventBridge.shared.attach(eventContainer: sharedModelContainer)
+                // 세이프 모드에서는 맥과 맞추지 않는다 — 양쪽 스토어를 고치는 자동 경로라 죽은 자리일 수 있다.
+                guard !LaunchSafety.isSafeMode else { return }
                 // 무지개 일정을 맥과 함께 쓰는 사본과 맞춘다 (→ RainbowBridge.swift).
                 RainbowBridge.shared.attach(eventContainer: sharedModelContainer, sharedContainer: todoContainer)
                 // 무지개 탭을 한 번도 안 열어도 위젯은 채워져 있어야 한다.
@@ -411,12 +461,12 @@ struct ScheduleDensityApp: App {
             }
             // 다른 앱에서 공유한 할 일 받기. 공유 익스텐션은 SwiftData에 직접 못 쓰고
             // App Group에 쌓아만 두므로, 앱이 켜질 때마다 그 상자를 비운다.
-            .task { intakeSharedTodos() }
+            .task { if !LaunchSafety.isSafeMode { intakeSharedTodos() } }
             // 앱을 연 날을 적고, 끄지 않았으면 그 숫자를 허브에 갱신한다.
             // **끈 사람에게서는 한 바이트도 안 나간다** (→ UsageReporting.swift).
             .task {
                 UsageDiary.markToday()
-                guard UsageReporting.isEnabled else { return }
+                guard UsageReporting.canSend, !LaunchSafety.isSafeMode else { return }
                 UsageReporting.logOpenIfAllowed()
                 let context = todoContainer.mainContext
                 let todos = (try? context.fetch(FetchDescriptor<BacklogItem>())) ?? []
@@ -439,7 +489,7 @@ struct ScheduleDensityApp: App {
             // 여기서 같이 거두면 어느 쪽이 먼저 도착했는지에 따라 줄이 열리다 말다 한다.
             .task {
                 if QuickTodoBridge.hasPendingAdd { selectedTab = .todo }
-                reloadControls()
+                if !LaunchSafety.isSafeMode { reloadControls() }
             }
             .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
                 selectedTab = .todo
@@ -502,6 +552,33 @@ struct ScheduleDensityApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    /// 쓰던 사람이 업데이트하고 처음 열었으면 "새로 생긴 것"을 한 번 띄운다.
+    /// 처음 온 사람에게는 띄우지 않고 본 것으로만 적는다 (→ WhatsNewGate).
+    @MainActor
+    private func presentWhatsNewIfNeeded() async {
+        guard !LaunchSafety.isSafeMode else { return }
+        let defaults = UserDefaults.standard
+        let decision = WhatsNewGate.decide(
+            launchCount: LeeoEngagement.shared.launchCount,
+            hasUsedBefore: defaults.bool(forKey: AppSettingsKey.hasSeenRainbowOnboarding)
+                || defaults.bool(forKey: AppSettingsKey.hasSeenBoltOnboarding)
+                || defaults.bool(forKey: AppSettingsKey.hasSeenSplitOnboarding),
+            lastSeenVersion: defaults.string(forKey: AppSettingsKey.lastSeenWhatsNewVersion))
+        switch decision {
+        case .nothing:
+            return
+        case .markSeenSilently:
+            defaults.set(WhatsNewContent.version, forKey: AppSettingsKey.lastSeenWhatsNewVersion)
+        case .show:
+            // 첫 화면이 자리를 잡은 뒤에 띄운다. 뜨자마자 덮으면 무슨 앱이 열렸는지도 모른다.
+            try? await Task.sleep(for: .seconds(1.2))
+            guard !timerSheet, !widgetPaywall else { return }
+            defaults.set(WhatsNewContent.version, forKey: AppSettingsKey.lastSeenWhatsNewVersion)
+            showWhatsNew = true
+            AppLog.ui.notice("🎉 [WhatsNew] \(WhatsNewContent.version, privacy: .public) 안내")
+        }
     }
 
     /// 이미 추가해 둔 제어센터 버튼이 죽은 채 남지 않게 켤 때마다 다시 등록한다.

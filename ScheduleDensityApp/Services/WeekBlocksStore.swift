@@ -110,10 +110,10 @@ final class WeekBlocksStore {
         do {
             let container = try makeContainer(schema)
             CloudDiagnostics.todoStoreMode = .cloud
-            print("✅ [WeekBlocks] 컨테이너 준비됨 — 한 스토어(\(storeName)), container=\(containerID)")
+            AppLog.store.notice("✅ [WeekBlocks] 컨테이너 준비됨 — 한 스토어(\(storeName)), container=\(containerID)")
             return container
         } catch {
-            print("⚠️ [WeekBlocks] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(error)")
+            AppLog.store.warning("⚠️ [WeekBlocks] CloudKit 컨테이너 실패, 로컬 전용으로 전환: \(String(describing: error), privacy: .public)")
             CloudDiagnostics.todoStoreMode = .localOnly
             CloudDiagnostics.todoStoreError = String(describing: error)
             let local = ModelConfiguration(storeName, schema: schema,
@@ -126,7 +126,7 @@ final class WeekBlocksStore {
         self.container = Self.sharedContainer
         if self.container == nil {
             self.lastErrorDescription = CloudDiagnostics.todoStoreError ?? String(localized: "컨테이너 생성 실패")
-            print("⚠️ [WeekBlocks] 컨테이너 없음 — 계획도 할 일도 읽지 못한다")
+            AppLog.store.warning("⚠️ [WeekBlocks] 컨테이너 없음 — 계획도 할 일도 읽지 못한다")
         }
     }
 
@@ -157,7 +157,7 @@ final class WeekBlocksStore {
         let fm = FileManager.default
         guard let supportURL = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             // 경로를 못 구하면 토큰을 세우지 않고 다음 실행에 재시도한다.
-            print("⚠️ [WeekBlocks] Application Support 경로를 찾지 못해 미러 리셋을 건너뜀")
+            AppLog.store.warning("⚠️ [WeekBlocks] Application Support 경로를 찾지 못해 미러 리셋을 건너뜀")
             return
         }
 
@@ -168,13 +168,13 @@ final class WeekBlocksStore {
                        "\(legacyMirrorStoreName).store-shm"].map { supportURL.appendingPathComponent($0) }
         let removed = targets.filter { fm.fileExists(atPath: $0.path) }.map(\.lastPathComponent)
         guard DataVault.moveStoreFilesAside(targets, reason: "mirror-reset") else {
-            print("⚠️ [WeekBlocks] 미러 파일을 금고로 옮기지 못했다 — 그대로 둔다")
+            AppLog.store.warning("⚠️ [WeekBlocks] 미러 파일을 금고로 옮기지 못했다 — 그대로 둔다")
             return
         }
 
         defaults.set(mirrorResetToken, forKey: mirrorResetKey)
-        print("🧹 [WeekBlocks] 미러 리셋(token=\(mirrorResetToken)) — 삭제: "
-              + (removed.isEmpty ? "없음(새 설치)" : removed.joined(separator: ", ")))
+        let removedList = removed.isEmpty ? "없음(새 설치)" : removed.joined(separator: ", ")
+        AppLog.store.notice("🧹 [WeekBlocks] 미러 리셋(token=\(mirrorResetToken)) — 삭제: \(removedList, privacy: .public)")
     }
 
     /// 컨테이너가 준비되었는지(=연동 가능 상태인지).
@@ -380,7 +380,7 @@ final class WeekBlocksStore {
 
     func loadVisualEvents(rangeStart: Date, rangeEnd: Date) -> [Event] {
         guard let container else {
-            print("⛔️ [WeekBlocks] 컨테이너 없음 — 계획을 읽지 않음. 사유: \(lastErrorDescription ?? "알 수 없음")")
+            AppLog.store.error("⛔️ [WeekBlocks] 컨테이너 없음 — 계획을 읽지 않음. 사유: \(self.lastErrorDescription ?? "알 수 없음", privacy: .public)")
             return []
         }
         let context = ModelContext(container)
@@ -393,8 +393,7 @@ final class WeekBlocksStore {
         // 어디서 비는지 한 줄로 판별하기 위한 계측:
         //  - 0/0 이면 미러가 아직 안 내려왔거나(첫 동기화 대기) CloudKit 환경/계정이 다른 것.
         //  - 값이 있는데 화면이 비면 날짜 범위 문제.
-        print("📥 [WeekBlocks] 미러 조회: routines=\(routines.count)(전부 무지개에서 제외), "
-              + "blocks=\(blocks.count), 범위=\(rangeStart)~\(rangeEnd)")
+        AppLog.store.debug("📥 [WeekBlocks] 미러 조회: routines=\(routines.count)(전부 무지개에서 제외), blocks=\(blocks.count), 범위=\(rangeStart)~\(rangeEnd)")
 
         // 루틴은 종류를 가리지 않고 전부 무지개에서 뺀다.
         //  - 고정(수면·운동 등): 매주 같은 자리에 똑같이 깔린다.
@@ -426,8 +425,7 @@ final class WeekBlocksStore {
         )
 
         let withinRoutine = blocks.filter(\.withinRoutine).count
-        print("🧮 [WeekBlocks] 변환 결과: 시각화 이벤트=\(visual.count) "
-              + "(계획 \(blockInputs.count)개, 그중 '루틴 안' \(withinRoutine)개)")
+        AppLog.store.debug("🧮 [WeekBlocks] 변환 결과: 시각화 이벤트=\(visual.count) (계획 \(blockInputs.count)개, 그중 '루틴 안' \(withinRoutine)개)")
 
         // WBVisualEvent → Event (insert 금지, 시각화 입력용 임시 객체)
         //
