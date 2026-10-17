@@ -2,9 +2,9 @@
 #
 # 배포 전 검사 — 실패하면 0이 아닌 값으로 끝나 아카이브를 막는다.
 #
-# ⚠️ **이 앱에는 테스트 타겟이 없다.** 그래서 이 검사가 지킬 수 있는 것은
-#    "적어도 컴파일은 된다"까지다. 초록불이 떠도 동작이 옳다는 뜻이 아니다.
-#    테스트 타겟이 생기면 아래 build 를 test 로 바꾸고 -only-testing 을 붙인다.
+# 1) Release 빌드  2) 단위 시험(ScheduleDensityAppTests — 핵심 계산과 LeeoKit 계약 감사).
+#    UI 시험(ScheduleDensityAppUITests)은 몇 분 걸려 여기서는 돌리지 않는다 — 손으로 돌린다.
+# CI(.github/workflows/ci.yml)도 이 스크립트를 그대로 부른다.
 #
 # Release 로 짓는 이유: Debug 만 통과하고 Release 에서 깨지는 일이 실제로 있다
 # (#if DEBUG 안에만 있는 코드를 밖에서 부르는 경우). 배포는 Release 로 나간다.
@@ -54,4 +54,17 @@ if ! xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
 fi
 rm -f "$LOG"
 
-echo "✅ Release 빌드 통과 (⚠️ 테스트 타겟이 없어 컴파일만 확인했습니다)"
+echo "✅ Release 빌드 통과"
+
+LOG="$(mktemp -t predeploy)"
+if ! xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
+     -destination "id=$DEST_ID" -only-testing:ScheduleDensityAppTests \
+     -quiet test > "$LOG" 2>&1; then
+  echo "❌ 단위 시험 실패"
+  grep -E "error:|failed" "$LOG" | head -40
+  rm -f "$LOG"
+  exit 1
+fi
+rm -f "$LOG"
+
+echo "✅ 단위 시험 통과"

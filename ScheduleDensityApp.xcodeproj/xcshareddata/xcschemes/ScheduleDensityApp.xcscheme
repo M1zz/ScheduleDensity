@@ -39,6 +39,28 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "836CB66D76E842BBB1FBA301"
+               BuildableName = "ScheduleDensityAppTests.xctest"
+               BlueprintName = "ScheduleDensityAppTests"
+               ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "BA6918F30F508CAFAEC04D50"
+               BuildableName = "ScheduleDensityAppUITests.xctest"
+               BlueprintName = "ScheduleDensityAppUITests"
+               ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

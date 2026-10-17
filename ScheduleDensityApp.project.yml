@@ -47,6 +47,10 @@ schemes:
       storeKitConfiguration: ScheduleDensityApp/Products.storekit
     test:
       config: Debug
+      # 단위 시험(핵심 계산·계약)과 UI 시험(핵심 흐름 + 접근성 자동 점검).
+      targets:
+        - ScheduleDensityAppTests
+        - ScheduleDensityAppUITests
     profile:
       config: Release
     analyze:
@@ -168,3 +172,37 @@ targets:
           - "$(inherited)"
           - "@executable_path/Frameworks"
           - "@executable_path/../../Frameworks"
+
+  # 단위 시험 — 무지개 밀도·할 일 단계 같은 핵심 계산과, 출시 전에 어긋나면 안 되는 약속
+  # (LeeoKit 계약 감사 · 새 기능 안내 · 퍼널 · 원격 스위치 이름). 앱을 호스트로 돈다.
+  ScheduleDensityAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ScheduleDensityAppTests
+    dependencies:
+      - target: ScheduleDensityApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityAppTests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ScheduleDensityApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScheduleDensityApp"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+
+  # UI 시험 — 실제로 띄워 할 일 적기 → 무지개 → 설정을 돌고, 화면마다 접근성 자동 점검을 한다.
+  ScheduleDensityAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ScheduleDensityAppUITests
+    dependencies:
+      - target: ScheduleDensityApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityAppUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ScheduleDensityApp
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
