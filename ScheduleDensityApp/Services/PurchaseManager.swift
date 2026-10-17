@@ -87,6 +87,7 @@ final class PurchaseManager {
     private func syncCrossPlatformMark() async {
         // 맥과 함께 쓰는 그 스토어. 표는 거기 산다 (→ ProMark.swift).
         guard let context = WeekBlocksStore.sharedContainer?.mainContext else { return }
+        markedHasPro = store.hasPro
         crossPlatformPro = await ProMarkStore.sync(hasPro: store.hasPro,
                                                    entitlementIDs: ProEntitlement.entitlementIDs,
                                                    defaultProductID: ProEntitlement.yearlyID,
@@ -95,6 +96,12 @@ final class PurchaseManager {
 
     /// 맥에서 산 것이 살아 있는가.
     @ObservationIgnored private var crossPlatformPro = false
+
+    /// 내 표에 마지막으로 옮겨 적은 답. 영수증이 이것과 달라지면 표를 다시 적는다.
+    ///
+    /// ⚠️ 전에는 켤 때(`refresh`)만 표를 적어서, 여기서 막 산 사람이 바로 맥을 켜면
+    ///    맥은 아직 표를 못 봤다 — 이 앱을 한 번 더 켜야 열렸다. 해지·환불·가족 공유도 같았다.
+    @ObservationIgnored private var markedHasPro: Bool?
 
     /// 상품을 아직 못 불러왔을 때 페이월이 다시 청한다.
     /// 실패해도 조용히 넘어가지 않는다 — 페이월이 값을 못 보여주면 단추가 죽고,
@@ -130,6 +137,11 @@ final class PurchaseManager {
     // MARK: -
 
     private func pull() {
+        // 사기·복원·리스너(다른 기기, 가족 공유, 환불, 만료)로 영수증이 바뀌었으면 표도 바로 고친다.
+        if entitlementsChecked, let marked = markedHasPro, marked != store.hasPro {
+            markedHasPro = store.hasPro
+            Task { await syncCrossPlatformMark(); pull() }
+        }
         let before = isUnlocked
         // ⚠️ 물어보기 전에는 캐시에 쓰지 않는다 (위 `entitlementsChecked` 주석).
         // 맥에서 산 표가 살아 있으면 그것도 권한이다 (→ syncCrossPlatformMark).

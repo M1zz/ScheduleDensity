@@ -1,5 +1,191 @@
 # 릴리즈 노트
 
+## 1.1.13
+
+### 앱스토어 (한국어)
+
+```
+맥에서 정한 회차 시작 시각이 함께 보입니다
+연간 요금제로 얼마나 아끼는지 바로 보입니다
+여기서 사면 맥 앱도 곧바로 Pro로 열립니다
+```
+
+### 앱스토어 (English)
+
+```
+Session start times from Mac now show
+See what the yearly plan saves
+Buying here unlocks your Mac right away
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+在 Mac 設定的分次開始時間也會顯示
+一眼看出年訂閱能省多少
+在這裡購買，Mac 也會立即解鎖 Pro
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+在 Mac 设置的分次开始时间也会显示
+一眼看出年订阅能省多少
+在这里购买，Mac 也会立即解锁 Pro
+```
+
+### 앱스토어 (일본어)
+
+```
+Macで決めた回ごとの開始時刻が表示されます
+年額プランでいくらお得かすぐわかります
+ここで購入するとMacもすぐProになります
+```
+
+### 앱스토어 (독일어)
+
+```
+Startzeiten vom Mac jetzt sichtbar
+Sieh sofort, was das Jahresabo spart
+Kauf hier schaltet den Mac sofort frei
+```
+
+### 앱스토어 (스페인어)
+
+```
+Ves las horas de inicio fijadas en Mac
+Mira cuánto ahorras con el plan anual
+Compra aquí y Pro se abre ya en tu Mac
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Les heures de début du Mac s’affichent
+Voyez l’économie de l’offre annuelle
+Un achat ici débloque aussitôt le Mac
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Vedi gli orari di inizio scelti sul Mac
+Vedi quanto risparmi con l’annuale
+Compra qui e il Mac si sblocca subito
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Horários de início do Mac aparecem aqui
+Veja quanto o plano anual economiza
+Compre aqui e o Mac libera o Pro na hora
+```
+
+### 앱스토어 (러시아어)
+
+```
+Время начала из Mac теперь видно здесь
+Сразу видно, сколько экономит год
+Покупка здесь сразу откроет Pro на Mac
+```
+
+### 앱스토어 (체코어)
+
+```
+Časy začátku z Macu se teď zobrazí
+Hned vidíte, kolik ušetří roční plán
+Nákup tady hned odemkne Pro i na Macu
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Starttider fra Mac vises nu her
+Se med det samme, hvad årsplanen sparer
+Køb her, og Mac låses op med det samme
+```
+
+### 앱스토어 (그리스어)
+
+```
+Οι ώρες έναρξης από το Mac φαίνονται εδώ
+Δες αμέσως πόσα κερδίζεις με το ετήσιο
+Αγόρασε εδώ και το Mac ανοίγει αμέσως
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Macissa asetetut alkuajat näkyvät nyt
+Näet heti, paljonko vuositilaus säästää
+Osta täällä, niin Mac avautuu heti
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Jam mulai dari Mac kini tampil di sini
+Lihat langsung hemat paket tahunan
+Beli di sini, Mac pun langsung Pro
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Starttider fra Mac vises nå her
+Se med en gang hva årsplanen sparer
+Kjøp her, så låses Mac opp med en gang
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Begintijden van je Mac staan nu hier
+Zie meteen wat het jaarplan bespaart
+Hier kopen ontgrendelt je Mac meteen
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Godziny startu z Maca są teraz widoczne
+Od razu widać, ile oszczędza plan roczny
+Zakup tutaj od razu odblokuje Maca
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Starttider från Mac visas nu här
+Se direkt vad årsplanen sparar
+Köp här så låses Mac upp direkt
+```
+
+### 앱스토어 (태국어)
+
+```
+เวลาเริ่มที่ตั้งบน Mac แสดงที่นี่แล้ว
+เห็นทันทีว่าแพ็กรายปีประหยัดเท่าไร
+ซื้อที่นี่ Mac ก็ได้ Pro ทันที
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Mac’te seçilen başlangıç saatleri burada
+Yıllık planın kazancını hemen gör
+Burada al, Mac’te Pro hemen açılsın
+```
+
+### 앱스토어 (베트남어)
+
+```
+Giờ bắt đầu đặt trên Mac nay hiện ở đây
+Thấy ngay gói năm tiết kiệm bao nhiêu
+Mua ở đây, Mac cũng mở Pro ngay
+```
+
 ## 1.1.12
 
 ### 앱스토어 (한국어)

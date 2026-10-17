@@ -201,6 +201,14 @@ struct PaywallView: View {
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 1)
                                 .background(Color.accentColor, in: Capsule())
+                            if let saving = yearlySaving(product) {
+                                Text("\(saving) 절약")
+                                    .font(.system(size: 10.5, weight: .semibold))
+                                    .foregroundStyle(Color.accentColor)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 1)
+                                    .background(Color.accentColor.opacity(0.12), in: Capsule())
+                            }
                         }
                     }
                     Text(planNote(product))
@@ -219,6 +227,12 @@ struct PaywallView: View {
                         Text(unit)
                             .font(.system(size: 11))
                             .foregroundStyle(.secondary)
+                    }
+                    if let perMonth = perMonthPrice(product) {
+                        Text("월 \(perMonth) 꼴")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
                     }
                 }
                 .fixedSize()
@@ -374,6 +388,27 @@ struct PaywallView: View {
         case ProEntitlement.monthlyID: return String(localized: "달마다 결제되고 언제든 해지합니다.")
         default: return String(localized: "해마다 결제되고 언제든 해지합니다.")
         }
+    }
+
+    // MARK: 연간이 얼마나 이득인가 (맥 무지개 공방 `PaywallView`와 같은 셈)
+
+    /// 연간을 열두 달로 나눈 값 ("$1.25"). 가격만 있으면 연간을 고를 이유가 안 보인다.
+    /// 통화 표기는 상품의 것을 그대로 쓴다 — 나라마다 값과 소수 자리가 다르다.
+    private func perMonthPrice(_ product: Product) -> String? {
+        guard product.id == ProEntitlement.yearlyID else { return nil }
+        return (product.price / 12).formatted(product.priceFormatStyle)
+    }
+
+    /// 월간으로 열두 달 냈을 때보다 얼마나 싼가 ("58%"). 월간이 안 섰거나 싸지 않으면 말하지 않는다.
+    private func yearlySaving(_ yearly: Product) -> String? {
+        guard yearly.id == ProEntitlement.yearlyID,
+              let monthly = purchases.products.first(where: { $0.id == ProEntitlement.monthlyID }),
+              monthly.price > 0 else { return nil }
+        let ratio = 1 - NSDecimalNumber(decimal: yearly.price / (monthly.price * 12)).doubleValue
+        // 내려 버린다 — 58.3%를 59%라 하면 과장이다.
+        let points = Int((ratio * 100).rounded(.down))
+        guard points >= 5 else { return nil }
+        return (Double(points) / 100).formatted(.percent.precision(.fractionLength(0)))
     }
 
     /// "/ 년" · "/ 월". 평생 이용권에는 없다.
