@@ -1,5 +1,236 @@
 # 릴리즈 노트
 
+## 1.1.14
+
+### 앱스토어 (한국어)
+
+```
+어두운 화면에서도 무지개가 또렷합니다
+음성 제어와 VoiceOver로 더 편하게 씁니다
+색 구별이 어려워도 일정을 알아볼 수 있어요
+받은 코드로 Pro를 열 수 있습니다
+앞으로 만들 기능을 설정에서 볼 수 있어요
+```
+
+### 앱스토어 (English)
+
+```
+The rainbow stays crisp in Dark Mode
+Easier with Voice Control and VoiceOver
+Tell events apart without color
+Unlock Pro with a code you received
+See upcoming features in Settings
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+深色模式下彩虹也清晰
+語音控制與 VoiceOver 更好用
+不靠顏色也能分辨行程
+可以用收到的代碼開啟 Pro
+在設定中看看接下來的新功能
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+深色模式下彩虹也清晰
+语音控制与 VoiceOver 更好用
+不靠颜色也能分辨日程
+可以用收到的代码开启 Pro
+在设置中看看接下来的新功能
+```
+
+### 앱스토어 (일본어)
+
+```
+ダークモードでも虹がくっきり
+音声コントロールとVoiceOverが快適に
+色に頼らず予定を見分けられます
+受け取ったコードでProを開けます
+これから作る機能を設定で見られます
+```
+
+### 앱스토어 (독일어)
+
+```
+Der Regenbogen bleibt im Dunkeln klar
+Besser mit Sprachsteuerung und VoiceOver
+Termine auch ohne Farbe unterscheiden
+Pro mit einem Code freischalten
+Geplante Funktionen in den Einstellungen
+```
+
+### 앱스토어 (스페인어)
+
+```
+El arcoíris se ve nítido en modo oscuro
+Mejor con Control por voz y VoiceOver
+Distingue eventos sin depender del color
+Desbloquea Pro con un código
+Mira lo que viene en Ajustes
+```
+
+### 앱스토어 (프랑스어)
+
+```
+L’arc-en-ciel reste net en mode sombre
+Mieux avec Contrôle vocal et VoiceOver
+Distinguez les évènements sans couleur
+Débloquez Pro avec un code
+Découvrez ce qui arrive dans Réglages
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+L’arcobaleno è nitido in modalità scura
+Meglio con Controllo vocale e VoiceOver
+Distingui gli eventi anche senza colore
+Sblocca Pro con un codice
+Scopri cosa arriva nelle Impostazioni
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+O arco-íris fica nítido no modo escuro
+Melhor com Controle por Voz e VoiceOver
+Diferencie eventos sem depender da cor
+Desbloqueie o Pro com um código
+Veja o que vem por aí nos Ajustes
+```
+
+### 앱스토어 (러시아어)
+
+```
+Радуга чётко видна в тёмном режиме
+Управление голосом и VoiceOver удобнее
+События различимы и без цвета
+Pro можно открыть по коду
+Планы на будущее теперь в настройках
+```
+
+### 앱스토어 (체코어)
+
+```
+Duha je zřetelná i v tmavém režimu
+Snazší s Ovládáním hlasem a VoiceOverem
+Události rozlišíte i bez barev
+Pro odemknete kódem
+Chystané funkce najdete v Nastavení
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Regnbuen står skarpt i mørk tilstand
+Nemmere med Stemmestyring og VoiceOver
+Skel begivenheder ad uden farver
+Lås Pro op med en kode
+Se kommende funktioner i Indstillinger
+```
+
+### 앱스토어 (그리스어)
+
+```
+Το ουράνιο τόξο καθαρό στο σκοτεινό θέμα
+Καλύτερο VoiceOver και Φωνητικός έλεγχος
+Ξεχωρίστε γεγονότα χωρίς χρώμα
+Ξεκλειδώστε το Pro με κωδικό
+Δείτε τι έρχεται στις Ρυθμίσεις
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Sateenkaari erottuu tummassa tilassa
+Parempi Puheohjaus ja VoiceOver
+Erota tapahtumat ilman värejä
+Avaa Pro koodilla
+Katso tulevat ominaisuudet Asetuksista
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Pelangi tetap jelas di Mode Gelap
+Lebih nyaman dengan Kontrol Suara
+Bedakan acara tanpa bergantung warna
+Buka Pro dengan kode yang Anda terima
+Lihat fitur mendatang di Pengaturan
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Regnbuen er tydelig i mørk modus
+Enklere med Talestyring og VoiceOver
+Skill hendelser uten å bruke farge
+Lås opp Pro med en kode
+Se kommende funksjoner i Innstillinger
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Regenboog blijft scherp in donkere modus
+Beter met Stembediening en VoiceOver
+Onderscheid items ook zonder kleur
+Ontgrendel Pro met een code
+Bekijk wat eraan komt in Instellingen
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Tęcza jest wyraźna w trybie ciemnym
+Lepsze sterowanie głosem i VoiceOver
+Rozróżniaj wydarzenia bez kolorów
+Odblokuj Pro kodem
+Plany na przyszłość są w Ustawieniach
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Regnbågen syns tydligt i mörkt läge
+Enklare med Röststyrning och VoiceOver
+Särskilj händelser utan färg
+Lås upp Pro med en kod
+Se kommande funktioner i Inställningar
+```
+
+### 앱스토어 (태국어)
+
+```
+สายรุ้งยังชัดในโหมดมืด
+ใช้การควบคุมด้วยเสียงได้ง่ายขึ้น
+แยกนัดได้แม้ไม่ใช้สี
+ปลดล็อก Pro ด้วยรหัสที่ได้รับ
+ดูฟีเจอร์ที่กำลังจะมาในการตั้งค่า
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Gökkuşağı karanlık modda da net
+Ses Denetimi ve VoiceOver ile daha kolay
+Etkinlikleri renk olmadan ayırt edin
+Pro’yu bir kodla açın
+Gelecek özellikleri Ayarlar’da görün
+```
+
+### 앱스토어 (베트남어)
+
+```
+Cầu vồng vẫn rõ ở chế độ tối
+Dễ dùng hơn với Khẩu lệnh và VoiceOver
+Phân biệt sự kiện mà không cần màu
+Mở khóa Pro bằng mã nhận được
+Xem tính năng sắp có trong Cài đặt
+```
 ## 1.1.13
 
 ### 앱스토어 (한국어)
