@@ -82,6 +82,7 @@
 		92EFC5ACD3632528956606B8 /* ColorHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CCA231C8EF9417E46288EC6 /* ColorHex.swift */; };
 		93D94A92342AE2180D9A64F0 /* TodoWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA01AE5B1816B32D6547ACC1 /* TodoWidget.swift */; };
 		98BCB99BABFB85C47A516837 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DD3A4029A1F8FABD057A7D /* ContentView.swift */; };
+		9A9CD734F20FDC66EB7F8CBB /* FoldPanes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5AF13BA064577118A497C7A /* FoldPanes.swift */; };
 		9B43E50F4245366DA515CE89 /* TodoShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */; };
 		9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */; };
 		A07E7A83F9447DFA25E69989 /* TaskTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3485B020981ACBBB7679B4BF /* TaskTimer.swift */; };
@@ -266,6 +267,7 @@
 		CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksStore.swift; sourceTree = "<group>"; };
 		D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowWidgetSnapshot.swift; sourceTree = "<group>"; };
 		D5A142C0D69AD26EDCB2B3CC /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		D5AF13BA064577118A497C7A /* FoldPanes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldPanes.swift; sourceTree = "<group>"; };
 		D5DD9039B947CF18D06EE58E /* TimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerLiveActivity.swift; sourceTree = "<group>"; };
 		D876DDD38462D8033DE00DCB /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		DA01AE5B1816B32D6547ACC1 /* TodoWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidget.swift; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 				4ECBA157204B5F06367463A9 /* DoneTodosView.swift */,
 				9DE68BE86040DC668D87543A /* EventDeletion.swift */,
 				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
+				D5AF13BA064577118A497C7A /* FoldPanes.swift */,
 				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
 				7F639EF2609D3366C4F4C482 /* MacCompanionView.swift */,
 				2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */,
@@ -770,6 +773,7 @@
 				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
 				9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */,
 				07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */,
+				9A9CD734F20FDC66EB7F8CBB /* FoldPanes.swift in Sources */,
 				6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */,
 				86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */,
 				60C4121A7DCB81DF4293BBEB /* MacCompanionView.swift in Sources */,
@@ -1178,7 +1182,7 @@
 			repositoryURL = "https://github.com/M1zz/LeeoKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.16.1;
+				minimumVersion = 3.21.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

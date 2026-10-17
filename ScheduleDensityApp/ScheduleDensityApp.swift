@@ -333,17 +333,30 @@ struct ScheduleDensityApp: App {
 
     var body: some Scene {
         WindowGroup {
+            // 아이폰 듀오를 펴면 탭마다 접힌 선 양쪽에 짝이 선다 (→ Views/FoldPanes.swift).
+            // 접혀 있거나 보통 아이폰이면 `FoldSplitView` 는 왼쪽(고르는 쪽)만 그린다 — 지금 화면 그대로.
+            // ⚠️ 타이머 막대는 고르는 쪽 안에만 단다. 탭 전체에 달면 펼친 화면에서 접힌 선을 가로지른다.
             TabView(selection: $selectedTab) {
                 // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
-                TodoView()
-                    .modelContainer(todoContainer)
-                    .timerBar()
-                    .tabItem { Label("할 일", systemImage: "checklist") }
-                    .tag(AppTab.todo)
-                ContentView(viewModel: schedule)
-                    .timerBar()
-                    .tabItem { Label("무지개", systemImage: "rainbow") }
-                    .tag(AppTab.rainbow)
+                FoldSplitView {
+                    TodoView().timerBar()
+                } result: {
+                    FoldTodoResultPane(schedule: schedule)
+                }
+                .modelContainer(todoContainer)
+                .foldTabBarRoom()
+                .tabItem { Label("할 일", systemImage: "checklist") }
+                .tag(AppTab.todo)
+                // 펴면 왼쪽 격자 | 오른쪽 고른 날의 하루. 날짜를 누르면 탭을 넘기지 않고 오른쪽만 바뀐다.
+                FoldSplitView {
+                    ContentView(viewModel: schedule).timerBar()
+                } result: {
+                    DayTab(viewModel: schedule, date: $dayTabDate)
+                        .environment(\.foldLayout, .single)
+                }
+                .foldTabBarRoom()
+                .tabItem { Label("무지개", systemImage: "rainbow") }
+                .tag(AppTab.rainbow)
                 // 하루 타임라인은 무지개 칸을 눌러야만 뜨는 시트였다. 매일 보는 화면이라 탭으로 따로 둔다.
                 // 무지개에서 날짜를 눌러도 시트가 아니라 이 탭이 그 날로 열린다.
                 DayTab(viewModel: schedule, date: $dayTabDate)
@@ -354,13 +367,24 @@ struct ScheduleDensityApp: App {
                 // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
                 // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
                 if showShareTab, purchases.isUnlocked {
-                    ScheduleShareView()
-                        .timerBar()
-                        .tabItem { Label("공유", systemImage: "person.2.circle") }
-                        .tag(AppTab.share)
+                    FoldSplitView {
+                        ScheduleShareView().timerBar()
+                    } result: {
+                        DayTab(viewModel: schedule, date: $dayTabDate)
+                            .environment(\.foldLayout, .single)
+                    }
+                    .foldTabBarRoom()
+                    .tabItem { Label("공유", systemImage: "person.2.circle") }
+                    .tag(AppTab.share)
                 }
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
+            // 펴면 시스템 탭바 대신 고르는 쪽 판 바닥에 막대가 선다. 하루는 무지개의 오른쪽 판이 된다.
+            .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.isUnlocked),
+                        selected: selectedTab == .day ? .rainbow : selectedTab) { selectedTab = $0 }
+            .foldDayTabRedirect(selectedTab: $selectedTab)
+            // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
+            .foldAware()
             // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).
             .vaultRecoveryPrompt()
             // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
@@ -425,7 +449,8 @@ struct ScheduleDensityApp: App {
             }
             .onReceive(NotificationCenter.default.publisher(for: .openDayTabRequested)) { note in
                 if let date = note.object as? Date { dayTabDate = date }
-                selectedTab = .day
+                // 펼쳐져 있으면 하루는 무지개의 오른쪽 판에 이미 서 있다. 탭을 넘기지 않는다.
+                if !FoldState.current.isUnfolded { selectedTab = .day }
             }
             // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
