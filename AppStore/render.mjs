@@ -36,7 +36,7 @@ const { chromium } = await loadPlaywright();
 const here = path.dirname(fileURLToPath(import.meta.url));
 const NAMES = [
   '01-rainbow', '02-list', '03-two-questions',
-  '04-steps', '05-widgets', '06-free',
+  '04-steps', '05-widgets',
 ];
 // One artboard set per App Store localisation. The Korean set uses the app's
 // own strings; the English one needs the app localised before it can ship
