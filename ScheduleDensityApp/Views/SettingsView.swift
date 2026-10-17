@@ -1116,6 +1116,8 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    // 앞으로 만들 기능 — 원본은 ScheduleDensityAppRoadmap.swift
+                    NavigationLink(LeeoRoadmapText.entry) { RoadmapScreen() }
                     LeeoSupportSection<ScheduleDensityAppSpec>()
                 } header: {
                     Text("지원")
