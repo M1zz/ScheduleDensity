@@ -31,6 +31,7 @@ struct TodoView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.foldLayout) private var fold
+    @Environment(\.colorSchemeContrast) private var contrast
 
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]
@@ -185,6 +186,8 @@ struct TodoView: View {
                             Image(systemName: "list.clipboard")
                         }
                         .accessibilityLabel("이번 주 결산")
+                        // 음성 제어로 부를 이름. 아이콘만 있는 단추라 화면에 적힌 글자가 없다.
+                        .accessibilityInputLabels([Text("이번 주 결산"), Text("결산"), Text("장부")])
                     }
                 }
                 if visibleTab == .family {
@@ -201,6 +204,7 @@ struct TodoView: View {
                             .font(.system(size: 17, weight: .semibold))
                     }
                     .accessibilityLabel("할 일 추가")
+                    .accessibilityInputLabels([Text("할 일 추가"), Text("추가"), Text("새 할 일")])
                 }
             }
             // 세그먼트를 네비게이션 바(.principal) 대신 그 아래에 둔다.
@@ -313,7 +317,7 @@ struct TodoView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity)
-            .background(.bar)
+            .adaptiveBarBackground()
         }
     }
 
@@ -597,19 +601,22 @@ struct TodoView: View {
             // 셈줄이 빈 화면의 유일한 글이던 시절이 있었다. 셈이 없어졌으니
             // 여기서는 다음에 뭘 하면 되는지만 말한다.
             Text("오른쪽 위 + 를 눌러 이번 주에 할 일을 적어보세요.")
+                // 빈 화면의 유일한 안내라 읽혀야 한다. 목록 꼬리말의 기본 회색은 회색 바탕 위에서
+                // 대비가 모자랐다(접근성 자동 점검). 한 단 진하게, 대비를 높이면 글자색 그대로.
+                .foregroundStyle(contrast == .increased ? Color.primary : Color.primary.opacity(0.72))
         } else {
             HStack(spacing: 14) {
                 if !marked.isEmpty {
                     countChip("bolt.fill", marked.count, String(localized: "바로 하면 되는 일"), Self.nowGreen)
                 }
                 if !errands.isEmpty {
-                    countChip("circle.dashed", errands.count, String(localized: "그냥 하면 되는 것"), .secondary)
+                    countChip("circle.dashed", errands.count, String(localized: "그냥 하면 되는 것"), chipInk)
                 }
                 if !items.isEmpty {
-                    countChip("clock", items.count, String(localized: "시간 잡은 일"), .secondary)
+                    countChip("clock", items.count, String(localized: "시간 잡은 일"), chipInk)
                 }
                 if !done.isEmpty {
-                    countChip("checkmark", done.count, String(localized: "완료"), .secondary)
+                    countChip("checkmark", done.count, String(localized: "완료"), chipInk)
                 }
                 Spacer(minLength: 0)
             }
@@ -619,6 +626,11 @@ struct TodoView: View {
 
     /// 기호 하나와 숫자 하나. 기호는 그 줄들이 목록에서 쓰는 것과 같은 것이라
     /// 무엇을 센 건지 위를 보면 안다 — 번개는 바로 하면 되는 일, 점선 원은 적기만 한 줄.
+    /// 셈 숫자의 색. 목록 꼬리말의 회색 바탕 위에서 시스템 회색은 대비가 모자랐다(접근성 자동 점검).
+    private var chipInk: Color {
+        contrast == .increased ? .primary : Color.primary.opacity(0.72)
+    }
+
     private func countChip(_ symbol: String, _ count: Int,
                            _ label: String, _ tint: Color) -> some View
     {
@@ -1277,6 +1289,7 @@ struct TodoView: View {
                 context.insert(fresh)
                 save()
             }
+            RainbowFunnel.reach(.firstTodo)
         }
         newTitle = ""
         // 팁·필터 줄이 나타나며 목록이 다시 그려지면 포커스가 풀릴 수 있다.
@@ -1296,6 +1309,13 @@ struct TodoView: View {
                 }
             } else {
                 tree.advance(item)
+                // 줄이 끝나면 목록에서 내려가고, 단계가 넘어가면 줄의 글자가 바뀐다.
+                // 둘 다 눈으로는 보이지만 VoiceOver 로는 무엇이 됐는지 알 수 없다 — 말로 알려 준다.
+                if item.isCompleted {
+                    A11yAnnounce.post(String(localized: "'\(item.title)' 끝냄"))
+                } else if let next = tree.currentStep(of: item) {
+                    A11yAnnounce.post(String(localized: "다음 단계: \(next.title)"))
+                }
             }
             save()
         }

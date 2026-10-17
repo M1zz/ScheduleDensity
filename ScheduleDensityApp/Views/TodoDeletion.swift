@@ -32,6 +32,9 @@ enum TodoDeletion {
                        allItems: [BacklogItem],
                        context: ModelContext) async -> Result<Void, Error> {
 
+        // 지운 뒤에는 제목을 읽을 수 없다 — 알려 줄 말을 먼저 떠 둔다.
+        let title = item.title
+
         // 1. 무지개 줄부터. 실패하면 할 일은 건드리지 않는다.
         if case .failure(let error) = await TodoEventBridge.shared.clearRainbow(for: item) {
             return .failure(error)
@@ -52,6 +55,8 @@ enum TodoDeletion {
         } catch {
             return .failure(error)
         }
+        // 줄이 사라지는 것만으로는 VoiceOver 를 쓰는 사람이 지워졌는지 알 수 없다.
+        A11yAnnounce.post(String(localized: "'\(title)' 삭제됨"))
         return .success(())
     }
 

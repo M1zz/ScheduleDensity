@@ -27,6 +27,8 @@ struct TimelineDensityView: View {
     @State private var draggedDates: Set<Date> = []
     @State private var draggedLane: Int?
 
+    @Environment(\.colorScheme) private var colorScheme
+
     // 토스트 메시지 상태
     @State private var showToast = false
     @State private var toastMessage = ""
@@ -75,6 +77,7 @@ struct TimelineDensityView: View {
                             Text("오늘")
                         }
                     }
+                    .accessibilityInputLabels([Text("오늘"), Text("오늘로 가기")])
                 }
             }
             .task {
@@ -88,21 +91,21 @@ struct TimelineDensityView: View {
             }
             .onChange(of: viewModel.showingAddEvent) { _, isShowing in
                 if !isShowing {
-                    print("🔵 [TimelineView] 일정 추가 시트 닫힘")
+                    AppLog.ui.debug("🔵 [TimelineView] 일정 추가 시트 닫힘")
                     // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        print("🔵 [TimelineView] 0.3초 후 실행 시작")
-                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
+                        AppLog.ui.debug("🔵 [TimelineView] 0.3초 후 실행 시작")
+                        AppLog.ui.debug("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
 
                         // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
                         if let addedDate = viewModel.lastAddedEventDate {
-                            print("✅ [TimelineView] 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            AppLog.ui.notice("✅ [TimelineView] 일정 추가됨 - refreshData() 호출 후 스크롤")
                             refreshData()
                             scrollToDate(addedDate)
                             offerSplit(startingOn: addedDate)
                             viewModel.lastAddedEventDate = nil // 초기화
                         } else {
-                            print("✅ [TimelineView] 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            AppLog.ui.notice("✅ [TimelineView] 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
                             // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
                         }
                     }
@@ -167,7 +170,7 @@ struct TimelineDensityView: View {
                             showingMeaning = true
                         }
                     }
-                    print("🔵 [TimelineView] 드래그 일정 추가 시트 닫힘")
+                    AppLog.ui.debug("🔵 [TimelineView] 드래그 일정 추가 시트 닫힘")
                     // sheet가 닫힐 때 선택 상태 초기화
                     isDraggingSelection = false
                     dragStartDate = nil
@@ -177,16 +180,16 @@ struct TimelineDensityView: View {
 
                     // 일정이 추가되었을 때만 새로고침
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        print("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
+                        AppLog.ui.debug("🔵 [TimelineView] lastAddedEventDate: \(viewModel.lastAddedEventDate != nil ? "있음" : "nil")")
 
                         // 일정이 추가되었으면 데이터 새로고침 후 해당 날짜로 스크롤
                         if let addedDate = viewModel.lastAddedEventDate {
-                            print("✅ [TimelineView] 드래그 일정 추가됨 - refreshData() 호출 후 스크롤")
+                            AppLog.ui.notice("✅ [TimelineView] 드래그 일정 추가됨 - refreshData() 호출 후 스크롤")
                             refreshData()
                             scrollToDate(addedDate)
                             viewModel.lastAddedEventDate = nil // 초기화
                         } else {
-                            print("✅ [TimelineView] 드래그 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
+                            AppLog.ui.notice("✅ [TimelineView] 드래그 일정 취소됨 - 아무것도 하지 않음 (스크롤 위치 유지)")
                             // 취소한 경우 데이터 변경 없음 - refreshData() 호출 안 함
                         }
                     }
@@ -349,9 +352,19 @@ struct TimelineDensityView: View {
             .padding(.vertical, 12)
             .background(
                 Capsule()
-                    .fill(Color.black.opacity(0.8))
+                    .fill(toastFill)
+            )
+            // 어두운 화면에서는 검은 알약이 배경에 묻힌다 — 가는 테두리로 떼어 낸다.
+            .overlay(
+                Capsule()
+                    .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.25 : 0), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+    }
+
+    /// 알림 알약의 바탕. 밝은 화면에서는 진한 검정, 어두운 화면에서는 배경보다 한 단 밝은 회색.
+    private var toastFill: Color {
+        colorScheme == .dark ? Color(white: 0.24).opacity(0.95) : Color.black.opacity(0.8)
     }
 
     private var loadingView: some View {
@@ -488,7 +501,7 @@ struct TimelineDensityView: View {
                     proxy.scrollTo(targetData.id, anchor: .center)
                 }
             }
-            print("📍 [TimelineView] Scrolling to added event date: \(monthDay(from: date))")
+            AppLog.ui.notice("📍 [TimelineView] Scrolling to added event date: \(monthDay(from: date))")
         }
     }
 
@@ -684,7 +697,7 @@ struct TimelineDensityView: View {
         // 첫 로드에만 로딩 화면을 쓴다. 데이터가 이미 있는데 isLoading을 켜면
         // ScrollView가 언마운트됐다 다시 붙으면서 스크롤 위치가 맨 위로 리셋된다
         // (CloudKit 원격 변경 갱신이 반복될 때마다 오늘 위치를 잃는 원인).
-        print("🔄 [TimelineView] refreshData() 시작")
+        AppLog.ui.debug("🔄 [TimelineView] refreshData() 시작")
         if densityData.isEmpty {
             isLoading = true
         }
@@ -692,7 +705,7 @@ struct TimelineDensityView: View {
         // 비동기로 데이터 로드
         DispatchQueue.main.async {
             densityData = viewModel.getAllDensityData()
-            print("🔄 [TimelineView] 데이터 로드 완료")
+            AppLog.ui.debug("🔄 [TimelineView] 데이터 로드 완료")
             isLoading = false
             // 홈·잠금 화면 위젯이 읽는 스냅샷도 같이 다시 굽는다.
             RainbowWidgetSync.refresh(from: viewModel)
@@ -758,11 +771,7 @@ struct TimelineDensityView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.regularMaterial)
-                .shadow(color: .black.opacity(0.15), radius: 10, y: 4)
-        )
+        .adaptiveCardBackground(cornerRadius: 16, shadowRadius: 10)
         .padding(.horizontal, 12)
         .padding(.bottom, 10)
     }
@@ -947,13 +956,22 @@ struct DateRow: View {
         HStack(spacing: 0) {
             // 왼쪽: 날짜 레이블
             VStack(alignment: .trailing, spacing: 1) {
+                // 글자 크기 설정을 따른다(텍스트 스타일). 칸이 40pt 격자라 아주 큰 크기에서는
+                // 줄어들어 들어가게 하고, 격자가 깨지지 않게 상한을 둔다.
                 Text(monthDay(from: dayData.date))
-                    .font(.system(size: 11, weight: isToday ? .bold : .semibold))
-                    .foregroundColor(isToday ? .blue : .primary)
+                    .font(.caption.weight(isToday ? .bold : .semibold))
+                    .foregroundColor(isToday ? DateLabelInk.today : .primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                // 요일은 칸 옆의 아주 작은 글자다. 시스템 회색·빨강은 이 크기에서 대비가 모자랐다
+                // (접근성 자동 점검) — 한 단 진한 잉크를 쓴다.
                 Text(weekday(from: dayData.date))
-                    .font(.system(size: 9))
-                    .foregroundColor(isWeekend ? .red : .secondary)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundColor(isWeekend ? DateLabelInk.weekend : DateLabelInk.weekday)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             .frame(width: 50)
             .padding(.vertical, 2)
             .background(isToday ? Color.blue.opacity(0.1) : Color.clear)
@@ -1052,6 +1070,17 @@ struct DateRow: View {
     }
 }
 
+/// 무지개 왼쪽 날짜 칸의 글자색. 작은 글자라 시스템 색보다 대비를 한 단 높인다.
+/// 밝은 화면과 어두운 화면에서 각각 바탕과 4.5:1 이상이 되게 고른 값이다.
+enum DateLabelInk {
+    static let weekday = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(white: 0.78, alpha: 1) : UIColor(white: 0.26, alpha: 1) })
+    static let weekend = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(red: 1.0, green: 0.45, blue: 0.42, alpha: 1) : UIColor(red: 0.75, green: 0.1, blue: 0.08, alpha: 1) })
+    static let today = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(red: 0.45, green: 0.7, blue: 1.0, alpha: 1) : UIColor(red: 0.0, green: 0.36, blue: 0.82, alpha: 1) })
+}
+
 // 그리드 셀
 struct GridCell: View {
     let dayData: DayDensity
@@ -1071,6 +1100,12 @@ struct GridCell: View {
     let onDelete: () -> Void
 
     @State private var deletionRequest: EventDeletionRequest?
+    @Environment(\.colorSchemeContrast) private var contrast
+
+    /// 칸을 가르는 격자선. 대비를 높이면 옅은 시스템 구분선 대신 글자색에 가까운 선을 긋는다.
+    private var gridLineColor: Color {
+        contrast == .increased ? Color.primary.opacity(0.45) : Color(.separator)
+    }
 
     // 꾹 누르는 동안의 되먹임 — 테두리가 차오르고 진동이 같이 세진다.
     /// 이만큼 누르고 있어야 잡힌다. 테두리·진동·제스처가 모두 이 값을 쓴다.
@@ -1085,8 +1120,8 @@ struct GridCell: View {
         .overlay(
             Rectangle()
                 .strokeBorder(
-                    !isActive && isDraggedDate ? Color.blue : Color(.separator),
-                    lineWidth: !isActive && isDraggedDate ? 2 : 0.5
+                    !isActive && isDraggedDate ? Color.blue : gridLineColor,
+                    lineWidth: !isActive && isDraggedDate ? 2 : (contrast == .increased ? 1 : 0.5)
                 )
         )
         // 누르고 있는 동안 테두리가 한 바퀴 차오른다. 다 차는 순간이 곧 잡히는 순간이다.
@@ -1225,7 +1260,8 @@ struct GridCell: View {
                         isStart: isStart,
                         isEnd: isEnd,
                         variantColor: variantColor,
-                        isInGap: isInGap
+                        isInGap: isInGap,
+                        initial: event.title.first.map(String.init)
                     )
                     .padding(2)
                 } else {
@@ -1437,10 +1473,14 @@ struct EventListCard: View {
             Spacer()
         }
         .padding()
-        .background(Color(.systemBackground))
+        // 밝은 화면은 그림자가 카드를 띄우지만, 어두운 화면에서 검은 그림자는 보이지 않는다.
+        // 어두울 때는 한 단 밝은 바탕으로 카드를 떼어 낸다.
+        .background(colorScheme == .dark ? Color(.secondarySystemBackground) : Color(.systemBackground))
         .cornerRadius(10)
-        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .shadow(color: Color.black.opacity(colorScheme == .dark ? 0 : 0.05), radius: 2, x: 0, y: 1)
     }
+
+    @Environment(\.colorScheme) private var colorScheme
 
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -1458,13 +1498,37 @@ struct EventLaneBlock: View {
     let isEnd: Bool
     let variantColor: Color
     let isInGap: Bool  // 구멍에 들어간 일정인지 여부
+    /// 일정 이름의 첫 글자. '색 없이 구별'을 켠 사람에게 시작 칸에 보여 준다.
+    /// 같은 레인 안의 일정은 색의 밝기만 조금씩 달라서, 색으로는 어느 것이 어느 것인지 가를 수 없다.
+    var initial: String? = nil
+
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
+
+    /// 이웃한 칸과 칸을 가르는 선. 밝은 화면에서는 흰 선이 칸을 떼어 주지만,
+    /// 어두운 화면에서 흰 선은 칸마다 빛나는 테두리가 되어 무지개보다 선이 먼저 보인다 —
+    /// 어두울 때는 배경과 같은 쪽(검정)으로 가른다.
+    private var separator: Color {
+        let base: Color = colorScheme == .dark ? .black : .white
+        return base.opacity(contrast == .increased ? 1.0 : 0.6)
+    }
+
+    /// 대비를 높이면 가르는 선도 굵어진다.
+    private var separatorWidth: CGFloat { contrast == .increased ? 2 : 1.5 }
+
+    /// 중간 칸의 진하기. 어두운 배경 위에서 0.65 는 탁하게 가라앉아 시작·끝 칸과 다른 일정처럼 보였다.
+    private var middleOpacity: Double {
+        if contrast == .increased { return 0.9 }
+        return colorScheme == .dark ? 0.8 : 0.65
+    }
 
     var body: some View {
         ZStack {
             if isActive {
                 let eventColor = variantColor
                 // 시작/끝 칸은 진하게, 중간 칸은 연하게
-                let opacity: Double = (isStart || isEnd) ? 1.0 : 0.65
+                let opacity: Double = (isStart || isEnd) ? 1.0 : middleOpacity
 
                 // 배경 색상
                 if isStart && isEnd {
@@ -1473,7 +1537,7 @@ struct EventLaneBlock: View {
                         .fill(eventColor.opacity(opacity))
                         .overlay(
                             RoundedRectangle(cornerRadius: 4)
-                                .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                                .strokeBorder(separator, lineWidth: separatorWidth)
                         )
                         .overlay(
                             // 구멍에 들어간 일정이면 빗금 패턴
@@ -1496,7 +1560,7 @@ struct EventLaneBlock: View {
                             bottomTrailingRadius: 0,
                             topTrailingRadius: 4
                         )
-                        .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                        .strokeBorder(separator, lineWidth: separatorWidth)
                     )
                     .overlay(
                         isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6))
@@ -1523,7 +1587,7 @@ struct EventLaneBlock: View {
                             bottomTrailingRadius: 4,
                             topTrailingRadius: 0
                         )
-                        .strokeBorder(Color.white.opacity(0.6), lineWidth: 1.5)
+                        .strokeBorder(separator, lineWidth: separatorWidth)
                     )
                     .overlay(
                         isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6))
@@ -1541,18 +1605,30 @@ struct EventLaneBlock: View {
                         .overlay(
                             HStack(spacing: 0) {
                                 Rectangle()
-                                    .fill(Color.white.opacity(0.4))
-                                    .frame(width: 1.5)
+                                    .fill(separator.opacity(0.7))
+                                    .frame(width: separatorWidth)
                                 Spacer()
                                 Rectangle()
-                                    .fill(Color.white.opacity(0.4))
-                                    .frame(width: 1.5)
+                                    .fill(separator.opacity(0.7))
+                                    .frame(width: separatorWidth)
                             }
                         )
                         .overlay(
                             isInGap ? DiagonalStripesPattern(color: .white.opacity(0.6)) : nil
                         )
                 }
+            }
+        }
+        .overlay(alignment: .topLeading) {
+            if differentiateWithoutColor, isActive, isStart, let initial, !initial.isEmpty {
+                Text(verbatim: initial)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 2)
+                    .background(Color(.systemBackground).opacity(0.85),
+                                in: RoundedRectangle(cornerRadius: 3))
+                    .padding(2)
+                    .accessibilityHidden(true)
             }
         }
     }
@@ -1570,13 +1646,31 @@ struct SpanFillBlock: View {
     let isEnd: Bool
 
     var body: some View {
-        UnevenRoundedRectangle(
+        let shape = UnevenRoundedRectangle(
             topLeadingRadius: isStart ? 4 : 0,
             bottomLeadingRadius: isEnd ? 4 : 0,
             bottomTrailingRadius: isEnd ? 4 : 0,
             topTrailingRadius: isStart ? 4 : 0
         )
-        .fill(color.opacity(0.20))
+        shape
+            .fill(color.opacity(fillOpacity))
+            // '하는 날'과 '기간만 이어지는 날'은 진하기로만 갈렸다. 색을 구별하기 어려운 사람에게는
+            // 이어지는 날에 점선 테두리를 둘러 모양으로도 가른다.
+            .overlay {
+                if differentiateWithoutColor {
+                    shape.strokeBorder(color, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
+                }
+            }
+    }
+
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
+    @Environment(\.colorSchemeContrast) private var contrast
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// 옅은 칸. 어두운 배경에서는 0.2 가 거의 사라져 한 단 올리고, 대비를 높이면 더 올린다.
+    private var fillOpacity: Double {
+        if contrast == .increased { return 0.4 }
+        return colorScheme == .dark ? 0.28 : 0.20
     }
 }
 

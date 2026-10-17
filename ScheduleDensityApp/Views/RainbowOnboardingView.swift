@@ -112,10 +112,8 @@ struct SpotlightCoachOverlay<Actions: View>: View {
         }
         .padding(16)
         .frame(maxWidth: 330, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(.regularMaterial)
-        )
+        // 투명도 줄이기를 켜면 뒤의 무지개가 비치지 않는 불투명한 카드가 선다.
+        .adaptiveCardBackground(cornerRadius: 18)
         .shadow(color: .black.opacity(0.25), radius: 14, y: 6)
         .padding(.horizontal, 20)
         .padding(.vertical, 24)

@@ -187,6 +187,8 @@ struct TimerBar: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityHint("타이머 열기. 길게 누르면 끝내거나 숨깁니다")
+        // 읽히는 이름은 지금 세는 일정의 제목이라 매번 바뀐다. 음성 제어로는 "타이머"로 부른다.
+        .accessibilityInputLabels([Text("타이머"), Text(title)])
     }
 }
 

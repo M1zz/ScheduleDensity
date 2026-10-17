@@ -41,6 +41,8 @@ struct ContentView: View {
                         }
                         .accessibilityLabel(!usesMac && !seenMacCompanion
                                             ? Text("설정, 새로 볼 것 있음") : Text("설정"))
+                        // 라벨에 '새로 볼 것 있음'이 붙어도 음성 제어로는 "설정"이라고만 불러도 열린다.
+                        .accessibilityInputLabels([Text("설정")])
                     }
                 }
                 .sheet(isPresented: $viewModel.showingAddEvent) {

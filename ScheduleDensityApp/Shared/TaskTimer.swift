@@ -328,6 +328,12 @@ final class TaskTimer {
         if isActive, remaining <= 0 {
             // 앱을 보고 있을 때의 알림. 주머니 속이라면 로컬 알림이 대신 울린다.
             UINotificationFeedbackGenerator().notificationOccurred(.success)
+            // 진동은 느껴도 무엇이 끝났는지는 모른다 — VoiceOver 로 말해 준다.
+            let finished = target?.title ?? ""
+            UIAccessibility.post(notification: .announcement,
+                                 argument: finished.isEmpty
+                                     ? String(localized: "타이머가 끝났습니다")
+                                     : String(localized: "'\(finished)' 타이머가 끝났습니다"))
             stop()
         }
     }

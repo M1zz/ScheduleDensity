@@ -129,7 +129,7 @@ struct MeaningPage<Diagram: View>: View {
         .padding(.bottom, showsDoneButton ? 12 : 20)
         .frame(maxWidth: 520)
         .frame(maxWidth: .infinity)
-        .background(.bar)
+        .adaptiveBarBackground()
     }
 }
 

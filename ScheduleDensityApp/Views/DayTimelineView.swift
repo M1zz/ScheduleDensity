@@ -107,6 +107,7 @@ struct DayTimeAnalysisView: View {
                         Image(systemName: hideSleep ? "moon.zzz" : "moon.zzz.fill")
                     }
                     .accessibilityLabel(hideSleep ? "수면 시간 펴기" : "수면 시간 접기")
+                    .accessibilityInputLabels([Text(hideSleep ? "수면 시간 펴기" : "수면 시간 접기"), Text("수면")])
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     if !isToday {
@@ -114,8 +115,10 @@ struct DayTimeAnalysisView: View {
                     }
                     Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
                         .accessibilityLabel("전날")
+                        .accessibilityInputLabels([Text("전날"), Text("이전")])
                     Button { onStep(1) } label: { Image(systemName: "chevron.right") }
                         .accessibilityLabel("다음 날")
+                        .accessibilityInputLabels([Text("다음 날"), Text("다음")])
                 }
             }
             .sheet(item: $inspected) { subject in
