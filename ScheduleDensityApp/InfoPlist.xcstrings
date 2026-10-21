@@ -34,6 +34,12 @@
             "value" : "Rainbow of Desire"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -172,6 +178,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "ScheduleDensityApp"
@@ -320,6 +332,12 @@
             "value" : "Reads the calendars you pick so their events can show on your rainbow. Nothing is written to your calendars, and events are never sent anywhere."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads the calendars you pick so their events can show on your rainbow. Nothing is written to your calendars, and events are never sent anywhere."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -458,6 +476,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reads your calendar events so it can measure how full your days are. The data stays on this device and is never sent anywhere."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reads your calendar events so it can measure how full your days are. The data stays on this device and is never sent anywhere."

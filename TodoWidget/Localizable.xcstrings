@@ -33,6 +33,12 @@
             "value" : ", step of %@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", step of %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -170,6 +176,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", step %2$lld of %1$lld, now %3$@"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ", step %2$lld of %1$lld, now %3$@"
@@ -317,6 +329,12 @@
             "value" : ", %lld min"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", %lld min"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -454,6 +472,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", can be done in five minutes"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ", can be done in five minutes"
@@ -601,6 +625,12 @@
             "value" : ", now %@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", now %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -738,6 +768,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", marked by you"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ", marked by you"
@@ -885,6 +921,12 @@
             "value" : "Opens Rainbow of Desire on a blank line, ready to write."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens Rainbow of Desire on a blank line, ready to write."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1022,6 +1064,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.0f h"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%.0f h"
@@ -1169,6 +1217,12 @@
             "value" : "%.1f h"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f h"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1306,6 +1360,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The %@ widget is locked. Tap to unlock Rainbow Pro."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The %@ widget is locked. Tap to unlock Rainbow Pro."
@@ -1454,6 +1514,12 @@
             "value" : "The %@ widget is locked. Buy Rainbow Pro in Settings to open it."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The %@ widget is locked. Buy Rainbow Pro in Settings to open it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1591,6 +1657,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, today"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@, today"
@@ -1738,6 +1810,12 @@
             "value" : "Ends at %@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ends at %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1875,6 +1953,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld"
@@ -2022,6 +2106,12 @@
             "value" : "%lld/%lld"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/%lld"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2159,6 +2249,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld%%"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld%%"
@@ -2306,6 +2402,12 @@
             "value" : "%lld"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2443,6 +2545,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
@@ -2590,6 +2698,12 @@
             "value" : "+%lld"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%lld"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2727,6 +2841,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ %lld · %@"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "⚡︎ %lld · %@"
@@ -2874,6 +2994,12 @@
             "value" : "⚡︎ No fragments ready"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚡︎ No fragments ready"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3011,6 +3137,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 Rainbow Pro"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "🔒 Rainbow Pro"
@@ -3158,6 +3290,12 @@
             "value" : "🔒 Bolt — Rainbow Pro"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 Bolt — Rainbow Pro"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3295,6 +3433,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔒 To-Do — Rainbow Pro"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "🔒 To-Do — Rainbow Pro"
@@ -3442,6 +3586,12 @@
             "value" : "0 min"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0 min"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3579,6 +3729,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps you can do in five minutes. "
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld steps you can do in five minutes. "
@@ -3726,6 +3882,12 @@
             "value" : "%lld in five minutes"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld in five minutes"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3863,6 +4025,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Work"
@@ -4011,6 +4179,12 @@
             "value" : "Past your plan"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Past your plan"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4148,6 +4322,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Draft the proposal"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Draft the proposal"
@@ -4295,6 +4475,12 @@
             "value" : "Finished"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Finished"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4432,6 +4618,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing left"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing left"
@@ -4579,6 +4771,12 @@
             "value" : "Nothing left to do"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing left to do"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4716,6 +4914,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share your events with others, read-only."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share your events with others, read-only."
@@ -4863,6 +5067,12 @@
             "value" : "Tap to unlock"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to unlock"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5000,6 +5210,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next: %@"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Next: %@"
@@ -5147,6 +5363,12 @@
             "value" : "Next: %1$@ %2$@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next: %1$@ %2$@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5289,6 +5511,12 @@
             "value" : "Cut a step small enough to close in five minutes and it lands here."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cut a step small enough to close in five minutes and it lands here."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5426,6 +5654,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30-minute run"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "30-minute run"
@@ -5574,6 +5808,12 @@
             "value" : "Use it with your Mac"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use it with your Mac"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5711,6 +5951,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Paused"
@@ -5858,6 +6104,12 @@
             "value" : "Outline the sections"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outline the sections"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5995,6 +6247,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rainbow"
@@ -6142,6 +6400,12 @@
             "value" : "The Rainbow widget is locked"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Rainbow widget is locked"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6279,6 +6543,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bolt"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bolt"
@@ -6426,6 +6696,12 @@
             "value" : "The Bolt widget is locked"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Bolt widget is locked"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6563,6 +6839,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minutes (60:00)"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Minutes (60:00)"
@@ -6710,6 +6992,12 @@
             "value" : "Nothing here"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing here"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6847,6 +7135,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens a blank line and starts writing."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Opens a blank line and starts writing."
@@ -6994,6 +7288,12 @@
             "value" : "Hours (1:00:00)"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hours (1:00:00)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7131,6 +7431,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brings events from Calendar onto the Rainbow."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brings events from Calendar onto the Rainbow."
@@ -7278,6 +7584,12 @@
             "value" : "Look at everything you've scheduled at once."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look at everything you've scheduled at once."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7415,6 +7727,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No lines drawn yet"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No lines drawn yet"
@@ -7562,6 +7880,12 @@
             "value" : "See what's still open on the Home and Lock Screen."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See what's still open on the Home and Lock Screen."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7699,6 +8023,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See at a glance how full the days ahead are."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "See at a glance how full the days ahead are."
@@ -7847,6 +8177,12 @@
             "value" : "Settings ▸ Rainbow Pro"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings ▸ Rainbow Pro"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7984,6 +8320,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Call to book the movers"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Call to book the movers"
@@ -8132,6 +8474,12 @@
             "value" : "To-dos you write here show up on your Mac. Writing itself is free."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-dos you write here show up on your Mac. Writing itself is free."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8269,6 +8617,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Today"
@@ -8416,6 +8770,12 @@
             "value" : "%lld today · %@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld today · %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8553,6 +8913,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing today"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing today"
@@ -8700,6 +9066,12 @@
             "value" : "Exercise"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exercise"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8837,6 +9209,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidy up widget snapshots"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tidy up widget snapshots"
@@ -8984,6 +9362,12 @@
             "value" : "Counts what you won back this week."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Counts what you won back this week."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9121,6 +9505,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moving prep"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Moving prep"
@@ -9268,6 +9658,12 @@
             "value" : "Event sharing"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event sharing"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9405,6 +9801,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From schedule"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "From schedule"
@@ -9552,6 +9954,12 @@
             "value" : "Event stats"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Event stats"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9689,6 +10097,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save one reference link"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Save one reference link"
@@ -9836,6 +10250,12 @@
             "value" : "Groceries — milk, eggs"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groceries — milk, eggs"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9973,6 +10393,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps you could do in five minutes right now"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld steps you could do in five minutes right now"
@@ -10120,6 +10546,12 @@
             "value" : "Gathers only the steps you could do in five minutes."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gathers only the steps you could do in five minutes."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10257,6 +10689,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing scheduled now"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing scheduled now"
@@ -10404,6 +10842,12 @@
             "value" : "No fragments ready now"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No fragments ready now"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10541,6 +10985,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No fragments ready right now"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No fragments ready right now"
@@ -10688,6 +11138,12 @@
             "value" : "See how much time is left in your current schedule."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See how much time is left in your current schedule."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10825,6 +11281,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See the current step and the Rainbow without opening the app."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "See the current step and the Rainbow without opening the app."
@@ -10972,6 +11434,12 @@
             "value" : "Home"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11109,6 +11577,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read one chapter"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Read one chapter"
@@ -11256,6 +11730,12 @@
             "value" : "Import from Calendar"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import from Calendar"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11393,6 +11873,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timer"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Timer"
@@ -11540,6 +12026,12 @@
             "value" : "The Timer widget is locked"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Timer widget is locked"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11677,6 +12169,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-Do"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "To-Do"
@@ -11824,6 +12322,12 @@
             "value" : "No to-dos"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No to-dos"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11961,6 +12465,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write a to-do"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Write a to-do"
@@ -12108,6 +12618,12 @@
             "value" : "To-dos. "
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-dos. "
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12250,6 +12766,12 @@
             "value" : "Home and Lock Screen widgets"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home and Lock Screen widgets"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -12387,6 +12909,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ledger"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ledger"

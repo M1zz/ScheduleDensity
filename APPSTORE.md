@@ -245,6 +245,123 @@ Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/st
 Privacy Policy: https://m1zz.github.io/ScheduleDensity/en/privacy.html
 ```
 
+## English (U.K.) (en-GB)
+
+<!-- en-GB: 영국 철자·표현. 부제·이름은 미국판과 같은 브랜드/전략을 따른다(task breakdown 은 영국에서도 같은 말). 키워드는 organiser 를 더한다. -->
+
+### 이름
+
+```
+Rainbow of Desire
+```
+
+### 부제
+
+```
+Task Breakdown & Week Planner
+```
+
+### 키워드
+
+```
+to-do,list,adhd,weekly,overview,timeboxing,time,blocking,subtask,checklist,schedule,focus,organiser
+```
+
+### 프로모션 텍스트
+
+```
+See how full your week is before you walk into it, and keep what fits a five-minute gap at the top. Timers now count down to the moment an event ends.
+```
+
+### 지원 URL
+
+```
+https://m1zz.github.io/ScheduleDensity/en/
+```
+
+### 개인정보처리방침 URL
+
+```
+https://m1zz.github.io/ScheduleDensity/en/privacy.html
+```
+
+### 마케팅 URL
+
+```
+https://m1zz.github.io/ScheduleDensity/en/
+```
+
+### 설명
+
+```
+A calendar tells you whether something is scheduled. It does not tell you how much is stacked on top of it. Rainbow of Desire draws your weeks as a grid where the colour deepens the more your work overlaps, so you see the heavy week before you walk into it.
+
+And when the week is heavy, the answer is rarely a longer list. It is one step small enough to take in the five minutes you actually have.
+
+THE RAINBOW
+
+Press and hold an empty cell on the day something starts, then again on the day it ends, and a line is drawn down the grid. Days you actually work on it are dark. The rest stay pale, because unfinished work still holds you, even on the days you do not touch it.
+
+Cells across a row are the jobs you are juggling that day. When the row fills up, one slip pushes the whole day.
+
+Events from the calendars you pick appear on the rainbow and in your day, read only. Nothing is written back.
+
+TWO QUESTIONS, AND ONLY TWO
+
+Split a large job into steps. Each step is then sorted by two questions.
+
+Can you start it cold? If you have to reload where you left off, a five-minute gap goes entirely to warming up.
+
+Does it run all the way through in five minutes? Work left half done follows you into the next hour.
+
+Only a step that answers yes to both is a fragment, something to grab when five minutes open up. Everything else is a block, and belongs in time you set aside. The app answers first, from the words and time you wrote. You step in only when it is wrong.
+
+Twelve five-minute gaps are not an hour. Scraps of time do not add up, which is exactly why the steps that fit a gap have to be marked from the start.
+
+THE BOLT
+
+Swipe a row to the right to add a Bolt, your own mark that says this one is ready right now. A bolted row jumps the queue and stands at the top, so when a gap opens you look there instead of reading the whole list.
+
+STEP ORDER, DECIDED ONCE
+
+Steps either wait for each other or they do not, and you decide that once for the group instead of wiring up dependencies one by one. In order shows the first unfinished step. Any order shows whichever fragment you could pick up now.
+
+TIMER
+
+The timer counts down to the moment the event ends. When events overlap, pick which one to time, and switch to another in a tap. It shows in the Dynamic Island and on the Lock Screen too.
+
+WIDGETS
+
+On the Home and Lock Screen. To-Do shows the job you are on and the step inside it. Bolt lists only what you could pick up in five minutes right now. Rainbow shows the density grid itself. Timer shows the time left.
+
+SHARING
+
+Send an invite link to share your events read only, or to open a to-do list that you and the people you invite read and write together.
+
+FREE, AND RAINBOW PRO
+
+The heart of the app costs nothing. To-dos, the Rainbow, splitting into steps, the two questions, step order and the timer are all free, with no account and no sign-up. Using it alongside the Mac is free too.
+
+Rainbow Pro opens the extras: Home and Lock Screen widgets, importing from Calendar, sharing events, event stats, and the full weekly Ledger. Choose yearly with a free first week, monthly, or a one-time lifetime purchase.
+
+ON THE MAC
+
+Rainbow Craft is a separate macOS app. On the same iCloud account, to-dos and weekly plans sync on their own.
+
+PRIVACY
+
+There is no server. What you write stays on your device and in your own private iCloud, where the developer cannot reach it. No advertising identifiers, no location, no sign-up. The app sends anonymous usage statistics to the developer, and you can turn that off in Settings.
+
+Available in 24 languages, following your device language.
+
+SUBSCRIPTIONS AND TERMS
+
+Subscriptions renew automatically unless cancelled at least 24 hours before the period ends, and are charged to your Apple Account. Manage or cancel them in App Store account settings.
+
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://m1zz.github.io/ScheduleDensity/en/privacy.html
+```
+
 ## 중국어 번체 (zh-Hant)
 
 ### 이름

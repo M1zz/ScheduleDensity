@@ -33,6 +33,12 @@
             "value" : "Actually do %@"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actually do %@"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -170,6 +176,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's %@, so it fits inside a fragment."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "It's %@, so it fits inside a fragment."
@@ -317,6 +329,12 @@
             "value" : "It's %@, so it won't fit in a fragment."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's %@, so it won't fit in a fragment."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -454,6 +472,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's %@. Even one sitting won't close it."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "It's %@. Even one sitting won't close it."
@@ -601,6 +625,12 @@
             "value" : "%lld steps run past two hours. Split them down to a size that closes. A half-done step drags your attention into the next hour."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps run past two hours. Split them down to a size that closes. A half-done step drags your attention into the next hour."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -738,6 +768,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld min"
@@ -885,6 +921,12 @@
             "value" : "%lld h"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1022,6 +1064,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lldh %lldm"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lldh %lldm"
@@ -1169,6 +1217,12 @@
             "value" : "Put a closing step last — send it, publish it, submit it. The final 10% of a job that's 90% done is the best possible use of a fragment, and closing it leaves the block of time after it clean."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Put a closing step last — send it, publish it, submit it. The final 10% of a job that's 90% done is the best possible use of a fragment, and closing it leaves the block of time after it clean."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1306,6 +1360,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Does it run all the way through in five minutes?"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Does it run all the way through in five minutes?"
@@ -1453,6 +1513,12 @@
             "value" : "No step here can be picked up in a five-minute gap"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No step here can be picked up in a five-minute gap"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1590,6 +1656,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'%@' won't finish in one go"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "'%@' won't finish in one go"
@@ -1737,6 +1809,12 @@
             "value" : "'%@' comes after '%@'. Work started before the decision is made won't close in a fragment or in a block. Move the decision earlier."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "'%@' comes after '%@'. Work started before the decision is made won't close in a fragment or in a block. Move the decision earlier."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1874,6 +1952,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skipped"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skipped"
@@ -2021,6 +2105,12 @@
             "value" : "A decision sits behind the work"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A decision sits behind the work"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2158,6 +2248,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fixed hours"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fixed hours"
@@ -2305,6 +2401,12 @@
             "value" : "Writing, building, designing — work that needs its context reloaded spends a fragment-sized slot warming up and nothing more. Give it more time, or put a small setup step in front of it."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Writing, building, designing — work that needs its context reloaded spends a fragment-sized slot warming up and nothing more. Give it more time, or put a small setup step in front of it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2442,6 +2544,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If it breaks, you have to climb back up. Give it undisturbed time."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "If it breaks, you have to climb back up. Give it undisturbed time."
@@ -2589,6 +2697,12 @@
             "value" : "Unfinished work leaves residue that eats into the next block of time."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unfinished work leaves residue that eats into the next block of time."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2726,6 +2840,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The step that closes the end. Take it whenever a gap opens."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The step that closes the end. Take it whenever a gap opens."
@@ -2873,6 +2993,12 @@
             "value" : "Split it further, down to a size that closes. A half-done step drags your attention into the next hour."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Split it further, down to a size that closes. A half-done step drags your attention into the next hour."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3010,6 +3136,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The end is fixed, so it closes here."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The end is fixed, so it closes here."
@@ -3157,6 +3289,12 @@
             "value" : "There's no fixed end, so it never closes."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There's no fixed end, so it never closes."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3294,6 +3432,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It takes 23 minutes on average just to get back into it. In a fragment you'd only be warming up — give it more time, or put it in a block."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "It takes 23 minutes on average just to get back into it. In a fragment you'd only be warming up — give it more time, or put it in a block."
@@ -3441,6 +3585,12 @@
             "value" : "Met"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Met"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3578,6 +3728,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Block"
@@ -3725,6 +3881,12 @@
             "value" : "This is a block. Give it time you've set aside."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a block. Give it time you've set aside."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3862,6 +4024,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Just open the links and files. You pay the real work's warm-up cost here."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Just open the links and files. You pay the real work's warm-up cost here."
@@ -4009,6 +4177,12 @@
             "value" : "Wrap it up and send it"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrap it up and send it"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4146,6 +4320,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There's no step that closes the end"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "There's no step that closes the end"
@@ -4293,6 +4473,12 @@
             "value" : "Work that needs its context reloaded spends the whole fragment warming up."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work that needs its context reloaded spends the whole fragment warming up."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4430,6 +4616,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every step here needs you to sit down for it. Add one step that closes in a fragment — gathering links, a one-line note — and the gaps you used to let slip start going into this job."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Every step here needs you to sit down for it. Add one step that closes in a fragment — gathering links, a one-line note — and the gaps you used to let slip start going into this job."
@@ -4577,6 +4769,12 @@
             "value" : "Physical work adds up even when it's split."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Physical work adds up even when it's split."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4714,6 +4912,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's physical, so there's no warm-up."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "It's physical, so there's no warm-up."
@@ -4861,6 +5065,12 @@
             "value" : "Decide what to do"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decide what to do"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4998,6 +5208,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The gap is gone before you finish choosing."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The gap is gone before you finish choosing."
@@ -5145,6 +5361,12 @@
             "value" : "The gap is gone before you finish choosing. Make decisions in a block, and send only the settled work to fragment steps."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The gap is gone before you finish choosing. Make decisions in a block, and send only the settled work to fragment steps."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5282,6 +5504,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the drain"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "the drain"
@@ -5429,6 +5657,12 @@
             "value" : "Partly met"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partly met"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5566,6 +5800,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No time is written down, so there's no telling yet whether it closes in five minutes."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No time is written down, so there's no telling yet whether it closes in five minutes."
@@ -5713,6 +5953,12 @@
             "value" : "Does it start with no warm-up?"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Does it start with no warm-up?"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5850,6 +6096,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Late night"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Late night"
@@ -5997,6 +6249,12 @@
             "value" : "Late night (after 11 PM)"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Late night (after 11 PM)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6134,6 +6392,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morning"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Morning"
@@ -6281,6 +6545,12 @@
             "value" : "Morning (6 AM–12 PM)"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morning (6 AM–12 PM)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6418,6 +6688,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something undecided is blocking it first."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Something undecided is blocking it first."
@@ -6565,6 +6841,12 @@
             "value" : "If anything is left undecided, none of the steps below will open."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If anything is left undecided, none of the steps below will open."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6702,6 +6984,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing seems to be blocking it."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nothing seems to be blocking it."
@@ -6849,6 +7137,12 @@
             "value" : "You have to reload where you left off before you can start."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have to reload where you left off before you can start."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6986,6 +7280,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afternoon"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Afternoon"
@@ -7133,6 +7433,12 @@
             "value" : "Afternoon (12–6 PM)"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afternoon (12–6 PM)"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7270,6 +7576,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "this job"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "this job"
@@ -7417,6 +7729,12 @@
             "value" : "Brought in from this page. You can rename it."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brought in from this page. You can rename it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7554,6 +7872,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This isn't work — it's where your fragments leak away. Kept as a step, it only inflates your progress bar."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "This isn't work — it's where your fragments leak away. Kept as a step, it only inflates your progress bar."
@@ -7701,6 +8025,12 @@
             "value" : "Evening"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evening"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7838,6 +8168,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Evening (6–11 PM)"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Evening (6–11 PM)"
@@ -7985,6 +8321,12 @@
             "value" : "Fragment"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fragment"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8122,6 +8464,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fragments of time don't add up into a total. Twelve five-minute gaps are not sixty minutes. So it's better to separate, from the start, the steps you can take when five minutes open up from the steps that need time you've held."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fragments of time don't add up into a total. Twelve five-minute gaps are not sixty minutes. So it's better to separate, from the start, the steps you can take when five minutes open up from the steps that need time you've held."
@@ -8269,6 +8617,12 @@
             "value" : "Fragments and blocks are separated"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fragments and blocks are separated"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8406,6 +8760,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld steps can be picked up in a fragment; %lld need time you've set aside. When five minutes open up, take a fragment; when you've held time, take a block."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld steps can be picked up in a fragment; %lld need time you've set aside. When five minutes open up, take a fragment; when you've held time, take a block."
@@ -8553,6 +8913,12 @@
             "value" : "This is a fragment. When five minutes open up, take it."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a fragment. When five minutes open up, take it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8690,6 +9056,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly quota (flexible hours)"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weekly quota (flexible hours)"
@@ -8837,6 +9209,12 @@
             "value" : "You answered this yourself."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You answered this yourself."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8974,6 +9352,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Even with a short time set, it won't end here."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Even with a short time set, it won't end here."
@@ -9121,6 +9505,12 @@
             "value" : "%lld block-sized jobs have been given too little time"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld block-sized jobs have been given too little time"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9258,6 +9648,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short block"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Short block"
@@ -9405,6 +9801,12 @@
             "value" : "This is a short block. You have to sit down, but one sitting finishes it."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a short block. You have to sit down, but one sitting finishes it."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9542,6 +9944,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One thing before you split"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "One thing before you split"
@@ -9689,6 +10097,12 @@
             "value" : "Add"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9826,6 +10240,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cancel"
@@ -9973,6 +10393,12 @@
             "value" : "Rule 3"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rule 3"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10110,6 +10536,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gather what you'll need"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gather what you'll need"
@@ -10257,6 +10689,12 @@
             "value" : "This is too big to finish in one go. Unless you split it down to something that closes, the half-done state follows you into the next hour."
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is too big to finish in one go. Unless you split it down to something that closes, the half-done state follows you into the next hour."
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10394,6 +10832,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What to do is already settled, so you can start."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "What to do is already settled, so you can start."
@@ -10541,6 +10985,12 @@
             "value" : "To-Do"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-Do"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10683,6 +11133,12 @@
             "value" : "To-Do"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-Do"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10820,6 +11276,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The to-do couldn't be saved. Open the app once and try again."
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "The to-do couldn't be saved. Open the app once and try again."

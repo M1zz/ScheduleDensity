@@ -752,6 +752,7 @@
 				de,
 				el,
 				en,
+				"en-GB",
 				es,
 				fi,
 				fr,

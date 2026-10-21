@@ -34,6 +34,12 @@
             "value" : "To-Do"
           }
         },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To-Do"
+          }
+        },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
@@ -172,6 +178,12 @@
           }
         },
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TodoShareExtension"
+          }
+        },
+        "en-GB" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "TodoShareExtension"

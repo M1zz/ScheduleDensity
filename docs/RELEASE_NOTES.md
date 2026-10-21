@@ -22,6 +22,16 @@ Unlock Pro with a code you received
 See upcoming features in Settings
 ```
 
+### 앱스토어 (English UK)
+
+```
+The rainbow stays crisp in Dark Mode
+Easier with Voice Control and VoiceOver
+Tell events apart without colour
+Unlock Pro with a code you received
+See upcoming features in Settings
+```
+
 ### 앱스토어 (중국어 번체)
 
 ```

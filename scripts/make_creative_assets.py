@@ -25,7 +25,7 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 # 앱 언어 코드 → App Store Connect 로케일 (deploy.env LOCALES). 같으면 적지 않는다.
 STORE = {"en": "en-US"}
 # 마케팅 스크린샷 폴더 이름 (언어 코드와 같으면 적지 않는다)
-SHOT_DIR = {}
+SHOT_DIR = {"en-GB": "en"}
 
 # (가로, 세로, 안전 영역 left, top, right, bottom)
 SPEC = {
@@ -38,6 +38,7 @@ SPEC = {
 SEARCH = {
     "ko":      ("일정관리", "이번 주가<br>얼마나 빽빽한지", "일정이 겹칠수록 색이 진해집니다"),
     "en":      ("Weekly planner", "See the week<br>before it lands", "The more plans overlap, the deeper the color"),
+    "en-GB":  ("Weekly planner", "See the week<br>before it lands", "The more plans overlap, the deeper the colour"),
     "zh-Hant": ("行事曆", "這週有多滿<br>一眼就知道", "行程重疊越多，顏色就越深"),
     "zh-Hans": ("日程管理", "这周有多满<br>一眼就知道", "日程重叠越多，颜色就越深"),
     "ja": ("週間プランナー", "今週の混み具合が<br>ひと目でわかる", "予定が重なるほど、色が濃くなる"),
@@ -66,6 +67,7 @@ SEARCH = {
 HEADER = {
     "ko":      ("주간 플래너", "빡빡한 한 주,<br>색으로 먼저 봅니다"),
     "en":      ("Week planner", "Know a busy week<br>before you're in it"),
+    "en-GB":   ("Week planner", "Know a busy week<br>before you're in it"),
     "zh-Hant": ("週計畫", "忙碌的一週，<br>先用顏色看見"),
     "zh-Hans": ("周计划", "忙碌的一周，<br>先用颜色看清"),
     "ja": ("週間プランナー", "忙しい1週間を、<br>先に色で見る"),
