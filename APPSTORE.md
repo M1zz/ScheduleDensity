@@ -245,7 +245,7 @@ Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/st
 Privacy Policy: https://m1zz.github.io/ScheduleDensity/en/privacy.html
 ```
 
-## English (U.K.) (en-GB)
+## 영어(영국) (en-GB)
 
 <!-- en-GB: 영국 철자·표현. 부제·이름은 미국판과 같은 브랜드/전략을 따른다(task breakdown 은 영국에서도 같은 말). 키워드는 organiser 를 더한다. -->
 

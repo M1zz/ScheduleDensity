@@ -1,6 +1,6 @@
 # App Store 스크린샷
 
-언어 스물세 벌 × 크기 세 벌 × 다섯 장 = 345장. 언어 목록은 `render.mjs` 의 `ALL_LOCALES`. `<언어>/<크기>/01-rainbow.png` … `05-widgets.png`.
+언어 스물네 벌 × 크기 세 벌 × 다섯 장 = 360장. 언어 목록은 `render.mjs` 의 `ALL_LOCALES`. `<언어>/<크기>/01-rainbow.png` … `05-widgets.png`.
 
 ```
 AppStore/

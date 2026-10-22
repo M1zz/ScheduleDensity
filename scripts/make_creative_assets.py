@@ -25,7 +25,7 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 # 앱 언어 코드 → App Store Connect 로케일 (deploy.env LOCALES). 같으면 적지 않는다.
 STORE = {"en": "en-US"}
 # 마케팅 스크린샷 폴더 이름 (언어 코드와 같으면 적지 않는다)
-SHOT_DIR = {"en-GB": "en"}
+SHOT_DIR = {}
 
 # (가로, 세로, 안전 영역 left, top, right, bottom)
 SPEC = {

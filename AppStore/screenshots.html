@@ -86,7 +86,7 @@ body.th .cap p  { line-height:1.55; }
 body.th .row .title, body.th .steprow .sname { line-height:1.4; }
 /* Long-word languages (German, Finnish, Dutch, Greek, Russian …): let a word
    that is wider than its box break with a hyphen instead of overflowing. */
-body:not(.ko):not(.en):not(.zh-Hant):not(.zh-Hans):not(.ja):not(.th) {
+body:not(.ko):not(.en):not(.en-GB):not(.zh-Hant):not(.zh-Hans):not(.ja):not(.th) {
   hyphens:auto; -webkit-hyphens:auto; overflow-wrap:break-word;
 }
 /* …but never inside the big headline — a hyphen there reads as a typo. */
@@ -2725,6 +2725,22 @@ ko: {
   ],
 },
 };
+
+/* en-GB: the app's British strings match the US ones on these screens except
+   for spelling, so the set is derived from en. What changes is what a UK
+   iPhone actually shows — day-first dates (Md → 02/03, MMMd → 14 Mar) —
+   plus British spelling in the captions and a UK trip in the list. */
+STRINGS['en-GB'] = (() => {
+  const en = STRINGS.en, pad = n => String(n).padStart(2, '0');
+  const fix = t => t.replace('Plan the trip to Busan', 'Plan the trip to Edinburgh')
+                    .replace('due:Mar 14', 'due:14 Mar');
+  return {
+    ...en,
+    grid: { ...en.grid, day:(m,d) => `${pad(d)}/${pad(m)}` },
+    list: { ...en.list, rows: en.list.rows.map(r => r.map(fix)) },
+    shots: en.shots.map(r => r.map(t => t.replace('the deeper the color runs', 'the deeper the colour runs'))),
+  };
+})();
 
 const LANG = new URLSearchParams(location.search).get('lang') || 'en';
 const S = STRINGS[LANG];

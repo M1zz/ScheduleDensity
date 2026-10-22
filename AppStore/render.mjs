@@ -45,6 +45,7 @@ const NAMES = [
 // `apt-get install fonts-noto-cjk`.
 const ALL_LOCALES = [
   { lang: 'en', dir: 'en-US' },
+  { lang: 'en-GB', dir: 'en-GB' },      // British English: day-first dates, British spelling
   { lang: 'ko', dir: 'ko' },
   { lang: 'zh-Hant', dir: 'zh-Hant' },   // Traditional Chinese (Taiwan)
   ...['zh-Hans', 'ja', 'de', 'es', 'fr', 'it', 'pt-BR', 'ru', 'cs', 'da', 'el',

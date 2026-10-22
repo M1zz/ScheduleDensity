@@ -22,7 +22,7 @@ Unlock Pro with a code you received
 See upcoming features in Settings
 ```
 
-### 앱스토어 (English UK)
+### 앱스토어 (영국 영어 en-GB)
 
 ```
 The rainbow stays crisp in Dark Mode
