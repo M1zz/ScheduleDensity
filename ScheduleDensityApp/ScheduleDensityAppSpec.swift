@@ -41,11 +41,12 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
         marketingURL: URL(string: siteRoot)!
     )
 
-    /// **무료로 쓰다가, 쌓여야 보이는 것과 밖으로 나가는 것을 Pro로 파는 앱이다.**
+    /// **무료로 쓰다가, 쌓여야 보이는 것은 Plus, 밖으로 나가는 것은 Pro로 파는 앱이다.**
     ///
-    /// 맥앱 '무지개 공방'과 **같은 문장, 같은 사다리**다 — 연간(7일 체험) · 평생 · 월간.
+    /// 맥앱 '무지개 공방'과 **같은 사다리**다. 무료 · Plus · Pro, 유료 칸마다 연 구독과 평생.
     /// 1.1.x에서 4,900원에 한 번 사는 상품을 팔았고, 그 구매자는 평생 Pro로 인정한다
-    /// (평생 이용권이 바로 그 상품이다 → ProEntitlement.lifetimeID).
+    /// (Pro 평생이 바로 그 상품이다 → ProEntitlement.proLifetimeID).
+    /// 칸마다 무엇이 열리는지는 `ProFeature.tier` 한 곳에 있다.
     ///
     /// ⚠️ **여기 선언했다고 팔기 시작하는 게 아니다.** 실제로 파는지는
     ///    `ProEntitlement.sellsPro`가 정한다. 상품이 App Store Connect에 서기 전에 켜면

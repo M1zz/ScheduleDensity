@@ -374,7 +374,7 @@ class ScheduleViewModel {
     /// 고른 캘린더의 일정(→ CalendarMirror). 캘린더는 Pro다 — '가져오기'와 같은 잠금.
     /// ⚠️ 잠기면 **비추기도 멈춘다.** 켜 둔 채 구독이 끝났다고 계속 보이면 잠금이 이름뿐이다.
     private func calendarEvents() -> [Event] {
-        guard ProEntitlement.isUnlocked else { return [] }
+        guard ProEntitlement.allows(.calendarImport) else { return [] }
         if calendarCacheToken == dataRefreshTrigger { return calendarCache }
         // 맥이 이미 계획표에 옮겨 적은 회의는 맥 계획으로 서 있다. 두 번 세지 않는다.
         calendarCache = CalendarMirror.shared.visualEvents(from: currentStartDate, to: currentEndDate,

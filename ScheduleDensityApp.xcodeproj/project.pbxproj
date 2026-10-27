@@ -14,6 +14,7 @@
 		07FF2CA8DD7C9425D2D6F95B /* TodoWidgetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F72F9EC4C2F155B4FA16D8 /* TodoWidgetSnapshot.swift */; };
 		0B6581ED5CA549E4585C7B2A /* FragmentWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE9554167B35E0F3AE9A560 /* FragmentWidget.swift */; };
 		0EA6A29B497C2A262A6E0DB1 /* DeletionMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14BACF1AC9F509E8472DF879 /* DeletionMark.swift */; };
+		10C47EA18AF8BA18F7D9CE82 /* PricingTierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946E603EE42C844D99638C82 /* PricingTierTests.swift */; };
 		15AC4BCD3A340F00631B1579 /* CalendarImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E9C53AD99A30D54F2734AFB /* CalendarImportView.swift */; };
 		15BD1FF9295E0253422A35FA /* TodoSplitOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */; };
 		15BEC2A471176C1A6388C507 /* todo.md in Resources */ = {isa = PBXBuildFile; fileRef = A16BC621C70AAA92574B4346 /* todo.md */; };
@@ -263,6 +264,7 @@
 		8E4674AA473A6F359F710CB6 /* VaultMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VaultMonitor.swift; sourceTree = "<group>"; };
 		9034F91023F0FAA93436F32D /* UsageAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageAnalytics.swift; sourceTree = "<group>"; };
 		910FBBD73ECA9E9527512FE8 /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
+		946E603EE42C844D99638C82 /* PricingTierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingTierTests.swift; sourceTree = "<group>"; };
 		979A4AF622853CA818289703 /* TodoWidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidgetSync.swift; sourceTree = "<group>"; };
 		9986D50F72A622E5CA223199 /* ScheduleClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleClock.swift; sourceTree = "<group>"; };
 		998B70300E7474EF72D813EB /* TodoShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodoShare.entitlements; sourceTree = "<group>"; };
@@ -606,6 +608,7 @@
 			isa = PBXGroup;
 			children = (
 				2D316804853FEFDF78E7B2CC /* CoreLogicTests.swift */,
+				946E603EE42C844D99638C82 /* PricingTierTests.swift */,
 				274E10277DE239661C65CFD5 /* ServiceContractTests.swift */,
 			);
 			path = ScheduleDensityAppTests;
@@ -854,6 +857,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3192A934C4AA9D2A38502E7E /* CoreLogicTests.swift in Sources */,
+				10C47EA18AF8BA18F7D9CE82 /* PricingTierTests.swift in Sources */,
 				2923819CA469BFF7B5EACEA9 /* ServiceContractTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1426,7 +1430,7 @@
 			repositoryURL = "https://github.com/M1zz/LeeoKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.21.0;
+				minimumVersion = 3.23.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

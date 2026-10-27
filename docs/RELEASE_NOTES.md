@@ -1,5 +1,223 @@
 # 릴리즈 노트
 
+## 1.1.15
+
+### 앱스토어 (한국어)
+
+```
+요금제가 무료, Plus, Pro 세 가지로 정리됐어요
+Plus와 Pro는 연 구독과 평생 중에 고를 수 있어요
+구독 중이라면 언제든 평생으로 바꿀 수 있어요
+모든 앱을 평생 여는 언제나 평생 패스가 생겼어요
+```
+
+### 앱스토어 (English)
+
+```
+Plans are now Free, Plus and Pro
+Plus and Pro: yearly or lifetime
+Subscribed? Switch to lifetime anytime
+Forever Pass opens all our apps
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+Plans are now Free, Plus and Pro
+Plus and Pro: yearly or lifetime
+Subscribed? Switch to lifetime any time
+Forever Pass opens all our apps
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+方案整理為免費、Plus、Pro 三種
+Plus 與 Pro 可選年訂閱或永久版
+訂閱中的用戶隨時可改為永久版
+新增永久通行證，一次解鎖所有 App
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+方案整理为免费、Plus、Pro 三种
+Plus 与 Pro 可选年订阅或永久版
+订阅中的用户随时可改为永久版
+新增永久通行证，一次解锁所有 App
+```
+
+### 앱스토어 (일본어)
+
+```
+プランを無料、Plus、Proの3つに整理しました
+PlusとProは年額か買い切りを選べます
+サブスク中ならいつでも買い切りに切り替えられます
+すべてのアプリが開くずっとパスが登場
+```
+
+### 앱스토어 (독일어)
+
+```
+Neue Pläne: Kostenlos, Plus und Pro
+Plus und Pro jährlich oder für immer
+Abo jederzeit zu Lebenslang wechseln
+Neu: Für-immer-Pass für alle unsere Apps
+```
+
+### 앱스토어 (스페인어)
+
+```
+Planes nuevos: Gratis, Plus y Pro
+Plus y Pro, anual o de por vida
+Con suscripción, pasa a de por vida
+Nuevo Pase para siempre: todas las apps
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Trois formules : Gratuit, Plus et Pro
+Plus et Pro en annuel ou à vie
+Abonné ? Passez à vie quand vous voulez
+Pass à vie pour toutes nos apps
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Ora i piani sono Gratis, Plus e Pro
+Plus e Pro annuali o a vita
+Abbonato? Passa a vita quando vuoi
+Pass per sempre per tutte le nostre app
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Planos agora: Grátis, Plus e Pro
+Plus e Pro anuais ou vitalícios
+Assinante? Mude para vitalício
+Passe para sempre libera todos os apps
+```
+
+### 앱스토어 (러시아어)
+
+```
+Тарифы теперь: Бесплатно, Plus и Pro
+Plus и Pro на год или навсегда
+Подписку можно сменить на «навсегда»
+Вечный пропуск открывает все приложения
+```
+
+### 앱스토어 (체코어)
+
+```
+Tarify jsou teď Zdarma, Plus a Pro
+Plus i Pro ročně, nebo doživotně
+Předplatné kdykoli změníte na doživotní
+Pas navždy odemkne všechny naše aplikace
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Planerne er nu Gratis, Plus og Pro
+Plus og Pro årligt eller på livstid
+Abonnenter kan altid skifte til livstid
+Evighedspas åbner alle vores apps
+```
+
+### 앱스토어 (그리스어)
+
+```
+Νέα προγράμματα: Δωρεάν, Plus και Pro
+Plus και Pro ετήσια ή εφ’ όρου ζωής
+Από συνδρομή σε εφ’ όρου ζωής, όποτε θες
+Πάσο για πάντα για όλες τις εφαρμογές
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Tasot ovat nyt Ilmainen, Plus ja Pro
+Plus ja Pro vuodeksi tai eliniäksi
+Tilauksen voi vaihtaa elinikäiseen
+Ikuinen passi avaa kaikki sovelluksemme
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Paket kini Gratis, Plus, dan Pro
+Plus dan Pro tahunan atau seumur hidup
+Pelanggan bisa beralih ke seumur hidup
+Pass Selamanya membuka semua app kami
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Planene er nå Gratis, Plus og Pro
+Plus og Pro årlig eller livstid
+Abonnenter kan alltid bytte til livstid
+Evighetspass åpner alle appene våre
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Niveaus nu: Gratis, Plus en Pro
+Plus en Pro per jaar of levenslang
+Abonnement altijd omzetten in levenslang
+Altijd-pas opent al onze apps
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Plany to teraz Za darmo, Plus i Pro
+Plus i Pro rocznie albo dożywotnio
+Subskrypcję zmienisz na dożywotni dostęp
+Przepustka na zawsze otwiera aplikacje
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Nivåerna heter nu Gratis, Plus och Pro
+Plus och Pro per år eller livstid
+Byt från prenumeration till livstid
+Evighetspass öppnar alla våra appar
+```
+
+### 앱스토어 (태국어)
+
+```
+แผนตอนนี้มี ฟรี Plus และ Pro
+เลือก Plus หรือ Pro แบบรายปีหรือตลอดชีพ
+สมาชิกเปลี่ยนเป็นตลอดชีพได้ทุกเมื่อ
+พาสตลอดกาล เปิดทุกแอปของเรา
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Planlar artık Ücretsiz, Plus ve Pro
+Plus ve Pro yıllık ya da ömür boyu
+Aboneler her an ömür boyuya geçebilir
+Sonsuz Geçiş tüm uygulamalarımızı açar
+```
+
+### 앱스토어 (베트남어)
+
+```
+Gói nay gọn lại: Miễn phí, Plus và Pro
+Chọn Plus hoặc Pro theo năm hay trọn đời
+Đang đăng ký có thể chuyển sang trọn đời
+Vé trọn đời mở tất cả ứng dụng
+```
+
 ## 1.1.14
 
 ### 앱스토어 (한국어)

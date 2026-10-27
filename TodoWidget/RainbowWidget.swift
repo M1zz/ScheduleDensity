@@ -29,12 +29,12 @@ struct RainbowProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (RainbowEntry) -> Void) {
         // 위젯 갤러리에서는 빈 격자 대신 예시를 보여준다.
         let snapshot = context.isPreview ? .sample : RainbowWidgetBridge.read()
-        completion(RainbowEntry(isLocked: !context.isPreview && !ProEntitlement.isUnlocked,
+        completion(RainbowEntry(isLocked: !context.isPreview && !ProEntitlement.allows(.widget),
                                 date: Date(), snapshot: snapshot))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<RainbowEntry>) -> Void) {
-        let entry = RainbowEntry(isLocked: !ProEntitlement.isUnlocked,
+        let entry = RainbowEntry(isLocked: !ProEntitlement.allows(.widget),
                                  date: Date(), snapshot: RainbowWidgetBridge.read())
         // 내용이 바뀌면 앱이 reloadTimelines를 부른다. 여기서는 날짜가 넘어가면
         // '오늘'이 달라지므로 자정 직후 한 번만 다시 그리게 한다.

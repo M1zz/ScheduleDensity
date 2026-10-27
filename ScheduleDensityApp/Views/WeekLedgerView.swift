@@ -46,7 +46,7 @@ struct WeekLedgerView: View {
     /// ⚠️ 영수증을 아직 못 읽었으면(`isKnown == false`) 잠그지 않는다 — 산 사람이 앱을 켜자마자
     ///    넘기려 할 때 자물쇠와 페이월을 보게 되기 때문이다 (→ PurchaseManager.isKnown).
     private var canGoBack: Bool {
-        purchases.isUnlocked || !purchases.isKnown || isFree(previousWeek)
+        purchases.allows(.ledger) || !purchases.isKnown || isFree(previousWeek)
     }
 
     /// 이번 주인가. 지난 주 장부는 읽기만 한다 — 지나간 주에 새 기록을 더할 일은 없다.

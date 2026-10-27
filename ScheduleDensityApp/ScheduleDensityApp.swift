@@ -136,6 +136,8 @@ struct ScheduleDensityApp: App {
     @State private var timerSheet = false
     /// 업데이트 뒤 처음 열었을 때 "새로 생긴 것" (→ WhatsNewView.swift).
     @State private var showWhatsNew = false
+    /// 구독 중인 사람에게 6개월째와 갱신 7일 전에 한 번씩 서는 '구독 졸업' 평생가 (→ LeeoGraduation).
+    @State private var graduationSheet = false
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
     @State private var schedule = ScheduleViewModel()
@@ -400,7 +402,7 @@ struct ScheduleDensityApp: App {
                 // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
                 // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
                 // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
-                if showShareTab, purchases.isUnlocked {
+                if showShareTab, purchases.allows(.scheduleShare) {
                     FoldSplitView {
                         ScheduleShareView().timerBar()
                     } result: {
@@ -414,7 +416,7 @@ struct ScheduleDensityApp: App {
             }
             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
             // 펴면 시스템 탭바 대신 고르는 쪽 판 바닥에 막대가 선다. 하루는 무지개의 오른쪽 판이 된다.
-            .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.isUnlocked),
+            .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.allows(.scheduleShare)),
                         selected: selectedTab == .day ? .rainbow : selectedTab) { selectedTab = $0 }
             .foldDayTabRedirect(selectedTab: $selectedTab)
             // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
@@ -432,6 +434,14 @@ struct ScheduleDensityApp: App {
             .sheet(isPresented: $showWhatsNew) {
                 WhatsNewView()
                     .presentationDragIndicator(.visible)
+            }
+            .sheet(isPresented: $graduationSheet) {
+                LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
+                    await purchases.refresh()
+                }
+                // 실제로 보인 때를 적는다. 다른 시트에 밀려 못 뜬 판은 세지 않는다.
+                .onAppear { purchases.markGraduationOffered() }
+                .presentationDragIndicator(.visible)
             }
             // 첫 화면이 섰다. 몇 초 버티면 이번 실행은 무사히 뜬 것으로 적는다 (→ LaunchSafety).
             .task {
@@ -506,6 +516,7 @@ struct ScheduleDensityApp: App {
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
             .task {
                 await PurchaseManager.shared.refresh()
+                offerGraduationIfDue()
             }
             // 맥과 아이폰은 서로 가진 것을 **다** 보여 준다(합집합). 동기화는 무료라 결제와
             // 상관없이, 잠겨 있던 때 닫힌 채 찍힌 이 기기의 줄을 켤 때마다 연다 (→ TodoSharing.swift).
@@ -527,7 +538,10 @@ struct ScheduleDensityApp: App {
                     // 맥에서 넘어온 변경도 위젯에 반영한다.
                     RainbowWidgetSync.refresh(from: schedule)
                     // 다른 기기에서 사거나 환불했을 수 있다.
-                    Task { await PurchaseManager.shared.refresh() }
+                    Task {
+                        await PurchaseManager.shared.refresh()
+                        offerGraduationIfDue()
+                    }
                 }
             }
             .onOpenURL { url in
@@ -552,6 +566,13 @@ struct ScheduleDensityApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    /// 구독 졸업을 제안할 때면 한 번 띄운다. 다른 시트가 떠 있으면 다음에 연 때로 미룬다.
+    @MainActor
+    private func offerGraduationIfDue() {
+        guard purchases.graduationIsDue, !showWhatsNew, !timerSheet, !widgetPaywall else { return }
+        graduationSheet = true
     }
 
     /// 쓰던 사람이 업데이트하고 처음 열었으면 "새로 생긴 것"을 한 번 띄운다.

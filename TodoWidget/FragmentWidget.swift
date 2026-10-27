@@ -36,12 +36,12 @@ struct FragmentProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (FragmentEntry) -> Void) {
         // 위젯 갤러리에서는 빈 목록 대신 예시를 보여준다.
         let snapshot = context.isPreview ? .sample : TodoWidgetBridge.read()
-        completion(FragmentEntry(isLocked: !context.isPreview && !ProEntitlement.isUnlocked,
+        completion(FragmentEntry(isLocked: !context.isPreview && !ProEntitlement.allows(.widget),
                                  date: Date(), snapshot: snapshot))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<FragmentEntry>) -> Void) {
-        let entry = FragmentEntry(isLocked: !ProEntitlement.isUnlocked,
+        let entry = FragmentEntry(isLocked: !ProEntitlement.allows(.widget),
                                   date: Date(), snapshot: TodoWidgetBridge.read())
         // 내용이 바뀌면 앱이 reloadTimelines를 부른다. 여기서는 날짜가 넘어가면
         // '이번 주'가 달라지므로 자정 직후 한 번만 다시 그리게 한다.

@@ -332,7 +332,7 @@ final class WeekBlocksStore {
     /// 캘린더에서 옮겨 간 일정인데 맥이 아직 블록을 안 옮겼다 → 화면에서 뺀다 (→ CalendarMirror.isStale).
     /// 캘린더를 비추고 있을 때(Pro)만 — 안 비추면 블록이 유일한 표시라 빼면 아예 사라진다.
     static func isStaleCalendarCopy(_ block: PlanBlock) -> Bool {
-        guard ProEntitlement.isUnlocked, let key = block.calendarEventID else { return false }
+        guard ProEntitlement.allows(.calendarImport), let key = block.calendarEventID else { return false }
         return CalendarMirror.shared.isStale(calendarEventID: key)
     }
 

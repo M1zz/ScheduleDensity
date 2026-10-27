@@ -66,6 +66,10 @@ struct SettingsView: View {
     /// 타이머 설정을 보여주고 바꾸는 자리 (→ TaskTimer.swift).
     @State private var timer = TaskTimer.shared
     @State private var paywallFeature: ProFeature?
+    /// 구독 중인 사람이 평생으로 옮겨 가는 시트 (→ LeeoGraduation).
+    @State private var showingGraduation = false
+    /// App Store 의 구독 관리 시트.
+    @State private var managingSubscription = false
     /// App Store 의 '코드 사용' 시트 (할인·무료 기간 오퍼 코드).
     @State private var redeemingCode = false
     /// 업데이트 때 한 번 떴던 "새로 생긴 것"을 다시 본다 (→ WhatsNewView.swift).
@@ -97,27 +101,36 @@ struct SettingsView: View {
     /// ⚠️ **모를 때는 단정하지 않는다.** 영수증을 아직 못 읽었는데 '무료 버전'이라고 적으면,
     ///    산 사람이 설정을 열 때마다 한 번씩 거짓말을 보게 된다 (→ PurchaseManager.isKnown).
     private var entitlementTitle: String {
-        if purchases.isUnlocked { return String(localized: "무지개 Pro") }
+        if purchases.tier > .free { return purchases.tier.title }
         return purchases.isKnown ? String(localized: "무료 버전") : String(localized: "확인 중…")
     }
 
     /// 그래서 지금 무엇을 쓰고 있는가. 잠긴 쪽에서도 **본체는 다 쓴다**는 말을 먼저 한다 —
     /// 이 앱은 무료로도 온전히 돌아가고, 그 사실을 감추면 안 사는 사람이 지운다.
     private var entitlementNote: String {
-        if purchases.isUnlocked {
+        switch purchases.tier {
+        case .pro:
             return String(localized: "쌓여야 보이는 것까지 전부 열려 있습니다.")
+        case .plus:
+            return String(localized: "지나온 주를 끝까지 봅니다. 위젯, 캘린더, 일정 공유는 Pro에서 열립니다.")
+        case .free:
+            if !purchases.isKnown {
+                return String(localized: "App Store에 구매 기록을 확인하는 중입니다.")
+            }
+            return String(localized: "무지개, 할 일 쪼개기, 타이머, 맥과 오가기는 그대로 쓰십니다. \(lockedFeatures.count)가지가 잠겨 있습니다.")
         }
-        if !purchases.isKnown {
-            return String(localized: "App Store에 구매 기록을 확인하는 중입니다.")
-        }
-        return String(localized: "무지개, 할 일 쪼개기, 타이머, 맥과 오가기는 그대로 쓰십니다. \(ProFeature.sold.count)가지가 잠겨 있습니다.")
+    }
+
+    /// 지금 칸에서 아직 잠긴 것들.
+    private var lockedFeatures: [ProFeature] {
+        ProFeature.sold.filter { !purchases.allows($0) }
     }
 
     /// 값을 받고 여는 것들의 이름.
     /// ⚠️ 손으로 적지 않는다. 전에 여기 다섯 개만 적혀 있어서 나중에 들어온
     ///    '이 기기에서 적기'가 빠져 있었다 — 목록은 `ProFeature` 한 곳에서만 읽는다.
     private var lockedFeatureList: String {
-        ProFeature.sold.map(\.title).joined(separator: ", ")
+        lockedFeatures.map(\.title).joined(separator: ", ")
     }
 
     /// 타이머가 끝날 때 알릴지. 값은 타이머가 들고 있다 —
@@ -159,9 +172,9 @@ struct SettingsView: View {
                 //    있어서 끝까지 내려가야 알 수 있었다.
                 Section {
                     HStack(spacing: 12) {
-                        Image(systemName: purchases.isUnlocked ? "checkmark.seal.fill" : "lock.fill")
+                        Image(systemName: purchases.tier > .free ? "checkmark.seal.fill" : "lock.fill")
                             .font(.title3)
-                            .foregroundStyle(purchases.isUnlocked ? Color.green : Color.secondary)
+                            .foregroundStyle(purchases.tier > .free ? Color.green : Color.secondary)
                             .frame(width: 24)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(entitlementTitle)
@@ -176,16 +189,16 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
                     .accessibilityElement(children: .combine)
 
-                    if !purchases.isUnlocked {
+                    if purchases.tier < .pro {
                         Button {
-                            paywallFeature = .widget
+                            paywallFeature = lockedFeatures.first ?? .widget
                         } label: {
                             HStack {
                                 Image(systemName: "sparkles")
                                     .foregroundColor(.accentColor)
                                     .frame(width: 24)
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("무지개 Pro")
+                                    Text(purchases.tier == .plus ? ProTier.pro.title : String(localized: "무지개 Plus · Pro"))
                                         .font(.headline)
                                         .foregroundColor(.primary)
                                     Text(lockedFeatureList)
@@ -211,10 +224,16 @@ struct SettingsView: View {
                         }
                         .disabled(purchases.isWorking)
                     }
+
+                    // 구독 중일 때만. 구독을 관리하는 자리 바로 옆에 평생으로 옮겨 가는 길을 늘 둔다.
+                    if purchases.subscription != nil {
+                        Button("구독 관리") { managingSubscription = true }
+                        Button(LeeoLadderText.switchToLifetimeEntry) { showingGraduation = true }
+                    }
                 } header: {
                     Text("내 버전")
                 } footer: {
-                    Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. 한 번 사면 끝이고 구독이 아닙니다.")
+                    Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. Plus와 Pro는 연 구독과 평생 중에서 고릅니다.")
                 }
 
                 Group {
@@ -270,7 +289,7 @@ struct SettingsView: View {
                     Button(action: {
                         // 잠긴 자리는 아무 일도 안 일어나게 두지 않는다 —
                         // 왜 안 되는지 그 자리에서 말해준다.
-                        if purchases.isUnlocked { showingStatistics = true }
+                        if purchases.allows(.statistics) { showingStatistics = true }
                         else { paywallFeature = .statistics }
                     }) {
                         HStack {
@@ -286,7 +305,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            if !purchases.isUnlocked { ProLockBadge() }
+                            if !purchases.allows(.statistics) { ProLockBadge(for: .statistics) }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.secondary)
@@ -295,7 +314,7 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     Button(action: {
-                        if purchases.isUnlocked { showingCalendarMirror = true }
+                        if purchases.allows(.calendarImport) { showingCalendarMirror = true }
                         else { paywallFeature = .calendarImport }
                     }) {
                         HStack {
@@ -311,7 +330,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            if !purchases.isUnlocked { ProLockBadge() }
+                            if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.secondary)
@@ -320,7 +339,7 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     Button(action: {
-                        if purchases.isUnlocked { showingCalendarImport = true }
+                        if purchases.allows(.calendarImport) { showingCalendarImport = true }
                         else { paywallFeature = .calendarImport }
                     }) {
                         HStack {
@@ -336,7 +355,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            if !purchases.isUnlocked { ProLockBadge() }
+                            if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.secondary)
@@ -489,9 +508,9 @@ struct SettingsView: View {
                     // 잠겨 있으면 토글을 끄는 대신 켜려는 순간 페이월을 낸다 —
                     // 회색으로 죽은 스위치는 고장인지 잠긴 건지 구분이 안 된다.
                     Toggle(isOn: Binding(
-                        get: { showShareTab && purchases.isUnlocked },
+                        get: { showShareTab && purchases.allows(.scheduleShare) },
                         set: { wants in
-                            guard purchases.isUnlocked else {
+                            guard purchases.allows(.scheduleShare) else {
                                 if wants { paywallFeature = .scheduleShare }
                                 return
                             }
@@ -500,12 +519,12 @@ struct SettingsView: View {
                     )) {
                         HStack(spacing: 8) {
                             Image(systemName: "person.2.circle")
-                                .foregroundColor(showShareTab && purchases.isUnlocked ? .blue : .secondary)
+                                .foregroundColor(showShareTab && purchases.allows(.scheduleShare) ? .blue : .secondary)
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 6) {
                                     Text("공유 탭 표시")
                                         .font(.headline)
-                                    if !purchases.isUnlocked { ProLockBadge() }
+                                    if !purchases.allows(.scheduleShare) { ProLockBadge(for: .scheduleShare) }
                                 }
                                 Text("일정을 다른 사람과 공유하는 탭을 추가")
                                     .font(.caption)
@@ -1180,6 +1199,13 @@ struct SettingsView: View {
         .sheet(item: $paywallFeature) { feature in
             PaywallView(highlight: feature)
         }
+        .sheet(isPresented: $showingGraduation) {
+            LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
+                await purchases.refresh()
+            }
+            .presentationDragIndicator(.visible)
+        }
+        .manageSubscriptionsSheet(isPresented: $managingSubscription)
         .sheet(isPresented: $showingWhatsNew) {
             WhatsNewView()
                 .presentationDragIndicator(.visible)
@@ -1187,7 +1213,7 @@ struct SettingsView: View {
         .offerCodeRedemption(isPresented: $redeemingCode) { _ in
             Task {
                 await purchases.refresh()
-                if purchases.isUnlocked { RainbowFunnel.reach(.purchased) }
+                if purchases.tier > .free { RainbowFunnel.reach(.purchased) }
             }
         }
         .sheet(isPresented: $showingCategoryManager) {

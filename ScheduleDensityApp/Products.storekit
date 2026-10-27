@@ -3,23 +3,83 @@
   "nonRenewingSubscriptions": [],
   "products": [
     {
-      "displayPrice": "59000",
+      "displayPrice": "17.99",
       "familyShareable": true,
       "internalID": "A1B2C3D4-0000-4000-8000-000000000002",
       "localizations": [
         {
-          "description": "위젯, 캘린더에서 가져오기, 일정 공유, 그리고 2주보다 더 거슬러 보는 통계와 회수 장부를 엽니다. 한 번 결제로 계속 씁니다.",
+          "description": "Plus 전부에 위젯, 캘린더 가져오기와 비추기, 일정 공유를 더합니다. 맥 무지개 공방 Pro도 함께 열립니다.",
           "displayName": "무지개 Pro 평생",
           "locale": "ko_KR"
         },
         {
-          "description": "Unlocks widgets, Calendar import, event sharing, and stats and the Ledger beyond the last two weeks. One payment, yours for good.",
+          "description": "Everything in Plus, plus widgets, Calendar import and mirroring, and event sharing. Also unlocks Pro in Rainbow Workshop on Mac.",
           "displayName": "Rainbow Pro Lifetime",
           "locale": "en_US"
         }
       ],
       "productID": "com.example.ScheduleDensityApp.pro",
       "referenceName": "Pro 평생 (1.1.x의 그 상품)",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "8.99",
+      "familyShareable": true,
+      "internalID": "A1B2C3D4-0000-4000-8000-000000000003",
+      "localizations": [
+        {
+          "description": "지나온 주를 끝까지 봅니다. 회수 장부 전체 기간과 일정 통계를 엽니다.",
+          "displayName": "무지개 Plus 평생",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "See every week behind you: the full Ledger history and schedule stats.",
+          "displayName": "Rainbow Plus Lifetime",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.example.ScheduleDensityApp.plus",
+      "referenceName": "Plus 평생",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "8.99",
+      "familyShareable": true,
+      "internalID": "A1B2C3D4-0000-4000-8000-000000000004",
+      "localizations": [
+        {
+          "description": "Plus 평생을 산 분이 Pro 평생으로 올립니다.",
+          "displayName": "Plus 평생에서 Pro 평생으로",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "For Plus Lifetime owners: move up to Pro Lifetime.",
+          "displayName": "Plus to Pro Lifetime",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.example.ScheduleDensityApp.pro.upgrade",
+      "referenceName": "Plus 평생 → Pro 평생",
+      "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "12.99",
+      "familyShareable": true,
+      "internalID": "A1B2C3D4-0000-4000-8000-000000000005",
+      "localizations": [
+        {
+          "description": "구독하던 분께 드리는 Pro 평생입니다.",
+          "displayName": "무지개 Pro 평생 (구독 졸업)",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "Pro Lifetime at a lower price for current subscribers.",
+          "displayName": "Rainbow Pro Lifetime for Subscribers",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.example.ScheduleDensityApp.pro.graduate",
+      "referenceName": "졸업 Pro 평생",
       "type": "NonConsumable"
     }
   ],
@@ -28,37 +88,38 @@
     "_developerTeamID": "QGAQ3AY3R3",
     "_failTransactionsEnabled": false,
     "_lastSynchronizedDate": 0,
-    "_locale": "ko_KR",
-    "_storefront": "KOR",
+    "_locale": "en_US",
+    "_storefront": "USA",
     "_storeKitErrors": []
   },
   "subscriptionGroups": [
     {
       "id": "0C80D52C-9DD4-4CE6-B2CA-166795667330",
       "localizations": [],
-      "name": "무지개 Pro",
+      "name": "무지개",
       "subscriptions": [
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "22000",
+          "displayPrice": "5.99",
           "familyShareable": true,
           "groupNumber": 1,
           "internalID": "8D916837-79DA-4E35-B742-B1293393B958",
           "introductoryOffer": {
             "internalID": "B96FAA5B-22F8-4AC1-B02C-1C2585D8D05B",
             "numberOfPeriods": 1,
-            "paymentMode": "free",
-            "subscriptionPeriod": "P1W"
+            "paymentMode": "payUpFront",
+            "subscriptionPeriod": "P1Y",
+            "displayPrice": "2.99"
           },
           "localizations": [
             {
-              "description": "위젯, 캘린더에서 가져오기, 일정 공유, 그리고 2주보다 더 거슬러 보는 통계와 회수 장부를 엽니다.",
+              "description": "Plus 전부에 위젯, 캘린더 가져오기와 비추기, 일정 공유를 더합니다. 맥 무지개 공방 Pro도 함께 열립니다.",
               "displayName": "무지개 Pro 연간",
               "locale": "ko_KR"
             },
             {
-              "description": "Unlocks widgets, Calendar import, event sharing, and stats and the Ledger beyond the last two weeks.",
+              "description": "Everything in Plus, plus widgets, Calendar import and mirroring, and event sharing. Also unlocks Pro in Rainbow Workshop on Mac.",
               "displayName": "Rainbow Pro Yearly",
               "locale": "en_US"
             }
@@ -73,26 +134,59 @@
         {
           "adHocOffers": [],
           "codeOffers": [],
-          "displayPrice": "4400",
+          "displayPrice": "2.99",
           "familyShareable": true,
           "groupNumber": 2,
+          "internalID": "5E1F3A20-6B7C-4D8E-9F01-23456789ABCD",
+          "introductoryOffer": {
+            "internalID": "6F2A4B31-7C8D-4E9F-A012-3456789ABCDE",
+            "numberOfPeriods": 1,
+            "paymentMode": "payUpFront",
+            "subscriptionPeriod": "P1Y",
+            "displayPrice": "1.49"
+          },
+          "localizations": [
+            {
+              "description": "지나온 주를 끝까지 봅니다. 회수 장부 전체 기간과 일정 통계를 엽니다.",
+              "displayName": "무지개 Plus 연간",
+              "locale": "ko_KR"
+            },
+            {
+              "description": "See every week behind you: the full Ledger history and schedule stats.",
+              "displayName": "Rainbow Plus Yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.example.ScheduleDensityApp.plus.annual",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Plus 연간",
+          "subscriptionGroupID": "0C80D52C-9DD4-4CE6-B2CA-166795667330",
+          "type": "RecurringSubscription",
+          "winbackOffers": []
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "0.99",
+          "familyShareable": true,
+          "groupNumber": 1,
           "internalID": "AC09DA92-CC4A-4303-A7A2-92F9FC531EEE",
           "introductoryOffer": null,
           "localizations": [
             {
-              "description": "위젯, 캘린더에서 가져오기, 일정 공유, 그리고 2주보다 더 거슬러 보는 통계와 회수 장부를 엽니다.",
+              "description": "Plus 전부에 위젯, 캘린더 가져오기와 비추기, 일정 공유를 더합니다. 맥 무지개 공방 Pro도 함께 열립니다.",
               "displayName": "무지개 Pro 월간",
               "locale": "ko_KR"
             },
             {
-              "description": "Unlocks widgets, Calendar import, event sharing, and stats and the Ledger beyond the last two weeks.",
+              "description": "Everything in Plus, plus widgets, Calendar import and mirroring, and event sharing. Also unlocks Pro in Rainbow Workshop on Mac.",
               "displayName": "Rainbow Pro Monthly",
               "locale": "en_US"
             }
           ],
           "productID": "com.example.ScheduleDensityApp.pro.monthly",
           "recurringSubscriptionPeriod": "P1M",
-          "referenceName": "Pro 월간",
+          "referenceName": "Pro 월간 (판매 중지, 권한 유지)",
           "subscriptionGroupID": "0C80D52C-9DD4-4CE6-B2CA-166795667330",
           "type": "RecurringSubscription",
           "winbackOffers": []

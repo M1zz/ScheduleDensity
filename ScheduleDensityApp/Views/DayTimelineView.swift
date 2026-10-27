@@ -857,8 +857,8 @@ struct DayTimeAnalysisView: View {
             viewModel.calendarMirrorEvents().compactMap { e in e.mirrorKey.map { ($0, laneColor(for: e)) } },
             uniquingKeysWith: { first, _ in first })
         // 맥이 이미 계획 블록으로 옮겨 적은 회의는 그 블록이 같은 시각에 서 있다 — 한 번만.
-        let planned = ProEntitlement.isUnlocked ? WeekBlocksStore.shared.plannedCalendarCopies() : .init()
-        let fixed = (ProEntitlement.isUnlocked ? CalendarMirror.shared.timedEvents(on: date, planned: planned) : [])
+        let planned = ProEntitlement.allows(.calendarImport) ? WeekBlocksStore.shared.plannedCalendarCopies() : .init()
+        let fixed = (ProEntitlement.allows(.calendarImport) ? CalendarMirror.shared.timedEvents(on: date, planned: planned) : [])
             .enumerated()
             .map { index, e in
                 TimelineLayout.FixedEvent(id: "\(e.key)#\(index)", title: e.title,

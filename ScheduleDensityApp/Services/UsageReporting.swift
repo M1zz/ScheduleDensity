@@ -84,8 +84,8 @@ enum UsageReporting {
     ///
     /// **영수증을 아직 안 물어봤을 때는 한 줄도 안 보낸다. 0 과 다른 말이기 때문이다:**
     ///
-    /// - 영수증을 아직 안 물어봤을 때(`cachedPurchase == nil`). 한 번 늦은 조회가
-    ///   산 사람을 무료로 만들면 안 된다 — `ProEntitlement.cachedPurchase` 가
+    /// - 영수증을 아직 안 물어봤을 때(`cachedTier == nil`). 한 번 늦은 조회가
+    ///   산 사람을 무료로 만들면 안 된다. `ProEntitlement.cachedTier` 가
     ///   세 상태인 까닭이 그것이다. 허브는 안 온 값을 0 이 아니라 **모름**으로 센다.
     ///
     /// ⚠️ 나가는 것은 0/1 한 비트뿐이다. 결제 수단·영수증·금액은 앱이 아예 모르고,
@@ -94,8 +94,8 @@ enum UsageReporting {
     private static func entitlementMetrics() -> [String: Double] {
         // 구독 사다리를 켜기 전에도 옛 한 번 결제 상품은 판다(→ ProEntitlement.productIDs).
         // 살 수 있으니 0 은 '안 샀다'가 맞다.
-        guard let purchased = ProEntitlement.cachedPurchase else { return [:] }
-        return ["flag.isPaid": purchased ? 1 : 0]
+        guard let tier = ProEntitlement.cachedTier else { return [:] }
+        return ["flag.isPaid": tier > .free ? 1 : 0]
     }
 
     /// 드물게 일어나는 큰 행동 하나. 고빈도 동작에는 쓰지 않는다 —

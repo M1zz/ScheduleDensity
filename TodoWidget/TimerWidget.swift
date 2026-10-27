@@ -42,12 +42,12 @@ struct TimerWidgetProvider: TimelineProvider {
         }
         let now = Date()
         completion(Self.entry(at: now, from: TimerWidgetBridge.read(),
-                              locked: !ProEntitlement.isUnlocked))
+                              locked: !ProEntitlement.allows(.widget)))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<TimerWidgetEntry>) -> Void) {
         let snap = TimerWidgetBridge.read()
-        let locked = !ProEntitlement.isUnlocked
+        let locked = !ProEntitlement.allows(.widget)
         let now = Date()
 
         // 얼굴이 바뀌는 순간들. 그 사이는 숫자와 막대가 알아서 흐른다.
