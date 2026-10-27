@@ -62,11 +62,19 @@ if (only.length && LOCALES.length !== only.length) {
 }
 // App Store Connect validates the exact pixel size of each display slot, so
 // every slot the app targets gets its own folder. CSS px = pixels / 3.
-const SIZES = [
+const ONLY_SIZE = process.env.SIZE;  // SIZE=1398x2034 renders just that slot
+const SIZES_ALL = [
   { key: '1290x2796', w: 430, h: 932 },   // 6.9"
   { key: '1284x2778', w: 428, h: 926 },   // 6.5" / 6.7"
   { key: '1242x2688', w: 414, h: 896 },   // 6.5"
+  { key: '1398x2034', w: 466, h: 678 },   // iPhone Duo, outer screen
 ];
+const SIZES = ONLY_SIZE ? SIZES_ALL.filter(s => s.key === ONLY_SIZE) : SIZES_ALL;
+if (!SIZES.length) throw new Error(`unknown SIZE ${ONLY_SIZE}`);
+
+const DUO_KEY = '1398x2034';
+// marketing folders use the store locale; Norwegian is kept under both nb and no.
+const MARKETING_DIRS = { 'en-US': ['en'], nb: ['nb', 'no'] };
 
 const browser = await chromium.launch();
 for (const { lang, dir } of LOCALES) {
@@ -92,6 +100,16 @@ for (const { lang, dir } of LOCALES) {
       if (Math.round(width * 3) !== +key.split('x')[0] ||
           Math.round(height * 3) !== +key.split('x')[1]) {
         throw new Error(`${file}: rendered ${width * 3}x${height * 3}, expected ${key}`);
+      }
+    }
+    // The Duo set also goes where DeployBar picks shots up, next to the
+    // iPhone ones: docs/screenshots/marketing/<store locale>/duo-01-....png.
+    // DeployBar tells the devices apart by pixel size (1398x2034 = Duo).
+    if (key === DUO_KEY) {
+      for (const store of MARKETING_DIRS[dir] || [dir]) {
+        const mDir = path.join(here, '..', 'docs', 'screenshots', 'marketing', store);
+        fs.mkdirSync(mDir, { recursive: true });
+        for (const n of NAMES) fs.copyFileSync(path.join(outDir, `${n}.png`), path.join(mDir, `duo-${n}.png`));
       }
     }
     console.log(`${dir}/${key}/  (${NAMES.length} shots)`);

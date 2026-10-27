@@ -363,6 +363,34 @@ svg { display:block; }
   letter-spacing:-0.02em;
 }
 .oncebadge { text-align:center; font-size:12px; color:var(--sub); margin-top:9px; }
+
+/* ── iPhone Duo, outer screen (size=1398x2034) ────────────────
+   The folded Duo shows apps on a 466 x 678 pt screen. The clock and
+   the tab bar leave the top and bottom edges and stand in a 92 pt
+   column on the right, so every screen keeps its content to the
+   left 374 pt and the rail sits on top of the same background. */
+body.duo .screen { width:466px; height:678px; }
+body.duo .screen > :not(.duorail):not(.duotabs):not(.duofull) { margin-right:92px; }
+body.duo .duotop { height:14px; flex:none; }
+body.duo .homebar { display:none; }
+body.duo .homewall > :not(.duorail):not(.duoside):not(.duotop) { margin-right:92px; }
+body.duo .legend { bottom:0; }
+body.duo .fab { bottom:58px; }
+.duorail {
+  position:absolute; top:0; right:0; width:92px; height:100%;
+  display:flex; flex-direction:column; align-items:center; padding-top:78px;
+  pointer-events:none; z-index:3;
+}
+.duorail .t { font-size:19px; font-weight:700; letter-spacing:-0.01em; line-height:1; }
+.duorail .ring { margin-top:10px; }
+.duotabs {
+  position:absolute; right:16px; bottom:40px; width:48px; padding:4px;
+  display:flex; flex-direction:column; gap:6px; border-radius:24px; z-index:3;
+  background:rgba(255,255,255,.86); border:.5px solid rgba(0,0,0,.10);
+  box-shadow:0 4px 14px rgba(0,0,0,.10); backdrop-filter:blur(20px);
+}
+.duotabs .tab { width:40px; height:48px; border-radius:20px; display:flex; align-items:center; justify-content:center; }
+.duotabs .tab.on { background:rgba(120,120,128,.16); }
 </style>
 <script>
 /* ── icons (SF-Symbol-alikes, 24x24 box) ───────────────────── */
@@ -407,8 +435,21 @@ function donut(done, total, size, ringColor) {
   }
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" style="transform:rotate(-90deg)">${s}</svg>`;
 }
+/* iPhone Duo outer screen: one size key switches every screen over. */
+const DUO = new URLSearchParams(location.search).get('size') === '1398x2034';
+if (DUO) document.body.classList.add('duo');
+/** the Duo's right-hand column: clock, then the Wi-Fi / battery ring. */
+const duoRail = (c, extra = '') => `<div class="duorail" style="color:${c}">
+    <span class="t">9:41</span>
+    <svg class="ring" width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <path d="M8 31a15 15 0 1 1 24 0" stroke="#34C759" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M20 26.6 18 24.4a2.8 2.8 0 0 1 4 0zM20 21.4a6 6 0 0 0-4.3 1.8l-1.4-1.4a8 8 0 0 1 11.4 0l-1.4 1.4a6 6 0 0 0-4.3-1.8z" fill="${c}"/>
+      <circle cx="14.5" cy="36" r="1.5" fill="${c}"/><circle cx="18.2" cy="37.4" r="1.5" fill="${c}"/>
+      <circle cx="21.8" cy="37.4" r="1.5" fill="${c}"/><circle cx="25.5" cy="36" r="1.5" fill="${c}"/>
+    </svg>${extra}</div>`;
 const statusbar = (dark) => {
   const c = dark ? '#fff' : '#000';
+  if (DUO) return `<div class="duotop"></div>${duoRail(c)}`;
   return `<div class="statusbar" style="color:${c}">
     <span>9:41</span>
     <span class="icons">
@@ -417,7 +458,11 @@ const statusbar = (dark) => {
       <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.2" stroke="${c}" stroke-opacity=".4"/><rect x="2" y="2" width="15.5" height="8" rx="2" fill="${c}"/><path d="M23 4.2v3.6a2 2 0 0 0 0-3.6z" fill="${c}" fill-opacity=".5"/></svg>
     </span></div>`;
 };
-const tabbar = (active) => `
+const tabbar = (active) => DUO ? `
+  <div class="duotabs">
+    <div class="tab ${active === 'todo' ? 'on' : ''}">${ico('list', 25, active === 'todo' ? '#007AFF' : '#1c1c1e')}</div>
+    <div class="tab ${active === 'rainbow' ? 'on' : ''}">${rainbowIco(25, active === 'rainbow' ? '#007AFF' : '#1c1c1e')}</div>
+  </div>` : `
   <div class="tabbar">
     <div class="tab ${active === 'todo' ? 'on' : ''}">${ico('list', 25, active === 'todo' ? '#007AFF' : '#999a9e')}<span>${S.tabs.todo}</span></div>
     <div class="tab ${active === 'rainbow' ? 'on' : ''}">${rainbowIco(25, active === 'rainbow' ? '#007AFF' : '#999a9e')}<span>${S.tabs.rainbow}</span></div>
@@ -2986,8 +3031,16 @@ function widgetScreen() {
         <div style="margin-top:6px;font-size:11px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)">${label}</div></div>`).join('')}
     </div>`;
 
-  return `<div class="body"><div class="homewall">
-      ${statusbar(true)}
+  // Duo outer screen: the dock leaves the bottom edge for the right column,
+  // one app above a search button, the way the folded Duo Home Screen stands.
+  const duoDock = `<div class="duoside" style="position:absolute;right:13px;top:330px;width:66px;height:66px;border-radius:20px;
+        background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:13px;background:linear-gradient(150deg,#3ddc84,#0f9d58)"></div></div>
+      <div class="duoside" style="position:absolute;right:23px;bottom:24px;width:46px;height:46px;border-radius:23px;
+        background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></div>`;
+  return `<div class="body${DUO ? ' duofull' : ''}"><div class="homewall">
+      ${statusbar(true)}${DUO ? duoDock : ''}
       <div class="wgrid" style="padding-top:14px">
         <div class="wg wide">
           <div class="wt">${ico('bolt', 12, '#8CF0A6', 'f')} ${W.bolt}</div>
@@ -3008,18 +3061,18 @@ function widgetScreen() {
         </div>
       </div>
       ${iconRow(0)}${iconRow(1)}${iconRow(2)}
-      <div style="position:absolute;left:0;right:0;bottom:112px;display:flex;justify-content:center;gap:7px">
+      <div style="position:absolute;left:0;right:0;bottom:${DUO ? 30 : 112}px;display:flex;justify-content:center;gap:7px">
         <span style="width:7px;height:7px;border-radius:50%;background:#fff"></span>
         <span style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)"></span>
       </div>
-      <div style="position:absolute;left:12px;right:12px;bottom:22px;border-radius:30px;
+      ${DUO ? '' : `<div style="position:absolute;left:12px;right:12px;bottom:22px;border-radius:30px;
                   background:rgba(255,255,255,.14);backdrop-filter:blur(24px);
                   border:.5px solid rgba(255,255,255,.14);padding:12px 0;
                   display:flex;justify-content:space-around">
         ${['linear-gradient(150deg,#3ddc84,#0f9d58)','linear-gradient(150deg,#4d9bff,#1553c4)',
            'linear-gradient(150deg,#ff9f0a,#e8590c)','linear-gradient(150deg,#5ac8fa,#0a84ff)']
           .map(g => `<div style="width:56px;height:56px;border-radius:14px;background:${g};box-shadow:0 4px 12px rgba(0,0,0,.3)"></div>`).join('')}
-      </div>
+      </div>`}
       <div class="homebar" style="background:#fff;opacity:.9"></div>
     </div></div>`;
 }
@@ -3085,6 +3138,7 @@ const SIZES = {
   '1290x2796': { w:430, h:932 }, // 6.9"  iPhone 17 Pro Max / 16 Pro Max
   '1284x2778': { w:428, h:926 }, // 6.5"/6.7"  iPhone 14 Plus / 12-13 Pro Max
   '1242x2688': { w:414, h:896 }, // 6.5"  iPhone 11 Pro Max / XS Max
+  '1398x2034': { w:466, h:678, sw:466, sh:678 }, // iPhone Duo, outer screen
 };
 const GAP = 13;        // caption to device
 const BEZEL = 11;      // frame around the screen on each side
@@ -3092,7 +3146,7 @@ const SCREEN_W = 393, SCREEN_H = 852;   // iPhone 16 Pro, in points
 
 function fitLayout() {
   const key = new URLSearchParams(location.search).get('size') || '1290x2796';
-  const { w, h } = SIZES[key] || SIZES['1290x2796'];
+  const { w, h, sw = SCREEN_W, sh = SCREEN_H } = SIZES[key] || SIZES['1290x2796'];
   const root = document.documentElement.style;
   root.setProperty('--shotW', `${w}px`);
   root.setProperty('--shotH', `${h}px`);
@@ -3104,8 +3158,8 @@ function fitLayout() {
   // let the device bleed a little past the bottom edge, the way it did
   // at 1290x2796 — a frame that stops short reads as a floating sticker
   const clipH = h - top - BEZEL + 4;
-  const scale = clipH / SCREEN_H;
-  const clipW = Math.round(SCREEN_W * scale);
+  const scale = clipH / sh;
+  const clipW = Math.round(sw * scale);
   root.setProperty('--clipH', `${clipH}px`);
   root.setProperty('--clipW', `${clipW}px`);
   root.setProperty('--phoneW', `${clipW + BEZEL * 2}px`);

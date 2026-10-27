@@ -14,6 +14,7 @@ AppStore/
 | **1290 × 2796** | 6.9" | iPhone 17 Pro Max · 16 Pro Max |
 | **1284 × 2778** | 6.5" / 6.7" | iPhone 14 Plus · 12–13 Pro Max |
 | **1242 × 2688** | 6.5" | iPhone 11 Pro Max · XS Max |
+| **1398 × 2034** | iPhone Duo 바깥 화면 | iPhone Duo (접은 채) |
 
 **6.5" 슬롯은 1290 × 2796을 안 받는다.** "스크린샷 크기는 1242 × 2688px … 이어야 합니다"가
 뜨면 `1284x2778/`이나 `1242x2688/`을 올리면 된다. 6.9" 슬롯에는 `1290x2796/`.
@@ -40,6 +41,20 @@ node AppStore/render.mjs zh-Hant          # 한 언어만 (lang 또는 폴더 �
 
 CJK 폰트가 없으면 한국어·중국어 세트의 글자가 두부(□)로 나온다. 영어 세트는 영향 없다.
 macOS에는 Apple SD Gothic Neo와 PingFang TC가 있어 따로 설치할 것이 없다.
+
+### iPhone Duo 바깥 화면
+
+`?size=1398x2034` 이면 화면이 접은 Duo 의 바깥 화면(466 × 678 pt)으로 바뀐다. 시계와 탭 막대가
+위·아래 가장자리를 떠나 오른쪽 92 pt 세로줄에 서고(실기기 모양 그대로), 내용은 왼쪽 374 pt 안에 둔다.
+장면·순서·헤드라인은 아이폰 세트와 같다(같은 `STRINGS`).
+
+```sh
+SIZE=1398x2034 node AppStore/render.mjs      # Duo 만 다시 굽는다 (SIZE 없으면 네 크기 모두)
+```
+
+Duo 세트는 `AppStore/<언어>/1398x2034/` 와 함께 `docs/screenshots/marketing/<스토어 로케일>/duo-01-....png`
+에도 놓인다. DeployBar 는 픽셀로 기기를 가른다(1398x2034 = APP_IPHONE_DUO).
+확인: `DeployBar --shotplan 욕망의 무지개` 에 언어마다 "iPhone Duo (APP_IPHONE_DUO)" 묶음. 안쪽(펼친) 화면 세트는 없다.
 
 ## 구조
 
