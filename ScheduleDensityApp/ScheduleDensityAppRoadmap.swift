@@ -17,6 +17,12 @@ import LeeoKit
 extension ScheduleDensityAppSpec {
     static var roadmap: [LeeoRoadmapItem] {[
         // MARK: 다음에 만들어요
+        .init(id: "timer.control", status: .building,
+              title: String(localized: "앱 밖에서 타이머 켜기", comment: "Roadmap item: start the timer from Control Center"),
+              detail: String(localized: "제어센터나 잠금 화면의 단추 하나로 지금 일정의 타이머를 바로 켜요.", comment: "Roadmap item detail: start the timer from Control Center")),
+        .init(id: "timer.upcoming", status: .building,
+              title: String(localized: "다음 일정 미리 보기", comment: "Roadmap item: show the next event 15 minutes ahead"),
+              detail: String(localized: "일정 15분 전에 잠금 화면에 다음 일정과 남은 시간이 떠요.", comment: "Roadmap item detail: show the next event 15 minutes ahead")),
         .init(id: "a11y.voiceover", status: .planned,
               title: String(localized: "VoiceOver로 더 편하게", comment: "Roadmap item: VoiceOver"),
               detail: String(localized: "화면 읽기 기능이 단추와 내용을 빠짐없이, 알맞은 순서로 읽어 줘요.", comment: "Roadmap item detail: VoiceOver")),

@@ -578,6 +578,7 @@ enum TimerStarter {
     /// 시작 전부터 끝 시각까지 센다. 이미 끝난 일정은 켜지 않는다 (데드라인이 지났다).
     static func start(slot: ScheduleSlot, from now: Date = Date()) {
         guard slot.end > now else { return }
+        UpcomingTimer.end(slotID: slot.id)
         TaskTimer.shared.start(token: slot.id,
                                title: slot.title,
                                plannedSeconds: slot.duration,

@@ -19,7 +19,7 @@ import ActivityKit
 struct TaskTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TaskTimerAttributes.self) { context in
-            lockScreen(context.state, stale: context.isStale)
+            lockScreen(context.state, stale: context.isStale, upcoming: context.attributes.isUpcoming)
                 .activityBackgroundTint(Color.black.opacity(0.35))
                 .activitySystemActionForegroundColor(.white)
         } dynamicIsland: { context in
@@ -41,7 +41,7 @@ struct TaskTimerLiveActivity: Widget {
                         .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    caption(state, stale: stale)
+                    caption(state, stale: stale, upcoming: context.attributes.isUpcoming)
                 }
             } compactLeading: {
                 Image(systemName: state.isRunning ? state.iconName : "pause.fill")
@@ -61,7 +61,7 @@ struct TaskTimerLiveActivity: Widget {
     // MARK: 잠금화면
 
     @ViewBuilder
-    private func lockScreen(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> some View {
+    private func lockScreen(_ state: TaskTimerAttributes.ContentState, stale: Bool, upcoming: Bool) -> some View {
         let tint = Self.tint(state, stale: stale)
         HStack(spacing: 12) {
             ZStack {
@@ -76,7 +76,7 @@ struct TaskTimerLiveActivity: Widget {
                 Text(state.title)
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .lineLimit(1)
-                caption(state, stale: stale)
+                caption(state, stale: stale, upcoming: upcoming)
             }
             Spacer(minLength: 6)
             countdown(state, stale: stale, size: 26)
@@ -85,9 +85,16 @@ struct TaskTimerLiveActivity: Widget {
         .padding(.vertical, 12)
     }
 
-    private func caption(_ state: TaskTimerAttributes.ContentState, stale: Bool) -> some View {
+    private func caption(_ state: TaskTimerAttributes.ContentState, stale: Bool, upcoming: Bool) -> some View {
         Group {
-            if !state.isRunning {
+            if upcoming {
+                // 일정 15분 전에 미리 띄운 것 — 끝이 아니라 시작까지 센다 (→ UpcomingTimer).
+                if Self.isOver(state, stale: stale) {
+                    Text("시작했습니다")
+                } else {
+                    Text("\(Text(state.endDate, style: .time))에 시작")
+                }
+            } else if !state.isRunning {
                 Text("멈춤")
             } else if !Self.isOver(state, stale: stale) {
                 Text("\(Text(state.endDate, style: .time))에 끝남")

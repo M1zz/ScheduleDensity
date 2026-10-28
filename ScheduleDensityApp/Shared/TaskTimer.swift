@@ -454,7 +454,9 @@ final class TaskTimer {
             $0.attributes.token == target?.token
                 && ($0.activityState == .active || $0.activityState == .stale)
         }
-        for stray in Activity<TaskTimerAttributes>.activities where stray.id != activity?.id {
+        // 일정 15분 전에 미리 띄운 것은 이 타이머의 것이 아니다 (→ UpcomingTimer).
+        for stray in Activity<TaskTimerAttributes>.activities
+            where stray.id != activity?.id && !stray.attributes.isUpcoming {
             Task { await stray.end(nil, dismissalPolicy: .immediate) }
         }
     }
@@ -496,7 +498,7 @@ final class TaskTimer {
               let snap = try? JSONDecoder().decode(Snapshot.self, from: data)
         else {
             // 앱은 지워졌는데 잠금화면에만 남은 것을 걷는다.
-            for stray in Activity<TaskTimerAttributes>.activities {
+            for stray in Activity<TaskTimerAttributes>.activities where !stray.attributes.isUpcoming {
                 Task { await stray.end(nil, dismissalPolicy: .immediate) }
             }
             return

@@ -31,6 +31,7 @@
 		286F647B011EEDBA094E7E7C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EEDF66AE07075BE60CB5E082 /* PrivacyInfo.xcprivacy */; };
 		2902DFF21E90EA3C9ACE62F1 /* TodoWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 979A4AF622853CA818289703 /* TodoWidgetSync.swift */; };
 		2923819CA469BFF7B5EACEA9 /* ServiceContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274E10277DE239661C65CFD5 /* ServiceContractTests.swift */; };
+		2A1F1163C4648F6F0F5B2B26 /* UpcomingTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B5172A4B24520504AA5CFD /* UpcomingTimer.swift */; };
 		2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA829919C711830D349E106C /* EventKitManager.swift */; };
 		2DA6447E5C4C977781B3F105 /* TodoSharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B060FAD765E0ADB281F6C3BC /* TodoSharing.swift */; };
 		2EAE8DABE951002B6CA675BA /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6576DBC2D1236A8BAF02E5B /* AppLog.swift */; };
@@ -46,6 +47,7 @@
 		41D7EB4840F00B281ADBFCF9 /* RainbowOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */; };
 		42AE13BB68F193890259458B /* WeekLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3700DE7959B6C0D6FF3AC4 /* WeekLedger.swift */; };
 		434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3513E47DA1D5F509870816E5 /* Assets.xcassets */; };
+		43F8A0C5BD2530B8C30C96C3 /* StartTimerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132A2ABF0A9E705D0EFF8B71 /* StartTimerControl.swift */; };
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
@@ -101,6 +103,7 @@
 		AA9F79CECE202D70CD384BC5 /* TodoSplitAdvisor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E0707E6404CEFF1ACF7CA3 /* TodoSplitAdvisor.swift */; };
 		AAF010948F1402F65848DC40 /* ScheduleDensityAppSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */; };
 		AB94E876F923B0260638DBC7 /* BoltOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FABE19E747350732827346E /* BoltOnboarding.swift */; };
+		ABF88E20214A13027B3D66A6 /* StartTimerControlIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF201C300CA9D8A22F45494C /* StartTimerControlIntent.swift */; };
 		AD981FACEF11D81D10379ADC /* TimerWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F614A05FBCBB13C8329E44 /* TimerWidgetSync.swift */; };
 		ADA02A8205E892FA137A4C81 /* ScheduleShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC3A6E73464097A7DEA1703 /* ScheduleShareView.swift */; };
 		AFD23F567B79F354DD08A2A9 /* DataVault.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D97CF58280A9DF67BC1FFB /* DataVault.swift */; };
@@ -196,6 +199,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		00B5172A4B24520504AA5CFD /* UpcomingTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingTimer.swift; sourceTree = "<group>"; };
 		02ED93348E9639FBA7A41339 /* RainbowFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowFlags.swift; sourceTree = "<group>"; };
 		03D120CAE185088043839C7E /* CalendarMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMirror.swift; sourceTree = "<group>"; };
 		059E898FF838C334CC121045 /* CloudSyncLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncLog.swift; sourceTree = "<group>"; };
@@ -204,6 +208,7 @@
 		09B3C5C88B51879319DBF42F /* RoutineOccurrence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineOccurrence.swift; sourceTree = "<group>"; };
 		0CFC92E1EC2EDB41AF3C0551 /* TimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerWidget.swift; sourceTree = "<group>"; };
 		0EA73C01E663B2E7E1A5958A /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		132A2ABF0A9E705D0EFF8B71 /* StartTimerControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTimerControl.swift; sourceTree = "<group>"; };
 		13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppSpec.swift; sourceTree = "<group>"; };
 		14BACF1AC9F509E8472DF879 /* DeletionMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletionMark.swift; sourceTree = "<group>"; };
 		1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
@@ -302,6 +307,7 @@
 		CB3700DE7959B6C0D6FF3AC4 /* WeekLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekLedger.swift; sourceTree = "<group>"; };
 		CCF1AED059EB801B4CC2F8E2 /* TodoWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TodoWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD1FA07D33E72BA4A2A63C80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CF201C300CA9D8A22F45494C /* StartTimerControlIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTimerControlIntent.swift; sourceTree = "<group>"; };
 		CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksStore.swift; sourceTree = "<group>"; };
 		D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowWidgetSnapshot.swift; sourceTree = "<group>"; };
 		D5A142C0D69AD26EDCB2B3CC /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -493,6 +499,7 @@
 				83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */,
 				9E0573DC980E40DA752B45DC /* ScheduleDensityAppRoadmap.swift */,
 				13E850A87FF524ED084AC7A2 /* ScheduleDensityAppSpec.swift */,
+				CF201C300CA9D8A22F45494C /* StartTimerControlIntent.swift */,
 				A16BC621C70AAA92574B4346 /* todo.md */,
 				07CE1BC99974DCBAC37DB2CE /* Adapters */,
 				A470A9D09715721C28BEFEC5 /* Models */,
@@ -524,6 +531,7 @@
 				A79039642EBC6F76CFDD72F2 /* PrivacyInfo.xcprivacy */,
 				44EAF9C0B39BD23B314B2ED9 /* QuickTodoControl.swift */,
 				BEB91B4FD6D2CC7AA5218EDE /* RainbowWidget.swift */,
+				132A2ABF0A9E705D0EFF8B71 /* StartTimerControl.swift */,
 				D5DD9039B947CF18D06EE58E /* TimerLiveActivity.swift */,
 				0CFC92E1EC2EDB41AF3C0551 /* TimerWidget.swift */,
 				B68A9B5FCF4CBFCC699EEEA5 /* TodoWidget.entitlements */,
@@ -585,6 +593,7 @@
 				F1DFC2876EC6FE5666C43486 /* TodoTree.swift */,
 				C54CBC40BDBC7F3EEC31FF92 /* TodoWhen.swift */,
 				E0F72F9EC4C2F155B4FA16D8 /* TodoWidgetSnapshot.swift */,
+				00B5172A4B24520504AA5CFD /* UpcomingTimer.swift */,
 				9CB08C0B861AECD504249346 /* UsageDiary.swift */,
 				4747C1E1ED9B853FF08FBEDC /* UsageStats.swift */,
 				CB3700DE7959B6C0D6FF3AC4 /* WeekLedger.swift */,
@@ -842,6 +851,7 @@
 				B0B763F0084160170439EBAA /* QuickTodoControl.swift in Sources */,
 				8FADD23CE3778B0B1FEFF630 /* RainbowWidget.swift in Sources */,
 				72FAB23FF49C0E818FAFEA09 /* RainbowWidgetSnapshot.swift in Sources */,
+				43F8A0C5BD2530B8C30C96C3 /* StartTimerControl.swift in Sources */,
 				758E38D85933E25FBD2459B5 /* TimerActivity.swift in Sources */,
 				6076A47FED34D08F1CAB6CC4 /* TimerLiveActivity.swift in Sources */,
 				5FEC567E03FF858D81E7EE6D /* TimerWidget.swift in Sources */,
@@ -942,6 +952,7 @@
 				ADA02A8205E892FA137A4C81 /* ScheduleShareView.swift in Sources */,
 				6074452A987673BB86C0113C /* ScheduleViewModel.swift in Sources */,
 				DB9522ED4B779C6E4C23F2D6 /* SettingsView.swift in Sources */,
+				ABF88E20214A13027B3D66A6 /* StartTimerControlIntent.swift in Sources */,
 				1B996BF59FB33CBFD7560DCC /* StatisticsView.swift in Sources */,
 				71F5A2674E96D4DD833C1FC2 /* SyncSettingsManager.swift in Sources */,
 				A07E7A83F9447DFA25E69989 /* TaskTimer.swift in Sources */,
@@ -966,6 +977,7 @@
 				B7BEF1D970CE012AA5EAEE10 /* TodoWhen.swift in Sources */,
 				3C892AB3EA9C8B5F384E8630 /* TodoWidgetSnapshot.swift in Sources */,
 				2902DFF21E90EA3C9ACE62F1 /* TodoWidgetSync.swift in Sources */,
+				2A1F1163C4648F6F0F5B2B26 /* UpcomingTimer.swift in Sources */,
 				6C735DD50198CBD25526823D /* UsageAnalytics.swift in Sources */,
 				F31D109E371509E59E3AAA81 /* UsageDiary.swift in Sources */,
 				F6775F776DC09C9C978F3F6D /* UsageReporting.swift in Sources */,

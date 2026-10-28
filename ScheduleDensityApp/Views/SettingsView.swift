@@ -15,11 +15,6 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Bindable var viewModel: ScheduleViewModel
 
-    @State private var monthsToShow: Int
-    @State private var sleepHours: Double
-    @State private var showPastEvents: Bool
-    @State private var showWeekBlocksPlans: Bool
-    @State private var fillSpanToEndDate: Bool
     @State private var isSyncEnabled: Bool
     @State private var showingSyncAlert = false
     @State private var syncAlertTitle = ""
@@ -65,6 +60,7 @@ struct SettingsView: View {
     @State private var purchases = PurchaseManager.shared
     /// 타이머 설정을 보여주고 바꾸는 자리 (→ TaskTimer.swift).
     @State private var timer = TaskTimer.shared
+    @AppStorage(UpcomingTimer.enabledKey) private var showsUpcoming = false
     @State private var paywallFeature: ProFeature?
     /// 구독 중인 사람이 평생으로 옮겨 가는 시트 (→ LeeoGraduation).
     @State private var showingGraduation = false
@@ -86,11 +82,6 @@ struct SettingsView: View {
 
     init(viewModel: ScheduleViewModel) {
         self.viewModel = viewModel
-        _monthsToShow = State(initialValue: viewModel.monthsToShow)
-        _sleepHours = State(initialValue: viewModel.sleepHoursPerDay)
-        _showPastEvents = State(initialValue: viewModel.showPastEvents)
-        _showWeekBlocksPlans = State(initialValue: viewModel.showWeekBlocksPlans)
-        _fillSpanToEndDate = State(initialValue: viewModel.fillSpanToEndDate)
         _isSyncEnabled = State(initialValue: SyncSettingsManager.shared.isSyncEnabled)
     }
 
@@ -441,10 +432,10 @@ struct SettingsView: View {
                     Divider()
 
                     // 지나간 이벤트 보기 토글
-                    Toggle(isOn: $showPastEvents) {
+                    Toggle(isOn: Binding(get: { viewModel.showPastEvents }, set: viewModel.updateShowPastEvents)) {
                         HStack(spacing: 8) {
                             Image(systemName: "clock.arrow.circlepath")
-                                .foregroundColor(showPastEvents ? .blue : .secondary)
+                                .foregroundColor(viewModel.showPastEvents ? .blue : .secondary)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("지나간 이벤트 보기")
                                     .font(.headline)
@@ -457,10 +448,10 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     // WeekBlocks(무지개 공방) 계획 표시 토글
-                    Toggle(isOn: $showWeekBlocksPlans) {
+                    Toggle(isOn: Binding(get: { viewModel.showWeekBlocksPlans }, set: viewModel.updateShowWeekBlocksPlans)) {
                         HStack(spacing: 8) {
                             Image(systemName: "macwindow")
-                                .foregroundColor(showWeekBlocksPlans ? .blue : .secondary)
+                                .foregroundColor(viewModel.showWeekBlocksPlans ? .blue : .secondary)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("무지개 공방 계획 표시")
                                     .font(.headline)
@@ -473,10 +464,10 @@ struct SettingsView: View {
                     .padding(.vertical, 4)
 
                     // 종료일까지 이어 칠하기 토글
-                    Toggle(isOn: $fillSpanToEndDate) {
+                    Toggle(isOn: Binding(get: { viewModel.fillSpanToEndDate }, set: viewModel.updateFillSpanToEndDate)) {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.down.to.line")
-                                .foregroundColor(fillSpanToEndDate ? .blue : .secondary)
+                                .foregroundColor(viewModel.fillSpanToEndDate ? .blue : .secondary)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("종료일까지 이어서 표시")
                                     .font(.headline)
@@ -556,7 +547,7 @@ struct SettingsView: View {
                 } header: {
                     Text("일정")
                 } footer: {
-                    Text(showPastEvents
+                    Text(viewModel.showPastEvents
                         ? "모든 일정(지나간 일정 포함)을 표시합니다."
                         : "종료일이 오늘 이전인 일정은 자동으로 숨겨집니다.")
                 }
@@ -596,6 +587,16 @@ struct SettingsView: View {
                                          set: { timer.setShowsLiveActivity($0) })) {
                         Label("다이나믹 아일랜드에 보기", systemImage: "capsule.fill")
                             // 새 타이머의 기본값이다. 이번 것만은 타이머 시트에서 바꾼다.
+                    }
+
+                    // 일정 15분 전에 다음 일정을 띄운다 (→ UpcomingTimer). 예약해서 띄우는 길은 iOS 26부터다.
+                    if UpcomingTimer.isSupported {
+                        Toggle(isOn: $showsUpcoming) {
+                            Label("일정 15분 전에 띄우기", systemImage: "clock.badge")
+                        }
+                        .onChange(of: showsUpcoming) {
+                            UpcomingTimer.reschedule(ScheduleClockStore.shared.slots)
+                        }
                     }
 
                 } header: {
@@ -971,16 +972,16 @@ struct SettingsView: View {
 
                 Group {
                     Section {
-                    Stepper(value: $monthsToShow, in: 1...12) {
+                    Stepper(value: Binding(get: { viewModel.monthsToShow }, set: viewModel.updateMonthsToShow), in: 1...12) {
                         HStack {
                             Text("표시 기간")
                             Spacer()
-                            Text("오늘 ± \(monthsToShow)개월")
+                            Text("오늘 ± \(viewModel.monthsToShow)개월")
                                 .foregroundColor(.secondary)
                         }
                     }
 
-                    Text("오늘을 기준으로 과거 \(monthsToShow)개월, 미래 \(monthsToShow)개월의 일정을 표시합니다.")
+                    Text("오늘을 기준으로 과거 \(viewModel.monthsToShow)개월, 미래 \(viewModel.monthsToShow)개월의 일정을 표시합니다.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } header: {
@@ -991,7 +992,7 @@ struct SettingsView: View {
                     HStack {
                         Text("총 표시 일수")
                         Spacer()
-                        Text("약 \(monthsToShow * 60)일")
+                        Text("약 \(viewModel.monthsToShow * 60)일")
                             .foregroundColor(.secondary)
                     }
                 } header: {
@@ -999,11 +1000,11 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Stepper(value: $sleepHours, in: 0...24, step: 0.5) {
+                    Stepper(value: Binding(get: { viewModel.sleepHoursPerDay }, set: viewModel.updateSleepHours), in: 0...24, step: 0.5) {
                         HStack {
                             Text("평균 수면시간")
                             Spacer()
-                            Text(String(format: String(localized: "%.1f시간"), sleepHours))
+                            Text(String(format: String(localized: "%.1f시간"), viewModel.sleepHoursPerDay))
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -1163,15 +1164,10 @@ struct SettingsView: View {
             .navigationTitle("설정")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("취소") {
-                        dismiss()
-                    }
-                }
-
+                // 바꾸는 즉시 저장된다 — 고르고 나서 '저장'을 또 누르게 하지 않는다.
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("저장") {
-                        saveSettings()
+                    Button("완료") {
+                        dismiss()
                     }
                 }
             }
@@ -1256,15 +1252,6 @@ struct SettingsView: View {
             Text("5개의 샘플 일정을 추가하시겠습니까?\n(프로젝트 A, B, 출장, 교육 프로그램, 컨퍼런스)")
         }
         .confirmsEventDeletion($deletionRequest)
-    }
-
-    private func saveSettings() {
-        viewModel.updateMonthsToShow(monthsToShow)
-        viewModel.updateSleepHours(sleepHours)
-        viewModel.updateShowPastEvents(showPastEvents)
-        viewModel.updateShowWeekBlocksPlans(showWeekBlocksPlans)
-        viewModel.updateFillSpanToEndDate(fillSpanToEndDate)
-        dismiss()
     }
 
     // MARK: - iCloud Sync Functions

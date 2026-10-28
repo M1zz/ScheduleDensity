@@ -55,6 +55,10 @@ struct TaskTimerAttributes: ActivityAttributes {
     /// 무엇에 붙은 타이머인가 (→ `TaskTimer.TimerTarget.token`).
     /// 같은 일을 두 번 시작하려 할 때 이미 떠 있는 것을 알아보는 데 쓴다.
     var token: String
+
+    /// 일정 15분 전에 미리 띄운 것인가 (→ UpcomingTimer). 세는 타이머가 아니라 **시작까지** 센다.
+    static let upcomingPrefix = "upcoming:"
+    var isUpcoming: Bool { token.hasPrefix(Self.upcomingPrefix) }
 }
 
 // MARK: - 표기
