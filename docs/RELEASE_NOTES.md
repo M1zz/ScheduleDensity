@@ -1,5 +1,199 @@
 # 릴리즈 노트
 
+## 1.1.16
+
+### 앱스토어 (한국어)
+
+```
+제어센터에서 바로 타이머를 켤 수 있어요
+일정 15분 전에 다음 일정을 미리 보여 줘요
+설정을 바꾸면 그 자리에서 저장돼요
+```
+
+### 앱스토어 (English)
+
+```
+Start a timer right from Control Center
+See what's next 15 minutes ahead
+Settings now save as you change them
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+Start a timer right from Control Centre
+See what's next 15 minutes ahead
+Settings now save as you change them
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+在控制中心就能直接開始計時
+行程開始前 15 分鐘先顯示下一個行程
+設定一改就自動儲存
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+在控制中心就能直接开始计时
+日程开始前 15 分钟提前显示下一个日程
+设置一改就自动保存
+```
+
+### 앱스토어 (일본어)
+
+```
+コントロールセンターからすぐタイマー開始
+予定の15分前に次の予定をお知らせ
+設定は変えたその場で保存されます
+```
+
+### 앱스토어 (독일어)
+
+```
+Timer direkt im Kontrollzentrum starten
+Nächster Termin 15 Minuten vorher
+Einstellungen werden sofort gesichert
+```
+
+### 앱스토어 (스페인어)
+
+```
+Temporizador desde el centro de control
+Ve lo siguiente 15 minutos antes
+Los ajustes se guardan al instante
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Minuteur depuis le centre de contrôle
+Le prochain événement 15 min avant
+Les réglages s'enregistrent aussitôt
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Avvia il timer dal Centro di Controllo
+Il prossimo impegno 15 minuti prima
+Le impostazioni si salvano subito
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Inicie o timer pela Central de Controle
+Veja o próximo compromisso 15 min antes
+Os ajustes são salvos na hora
+```
+
+### 앱스토어 (러시아어)
+
+```
+Таймер прямо из Пункта управления
+Следующее дело за 15 минут до начала
+Настройки сохраняются сразу
+```
+
+### 앱스토어 (체코어)
+
+```
+Časovač rovnou z ovládacího centra
+Další událost 15 minut předem
+Nastavení se ukládá hned
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Start en timer direkte fra Kontrolcenter
+Se næste aftale 15 minutter før
+Indstillinger gemmes med det samme
+```
+
+### 앱스토어 (그리스어)
+
+```
+Χρονόμετρο από το Κέντρο ελέγχου
+Το επόμενο 15 λεπτά νωρίτερα
+Οι ρυθμίσεις αποθηκεύονται αμέσως
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Ajastin suoraan Ohjauskeskuksesta
+Seuraava tapahtuma 15 min etukäteen
+Asetukset tallentuvat heti
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Mulai timer langsung dari Pusat Kontrol
+Jadwal berikutnya 15 menit sebelumnya
+Pengaturan langsung tersimpan
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Start en timer rett fra Kontrollsenter
+Se neste avtale 15 minutter før
+Innstillinger lagres med en gang
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Start een timer in het bedieningspaneel
+Je volgende afspraak 15 minuten vooraf
+Instellingen worden meteen bewaard
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Minutnik prosto z centrum sterowania
+Następne wydarzenie 15 minut wcześniej
+Ustawienia zapisują się od razu
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Starta en timer direkt i Kontrollcenter
+Se nästa händelse 15 minuter innan
+Inställningar sparas direkt
+```
+
+### 앱스토어 (태국어)
+
+```
+เริ่มจับเวลาจากศูนย์ควบคุมได้ทันที
+แสดงกำหนดการถัดไปก่อน 15 นาที
+การตั้งค่าบันทึกทันทีที่เปลี่ยน
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Zamanlayıcı artık Denetim Merkezi'nde
+Sıradaki etkinlik 15 dakika önceden
+Ayarlar değiştirdiğiniz anda kaydedilir
+```
+
+### 앱스토어 (베트남어)
+
+```
+Bật hẹn giờ ngay từ Trung tâm điều khiển
+Xem trước lịch tiếp theo 15 phút
+Cài đặt được lưu ngay khi thay đổi
+```
+
 ## 1.1.15
 
 ### 앱스토어 (한국어)
