@@ -81,6 +81,26 @@
       "productID": "com.example.ScheduleDensityApp.pro.graduate",
       "referenceName": "졸업 Pro 평생",
       "type": "NonConsumable"
+    },
+    {
+      "displayPrice": "17.99",
+      "familyShareable": false,
+      "internalID": "8956E019-3C81-43A0-A0B5-22FB17A3D9DC",
+      "localizations": [
+        {
+          "description": "다른 사람에게 Pro 를 선물합니다. 코드를 보내 주세요.",
+          "displayName": "무지개 Pro 선물",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "Give Pro to someone else with a gift code.",
+          "displayName": "Gift Rainbow Pro",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.example.ScheduleDensityApp.gift.pro",
+      "referenceName": "Gift Pro",
+      "type": "Consumable"
     }
   ],
   "settings": {

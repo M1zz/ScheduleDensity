@@ -227,6 +227,11 @@ struct SettingsView: View {
                     Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. Plus와 Pro는 연 구독과 평생 중에서 고릅니다.")
                 }
 
+                // Pro 선물하기 · 선물 코드 넣기 — '내 버전' 바로 아래 (→ GiftRows).
+                if let gift = purchases.store.gift {
+                    GiftRows(gift: gift, isPro: purchases.tier == .pro)
+                }
+
                 Group {
                     // 일정 관리 섹션
                     Section {
@@ -1701,6 +1706,53 @@ extension SettingsView {
             userRecordName = id.recordName
         } catch {
             userRecordName = String(localized: "가져오지 못함")
+        }
+    }
+}
+
+// MARK: - 선물
+
+/// 설정의 **선물** 줄. '내 버전' 칸 바로 아래에 선다.
+///
+/// - 보내기: Pro 를 다른 사람에게 보낸다(보내는 사람은 소모성 선물 상품을 산다).
+/// - 받기: 받은 코드를 넣는다. 받는 사람은 Pro 평생(`ProEntitlement.proLifetimeID`)을 산 것과 같아진다.
+///
+/// ⚠️ 상품이 App Store 에서 와야 줄이 선다(`isAvailable`). App Store Connect 에 상품을 만들기 전에
+///    이 빌드가 나가도 눌러도 안 되는 줄은 보이지 않는다. 단, 이미 결제했거나 주고받은 선물이 있는
+///    사람에게는 늘 보인다 — 상품을 못 불러온 날에도 코드를 다시 보거나 문의까지 갈 길이 있어야 한다.
+/// ⚠️ 문구는 LeeoKit 카탈로그(`LeeoGiftText`)에 있다 — 24개 언어가 이미 들어 있다.
+/// ⚠️ 엔진(`LeeoGiftStore`)은 따로 관찰해야 한다. 상품은 앱이 뜬 뒤에 오는데 `PurchaseManager` 는
+///    그 변화를 옮겨 적지 않는다.
+private struct GiftRows: View {
+    @ObservedObject var gift: LeeoGiftStore
+    let isPro: Bool
+    @State private var showSupport = false
+
+    var body: some View {
+        if gift.isAvailable || gift.pendingCount > 0 || !gift.sentGifts.isEmpty || gift.redeemed != nil {
+            Section {
+                NavigationLink {
+                    // 선물이 안 되면 결제 번호·코드를 붙여 문의하게 한다 — 막힌 사람을 놓치지 않게.
+                    LeeoGiftView<ScheduleDensityAppSpec>(gift: gift, showsRedeemLink: false,
+                                                         onContactSupport: { showSupport = true })
+                } label: {
+                    Label(LeeoGiftText.sendEntry, systemImage: "gift.fill")
+                }
+                // 이미 Pro 인 사람은 받을 것이 없다 — 받은 적이 있으면 그 기록을 볼 수 있게만 남긴다.
+                if !isPro || gift.redeemed != nil {
+                    NavigationLink {
+                        LeeoGiftRedeemView<ScheduleDensityAppSpec>(gift: gift,
+                                                                   onContactSupport: { showSupport = true })
+                    } label: {
+                        Label(LeeoGiftText.redeemEntry, systemImage: "giftcard")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSupport) {
+                // LeeoFeedbackView 는 자기 NavigationStack 과 닫기 단추를 갖고 있다 — 감싸지 않는다.
+                LeeoFeedbackView<ScheduleDensityAppSpec>(initialType: .bug, extraInfo: gift.supportLines,
+                                                         initialCategory: .purchase)
+            }
         }
     }
 }

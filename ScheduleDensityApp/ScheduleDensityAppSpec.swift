@@ -68,7 +68,15 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
                 // 반드시 어긋나므로 `ProFeature.sold` 하나에서 받아 온다.
                 proOnly: Set(ProFeature.sold.map(\.rawValue))),
             // 위젯과 함께 읽는 그 통. 권한 한 줄이 실제로 여기 적힌다.
-            cacheSuiteName: ProEntitlement.appGroupID))
+            cacheSuiteName: ProEntitlement.appGroupID,
+            // Pro 선물하기. 보내는 사람은 소모성 선물 상품을 사고, 받는 사람은 Pro 평생을 산 것과 같아진다.
+            // 선물 기록은 피드백과 같은 허브 컨테이너의 공개 DB 에 둔다. entitlements 에 이미 있다.
+            // ⚠️ 선물 상품은 productIDs · entitlementIDs 에 넣지 않는다. 넣으면 선물을 산 사람이 Pro 가 된다.
+            gift: LeeoGiftConfig(
+                productID: ProEntitlement.giftProductID,
+                grantsProductID: ProEntitlement.proLifetimeID,
+                containerIdentifier: "iCloud.com.Ysoup.FeedbackHub"
+            )))
 
     /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
     enum Gate {

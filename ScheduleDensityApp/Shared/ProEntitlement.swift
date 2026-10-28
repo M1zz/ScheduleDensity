@@ -139,6 +139,11 @@ enum ProEntitlement {
     /// Pro 월 구독. **판매는 멈췄고 권한은 그대로다.** 구독자는 끝날 때까지 Pro.
     static let monthlyID = "com.example.ScheduleDensityApp.pro.monthly"
 
+    /// Pro 선물 (소모성). 산 사람이 아니라 **코드를 받은 사람**에게 Pro 평생(`proLifetimeID`)을 연다(`LeeoGiftStore`).
+    /// ⚠️ `productIDs` · `tierByProduct` 에 넣지 않는다 — 넣으면 선물을 산 사람이 Pro 가 되고, 결제가 코드 없이 끝난다.
+    /// App Store Connect 에 소모성 상품으로 만들어야 뜬다. 없으면 설정의 선물 줄이 숨는다.
+    static let giftProductID = "com.example.ScheduleDensityApp.gift.pro"
+
     /// 페이월이 불러올 상품. 판매를 멈춘 월 구독은 없다.
     ///
     /// ⚠️ 언제나 평생 패스 상품은 여기 넣지 않는다. 패스는 `LeeoForeverPass` 가 따로 판정한다.
