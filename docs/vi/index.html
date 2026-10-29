@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire — lịch tuần với những bước 5 phút</title>
-<meta name="description" content="Ứng dụng iOS tô màu đậm dần khi các sự kiện chồng lên nhau. Xem tuần này kín đến đâu và chia nhỏ việc cần làm để lúc nào cũng có việc làm được trong năm phút. Hướng dẫn, câu hỏi thường gặp, quyền riêng tư, liên hệ." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Nhìn qua là biết tuần này nặng đến đâu, và luôn có sẵn một bước làm được trong năm phút." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: lịch tuần đậm màu theo độ dày việc và chia nhỏ công việc</title>
+  <meta name="description" content="Việc chồng càng nhiều, màu càng đậm, tuần kín lịch hiện ra từ trước. Chia việc lớn thành bước, bước làm được trong 5 phút luôn ở trên cùng. Miễn phí.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: lịch tuần đậm màu theo độ dày việc và chia nhỏ công việc">
+  <meta property="og:description" content="Việc chồng càng nhiều, màu càng đậm, tuần kín lịch hiện ra từ trước. Chia việc lớn thành bước, bước làm được trong 5 phút luôn ở trên cùng. Miễn phí.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/vi/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/vi/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">Chuyển đến nội dung</a>
+  <header class="bar">
+    <a class="brand" href="../vi/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Ngôn ngữ</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Thấy trước tuần kín lịch,<br>không để 5 phút trôi mất</h1>
+        <p class="lead">Việc càng chồng lên nhau, cầu vồng càng đậm. Chia việc lớn thành từng bước, khi có khoảng trống thì bước làm được ngay đã chờ sẵn trên cùng.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">Tải miễn phí trên App Store</a><a class="try" href="#try">Tự tay phân loại thử ↓</a></div>
+        <p class="muted small">Cầu vồng, chia nhỏ việc, bộ hẹn giờ và đồng bộ với Mac đều miễn phí.</p>
+      </div>
+      <div class="plain"><img src="../img/vi/01-rainbow.jpg" alt="Thấy trước tuần kín lịch, không để 5 phút trôi mất" width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">Ứng dụng iOS</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Sự kiện càng chồng lên nhau, màu càng đậm. Nhìn qua là biết tuần này nặng đến đâu, rồi bắt đầu từ việc bạn thực sự làm được ngay bây giờ.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Tự tay phân loại thử</h2>
+      <p class="muted">"Báo cáo quý 3" đã được chia thành năm bước. Chọn một bước rồi thử đổi thời gian hoặc lật câu trả lời của hai câu hỏi. Chỉ bước nào được trả lời "Có" cả hai mới là mảnh, thứ bạn nhặt lên làm trong 5 phút.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Tự tay phân loại thử&quot;, &quot;lead&quot;: &quot;\&quot;Báo cáo quý 3\&quot; đã được chia thành năm bước. Chọn một bước rồi thử đổi thời gian hoặc lật câu trả lời của hai câu hỏi. Chỉ bước nào được trả lời \&quot;Có\&quot; cả hai mới là mảnh, thứ bạn nhặt lên làm trong 5 phút.&quot;, &quot;task&quot;: &quot;Báo cáo quý 3&quot;, &quot;steps&quot;: [&quot;Lấy số liệu tháng 3&quot;, &quot;Mở tệp quý trước&quot;, &quot;Viết phần mở đầu&quot;, &quot;Vẽ biểu đồ theo khu vực&quot;, &quot;Gửi cho Mina&quot;], &quot;total&quot;: &quot;Tổng&quot;, &quot;time&quot;: &quot;Thời gian&quot;, &quot;min&quot;: &quot;{n} phút&quot;, &quot;hr&quot;: &quot;{h} giờ&quot;, &quot;hrmin&quot;: &quot;{h} giờ {m} phút&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Có bắt đầu được ngay mà không cần khởi động không?&quot;, &quot;why&quot;: &quot;Việc cần nạp lại ngữ cảnh sẽ tiêu hết cả mảnh chỉ để khởi động.&quot;}, {&quot;q&quot;: &quot;Có xong trong năm phút không?&quot;, &quot;why&quot;: &quot;Việc chưa xong để lại dư âm, ăn mòn cả quãng thời gian tiếp theo.&quot;}], &quot;yes&quot;: &quot;Có&quot;, &quot;no&quot;: &quot;Không&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Mảnh&quot;, &quot;short&quot;: &quot;Quãng ngắn&quot;, &quot;block&quot;: &quot;Quãng&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Đây là một mảnh. Khi có năm phút, hãy làm nó.&quot;, &quot;short&quot;: &quot;Đây là một quãng ngắn. Bạn phải ngồi xuống, nhưng làm một lần là xong.&quot;, &quot;block&quot;: &quot;Đây là một quãng. Hãy đặt vào khoảng thời gian bạn đã giữ riêng.&quot;}, &quot;pickNow&quot;: &quot;Có 5 phút thì làm&quot;, &quot;nothing&quot;: &quot;Chưa có&quot;, &quot;reset&quot;: &quot;Quay về đánh giá của ứng dụng&quot;, &quot;note&quot;: &quot;Bản dùng thử chỉ dựa vào thời gian để trả lời trước. Trong ứng dụng, câu trả lời đầu tiên đến từ thời gian bạn đặt, và từ chữ bạn viết nếu viết bằng tiếng Hàn hoặc tiếng Anh. Chỉ cần sửa khi nó sai.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Có tuần nào lịch trông trống mà vẫn thấy hụt hơi?</h2>
+      <p>Lịch chỉ cho biết có việc hay không, không cho biết việc chồng lên nhau bao nhiêu lớp. Ba hạn chót dồn vào cùng một tuần, thường phải bước vào tuần đó mới nhận ra. Còn 5 phút rảnh ở giữa thì trôi qua trong lúc lướt danh sách việc cần làm. Rainbow of Desire vẽ một tuần thành ô lưới, tô đậm theo mức chồng việc và tách riêng những bước làm được trong khoảng trống.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Cầu vồng — xem độ dày đặc, không chỉ từng mục</h2>
-  <p class="lead">Lịch chỉ cho biết một việc đã được xếp hay chưa. Cầu vồng cho bạn thấy bao nhiêu việc đang chồng lên nhau.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Chồng càng nhiều, màu càng đậm</h3>
-      <p>Càng nhiều việc dồn vào cùng những ngày, ô càng đậm. Chỉ cần cuộn qua là thấy tuần nào đang quá tải.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Cả khoảng thời gian, không chỉ một ngày</h3>
-      <p>Đặt ngày bắt đầu và kết thúc, đường sẽ kéo dài suốt khoảng đó. Ngày thực sự làm hiện đậm, ngày còn lại hiện nhạt — vì việc chưa xong vẫn giữ chân bạn.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Chỗ nào còn trống</h3>
-      <p>Ứng dụng gợi ý những ngày vẫn còn chỗ sau khi thêm sự kiện mới — chứ không đơn giản là ngày trống nhất.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Hai câu hỏi là đủ phân loại</h2>
+        <p>Khi chia việc lớn thành từng bước, mỗi bước được hỏi hai điều. Có bắt đầu ngay được mà không cần khởi động không? Có làm xong trọn vẹn trong năm phút không?<br>Chỉ bước nào được trả lời có cả hai mới là mảnh. Ứng dụng trả lời trước dựa trên thời gian và chữ bạn viết, bạn chỉ lật lại khi nó sai.</p>
+      </div>
+      <div class="plain"><img src="../img/vi/03-two-questions.jpg" alt="Hai câu hỏi là đủ phân loại" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Việc cần làm — chia nhỏ đến khi có bước vừa năm phút</h2>
-  <p class="lead">Danh sách mãi không vơi thường không phải do lười. Mà là vẫn còn điều gì đó chắn đường trước khi bạn bắt tay vào.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Có khoảng trống thì chỉ cần nhìn trên cùng</h2>
+        <p>Vuốt việc cần làm sang phải để gắn tia chớp, nó sẽ vượt lên đứng trên cùng. Không cần đọc hết danh sách, thứ làm được ngay đã nằm ở đó.<br>Các bước có chờ nhau hay không, mỗi nhóm chỉ quyết một lần. Theo thứ tự thì bước đầu tiên chưa xong lên trước, tùy ý thì mảnh nào nhặt được ngay lên trước.</p>
+      </div>
+      <div class="plain"><img src="../img/vi/02-list.jpg" alt="Có khoảng trống thì chỉ cần nhìn trên cùng" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Chia việc lớn thành các bước. Mỗi bước được phân loại bằng hai câu hỏi, chỉ hai thôi.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Không mở ứng dụng vẫn thấy</h2>
+        <p>Bộ hẹn giờ đếm đến đúng lúc sự kiện kết thúc, thời gian còn lại hiện cả trên Dynamic Island và Màn hình khóa.<br>Tiện ích Màn hình chính và Màn hình khóa hiện việc đang làm, thứ làm được trong 5 phút và cầu vồng của tuần này. (Tiện ích thuộc Pro)</p>
+      </div>
+      <div class="plain"><img src="../img/vi/05-widgets.jpg" alt="Không mở ứng dụng vẫn thấy" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">Câu hỏi một</td><td class="v">Có bắt đầu được ngay mà không cần khởi động không? Nếu phải nhớ lại mình đã làm tới đâu, năm phút rảnh sẽ tiêu hết vào việc khởi động.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">Câu hỏi hai</td><td class="v">Có xong trong năm phút không? Việc bỏ dở sẽ theo bạn sang cả giờ tiếp theo.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Bắt đầu trong ba bước</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Kẻ lịch</h3><p>Chạm và giữ ô trống ở ngày bắt đầu, chạm thêm ngày kết thúc, một đường sẽ hiện trên cầu vồng.</p></li>
+<li class="card"><span class="n">2</span><h3>Chia việc lớn</h3><p>Chạm vào việc cần làm, ghi các bước và chọn thời gian. Ứng dụng tự trả lời trước hai câu hỏi.</p></li>
+<li class="card"><span class="n">3</span><h3>Rảnh thì nhìn trên cùng</h3><p>Các mảnh và việc gắn tia chớp gom lên trên cùng, không phải chờ lượt.</p></li></ol>
+    </section>
 
-  <p><b>Chỉ bước nào trả lời có cho cả hai mới là một mảnh</b> — thứ bạn làm ngay khi có năm phút rảnh. Còn lại là quãng, dành cho khoảng thời gian bạn giữ riêng. Ứng dụng tự trả lời trước dựa trên chữ và thời gian bạn ghi; bạn chỉ cần sửa khi nó sai.</p>
+    <section class="reveal" id="commands">
+      <h2>Những từ bạn sẽ gặp trên màn hình</h2>
+      <div class="card table">
+        <dl><div><dt>Ô đậm · ô nhạt</dt><dd>ngày thật sự bắt tay vào làm, và phần còn lại cho tới ngày kết thúc</dd></div><div><dt>Cả hàng kín ô</dt><dd>ngày phải xoay nhiều việc cùng lúc, một việc trễ là cả ngày trễ theo</dd></div><div><dt>Mảnh</dt><dd>có cho cả hai câu hỏi; bước nhặt lên làm khi có 5 phút</dd></div><div><dt>Quãng ngắn</dt><dd>không cần khởi động nhưng không xong trong một mảnh; ngồi xuống làm một lèo</dd></div><div><dt>Quãng</dt><dd>cần khởi động hoặc từ 45 phút trở lên; đặt vào thời gian đã giữ riêng</dd></div><div><dt>Tia chớp</dt><dd>dấu "làm ngay" do bạn tự gắn, vượt lên trên cùng</dd></div><div><dt>Theo thứ tự · Tùy ý</dt><dd>các bước có chờ nhau không, quyết một lần cho mỗi nhóm</dd></div><div><dt>Sổ thời gian</dt><dd>bảng tổng kết tuần: việc còn lại, thời gian lấy lại và lúc nghỉ ngơi, ghi riêng không cộng dồn</dd></div></dl>
+      </div>
+      <p class="muted">Thời gian cộng dồn từ dưới lên: thời gian của việc lớn là tổng thời gian các bước.</p>
+    </section>
 
-  <h3 class="sub">Vì sao chia như vậy</h3>
-  <ul class="plain">
-    <li>Mười hai lần năm phút không bằng một giờ. Mảnh thời gian không cộng dồn thành tổng — chi phí chuyển việc ngốn mất phần chênh lệch — nên những bước vừa một khoảng trống phải được đánh dấu riêng ngay từ đầu.</li>
-    <li>Quay lại trạng thái tập trung sâu mất trung bình khoảng hai mươi ba phút. Cái giá không nằm ở lần bị ngắt, mà ở việc dựng lại ngữ cảnh.</li>
-    <li>Bắt đầu tốn sức hơn làm tiếp. Bước đầu tiên càng xa tầm tay, việc càng bị trì hoãn lâu.</li>
-    <li>Việc chân tay là ngoại lệ — chia nhỏ vẫn cộng dồn được, nên không bị chia theo kích cỡ.</li>
-  </ul>
 
-  <h3 class="sub">Thứ tự, mỗi nhóm đặt một lần</h3>
-  <p>Các bước hoặc chờ nhau, hoặc không, và bạn chỉ quyết định một lần cho cả nhóm thay vì nối từng bước phụ thuộc. <b>Theo thứ tự</b> thì bước đầu tiên chưa xong lên trên cùng; <b>Tùy ý</b> thì mảnh nào làm được ngay sẽ lên trên cùng. Nhấn giữ rồi kéo một bước để đổi chỗ trong cùng nhóm.</p>
+    <section class="reveal" id="pricing">
+      <h2>Những gì cần để sống trọn hôm nay đều miễn phí</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Miễn phí</h3>
+          <ul><li>Cầu vồng (lưới mật độ lịch)</li><li>Chia việc thành bước và hai câu hỏi</li><li>Tia chớp, thứ tự các bước</li><li>Bộ hẹn giờ (Dynamic Island · Màn hình khóa)</li><li>Đồng bộ với ứng dụng Rainbow Craft trên Mac qua iCloud</li><li>Sổ thời gian của 2 tuần gần nhất</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: thống kê sự kiện, Sổ thời gian xa hơn 2 tuần</li><li>Pro: toàn bộ Plus cùng tiện ích Màn hình chính và Màn hình khóa</li><li>Pro: nhập từ Lịch và hiển thị liên tục</li><li>Pro: chia sẻ lịch (chỉ xem)</li><li>Pro: mở luôn Rainbow Craft Pro trên Mac</li></ul>
+          <p class="muted">Mỗi gói có thể mua theo năm hoặc trả một lần dùng trọn đời</p>
+        </div>
+      </div>
+      <p class="muted">Chỉ thu phí phần nhìn lại các tuần đã qua và phần đưa dữ liệu ra ngoài ứng dụng. Ai đã mua Pro trước đây hoặc đang dùng gói tháng thì hiện vẫn là Pro.</p>
+    </section>
 
-  <h3 class="sub">Tia chớp</h3>
-  <p>Vuốt một dòng sang phải để gắn Tia chớp — dấu riêng của bạn cho biết việc này làm được ngay bây giờ. Dòng có Tia chớp được chen lên đầu danh sách, nên khi có khoảng trống bạn chỉ cần nhìn lên đó, không phải dò cả danh sách. Vuốt lần nữa để gỡ dấu.</p>
+    <section class="reveal" id="faq">
+      <h2>Câu hỏi thường gặp</h2>
+      <div class="faq"><details><summary>Có cần tài khoản hay đăng nhập iCloud không?</summary><p>Dùng một mình thì không. Không cần đăng ký, mọi thứ lưu trong máy. Muốn đồng bộ với thiết bị khác hoặc ứng dụng trên Mac, hay dùng tính năng chia sẻ thì cần đăng nhập iCloud.</p></details>
+<details><summary>Ứng dụng trả lời sai hai câu hỏi.</summary><p>Chạm vào bước rồi đổi giữa Có và Không. Câu trả lời bạn tự chọn luôn được ưu tiên hơn đánh giá của ứng dụng. Muốn giao lại cho ứng dụng thì chạm Quay về đánh giá của ứng dụng. Bước chưa có thời gian sẽ không được tính là mảnh, vì ứng dụng chưa biết nó có xong trong 5 phút không.</p></details>
+<details><summary>Có xem chung với người khác được không?</summary><p>Bạn có thể gửi liên kết mời để chia sẻ lịch ở chế độ chỉ xem (Pro), hoặc mở một danh sách việc cần làm mà bạn và người được mời cùng đọc, cùng sửa. Ai có liên kết cũng tham gia được, nên chỉ gửi cho người sẽ dùng chung. Tính năng này không liên quan đến Chia sẻ trong gia đình của Apple.</p></details>
+<details><summary>Sự kiện trong ứng dụng Lịch có hiện không?</summary><p>Sự kiện từ những lịch bạn chọn sẽ hiện trên cầu vồng và màn hình theo ngày (Pro). Ứng dụng chỉ đọc, không ghi gì vào Lịch.</p></details>
+<details><summary>Có đánh dấu xong từ tiện ích được không?</summary><p>Tiện ích chỉ để xem. Chạm vào sẽ mở thẳng màn hình việc cần làm, bạn đánh dấu trong ứng dụng nhé.</p></details>
+<details><summary>Ứng dụng trên Mac có phải mua riêng không?</summary><p>Rainbow Craft là một ứng dụng macOS riêng trên Mac App Store. Cùng tài khoản iCloud thì việc cần làm và kế hoạch tuần tự đồng bộ, việc đồng bộ không mất phí.</p></details>
+<details><summary>Việc cần làm ghi từ trước còn nguyên không?</summary><p>Còn nguyên. Việc cần làm, các bước và thời gian đã đặt đều được giữ. Nhãn điều kiện bắt đầu cũ sẽ được ứng dụng đánh giá lại bằng hai câu hỏi.</p></details>
+<details><summary>Nội dung tôi ghi được lưu ở đâu?</summary><p>Không có máy chủ. Dữ liệu chỉ nằm trên máy và iCloud riêng của bạn, nhà phát triển không xem được. Không dùng mã định danh quảng cáo hay vị trí, chỉ gửi thống kê sử dụng ẩn danh không nhận ra bạn, có thể tắt trong Cài đặt.</p></details>
+<details><summary>Hủy gói đăng ký thế nào?</summary><p>Vào ứng dụng Cài đặt &gt; Tài khoản Apple &gt; Đăng ký. Nếu không hủy ít nhất 24 giờ trước khi hết kỳ, gói sẽ tự gia hạn với giá cũ. Gói trọn đời chỉ thanh toán một lần.</p></details></div>
+      <p class="contact">Gặp khó khăn hay thấy điều gì lạ, hãy viết cho <a href="mailto:leeo@kakao.com">leeo@kakao.com</a>. Trong Cài đặt của ứng dụng cũng có mục liên hệ.</p>
+    </section>
 
-  <h3 class="sub">Ngoài ra</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Tiện ích Màn hình chính và Màn hình khóa</h3>
-      <p>Có bốn tiện ích — Việc cần làm, Tia chớp, Cầu vồng và Hẹn giờ. Tiện ích Tia chớp chỉ hiện những gì làm được trong năm phút ngay lúc này.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Thêm từ bất cứ đâu</h3>
-      <p>Chia sẻ từ ứng dụng khác, ứng dụng này sẽ hiện trong bảng chia sẻ. Chỉ một cửa sổ nhỏ là đủ để biến nó thành việc cần làm.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Theo bạn sang Mac</h3>
-      <p>Rainbow Craft, ứng dụng macOS, dùng chung tài khoản iCloud. Ghi ở bên này là bên kia cũng thấy.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Xem tuần này kín đến đâu<br>trước khi bước vào</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">Tải miễn phí trên App Store</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Chia sẻ</h2>
-  <p class="lead">Chỉ gửi liên kết cho những người cần.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Sự kiện (chỉ xem)</h3>
-      <p>Gửi liên kết mời, người nhận sẽ xem được sự kiện của bạn nhưng không sửa được.</p>
-    </div>
-    <div class="card">
-      <h3>Việc cần làm (cùng nhau)</h3>
-      <p>Bạn và những người được mời cùng đọc, cùng ghi một danh sách chung. Tính năng này không liên quan đến Chia sẻ trong gia đình của Apple.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Ai có liên kết mời đều có thể tham gia, nên chỉ gửi cho người bạn muốn mời. Cần đăng nhập iCloud để chia sẻ.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Ngôn ngữ"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi">Suomi</a>
+<a href="../id/" hreflang="id" lang="id">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi" aria-current="page">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Chính sách quyền riêng tư</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Bắt đầu</h2>
-  <ol class="steps">
-    <li><b>Vẽ một sự kiện</b><span>Nhấn giữ ô trống ở ngày bắt đầu, rồi nhấn giữ ngày kết thúc. Đặt tiêu đề, chọn những ngày trong tuần bạn thực sự làm và số giờ mỗi ngày.</span></li>
-    <li><b>Ghi việc cần làm</b><span>Gõ vào dòng trống rồi nhấn Return. Chỉ vậy thôi.</span></li>
-    <li><b>Chia nhỏ việc lớn</b><span>Mở dòng đó và ghi các bước theo đúng thứ tự công việc diễn ra. Ứng dụng sẽ cho biết bước nào là mảnh, bước nào là quãng.</span></li>
-    <li><b>Có năm phút thì làm một mảnh</b><span>Việc làm được ngay luôn nằm trên cùng danh sách. Bạn không cần đọc phần còn lại.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Câu hỏi thường gặp</h2>
-
-  <details>
-    <summary>Có bắt buộc đăng nhập iCloud không?</summary>
-    <p>Nếu chỉ dùng một mình thì không — mọi thứ được lưu trên thiết bị. Bạn cần iCloud để đồng bộ với thiết bị khác hoặc ứng dụng trên Mac, và để chia sẻ.</p>
-  </details>
-
-  <details>
-    <summary>Ứng dụng có tiếng Việt không?</summary>
-    <p>Có. Ứng dụng hỗ trợ 23 ngôn ngữ, trong đó có tiếng Việt, và tự hiển thị theo ngôn ngữ của thiết bị. Để đổi ngôn ngữ riêng cho ứng dụng này, hãy vào Cài đặt iOS, chọn Rainbow of Desire, rồi chọn Ngôn ngữ.</p>
-  </details>
-
-  <details>
-    <summary>Nếu ứng dụng đánh giá sai một bước thì sao?</summary>
-    <p>Vuốt bước đó sang trái và tự trả lời hai câu hỏi. Câu trả lời của bạn được ưu tiên hơn phỏng đoán của ứng dụng và sẽ giữ nguyên như vậy. Ứng dụng chỉ đọc chữ bạn ghi, nên thường đoán sai về công việc của người khác — điều đó là bình thường.</p>
-  </details>
-
-  <details>
-    <summary>Vì sao việc chưa ghi thời gian không bao giờ thành mảnh?</summary>
-    <p>Vì không có gì cho biết nó xong được trong năm phút, mà danh sách này chỉ có giá trị khi những gì nằm trong đó thực sự sẵn sàng. Hãy ghi thời gian — chẳng hạn mười lăm phút — và nó sẽ được phân loại đúng.</p>
-  </details>
-
-  <details>
-    <summary>Có thể đánh dấu xong ngay trên tiện ích không?</summary>
-    <p>Chưa được — tiện ích hiện chỉ để xem. Chạm vào tiện ích là màn hình Việc cần làm mở ra ngay.</p>
-  </details>
-
-  <details>
-    <summary>Phần nào phải trả phí?</summary>
-    <p>Phần cốt lõi hoàn toàn miễn phí: Cầu vồng, chia nhỏ việc, hai câu hỏi và thứ tự bước. Rainbow Pro mở khóa năm tính năng bổ sung: tiện ích Màn hình chính và Màn hình khóa, nhập từ Lịch, chia sẻ sự kiện, thống kê sự kiện và Sổ thời gian. Bạn chọn gói năm (miễn phí tuần đầu), gói tháng hoặc gói trọn đời thanh toán một lần. Dùng cùng Mac thì miễn phí.</p>
-  </details>
-
-  <details>
-    <summary>Có phải mua riêng ứng dụng cho Mac không?</summary>
-    <p>Rainbow Craft là một ứng dụng macOS riêng. Khi dùng cùng tài khoản iCloud, việc cần làm và kế hoạch tuần tự đồng bộ giữa hai bên.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Quyền riêng tư</h2>
-  <p class="lead">Không có máy chủ. Những gì bạn ghi chỉ nằm trên thiết bị và trong iCloud của riêng bạn.</p>
-  <div class="note">
-    Không có mã định danh quảng cáo, không dùng vị trí, không cần đăng ký. Ứng dụng chỉ gửi thống kê sử dụng ẩn danh không thể nhận diện bạn, và bạn có thể tắt trong Cài đặt.
-    Chi tiết có trong <a href="privacy.html">chính sách quyền riêng tư</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Có gì mới</h2>
-  <p class="lead">Mọi phiên bản đều được ghi lại.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Xem ghi chú phát hành</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Hỗ trợ</h2>
-    <p class="lead" style="margin-bottom:0">Nếu có gì vướng víu hay trông không đúng, hãy cho mình biết. Trong Cài đặt của ứng dụng cũng có mục liên hệ.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Chính sách quyền riêng tư</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

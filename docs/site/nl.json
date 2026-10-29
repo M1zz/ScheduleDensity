@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: weekplanner die volle weken kleurt en taken opknipt",
+  "description": "Hoe meer overlap, hoe donkerder de kleur, zo zie je een volle week vooraf. Knip grote taken op; wat in vijf minuten past, staat bovenaan. Gratis.",
+  "hero": {
+    "headline": "Zie de volle week aankomen.\nBenut de vijf minuten die je hebt.",
+    "lead": "Hoe meer je werk overlapt, hoe dieper de regenboog kleurt. Knip een grote taak op in stappen, en de stap die je in een gaatje kunt doen staat al bovenaan klaar.",
+    "cta": "Gratis in de App Store",
+    "note": "De regenboog, taken opknippen, de timer en synchroniseren met de Mac zijn gratis."
+  },
+  "demo": {
+    "title": "Probeer het zelf",
+    "lead": "‘Kwartaalrapport Q3’ is al in vijf stappen opgeknipt. Kies een stap, verander de duur of draai een antwoord om. Alleen een stap met twee keer ja wordt een fragment dat je in vijf minuten oppakt.",
+    "task": "Kwartaalrapport Q3",
+    "steps": [
+      "Cijfers van maart ophalen",
+      "Bestand van vorig kwartaal openen",
+      "Inleiding schrijven",
+      "Grafiek per regio maken",
+      "Naar Mina sturen"
+    ],
+    "total": "Totaal",
+    "time": "Duur",
+    "min": "{n} min",
+    "hr": "{h} uur",
+    "hrmin": "{h} uur {m} min",
+    "questions": [
+      {
+        "q": "Kun je beginnen zonder opstarttijd?",
+        "why": "Werk waarvoor je de context opnieuw moet laden, kost het hele fragment alleen aan opstarten."
+      },
+      {
+        "q": "Is het binnen vijf minuten klaar?",
+        "why": "Onafgemaakt werk laat restanten achter die aan de volgende brok tijd vreten."
+      }
+    ],
+    "yes": "Ja",
+    "no": "Nee",
+    "kinds": {
+      "fragment": "Fragment",
+      "short": "Korte brok",
+      "block": "Brok"
+    },
+    "verdicts": {
+      "fragment": "Dit is een fragment. Komen er vijf minuten vrij, pak het dan op.",
+      "short": "Dit is een korte brok. Je moet ervoor gaan zitten, maar het is in één zit af.",
+      "block": "Dit is een brok. Zet het in tijd die je hebt vrijgehouden."
+    },
+    "pickNow": "Vijf minuten over?",
+    "nothing": "Nog niets",
+    "reset": "Terug naar het oordeel van de app",
+    "note": "Deze demo antwoordt alleen op basis van de duur. In de app komt het eerste antwoord uit de duur die je instelt, en ook uit je woorden als je in het Koreaans of Engels schrijft. Je past het alleen aan als het niet klopt."
+  },
+  "problem": {
+    "title": "Ziet je agenda er leeg uit, terwijl je die week amper adem krijgt?",
+    "text": "Een agenda laat zien of er iets gepland staat, niet hoeveel er bovenop elkaar ligt. Dat drie deadlines in dezelfde week vallen, merk je vaak pas als je erin zit, en de vijf minuten tussendoor gaan op aan je takenlijst doorlezen. Rainbow of Desire tekent je week als raster, kleurt overlap donkerder en zet de stappen voor een gaatje alvast apart."
+  },
+  "features": [
+    {
+      "title": "Twee vragen en het is duidelijk",
+      "text": "Knip je een grote taak op, dan krijgt elke stap twee vragen. Kun je beginnen zonder opstarttijd? Is het binnen vijf minuten klaar?\nAlleen twee keer ja maakt een fragment. De app antwoordt eerst op basis van de duur en je woorden, jij draait het alleen om als het niet klopt.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Even tijd? Kijk alleen bovenaan",
+      "text": "Veeg een taak naar rechts voor een bliksem, en hij springt vooraan in de rij. Je hoeft niet de hele lijst te lezen om iets te vinden.\nOf stappen op elkaar wachten, bepaal je één keer per groep. Op volgorde zet de eerste open stap vooraan, Willekeurig het fragment dat je nu kunt pakken.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Zichtbaar zonder de app te openen",
+      "text": "De timer telt af tot het moment dat een afspraak eindigt, en de resterende tijd staat ook op het Dynamic Island en het toegangsscherm.\nWidgets voor beginscherm en toegangsscherm tonen waar je mee bezig bent, wat in vijf minuten past en de regenboog van deze week. (Widgets zijn Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "In drie stappen aan de slag",
+    "items": [
+      {
+        "title": "Teken een afspraak",
+        "text": "Houd een leeg vak op de startdag ingedrukt en tik op de einddag. Er verschijnt een lijn op de regenboog."
+      },
+      {
+        "title": "Knip grote taken op",
+        "text": "Tik op een taak, schrijf de stappen op en kies een duur. De twee vragen beantwoordt de app vooraf."
+      },
+      {
+        "title": "Kijk bovenaan bij een gaatje",
+        "text": "Fragmenten en taken met een bliksem staan bovenaan, zonder op hun beurt te wachten."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Wat je op het scherm tegenkomt",
+    "rows": [
+      [
+        "Donker vak · licht vak",
+        "dagen waarop je er echt aan werkt, en de rest tot de einddatum"
+      ],
+      [
+        "Een volle rij",
+        "een dag met zoveel tegelijk dat één uitloop de hele dag opschuift"
+      ],
+      [
+        "Fragment",
+        "twee keer ja; pak het op als je vijf minuten hebt"
+      ],
+      [
+        "Korte brok",
+        "geen opstarttijd, maar niet klaar in een fragment; in één zit af"
+      ],
+      [
+        "Brok",
+        "vraagt opstarttijd of duurt 45 minuten of langer; zet het in vrijgehouden tijd"
+      ],
+      [
+        "Bliksem",
+        "je eigen ‘nu meteen’-markering; springt naar boven"
+      ],
+      [
+        "Op volgorde · Willekeurig",
+        "of stappen op elkaar wachten, één keer per groep ingesteld"
+      ],
+      [
+        "Tijdlogboek",
+        "de weekafrekening: wat overblijft, teruggewonnen tijd en herstel, apart gehouden en nooit opgeteld"
+      ]
+    ],
+    "note": "Tijd telt van onder naar boven op: de duur van een taak is de som van haar stappen."
+  },
+  "pricing": {
+    "title": "Wat je voor vandaag nodig hebt, is gratis",
+    "free": {
+      "name": "Gratis",
+      "items": [
+        "De regenboog (raster met drukte per dag)",
+        "Taken opknippen in stappen, en de twee vragen",
+        "Bliksem en stapvolgorde",
+        "Timer op het Dynamic Island en het toegangsscherm",
+        "Synchroniseren met Rainbow Craft op de Mac via iCloud",
+        "Tijdlogboek van de afgelopen twee weken"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: planningsstatistieken en het tijdlogboek verder terug dan twee weken",
+        "Pro: alles van Plus, plus widgets voor beginscherm en toegangsscherm",
+        "Pro: importeren uit Agenda en blijvend tonen",
+        "Pro: je planning delen, alleen lezen",
+        "Pro: ontgrendelt ook Rainbow Craft Pro op de Mac"
+      ],
+      "note": "Elk als jaarabonnement of eenmalige aankoop voor altijd"
+    },
+    "note": "Je betaalt alleen voor terugkijken op eerdere weken en voor dingen buiten de app brengen. Heb je Pro eerder gekocht of loopt je maandabonnement nog, dan ben je nog steeds Pro."
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "items": [
+      {
+        "q": "Heb ik een account of iCloud nodig?",
+        "a": "Niet als je alleen werkt. Er is geen registratie en alles blijft op je apparaat. Voor andere apparaten, de Mac-app of delen log je in bij iCloud."
+      },
+      {
+        "q": "De app heeft een vraag verkeerd beantwoord.",
+        "a": "Tik op de stap en zet Ja of Nee om. Je eigen antwoord gaat altijd voor. Met ‘Terug naar het oordeel van de app’ geef je het weer uit handen. Een stap zonder duur telt niet als fragment, omdat de app niet weet of hij binnen vijf minuten klaar is."
+      },
+      {
+        "q": "Kan ik met iemand delen?",
+        "a": "Met een uitnodigingslink deel je je planning alleen-lezen (Pro), of open je een takenlijst die jij en de genodigden samen lezen en bewerken. Iedereen met de link kan meedoen, dus stuur hem alleen naar wie je bedoelt. Het staat los van Delen met gezin van Apple."
+      },
+      {
+        "q": "Zie ik mijn agenda-afspraken?",
+        "a": "Afspraken uit de agenda’s die je kiest verschijnen op de regenboog en in je dagoverzicht (Pro). De app leest alleen en schrijft niets terug."
+      },
+      {
+        "q": "Kan ik afvinken vanuit een widget?",
+        "a": "Widgets zijn alleen om te bekijken. Tik erop en je taken gaan direct open, daar vink je af."
+      },
+      {
+        "q": "Moet ik de Mac-app apart kopen?",
+        "a": "Rainbow Craft is een losse macOS-app in de Mac App Store. Met hetzelfde iCloud-account synchroniseren taken en weekplannen vanzelf, en dat kost niets."
+      },
+      {
+        "q": "Staan mijn oudere taken er nog?",
+        "a": "Ja. Taken, stappen en ingestelde duur blijven bewaard. Labels van de oude startvoorwaarden beoordeelt de app opnieuw met de twee vragen."
+      },
+      {
+        "q": "Waar worden mijn gegevens bewaard?",
+        "a": "Er is geen server. Alles staat op je apparaat en in je eigen iCloud, waar de ontwikkelaar niet bij kan. Geen advertentie-ID, geen locatie. De app stuurt alleen anonieme gebruiksstatistieken die niet naar jou te herleiden zijn, en die zet je uit in Instellingen."
+      },
+      {
+        "q": "Hoe zeg ik een abonnement op?",
+        "a": "In Instellingen > Apple Account > Abonnementen. Zonder opzegging uiterlijk 24 uur voor het einde van de periode wordt het tegen dezelfde prijs verlengd. Voor altijd is een eenmalige betaling."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Zie hoe vol de week is\nvoordat je erin stapt",
+    "cta": "Gratis in de App Store"
+  },
+  "ui": {
+    "skip": "Naar de inhoud",
+    "languages": "Taal",
+    "privacy": "Privacybeleid",
+    "contact": "Loop je vast of klopt er iets niet? Mail naar {email}. Ook in de instellingen van de app vind je een contactoptie."
+  }
+}

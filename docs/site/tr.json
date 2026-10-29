@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: yük arttıkça koyulaşan haftalık planlayıcı ve görev bölme",
+  "description": "İşler üst üste bindikçe renk koyulaşır, yoğun haftayı önceden görürsünüz. Büyük işleri adımlara bölersiniz. Temel özellikler ücretsizdir.",
+  "hero": {
+    "headline": "Yoğun haftayı önceden görün.\nBoş beş dakikayı kaçırmayın.",
+    "lead": "İşler üst üste bindikçe gökkuşağı koyulaşır. Büyük bir işi adımlara bölün, bir boşlukta yapabileceğiniz adım zaten en üstte bekliyor olsun.",
+    "cta": "App Store'dan ücretsiz indirin",
+    "note": "Gökkuşağı, iş bölme, zamanlayıcı ve Mac ile eşzamanlama ücretsizdir."
+  },
+  "demo": {
+    "title": "Kendiniz deneyin",
+    "lead": "\"3. Çeyrek Raporu\" beş adıma bölünmüş durumda. Bir adım seçin, süresini değiştirin ya da bir yanıtı tersine çevirin. Yalnızca iki soruya da evet alan adım, beş dakikada yapılacak bir parça olur.",
+    "task": "3. Çeyrek Raporu",
+    "steps": [
+      "Mart rakamlarını çıkar",
+      "Geçen çeyreğin dosyasını aç",
+      "Girişi yaz",
+      "Bölgelere göre grafik çiz",
+      "Mina'ya gönder"
+    ],
+    "total": "Toplam",
+    "time": "Süre",
+    "min": "{n} dk",
+    "hr": "{h} sa",
+    "hrmin": "{h} sa {m} dk",
+    "questions": [
+      {
+        "q": "Isınmadan başlayabilir misiniz?",
+        "why": "Bağlamı yeniden yüklemenizi gerektiren bir iş, parçanın tamamını ısınmaya harcar."
+      },
+      {
+        "q": "Beş dakika içinde biter mi?",
+        "why": "Bitmemiş iş, sonraki odak süresini de kemiren bir kalıntı bırakır."
+      }
+    ],
+    "yes": "Evet",
+    "no": "Hayır",
+    "kinds": {
+      "fragment": "Parça",
+      "short": "Kısa odak süresi",
+      "block": "Odak süresi"
+    },
+    "verdicts": {
+      "fragment": "Bu bir parça. Beş dakika açıldığında bunu ele alın.",
+      "short": "Bu kısa bir odak süresi. Oturmanız gerekir ama tek oturuşta biter.",
+      "block": "Bu bir odak süresi işi. Koruduğunuz bir zamana koyun."
+    },
+    "pickNow": "Beş dakikanız mı var?",
+    "nothing": "Henüz yok",
+    "reset": "Uygulamanın yanıtına dön",
+    "note": "Bu deneme yalnızca süreye bakarak yanıt verir. Uygulamada ilk yanıt belirlediğiniz süreden, Korece ya da İngilizce yazarsanız sözcüklerinizden de gelir. Yalnızca yanıldığında düzeltirsiniz."
+  },
+  "problem": {
+    "title": "Takvim boş görünüyor ama hafta yine de nefesinizi mi kesiyor?",
+    "text": "Takvim bir şeyin planlanıp planlanmadığını söyler, üstüne ne kadar yük bindiğini söylemez. Üç teslim tarihinin aynı haftaya düştüğünü genellikle o haftanın içindeyken fark edersiniz; aradaki boş beş dakika da yapılacaklar listesini okumakla geçer. Rainbow of Desire haftanızı bir ızgara olarak çizer, çakışan yerleri koyulaştırır ve boşluğa sığan adımları ayrıca ayırır."
+  },
+  "features": [
+    {
+      "title": "İki soru, her şey netleşir",
+      "text": "Büyük bir işi böldüğünüzde her adıma iki soru sorulur. Isınmadan başlayabilir misiniz? Beş dakika içinde biter mi?\nYalnızca iki evet onu bir parça yapar. Uygulama süreye ve sözcüklere bakarak önce yanıtlar, siz yalnızca yanlışsa çevirirsiniz.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Boşluk mu çıktı? Sadece en üste bakın",
+      "text": "Bir işi sağa kaydırıp şimşek ekleyin, sırayı atlayıp en üste geçsin. Bütün listeyi okumanıza gerek kalmaz.\nAdımların birbirini bekleyip beklemediğini her grup için bir kez belirlersiniz. Sırayla seçeneği bitmemiş ilk adımı, Sırasız seçeneği şimdi alabileceğiniz parçayı öne çıkarır.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Uygulamayı açmadan görünür",
+      "text": "Zamanlayıcı etkinliğin bittiği ana kadar sayar; kalan süre Dynamic Island'da ve Kilitli Ekran'da da görünür.\nAna Ekran ve Kilitli Ekran araç takımları üzerinde çalıştığınız işi, beş dakikaya sığanları ve bu haftanın gökkuşağını gösterir. (Araç takımları Pro'ya dahildir)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Üç adımda başlayın",
+    "items": [
+      {
+        "title": "Etkinliği çizin",
+        "text": "Başlangıç gününde boş bir hücreye basılı tutun, bitiş gününe dokunun. Gökkuşağında bir çizgi belirir."
+      },
+      {
+        "title": "Büyük işleri bölün",
+        "text": "Bir işe dokunun, adımlarını yazın ve süre seçin. İki soruyu önce uygulama yanıtlar."
+      },
+      {
+        "title": "Boşlukta en üste bakın",
+        "text": "Parçalar ve şimşekli işler sıra beklemeden en üstte toplanır."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Ekranda karşılaşacaklarınız",
+    "rows": [
+      [
+        "Koyu hücre · açık hücre",
+        "gerçekten üzerinde çalıştığınız günler ve bitiş tarihine kadar kalan süre"
+      ],
+      [
+        "Dolu bir satır",
+        "aynı anda o kadar çok iş dönen bir gün ki tek bir gecikme bütün günü kaydırır"
+      ],
+      [
+        "Parça",
+        "iki soruya da evet; beş dakikanız olduğunda alın"
+      ],
+      [
+        "Kısa odak süresi",
+        "ısınma gerekmez ama bir parçada bitmez; tek oturuşta tamamlanır"
+      ],
+      [
+        "Odak süresi",
+        "ısınma ister ya da 45 dakika ve üzeri sürer; ayırdığınız zamana koyun"
+      ],
+      [
+        "Şimşek",
+        "kendi \"hemen şimdi\" işaretiniz; en üste çıkar"
+      ],
+      [
+        "Sırayla · Sırasız",
+        "adımların birbirini bekleyip beklemediği, grup başına bir kez belirlenir"
+      ],
+      [
+        "Geri Kazanım Defteri",
+        "haftanın dökümü: kalanlar, geri kazanılan zaman ve dinlenme, ayrı tutulur ve asla toplanmaz"
+      ]
+    ],
+    "note": "Süre aşağıdan yukarı toplanır: bir işin süresi adımlarının toplamıdır."
+  },
+  "pricing": {
+    "title": "Bugün için gereken her şey ücretsiz",
+    "free": {
+      "name": "Ücretsiz",
+      "items": [
+        "Gökkuşağı (program yoğunluğu ızgarası)",
+        "İşleri adımlara bölme ve iki soru",
+        "Şimşek ve adım sırası",
+        "Dynamic Island ve Kilitli Ekran'da zamanlayıcı",
+        "Mac'teki Rainbow Craft ile iCloud üzerinden eşzamanlama",
+        "Son iki haftanın Geri Kazanım Defteri"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: etkinlik istatistikleri ve iki haftadan eski defter",
+        "Pro: Plus'ın tamamı ve Ana Ekran ile Kilitli Ekran araç takımları",
+        "Pro: Takvim'den içe aktarma ve sürekli gösterme",
+        "Pro: etkinlik paylaşımı, yalnızca görüntüleme",
+        "Pro: Mac'teki Rainbow Craft Pro'nun da kilidini açar"
+      ],
+      "note": "Her biri yıllık abonelik ya da tek seferlik ömür boyu satın alma olarak"
+    },
+    "note": "Yalnızca geçmiş haftalara dönüp bakmak ve verileri uygulamanın dışına taşımak için ödeme yaparsınız. Daha önce Pro aldıysanız ya da aylık aboneliğiniz sürüyorsa hâlâ Pro'sunuz."
+  },
+  "faq": {
+    "title": "Sık sorulan sorular",
+    "items": [
+      {
+        "q": "Hesap ya da iCloud gerekli mi?",
+        "a": "Tek başınıza kullanıyorsanız hayır. Kayıt yok, her şey cihazda kalır. Başka cihazlar, Mac uygulaması ya da paylaşım için iCloud'a giriş yapın."
+      },
+      {
+        "q": "Uygulama bir soruyu yanlış yanıtladı.",
+        "a": "Adıma dokunup Evet ile Hayır arasında geçiş yapın. Kendi yanıtınız her zaman önce gelir. Kararı geri vermek için \"Uygulamanın yanıtına dön\"e dokunun. Süresi girilmemiş bir adım parça sayılmaz, çünkü uygulama beş dakikada bitip bitmeyeceğini bilemez."
+      },
+      {
+        "q": "Başkalarıyla paylaşabilir miyim?",
+        "a": "Davet bağlantısıyla etkinliklerinizi yalnızca görüntülenecek şekilde paylaşabilir (Pro) ya da davet ettiğiniz kişilerle birlikte okuyup düzenlediğiniz bir yapılacaklar listesi açabilirsiniz. Bağlantıyı alan herkes katılabilir, bu yüzden yalnızca doğru kişilere gönderin. Apple'ın Aile Paylaşımı ile ilgisi yoktur."
+      },
+      {
+        "q": "Takvim etkinliklerim görünür mü?",
+        "a": "Seçtiğiniz takvimlerdeki etkinlikler gökkuşağında ve gün görünümünde yer alır (Pro). Uygulama yalnızca okur, takvime hiçbir şey yazmaz."
+      },
+      {
+        "q": "Araç takımından işaretleyebilir miyim?",
+        "a": "Araç takımları yalnızca görüntüleme içindir. Birine dokunduğunuzda görevler hemen açılır, işaretlemeyi orada yapın."
+      },
+      {
+        "q": "Mac uygulaması ayrıca mı satın alınıyor?",
+        "a": "Rainbow Craft, Mac App Store'da ayrı bir macOS uygulamasıdır. Aynı iCloud hesabıyla görevler ve haftalık planlar kendiliğinden eşzamanlanır, bunun bir ücreti yoktur."
+      },
+      {
+        "q": "Eski görevlerim duruyor mu?",
+        "a": "Evet. Görevler, adımlar ve girdiğiniz süreler korunur. Eski başlama koşulu etiketlerini uygulama iki soruyla yeniden değerlendirir."
+      },
+      {
+        "q": "Verilerim nerede saklanıyor?",
+        "a": "Sunucu yoktur. Her şey cihazınızda ve kendi iCloud'unuzda durur, geliştirici göremez. Reklam tanımlayıcısı ve konum kullanılmaz. Uygulama yalnızca sizi tanımlamayan anonim kullanım istatistikleri gönderir; bunları Ayarlar'dan kapatabilirsiniz."
+      },
+      {
+        "q": "Aboneliği nasıl iptal ederim?",
+        "a": "Ayarlar > Apple Hesabı > Abonelikler bölümünden. Dönem bitmeden en az 24 saat önce iptal edilmezse aynı fiyatla yenilenir. Ömür boyu satın alma bir kez ödenir."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Haftanın ne kadar dolu olduğunu\niçine girmeden görün",
+    "cta": "App Store'dan ücretsiz indirin"
+  },
+  "ui": {
+    "skip": "İçeriğe geç",
+    "languages": "Dil",
+    "privacy": "Gizlilik Politikası",
+    "contact": "Takıldınız mı ya da bir şey tuhaf mı görünüyor? {email} adresine yazın. Uygulamanın ayarlarında da bir iletişim seçeneği var."
+  }
+}

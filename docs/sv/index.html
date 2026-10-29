@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire – veckoplanerare med femminuterssteg</title>
-<meta name="description" content="En iOS-app där färgen blir djupare ju mer dina händelser överlappar. Se hur full veckan är och dela upp dina uppgifter så att det alltid finns något du kan ta på fem minuter. Guide, vanliga frågor, integritet och kontakt." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Se med en blick hur tung veckan är, och ha alltid ett steg du kan ta på fem minuter." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: veckoplanerare som färgar fulla veckor och delar upp uppgifter</title>
+  <meta name="description" content="Ju mer som överlappar, desto mörkare färg: du ser den fulla veckan i förväg. Dela stora uppgifter i steg och ha de små överst. Kärnan är gratis.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: veckoplanerare som färgar fulla veckor och delar upp uppgifter">
+  <meta property="og:description" content="Ju mer som överlappar, desto mörkare färg: du ser den fulla veckan i förväg. Dela stora uppgifter i steg och ha de små överst. Kärnan är gratis.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/sv/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/sv/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">Hoppa till innehållet</a>
+  <header class="bar">
+    <a class="brand" href="../sv/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Språk</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Se den fulla veckan komma.<br>Använd de fem minuter du får.</h1>
+        <p class="lead">Ju mer dina uppgifter överlappar, desto djupare färg får regnbågen. Dela upp en stor uppgift i steg, så väntar steget du hinner i en lucka redan överst.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">Hämta gratis på App Store</a><a class="try" href="#try">Prova själv ↓</a></div>
+        <p class="muted small">Regnbågen, uppdelning av uppgifter, timern och synkning med Mac är gratis.</p>
+      </div>
+      <div class="plain"><img src="../img/sv/01-rainbow.jpg" alt="Se den fulla veckan komma. Använd de fem minuter du får." width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">iOS-app</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Färgen blir djupare ju mer dina händelser överlappar. Se med en blick hur tung veckan är, och börja med det du faktiskt kan ta tag i just nu.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Prova själv</h2>
+      <p class="muted">”Kvartalsrapport Q3” är redan uppdelad i fem steg. Välj ett steg, ändra tiden eller vänd ett svar. Bara ett steg med ja på båda frågorna blir ett ministeg som du hinner på fem minuter.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Prova själv&quot;, &quot;lead&quot;: &quot;”Kvartalsrapport Q3” är redan uppdelad i fem steg. Välj ett steg, ändra tiden eller vänd ett svar. Bara ett steg med ja på båda frågorna blir ett ministeg som du hinner på fem minuter.&quot;, &quot;task&quot;: &quot;Kvartalsrapport Q3&quot;, &quot;steps&quot;: [&quot;Ta fram marssiffrorna&quot;, &quot;Öppna förra kvartalets fil&quot;, &quot;Skriv inledningen&quot;, &quot;Gör diagram per region&quot;, &quot;Skicka till Mina&quot;], &quot;total&quot;: &quot;Totalt&quot;, &quot;time&quot;: &quot;Tid&quot;, &quot;min&quot;: &quot;{n} min&quot;, &quot;hr&quot;: &quot;{h} tim&quot;, &quot;hrmin&quot;: &quot;{h} tim {m} min&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Kan du börja utan uppstart?&quot;, &quot;why&quot;: &quot;Arbete som kräver att du kommer in i sammanhanget igen förbrukar hela ministeget på att bara komma igång.&quot;}, {&quot;q&quot;: &quot;Blir det klart inom fem minuter?&quot;, &quot;why&quot;: &quot;Ofärdigt arbete lämnar rester som äter upp nästa fokustid.&quot;}], &quot;yes&quot;: &quot;Ja&quot;, &quot;no&quot;: &quot;Nej&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Ministeg&quot;, &quot;short&quot;: &quot;Kort fokustid&quot;, &quot;block&quot;: &quot;Fokustid&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Det här är ett ministeg. När fem minuter öppnar sig, ta det.&quot;, &quot;short&quot;: &quot;Det här kräver kort fokustid. Du måste sätta dig, men det blir klart i ett enda pass.&quot;, &quot;block&quot;: &quot;Det här kräver fokustid. Lägg det i tid du har skyddat.&quot;}, &quot;pickNow&quot;: &quot;Fem minuter över?&quot;, &quot;nothing&quot;: &quot;Inget än&quot;, &quot;reset&quot;: &quot;Tillbaka till appens bedömning&quot;, &quot;note&quot;: &quot;Demon svarar bara utifrån tiden. I appen kommer första svaret från tiden du väljer, och även från dina ord om du skriver på koreanska eller engelska. Du rättar bara när den har fel.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Ser kalendern tom ut, men veckan tar ändå andan ur dig?</h2>
+      <p>En kalender visar om något är inbokat, inte hur mycket som ligger ovanpå. Att tre deadlines hamnar i samma vecka märker du ofta först mitt i den, och de fem minuterna däremellan går åt till att läsa igenom att göra-listan. Rainbow of Desire ritar veckan som ett rutnät, färgar överlapp mörkare och lägger undan stegen som passar i en lucka.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Regnbågen – se tätheten, inte posterna</h2>
-  <p class="lead">En kalender visar om något är inplanerat. Det här visar hur mycket som ligger staplat på varandra.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Mörkare där det överlappar</h3>
-      <p>Ju mer som hopar sig på samma dagar, desto mörkare blir rutorna. Bara genom att skrolla ser du vilken vecka som är för mycket.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Perioden, inte bara dagen</h3>
-      <p>Ange start och slut, så löper linjen hela vägen. Dagar du faktiskt jobbar är mörka, resten förblir bleka – för ofärdigt arbete binder dig ändå.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Där det finns utrymme</h3>
-      <p>Appen föreslår dagarna som fortfarande har marginal när den nya händelsen lagts in – inte bara de tommaste.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Två frågor, sedan är det avgjort</h2>
+        <p>När du delar upp en stor uppgift får varje steg två frågor. Kan du börja utan uppstart? Blir det klart inom fem minuter?<br>Bara två ja ger ett ministeg. Appen svarar först utifrån tid och ordval, och du vänder bara ett svar när det är fel.</p>
+      </div>
+      <div class="plain"><img src="../img/sv/03-two-questions.jpg" alt="Två frågor, sedan är det avgjort" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Uppgifter – dela upp tills något ryms på fem minuter</h2>
-  <p class="lead">En lista som aldrig krymper beror sällan på lathet. Oftast står något i vägen innan du ens kan ta i den.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>En lucka? Titta högst upp</h2>
+        <p>Svep en uppgift åt höger för att ge den en blixt, så hoppar den över kön och hamnar överst. Du behöver inte läsa hela listan.<br>Om stegen väntar på varandra bestämmer du en gång per grupp. I ordning visar första öppna steget, Valfri ordning det ministeg du kan ta nu.</p>
+      </div>
+      <div class="plain"><img src="../img/sv/02-list.jpg" alt="En lucka? Titta högst upp" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Dela upp ett stort jobb i steg. Varje steg sorteras sedan med två frågor, och bara två.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Syns utan att öppna appen</h2>
+        <p>Timern räknar ned till att händelsen tar slut, och tiden som är kvar syns även i Dynamic Island och på låsskärmen.<br>Widgetar för hem- och låsskärm visar vad du håller på med, vad som ryms på fem minuter och veckans regnbåge. (Widgetar ingår i Pro)</p>
+      </div>
+      <div class="plain"><img src="../img/sv/05-widgets.jpg" alt="Syns utan att öppna appen" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">Fråga ett</td><td class="v">Kan du börja utan uppstart? Måste du först läsa in var du slutade går hela femminutersluckan åt till uppstart och inget annat.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">Fråga två</td><td class="v">Blir det klart inom fem minuter? Arbete du lämnar halvfärdigt följer med dig in i nästa timme.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Igång i tre steg</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Rita en händelse</h3><p>Håll på en tom ruta på startdagen och tryck på slutdagen. Då står det ett streck i regnbågen.</p></li>
+<li class="card"><span class="n">2</span><h3>Dela upp stora uppgifter</h3><p>Tryck på en uppgift, skriv stegen och välj en tid. De två frågorna besvarar appen först.</p></li>
+<li class="card"><span class="n">3</span><h3>Titta överst när det blir en lucka</h3><p>Ministeg och uppgifter med blixt samlas överst utan att vänta på sin tur.</p></li></ol>
+    </section>
 
-  <p><b>Bara ett steg som får ja på båda är ett ministeg</b> – något du tar när fem minuter öppnar sig. Allt annat kräver fokustid och hör hemma i tid du har avsatt. Appen svarar först, utifrån orden och tiden du skrev; du rättar bara när den har fel.</p>
+    <section class="reveal" id="commands">
+      <h2>Det du möter på skärmen</h2>
+      <div class="card table">
+        <dl><div><dt>Mörk ruta · ljus ruta</dt><dd>dagar du faktiskt jobbar med det, och resten fram till slutdatumet</dd></div><div><dt>En full rad</dt><dd>en dag med så mycket samtidigt att en försening skjuter hela dagen</dd></div><div><dt>Ministeg</dt><dd>ja på båda frågorna; ta det när du har fem minuter</dd></div><div><dt>Kort fokustid</dt><dd>ingen uppstart, men blir inte klart i ett ministeg; görs i ett svep</dd></div><div><dt>Fokustid</dt><dd>kräver uppstart eller tar 45 minuter eller mer; lägg det i avsatt tid</dd></div><div><dt>Blixt</dt><dd>din egen ”redo nu”-markering; hoppar högst upp</dd></div><div><dt>I ordning · Valfri ordning</dt><dd>om stegen väntar på varandra, valt en gång per grupp</dd></div><div><dt>Tidsliggare</dt><dd>veckans bokslut: det som är kvar, vunnen tid och återhämtning, hållet isär och aldrig ihopräknat</dd></div></dl>
+      </div>
+      <p class="muted">Tid räknas ihop nerifrån: en uppgifts tid är summan av dess steg.</p>
+    </section>
 
-  <h3 class="sub">Varför det delas upp så här</h3>
-  <ul class="plain">
-    <li>Tolv femminutersluckor blir inte en timme. Småbitar av tid går inte att lägga ihop – bytet mellan dem äter upp skillnaden – så stegen som ryms i en lucka måste märkas ut från början.</li>
-    <li>Att komma tillbaka in i djupt arbete tar i snitt cirka tjugotre minuter. Kostnaden är inte själva avbrottet, utan att bygga upp sammanhanget igen.</li>
-    <li>Att börja kräver mer kraft än att fortsätta. Ju längre bort det första greppet ligger, desto längre skjuts det upp.</li>
-    <li>Fysiskt arbete är undantaget – det summeras även när det delas upp, så det delas inte efter storlek.</li>
-  </ul>
 
-  <h3 class="sub">Ordningen, bestämd en gång per grupp</h3>
-  <p>Antingen väntar stegen på varandra eller inte, och det bestämmer du en gång för hela gruppen i stället för att koppla ihop beroenden ett och ett. <b>I ordning</b> visar det första ofärdiga steget; <b>Valfri ordning</b> visar det ministeg du kan ta just nu. Tryck länge på ett steg och dra för att flytta det bland de andra.</p>
+    <section class="reveal" id="pricing">
+      <h2>Det du behöver i dag är gratis</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Gratis</h3>
+          <ul><li>Regnbågen (rutnät över hur fullt det är)</li><li>Uppdelning i steg och de två frågorna</li><li>Blixt och stegordning</li><li>Timer i Dynamic Island och på låsskärmen</li><li>Synkning med Rainbow Craft på Mac via iCloud</li><li>Tidsliggaren för de senaste två veckorna</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: händelsestatistik och tidsliggaren längre bak än två veckor</li><li>Pro: allt i Plus plus widgetar för hem- och låsskärm</li><li>Pro: importera från Kalender och visa löpande</li><li>Pro: dela händelser, bara läsning</li><li>Pro: låser också upp Rainbow Craft Pro på Mac</li></ul>
+          <p class="muted">Var för sig som årsprenumeration eller engångsköp för alltid</p>
+        </div>
+      </div>
+      <p class="muted">Du betalar bara för att se tillbaka på tidigare veckor och för att ta saker utanför appen. Har du köpt Pro tidigare eller har månadsprenumeration är du fortfarande Pro.</p>
+    </section>
 
-  <h3 class="sub">Blixten</h3>
-  <p>Svep en rad åt höger för att sätta en blixt – din egen markering för att det här går att göra direkt. En rad med blixt går före i kön och står överst, så när en lucka öppnar sig behöver du bara titta där i stället för att skumma listan. Svep igen för att ta bort markeringen.</p>
+    <section class="reveal" id="faq">
+      <h2>Vanliga frågor</h2>
+      <div class="faq"><details><summary>Behöver jag ett konto eller iCloud?</summary><p>Inte om du använder den själv. Det finns ingen registrering och allt stannar på enheten. För andra enheter, Mac-appen eller delning loggar du in på iCloud.</p></details>
+<details><summary>Appen svarade fel på en fråga.</summary><p>Tryck på steget och växla mellan Ja och Nej. Ditt eget svar går alltid före. Tryck på ”Tillbaka till appens bedömning” för att lämna tillbaka det. Ett steg utan tid räknas inte som ministeg, eftersom appen inte vet om det blir klart på fem minuter.</p></details>
+<details><summary>Kan jag dela med andra?</summary><p>Med en inbjudningslänk delar du dina händelser för läsning (Pro), eller öppnar en att göra-lista som du och de inbjudna läser och skriver i tillsammans. Alla med länken kan gå med, så skicka den bara till dem du menar. Det har inget med Apples Familjedelning att göra.</p></details>
+<details><summary>Syns mina kalenderhändelser?</summary><p>Händelser från kalendrarna du väljer visas i regnbågen och i dagsvyn (Pro). Appen läser bara och skriver ingenting tillbaka.</p></details>
+<details><summary>Kan jag bocka av i en widget?</summary><p>Widgetar är bara för att titta. Tryck på en så öppnas dina uppgifter direkt, och bocka av där.</p></details>
+<details><summary>Måste Mac-appen köpas separat?</summary><p>Rainbow Craft är en egen macOS-app i Mac App Store. Med samma iCloud-konto synkas uppgifter och veckoplaner av sig själva, och det kostar ingenting.</p></details>
+<details><summary>Finns mina äldre uppgifter kvar?</summary><p>Ja. Uppgifter, steg och tiderna du har satt finns kvar. Etiketter från de gamla startvillkoren bedömer appen på nytt med de två frågorna.</p></details>
+<details><summary>Var sparas mina data?</summary><p>Det finns ingen server. Allt ligger på din enhet och i din egen iCloud, där utvecklaren inte kan se det. Inget reklam-ID, ingen plats. Appen skickar bara anonym användningsstatistik som inte kan kopplas till dig och som går att stänga av i Inställningar.</p></details>
+<details><summary>Hur säger jag upp en prenumeration?</summary><p>I Inställningar &gt; Apple-konto &gt; Prenumerationer. Den förnyas till samma pris om du inte säger upp senast 24 timmar innan perioden tar slut. För alltid är en engångsbetalning.</p></details></div>
+      <p class="contact">Har du kört fast eller ser något konstigt ut? Skriv till <a href="mailto:leeo@kakao.com">leeo@kakao.com</a>. Du hittar även ett kontaktval i appens inställningar.</p>
+    </section>
 
-  <h3 class="sub">Dessutom</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Widgetar för hem- och låsskärm</h3>
-      <p>Fyra stycken – Uppgifter, Blixt, Regnbåge och Timer. Blixtwidgeten visar bara det du kan ta på fem minuter just nu.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Lägg till var som helst ifrån</h3>
-      <p>Dela från en annan app så dyker den här upp i delningsbladet. Ett litet fönster är allt som behövs för att göra det till en uppgift.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Följer med till Mac</h3>
-      <p>Rainbow Craft, macOS-appen, använder samma iCloud-konto. Skriv på ena sidan så syns det på den andra.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Se hur full veckan är<br>innan du kliver in i den</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">Hämta gratis på App Store</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Delning</h2>
-  <p class="lead">Skicka en länk bara till dem som behöver den.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Händelser (skrivskyddat)</h3>
-      <p>Skicka en inbjudningslänk så kan mottagaren se dina händelser. Hen kan inte ändra dem.</p>
-    </div>
-    <div class="card">
-      <h3>Uppgifter (tillsammans)</h3>
-      <p>Du och de du bjuder in läser och skriver i en gemensam lista. Det har inget med Apples Familjedelning att göra.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Alla som har en inbjudningslänk kan gå med, så skicka den bara till dem du vill ha med. Delning kräver inloggning på iCloud.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Språk"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi">Suomi</a>
+<a href="../id/" hreflang="id" lang="id">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv" aria-current="page">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Integritetspolicy</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Kom igång</h2>
-  <ol class="steps">
-    <li><b>Rita en händelse</b><span>Tryck länge på en tom ruta för startdagen och sedan för slutdagen. Ge den en titel, veckodagarna du faktiskt jobbar med den och timmar per dag.</span></li>
-    <li><b>Skriv en uppgift</b><span>Skriv på den tomma raden och tryck på Retur. Mer än så är det inte.</span></li>
-    <li><b>Dela upp det som är stort</b><span>Öppna raden och skriv stegen i den ordning arbetet rullar. Appen säger vilka som är ministeg och vilka som kräver fokustid.</span></li>
-    <li><b>Ta ett ministeg när fem minuter öppnar sig</b><span>Det som är redo just nu står överst i listan. Du behöver inte läsa resten.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Vanliga frågor</h2>
-
-  <details>
-    <summary>Måste jag logga in på iCloud?</summary>
-    <p>Inte om du använder appen själv – allt sparas på enheten. Du behöver iCloud för att synka med en annan enhet eller med Mac-appen, och för att använda delning.</p>
-  </details>
-
-  <details>
-    <summary>Finns appen på svenska?</summary>
-    <p>Ja. Appen finns på 23 språk och följer språket på din enhet. Vill du bara byta språk i den här appen går du till Inställningar i iOS, väljer Rainbow of Desire och sedan Språk.</p>
-  </details>
-
-  <details>
-    <summary>Vad händer om appen bedömer ett steg fel?</summary>
-    <p>Svep steget åt vänster och svara själv på de två frågorna. Ditt svar går före appens gissning och står kvar. Appen läser orden du skrev, så den har ofta fel om någon annans arbete – det är väntat.</p>
-  </details>
-
-  <details>
-    <summary>Varför blir en uppgift utan tid aldrig ett ministeg?</summary>
-    <p>Eftersom inget där säger att den blir klar på fem minuter, och listan är bara värd något om det som står i den verkligen är redo. Skriv en tid – till exempel femton minuter – så sorteras den rätt.</p>
-  </details>
-
-  <details>
-    <summary>Kan jag bocka av saker i widgeten?</summary>
-    <p>Inte än – widgetarna är skrivskyddade. Tryck på en så öppnas skärmen Uppgifter direkt.</p>
-  </details>
-
-  <details>
-    <summary>Vad kostar pengar?</summary>
-    <p>Kärnan i appen är gratis: regnbågen, uppdelning av uppgifter, de två frågorna och stegordningen. Rainbow Pro låser upp fem extrafunktioner: widgetar för hem- och låsskärm, import från Kalender, delning av händelser, händelsestatistik och tidsliggaren. Välj årsvis med en gratis första vecka, månadsvis eller ett engångsköp för livstid. Att använda appen tillsammans med Mac är gratis.</p>
-  </details>
-
-  <details>
-    <summary>Måste jag köpa Mac-appen separat?</summary>
-    <p>Rainbow Craft är en separat macOS-app. Med samma iCloud-konto följer uppgifter och veckoplaner med av sig själva.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Integritet</h2>
-  <p class="lead">Det finns ingen server. Det du skriver stannar på din enhet och i din egen iCloud.</p>
-  <div class="note">
-    Inga annonsidentifierare, ingen plats, ingen registrering. Bara anonym användningsstatistik som inte kan identifiera dig skickas, och du kan stänga av den i Inställningar.
-    Detaljerna finns i <a href="privacy.html">integritetspolicyn</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Vad som är nytt</h2>
-  <p class="lead">Varje version finns nedskriven.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Läs versionsinformationen</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Support</h2>
-    <p class="lead" style="margin-bottom:0">Om något står i vägen eller ser fel ut, säg till. Det finns också ett kontaktalternativ i appens inställningar.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Integritetspolicy</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

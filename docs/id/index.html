@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire — planner mingguan dengan langkah 5 menit</title>
-<meta name="description" content="App iOS yang warnanya makin pekat saat jadwal Anda makin bertumpuk. Lihat sepadat apa minggu Anda, lalu pecah tugas agar selalu ada yang bisa diambil dalam lima menit. Panduan, FAQ, privasi, kontak." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Lihat sekilas sepadat apa minggu Anda, dan selalu punya langkah yang bisa diambil dalam lima menit." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: perencana mingguan yang makin pekat saat padat, dan pemecah tugas</title>
+  <meta name="description" content="Makin banyak yang tumpang tindih, makin pekat warnanya, jadi minggu padat terlihat lebih awal. Pecah tugas besar jadi langkah. Fitur intinya gratis.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: perencana mingguan yang makin pekat saat padat, dan pemecah tugas">
+  <meta property="og:description" content="Makin banyak yang tumpang tindih, makin pekat warnanya, jadi minggu padat terlihat lebih awal. Pecah tugas besar jadi langkah. Fitur intinya gratis.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/id/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/id/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">Langsung ke konten</a>
+  <header class="bar">
+    <a class="brand" href="../id/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Bahasa</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Lihat minggu padat sebelum tiba.<br>Pakai lima menit yang kamu punya.</h1>
+        <p class="lead">Makin banyak pekerjaan yang bertumpuk, makin pekat warna pelanginya. Pecah tugas besar jadi langkah, dan langkah yang bisa dikerjakan di sela waktu sudah menunggu di paling atas.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">Unduh gratis di App Store</a><a class="try" href="#try">Coba pilah sendiri ↓</a></div>
+        <p class="muted small">Pelangi, memecah tugas, timer, dan sinkron dengan Mac gratis.</p>
+      </div>
+      <div class="plain"><img src="../img/id/01-rainbow.jpg" alt="Lihat minggu padat sebelum tiba. Pakai lima menit yang kamu punya." width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">App iOS</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Makin banyak jadwal bertumpuk, makin pekat warnanya. Lihat sekilas sepadat apa minggu ini, lalu mulai dari yang benar-benar bisa Anda ambil sekarang.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Coba pilah sendiri</h2>
+      <p class="muted">"Laporan Kuartal 3" sudah dipecah jadi lima langkah. Pilih satu, ubah durasinya, atau balik jawabannya. Hanya langkah yang dijawab ya untuk kedua pertanyaan yang jadi kepingan, bisa kamu ambil dalam lima menit.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Coba pilah sendiri&quot;, &quot;lead&quot;: &quot;\&quot;Laporan Kuartal 3\&quot; sudah dipecah jadi lima langkah. Pilih satu, ubah durasinya, atau balik jawabannya. Hanya langkah yang dijawab ya untuk kedua pertanyaan yang jadi kepingan, bisa kamu ambil dalam lima menit.&quot;, &quot;task&quot;: &quot;Laporan Kuartal 3&quot;, &quot;steps&quot;: [&quot;Tarik angka bulan Maret&quot;, &quot;Buka file kuartal lalu&quot;, &quot;Tulis pendahuluan&quot;, &quot;Buat grafik per wilayah&quot;, &quot;Kirim ke Mina&quot;], &quot;total&quot;: &quot;Total&quot;, &quot;time&quot;: &quot;Durasi&quot;, &quot;min&quot;: &quot;{n} mnt&quot;, &quot;hr&quot;: &quot;{h} jam&quot;, &quot;hrmin&quot;: &quot;{h} jam {m} mnt&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Bisa mulai tanpa pemanasan?&quot;, &quot;why&quot;: &quot;Pekerjaan yang mengharuskan Anda memuat ulang konteks akan menghabiskan seluruh kepingan hanya untuk pemanasan.&quot;}, {&quot;q&quot;: &quot;Selesai dalam lima menit?&quot;, &quot;why&quot;: &quot;Pekerjaan yang belum tuntas meninggalkan sisa yang menggerogoti sesi fokus berikutnya.&quot;}], &quot;yes&quot;: &quot;Ya&quot;, &quot;no&quot;: &quot;Tidak&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Kepingan&quot;, &quot;short&quot;: &quot;Sesi fokus singkat&quot;, &quot;block&quot;: &quot;Sesi fokus&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Ini kepingan. Saat ada lima menit luang, ambil.&quot;, &quot;short&quot;: &quot;Ini sesi fokus singkat. Anda harus duduk khusus, tapi selesai sekali duduk.&quot;, &quot;block&quot;: &quot;Ini sesi fokus. Taruh di waktu yang sudah Anda lindungi.&quot;}, &quot;pickNow&quot;: &quot;Punya lima menit?&quot;, &quot;nothing&quot;: &quot;Belum ada&quot;, &quot;reset&quot;: &quot;Kembali ke penilaian app&quot;, &quot;note&quot;: &quot;Demo ini menjawab hanya dari durasi. Di app, jawaban pertama datang dari durasi yang kamu atur, dan juga dari kata-katamu kalau kamu menulis dalam bahasa Korea atau Inggris. Kamu cukup mengoreksi kalau keliru.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Kalender terlihat kosong, tapi minggunya bikin sesak napas?</h2>
+      <p>Kalender hanya memberi tahu ada jadwal atau tidak, bukan seberapa banyak yang menumpuk di atasnya. Tiga tenggat jatuh di minggu yang sama sering baru ketahuan saat sudah di dalamnya, dan lima menit luang di sela-selanya habis untuk membaca ulang daftar tugas. Rainbow of Desire menggambar minggumu sebagai kisi, menggelapkan bagian yang tumpang tindih, dan menyisihkan langkah yang muat di sela waktu.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Pelangi — yang terlihat kepadatannya, bukan sekadar daftarnya</h2>
-  <p class="lead">Kalender memberi tahu apakah sesuatu sudah dijadwalkan. Pelangi menunjukkan seberapa banyak yang menumpuk di atasnya.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Makin pekat saat bertumpuk</h3>
-      <p>Makin banyak yang menumpuk di hari yang sama, makin pekat selnya. Cukup gulir, dan terlihat minggu mana yang kelewat padat.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Seluruh rentang, bukan hanya satu hari</h3>
-      <p>Tentukan awal dan akhir, maka garisnya membentang sepanjang rentang itu. Hari yang benar-benar Anda kerjakan tampil pekat, sisanya pucat — karena pekerjaan yang belum selesai tetap membebani Anda.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Di mana masih ada ruang</h3>
-      <p>App menyarankan hari yang masih punya ruang setelah jadwal baru masuk — bukan sekadar hari yang paling kosong.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Dua pertanyaan, langsung jelas</h2>
+        <p>Saat kamu memecah tugas besar, setiap langkah ditanya dua hal. Bisa mulai tanpa pemanasan? Selesai dalam lima menit?<br>Hanya yang dijawab ya dua kali yang jadi kepingan. App menjawab lebih dulu dari durasi dan kata-katamu, kamu cukup membalik jawaban yang salah.</p>
+      </div>
+      <div class="plain"><img src="../img/id/03-two-questions.jpg" alt="Dua pertanyaan, langsung jelas" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Tugas — pecah sampai ada yang muat dalam lima menit</h2>
-  <p class="lead">Daftar yang tak kunjung berkurang biasanya bukan karena malas. Biasanya masih ada sesuatu yang menghalangi sebelum Anda bisa mulai.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Ada sela waktu? Lihat paling atas</h2>
+        <p>Geser tugas ke kanan untuk memberinya kilat, dan tugas itu menyalip antrean ke paling atas. Tidak perlu membaca seluruh daftar.<br>Apakah langkah saling menunggu, kamu tentukan sekali per kelompok. Berurutan menampilkan langkah pertama yang belum selesai, Bebas urutan menampilkan kepingan yang bisa diambil sekarang.</p>
+      </div>
+      <div class="plain"><img src="../img/id/02-list.jpg" alt="Ada sela waktu? Lihat paling atas" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Pecah pekerjaan besar menjadi langkah. Setiap langkah lalu dipilah dengan dua pertanyaan, cukup dua.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Terlihat tanpa membuka app</h2>
+        <p>Timer menghitung sampai acara selesai, dan sisa waktunya juga tampil di Dynamic Island dan Layar Terkunci.<br>Widget Layar Utama dan Layar Terkunci menampilkan tugas yang sedang dikerjakan, yang muat dalam lima menit, dan pelangi minggu ini. (Widget termasuk Pro)</p>
+      </div>
+      <div class="plain"><img src="../img/id/05-widgets.jpg" alt="Terlihat tanpa membuka app" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">Pertanyaan pertama</td><td class="v">Bisa mulai tanpa pemanasan? Kalau Anda harus mengingat lagi sampai mana terakhir kali, lima menit itu habis hanya untuk pemanasan.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">Pertanyaan kedua</td><td class="v">Selesai dalam lima menit? Pekerjaan yang ditinggal setengah jadi akan terbawa sampai jam berikutnya.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Mulai dalam tiga langkah</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Tarik jadwal</h3><p>Tekan lama sel kosong di hari mulai, lalu ketuk hari selesai. Satu garis muncul di pelangi.</p></li>
+<li class="card"><span class="n">2</span><h3>Pecah tugas besar</h3><p>Ketuk tugas, tulis langkahnya, dan pilih durasi. Dua pertanyaan dijawab app lebih dulu.</p></li>
+<li class="card"><span class="n">3</span><h3>Saat luang, lihat atas</h3><p>Kepingan dan tugas berkilat berkumpul di atas tanpa menunggu giliran.</p></li></ol>
+    </section>
 
-  <p><b>Hanya langkah dengan dua jawaban ya yang menjadi kepingan</b> — sesuatu yang diambil saat ada lima menit luang. Sisanya adalah sesi fokus, untuk waktu yang sudah Anda sisihkan. App menjawab lebih dulu berdasarkan kata dan durasi yang Anda tulis; Anda cukup turun tangan saat jawabannya keliru.</p>
+    <section class="reveal" id="commands">
+      <h2>Istilah yang akan kamu temui</h2>
+      <div class="card table">
+        <dl><div><dt>Sel pekat · sel pucat</dt><dd>hari kamu benar-benar mengerjakannya, dan sisa rentang sampai tanggal selesai</dd></div><div><dt>Satu baris penuh</dt><dd>hari dengan begitu banyak yang berjalan bersamaan sehingga satu molor, semua ikut molor</dd></div><div><dt>Kepingan</dt><dd>ya untuk kedua pertanyaan; ambil saat ada lima menit</dd></div><div><dt>Sesi fokus singkat</dt><dd>tidak perlu pemanasan, tapi tidak selesai dalam satu kepingan; tuntaskan sekali duduk</dd></div><div><dt>Sesi fokus</dt><dd>perlu pemanasan atau 45 menit lebih; taruh di waktu yang sudah disisihkan</dd></div><div><dt>Kilat</dt><dd>tanda "sekarang juga" buatanmu sendiri; melompat ke atas</dd></div><div><dt>Berurutan · Bebas urutan</dt><dd>apakah langkah saling menunggu, ditentukan sekali per kelompok</dd></div><div><dt>Catatan Waktu Kembali</dt><dd>rekap mingguan: sisa pekerjaan, waktu yang kembali, dan istirahat, dicatat terpisah dan tidak dijumlahkan</dd></div></dl>
+      </div>
+      <p class="muted">Waktu dijumlah dari bawah ke atas: durasi sebuah tugas adalah jumlah langkah-langkahnya.</p>
+    </section>
 
-  <h3 class="sub">Kenapa dipecah seperti ini</h3>
-  <ul class="plain">
-    <li>Dua belas kali lima menit bukan satu jam. Kepingan waktu tidak bisa dijumlahkan — selisihnya habis untuk berpindah fokus — jadi langkah yang muat di sela waktu perlu ditandai sejak awal.</li>
-    <li>Kembali ke pekerjaan yang butuh konsentrasi rata-rata memakan sekitar dua puluh tiga menit. Yang mahal bukan gangguannya, melainkan menyusun ulang konteksnya.</li>
-    <li>Memulai butuh tenaga lebih besar daripada melanjutkan. Makin jauh langkah pertama dari jangkauan, makin lama ia ditunda.</li>
-    <li>Pekerjaan fisik adalah pengecualian — tetap bisa dijumlahkan meski dipecah, jadi tidak dipotong berdasarkan ukuran.</li>
-  </ul>
 
-  <h3 class="sub">Urutan, cukup ditentukan sekali per kelompok</h3>
-  <p>Langkah-langkah saling menunggu atau tidak — dan Anda menentukannya sekali untuk seluruh kelompok, tanpa menyambungkan ketergantungan satu per satu. Dengan <b>Berurutan</b>, langkah pertama yang belum selesai ada di atas; dengan <b>Bebas urutan</b>, kepingan yang bisa diambil sekarang yang naik. Tekan lama sebuah langkah lalu seret untuk memindahkannya.</p>
+    <section class="reveal" id="pricing">
+      <h2>Yang kamu perlukan untuk hari ini gratis</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Gratis</h3>
+          <ul><li>Pelangi (kisi kepadatan jadwal)</li><li>Memecah tugas jadi langkah dan dua pertanyaan</li><li>Kilat dan urutan langkah</li><li>Timer di Dynamic Island dan Layar Terkunci</li><li>Sinkron dengan Rainbow Craft di Mac lewat iCloud</li><li>Catatan Waktu Kembali dua minggu terakhir</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: statistik jadwal dan catatan lebih dari dua minggu ke belakang</li><li>Pro: semua isi Plus ditambah widget Layar Utama dan Layar Terkunci</li><li>Pro: impor dari Kalender dan tampilkan terus</li><li>Pro: bagikan jadwal, hanya baca</li><li>Pro: membuka juga Rainbow Craft Pro di Mac</li></ul>
+          <p class="muted">Masing-masing berupa langganan tahunan atau sekali bayar seumur hidup</p>
+        </div>
+      </div>
+      <p class="muted">Yang berbayar hanya melihat ke minggu-minggu lalu dan membawa data keluar app. Kalau dulu sudah membeli Pro atau masih berlangganan bulanan, kamu tetap Pro.</p>
+    </section>
 
-  <h3 class="sub">Kilat</h3>
-  <p>Geser baris ke kanan untuk memberi Kilat — tanda pribadi Anda bahwa yang ini bisa dikerjakan sekarang juga. Baris berkilat melompati antrean ke paling atas, jadi saat ada waktu luang Anda cukup melihat ke sana tanpa menelusuri daftar. Geser lagi untuk mencabut tandanya.</p>
+    <section class="reveal" id="faq">
+      <h2>Pertanyaan umum</h2>
+      <div class="faq"><details><summary>Perlu akun atau iCloud?</summary><p>Kalau dipakai sendiri, tidak. Tanpa pendaftaran, semuanya tersimpan di perangkat. Untuk perangkat lain, app Mac, atau berbagi, masuk ke iCloud.</p></details>
+<details><summary>App salah menjawab pertanyaan.</summary><p>Ketuk langkahnya lalu ganti Ya atau Tidak. Jawabanmu selalu didahulukan. Ketuk "Kembali ke penilaian app" untuk menyerahkannya lagi. Langkah tanpa durasi tidak dihitung sebagai kepingan karena app belum tahu apakah selesai dalam lima menit.</p></details>
+<details><summary>Bisa berbagi dengan orang lain?</summary><p>Lewat tautan undangan kamu bisa membagikan jadwal dalam mode hanya baca (Pro), atau membuka satu daftar tugas yang dibaca dan diubah bersama orang yang kamu undang. Siapa pun yang punya tautan bisa bergabung, jadi kirim hanya ke orang yang dimaksud. Ini tidak berkaitan dengan Berbagi Keluarga Apple.</p></details>
+<details><summary>Apakah acara di Kalender ikut tampil?</summary><p>Acara dari kalender yang kamu pilih tampil di pelangi dan tampilan harian (Pro). App hanya membaca dan tidak menulis apa pun.</p></details>
+<details><summary>Bisa mencentang dari widget?</summary><p>Widget hanya untuk melihat. Ketuk widget untuk langsung membuka daftar tugas, lalu centang di sana.</p></details>
+<details><summary>Apakah app Mac dibeli terpisah?</summary><p>Rainbow Craft adalah app macOS tersendiri di Mac App Store. Dengan akun iCloud yang sama, tugas dan rencana mingguan tersinkron sendiri, dan sinkronnya gratis.</p></details>
+<details><summary>Tugas lamaku masih ada?</summary><p>Masih. Tugas, langkah, dan durasi yang sudah diisi tetap tersimpan. Label syarat mulai yang lama dinilai ulang oleh app dengan dua pertanyaan.</p></details>
+<details><summary>Di mana dataku disimpan?</summary><p>Tidak ada server. Semuanya ada di perangkat dan iCloud pribadimu, dan pengembang tidak bisa melihatnya. Tanpa pengenal iklan, tanpa lokasi. App hanya mengirim statistik penggunaan anonim yang tidak mengenali dirimu, dan bisa dimatikan di Pengaturan.</p></details>
+<details><summary>Bagaimana cara membatalkan langganan?</summary><p>Di app Pengaturan &gt; Akun Apple &gt; Langganan. Langganan diperpanjang dengan harga sama kecuali dibatalkan paling lambat 24 jam sebelum periode berakhir. Seumur hidup cukup dibayar sekali.</p></details></div>
+      <p class="contact">Bingung atau ada yang aneh? Tulis ke <a href="mailto:leeo@kakao.com">leeo@kakao.com</a>. Di pengaturan app juga ada pilihan untuk menghubungi kami.</p>
+    </section>
 
-  <h3 class="sub">Selain itu</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Widget Layar Utama dan Layar Terkunci</h3>
-      <p>Ada empat — Tugas, Kilat, Pelangi, dan Timer. Widget Kilat hanya menampilkan yang bisa Anda ambil dalam lima menit sekarang.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Tambah dari mana saja</h3>
-      <p>Bagikan dari app lain, dan app ini muncul di lembar berbagi. Cukup lewat jendela kecil, semuanya jadi tugas.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Ikut sampai ke Mac</h3>
-      <p>Rainbow Craft, app macOS-nya, memakai akun iCloud yang sama. Tulis di satu sisi, dan muncul di sisi lain.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Lihat seberapa penuh minggu ini<br>sebelum kamu masuk</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">Unduh gratis di App Store</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Berbagi</h2>
-  <p class="lead">Kirim tautan hanya kepada orang yang memerlukannya.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Jadwal (baca saja)</h3>
-      <p>Kirim tautan undangan, dan orang tersebut bisa melihat jadwal Anda. Mereka tidak bisa mengubahnya.</p>
-    </div>
-    <div class="card">
-      <h3>Tugas (bersama)</h3>
-      <p>Anda dan orang yang Anda undang membaca dan mengedit satu daftar bersama. Fitur ini tidak berkaitan dengan Berbagi Keluarga dari Apple.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Siapa pun yang memegang tautan undangan bisa bergabung, jadi kirim hanya kepada orang yang memang ingin Anda ajak. Berbagi memerlukan masuk ke iCloud.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Bahasa"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi">Suomi</a>
+<a href="../id/" hreflang="id" lang="id" aria-current="page">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Kebijakan Privasi</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Cara memulai</h2>
-  <ol class="steps">
-    <li><b>Gambar jadwal</b><span>Tekan lama sel kosong di hari mulai, lalu lakukan lagi di hari selesai. Beri judul, hari-hari saat Anda benar-benar mengerjakannya, dan jumlah jam per hari.</span></li>
-    <li><b>Tulis tugas</b><span>Ketik di baris kosong lalu tekan Return. Itu saja.</span></li>
-    <li><b>Pecah yang besar</b><span>Buka barisnya dan tulis langkah sesuai urutan pengerjaannya. App akan memberi tahu mana yang kepingan dan mana yang sesi fokus.</span></li>
-    <li><b>Ambil kepingan saat ada lima menit</b><span>Yang bisa dikerjakan sekarang ada di paling atas daftar. Sisanya tidak perlu Anda baca.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Pertanyaan yang sering diajukan</h2>
-
-  <details>
-    <summary>Apakah saya harus masuk ke iCloud?</summary>
-    <p>Tidak, jika hanya dipakai sendiri — semuanya tersimpan di perangkat. iCloud diperlukan untuk sinkronisasi dengan perangkat lain atau app Mac, serta untuk berbagi.</p>
-  </details>
-
-  <details>
-    <summary>Apakah app ini tersedia dalam bahasa saya?</summary>
-    <p>App ini mendukung 23 bahasa, termasuk Bahasa Indonesia, dan mengikuti bahasa perangkat Anda. Untuk mengganti bahasa khusus app ini, buka Pengaturan iOS, cari Rainbow of Desire, lalu pilih Bahasa.</p>
-  </details>
-
-  <details>
-    <summary>Bagaimana jika app salah menilai sebuah langkah?</summary>
-    <p>Geser langkah itu ke kiri dan jawab sendiri kedua pertanyaannya. Jawaban Anda mengalahkan tebakan app dan akan tetap begitu. App membaca kata-kata yang Anda tulis, jadi wajar jika ia sering keliru soal pekerjaan yang tidak ia kenal.</p>
-  </details>
-
-  <details>
-    <summary>Kenapa tugas tanpa durasi tidak pernah menjadi kepingan?</summary>
-    <p>Karena tidak ada yang menyatakan tugas itu selesai dalam lima menit, dan daftar ini baru berguna jika isinya benar-benar siap dikerjakan. Tulis durasinya — misalnya lima belas menit — dan tugas itu akan dipilah dengan benar.</p>
-  </details>
-
-  <details>
-    <summary>Bisakah saya mencentang tugas di widget?</summary>
-    <p>Belum — widget hanya untuk dibaca. Ketuk widget, dan layar tugas langsung terbuka.</p>
-  </details>
-
-  <details>
-    <summary>Apa saja yang berbayar?</summary>
-    <p>Inti app ini gratis: Pelangi, memecah tugas, dua pertanyaan, dan urutan langkah. Rainbow Pro membuka lima fitur tambahan: widget Layar Utama dan Layar Terkunci, impor dari Kalender, berbagi jadwal, statistik jadwal, dan Catatan Waktu Kembali. Pilih tahunan dengan minggu pertama gratis, bulanan, atau seumur hidup sekali bayar. Memakainya bersama Mac gratis.</p>
-  </details>
-
-  <details>
-    <summary>Apakah app Mac harus dibeli terpisah?</summary>
-    <p>Rainbow Craft adalah app macOS tersendiri. Dengan akun iCloud yang sama, tugas dan rencana mingguan tersinkron otomatis.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Privasi</h2>
-  <p class="lead">Tidak ada server. Apa yang Anda tulis tetap ada di perangkat dan di iCloud Anda sendiri.</p>
-  <div class="note">
-    Tanpa pengenal iklan, tanpa lokasi, tanpa pendaftaran. Yang dikirim hanya statistik penggunaan anonim yang tidak bisa mengenali Anda, dan Anda bisa mematikannya di Pengaturan.
-    Selengkapnya ada di <a href="privacy.html">kebijakan privasi</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Apa yang berubah</h2>
-  <p class="lead">Setiap versi tercatat.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Baca catatan rilis</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Dukungan</h2>
-    <p class="lead" style="margin-bottom:0">Jika ada yang mengganggu atau terlihat salah, beri tahu kami. Menu kontak juga tersedia di Pengaturan app.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Kebijakan Privasi</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

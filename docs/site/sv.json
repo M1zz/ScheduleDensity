@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: veckoplanerare som färgar fulla veckor och delar upp uppgifter",
+  "description": "Ju mer som överlappar, desto mörkare färg: du ser den fulla veckan i förväg. Dela stora uppgifter i steg och ha de små överst. Kärnan är gratis.",
+  "hero": {
+    "headline": "Se den fulla veckan komma.\nAnvänd de fem minuter du får.",
+    "lead": "Ju mer dina uppgifter överlappar, desto djupare färg får regnbågen. Dela upp en stor uppgift i steg, så väntar steget du hinner i en lucka redan överst.",
+    "cta": "Hämta gratis på App Store",
+    "note": "Regnbågen, uppdelning av uppgifter, timern och synkning med Mac är gratis."
+  },
+  "demo": {
+    "title": "Prova själv",
+    "lead": "”Kvartalsrapport Q3” är redan uppdelad i fem steg. Välj ett steg, ändra tiden eller vänd ett svar. Bara ett steg med ja på båda frågorna blir ett ministeg som du hinner på fem minuter.",
+    "task": "Kvartalsrapport Q3",
+    "steps": [
+      "Ta fram marssiffrorna",
+      "Öppna förra kvartalets fil",
+      "Skriv inledningen",
+      "Gör diagram per region",
+      "Skicka till Mina"
+    ],
+    "total": "Totalt",
+    "time": "Tid",
+    "min": "{n} min",
+    "hr": "{h} tim",
+    "hrmin": "{h} tim {m} min",
+    "questions": [
+      {
+        "q": "Kan du börja utan uppstart?",
+        "why": "Arbete som kräver att du kommer in i sammanhanget igen förbrukar hela ministeget på att bara komma igång."
+      },
+      {
+        "q": "Blir det klart inom fem minuter?",
+        "why": "Ofärdigt arbete lämnar rester som äter upp nästa fokustid."
+      }
+    ],
+    "yes": "Ja",
+    "no": "Nej",
+    "kinds": {
+      "fragment": "Ministeg",
+      "short": "Kort fokustid",
+      "block": "Fokustid"
+    },
+    "verdicts": {
+      "fragment": "Det här är ett ministeg. När fem minuter öppnar sig, ta det.",
+      "short": "Det här kräver kort fokustid. Du måste sätta dig, men det blir klart i ett enda pass.",
+      "block": "Det här kräver fokustid. Lägg det i tid du har skyddat."
+    },
+    "pickNow": "Fem minuter över?",
+    "nothing": "Inget än",
+    "reset": "Tillbaka till appens bedömning",
+    "note": "Demon svarar bara utifrån tiden. I appen kommer första svaret från tiden du väljer, och även från dina ord om du skriver på koreanska eller engelska. Du rättar bara när den har fel."
+  },
+  "problem": {
+    "title": "Ser kalendern tom ut, men veckan tar ändå andan ur dig?",
+    "text": "En kalender visar om något är inbokat, inte hur mycket som ligger ovanpå. Att tre deadlines hamnar i samma vecka märker du ofta först mitt i den, och de fem minuterna däremellan går åt till att läsa igenom att göra-listan. Rainbow of Desire ritar veckan som ett rutnät, färgar överlapp mörkare och lägger undan stegen som passar i en lucka."
+  },
+  "features": [
+    {
+      "title": "Två frågor, sedan är det avgjort",
+      "text": "När du delar upp en stor uppgift får varje steg två frågor. Kan du börja utan uppstart? Blir det klart inom fem minuter?\nBara två ja ger ett ministeg. Appen svarar först utifrån tid och ordval, och du vänder bara ett svar när det är fel.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "En lucka? Titta högst upp",
+      "text": "Svep en uppgift åt höger för att ge den en blixt, så hoppar den över kön och hamnar överst. Du behöver inte läsa hela listan.\nOm stegen väntar på varandra bestämmer du en gång per grupp. I ordning visar första öppna steget, Valfri ordning det ministeg du kan ta nu.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Syns utan att öppna appen",
+      "text": "Timern räknar ned till att händelsen tar slut, och tiden som är kvar syns även i Dynamic Island och på låsskärmen.\nWidgetar för hem- och låsskärm visar vad du håller på med, vad som ryms på fem minuter och veckans regnbåge. (Widgetar ingår i Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Igång i tre steg",
+    "items": [
+      {
+        "title": "Rita en händelse",
+        "text": "Håll på en tom ruta på startdagen och tryck på slutdagen. Då står det ett streck i regnbågen."
+      },
+      {
+        "title": "Dela upp stora uppgifter",
+        "text": "Tryck på en uppgift, skriv stegen och välj en tid. De två frågorna besvarar appen först."
+      },
+      {
+        "title": "Titta överst när det blir en lucka",
+        "text": "Ministeg och uppgifter med blixt samlas överst utan att vänta på sin tur."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Det du möter på skärmen",
+    "rows": [
+      [
+        "Mörk ruta · ljus ruta",
+        "dagar du faktiskt jobbar med det, och resten fram till slutdatumet"
+      ],
+      [
+        "En full rad",
+        "en dag med så mycket samtidigt att en försening skjuter hela dagen"
+      ],
+      [
+        "Ministeg",
+        "ja på båda frågorna; ta det när du har fem minuter"
+      ],
+      [
+        "Kort fokustid",
+        "ingen uppstart, men blir inte klart i ett ministeg; görs i ett svep"
+      ],
+      [
+        "Fokustid",
+        "kräver uppstart eller tar 45 minuter eller mer; lägg det i avsatt tid"
+      ],
+      [
+        "Blixt",
+        "din egen ”redo nu”-markering; hoppar högst upp"
+      ],
+      [
+        "I ordning · Valfri ordning",
+        "om stegen väntar på varandra, valt en gång per grupp"
+      ],
+      [
+        "Tidsliggare",
+        "veckans bokslut: det som är kvar, vunnen tid och återhämtning, hållet isär och aldrig ihopräknat"
+      ]
+    ],
+    "note": "Tid räknas ihop nerifrån: en uppgifts tid är summan av dess steg."
+  },
+  "pricing": {
+    "title": "Det du behöver i dag är gratis",
+    "free": {
+      "name": "Gratis",
+      "items": [
+        "Regnbågen (rutnät över hur fullt det är)",
+        "Uppdelning i steg och de två frågorna",
+        "Blixt och stegordning",
+        "Timer i Dynamic Island och på låsskärmen",
+        "Synkning med Rainbow Craft på Mac via iCloud",
+        "Tidsliggaren för de senaste två veckorna"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: händelsestatistik och tidsliggaren längre bak än två veckor",
+        "Pro: allt i Plus plus widgetar för hem- och låsskärm",
+        "Pro: importera från Kalender och visa löpande",
+        "Pro: dela händelser, bara läsning",
+        "Pro: låser också upp Rainbow Craft Pro på Mac"
+      ],
+      "note": "Var för sig som årsprenumeration eller engångsköp för alltid"
+    },
+    "note": "Du betalar bara för att se tillbaka på tidigare veckor och för att ta saker utanför appen. Har du köpt Pro tidigare eller har månadsprenumeration är du fortfarande Pro."
+  },
+  "faq": {
+    "title": "Vanliga frågor",
+    "items": [
+      {
+        "q": "Behöver jag ett konto eller iCloud?",
+        "a": "Inte om du använder den själv. Det finns ingen registrering och allt stannar på enheten. För andra enheter, Mac-appen eller delning loggar du in på iCloud."
+      },
+      {
+        "q": "Appen svarade fel på en fråga.",
+        "a": "Tryck på steget och växla mellan Ja och Nej. Ditt eget svar går alltid före. Tryck på ”Tillbaka till appens bedömning” för att lämna tillbaka det. Ett steg utan tid räknas inte som ministeg, eftersom appen inte vet om det blir klart på fem minuter."
+      },
+      {
+        "q": "Kan jag dela med andra?",
+        "a": "Med en inbjudningslänk delar du dina händelser för läsning (Pro), eller öppnar en att göra-lista som du och de inbjudna läser och skriver i tillsammans. Alla med länken kan gå med, så skicka den bara till dem du menar. Det har inget med Apples Familjedelning att göra."
+      },
+      {
+        "q": "Syns mina kalenderhändelser?",
+        "a": "Händelser från kalendrarna du väljer visas i regnbågen och i dagsvyn (Pro). Appen läser bara och skriver ingenting tillbaka."
+      },
+      {
+        "q": "Kan jag bocka av i en widget?",
+        "a": "Widgetar är bara för att titta. Tryck på en så öppnas dina uppgifter direkt, och bocka av där."
+      },
+      {
+        "q": "Måste Mac-appen köpas separat?",
+        "a": "Rainbow Craft är en egen macOS-app i Mac App Store. Med samma iCloud-konto synkas uppgifter och veckoplaner av sig själva, och det kostar ingenting."
+      },
+      {
+        "q": "Finns mina äldre uppgifter kvar?",
+        "a": "Ja. Uppgifter, steg och tiderna du har satt finns kvar. Etiketter från de gamla startvillkoren bedömer appen på nytt med de två frågorna."
+      },
+      {
+        "q": "Var sparas mina data?",
+        "a": "Det finns ingen server. Allt ligger på din enhet och i din egen iCloud, där utvecklaren inte kan se det. Inget reklam-ID, ingen plats. Appen skickar bara anonym användningsstatistik som inte kan kopplas till dig och som går att stänga av i Inställningar."
+      },
+      {
+        "q": "Hur säger jag upp en prenumeration?",
+        "a": "I Inställningar > Apple-konto > Prenumerationer. Den förnyas till samma pris om du inte säger upp senast 24 timmar innan perioden tar slut. För alltid är en engångsbetalning."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Se hur full veckan är\ninnan du kliver in i den",
+    "cta": "Hämta gratis på App Store"
+  },
+  "ui": {
+    "skip": "Hoppa till innehållet",
+    "languages": "Språk",
+    "privacy": "Integritetspolicy",
+    "contact": "Har du kört fast eller ser något konstigt ut? Skriv till {email}. Du hittar även ett kontaktval i appens inställningar."
+  }
+}

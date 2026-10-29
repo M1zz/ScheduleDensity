@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: Wochenplaner, der volle Wochen einfärbt, und Aufgaben in Schritte zerlegt",
+  "description": "Je mehr sich überschneidet, desto dunkler die Farbe: volle Wochen siehst du früh. Große Aufgaben werden zu Schritten, die kleinen stehen oben. Gratis.",
+  "hero": {
+    "headline": "Volle Wochen früh sehen.\nFünf freie Minuten nutzen.",
+    "lead": "Je mehr sich deine Aufgaben überschneiden, desto kräftiger wird der Regenbogen. Zerlegst du große Aufgaben in Schritte, wartet der, den du in einer Lücke erledigen kannst, schon ganz oben.",
+    "cta": "Kostenlos im App Store laden",
+    "note": "Regenbogen, Aufgaben zerlegen, Timer und Abgleich mit dem Mac sind kostenlos."
+  },
+  "demo": {
+    "title": "Probier es selbst",
+    "lead": "„Quartalsbericht Q3“ ist schon in fünf Schritte zerlegt. Wähle einen Schritt, ändere die Dauer oder dreh eine Antwort um. Nur wer beide Fragen mit Ja beantwortet, wird zum Splitter, den du in fünf Minuten erledigst.",
+    "task": "Quartalsbericht Q3",
+    "steps": [
+      "Märzzahlen ziehen",
+      "Datei vom letzten Quartal öffnen",
+      "Einleitung schreiben",
+      "Grafik nach Regionen bauen",
+      "An Mina schicken"
+    ],
+    "total": "Gesamt",
+    "time": "Dauer",
+    "min": "{n} Min.",
+    "hr": "{h} Std.",
+    "hrmin": "{h} Std. {m} Min.",
+    "questions": [
+      {
+        "q": "Kannst du ohne Anlaufen loslegen?",
+        "why": "Arbeit, für die du dich erst wieder einlesen musst, verbraucht den ganzen Splitter fürs Anlaufen."
+      },
+      {
+        "q": "Ist es in fünf Minuten erledigt?",
+        "why": "Unerledigte Arbeit hinterlässt Reste, die auch noch die nächste Fokuszeit auffressen."
+      }
+    ],
+    "yes": "Ja",
+    "no": "Nein",
+    "kinds": {
+      "fragment": "Splitter",
+      "short": "Kurze Fokuszeit",
+      "block": "Fokuszeit"
+    },
+    "verdicts": {
+      "fragment": "Das ist ein Splitter. Wenn sich fünf Minuten auftun, nimm ihn dir vor.",
+      "short": "Das ist kurze Fokuszeit. Du musst dich hinsetzen, aber es ist an einem Stück erledigt.",
+      "block": "Das braucht Fokuszeit. Plane es in Zeit, die du dir freigehalten hast."
+    },
+    "pickNow": "Fünf Minuten frei?",
+    "nothing": "Noch nichts",
+    "reset": "Zurück zur Einschätzung der App",
+    "note": "Die Demo antwortet nur anhand der Dauer. In der App kommt die erste Antwort aus der eingestellten Dauer und, wenn du auf Koreanisch oder Englisch schreibst, auch aus deinen Worten. Du korrigierst nur, wenn sie falsch liegt."
+  },
+  "problem": {
+    "title": "Der Kalender sieht leer aus, und trotzdem kommst du kaum zum Atmen?",
+    "text": "Ein Kalender zeigt, ob etwas eingetragen ist, aber nicht, wie viel sich darüber stapelt. Dass drei Abgaben in dieselbe Woche fallen, merkst du oft erst mittendrin, und die fünf Minuten zwischendurch gehen fürs Durchlesen der Aufgabenliste drauf. Rainbow of Desire zeichnet deine Woche als Raster, färbt Überschneidungen dunkler und legt die Schritte für kleine Lücken gleich beiseite."
+  },
+  "features": [
+    {
+      "title": "Zwei Fragen, und es ist klar",
+      "text": "Zerlegst du eine große Aufgabe, bekommt jeder Schritt zwei Fragen: Kannst du ohne Anlaufen loslegen? Ist es in fünf Minuten erledigt?\nNur ein doppeltes Ja macht einen Splitter. Die App antwortet zuerst anhand von Dauer und Wortlaut, du drehst eine Antwort nur um, wenn sie nicht passt.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Lücke frei? Schau einfach nach oben",
+      "text": "Wisch eine Aufgabe nach rechts und setz einen Blitz: Sie überspringt die Reihe und steht ganz oben. Du musst nicht die ganze Liste lesen, um etwas zu finden.\nOb Schritte aufeinander warten, legst du einmal pro Gruppe fest. Der Reihe nach zeigt den ersten offenen Schritt, Beliebig den Splitter, den du jetzt greifen kannst.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Sichtbar, ohne die App zu öffnen",
+      "text": "Der Timer zählt bis zum Ende des Termins herunter, die Restzeit erscheint auch in der Dynamic Island und auf dem Sperrbildschirm.\nWidgets für Home- und Sperrbildschirm zeigen, woran du gerade bist, was in fünf Minuten passt und den Regenbogen dieser Woche. (Widgets sind Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "In drei Schritten startklar",
+    "items": [
+      {
+        "title": "Termin ziehen",
+        "text": "Halte das leere Feld am Starttag gedrückt und tippe auf den Endtag. Schon steht eine Linie im Regenbogen."
+      },
+      {
+        "title": "Große Aufgaben zerlegen",
+        "text": "Tippe auf eine Aufgabe, trag die Schritte ein und wähle eine Dauer. Die zwei Fragen beantwortet die App vorab."
+      },
+      {
+        "title": "In Lücken nach oben schauen",
+        "text": "Splitter und Aufgaben mit Blitz sammeln sich oben, ohne zu warten."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Begriffe, die dir begegnen",
+    "rows": [
+      [
+        "Dunkles Feld · helles Feld",
+        "Tage, an denen du wirklich daran arbeitest, und der Rest bis zum Enddatum"
+      ],
+      [
+        "Volle Zeile",
+        "ein Tag mit so vielen parallelen Dingen, dass eine Verschiebung alles verschiebt"
+      ],
+      [
+        "Splitter",
+        "zweimal Ja; nimm ihn dir vor, wenn fünf Minuten frei werden"
+      ],
+      [
+        "Kurze Fokuszeit",
+        "kein Anlauf nötig, aber nicht in einem Splitter erledigt; einmal hinsetzen reicht"
+      ],
+      [
+        "Fokuszeit",
+        "braucht Anlauf oder dauert 45 Minuten und länger; gehört in freigehaltene Zeit"
+      ],
+      [
+        "Blitz",
+        "deine eigene Markierung für „jetzt sofort“; springt nach oben"
+      ],
+      [
+        "Der Reihe nach · Beliebig",
+        "ob Schritte aufeinander warten, einmal pro Gruppe festgelegt"
+      ],
+      [
+        "Zeitbilanz",
+        "der Wochenabschluss: Übriges, zurückgewonnene Zeit und Erholung, getrennt und nie zusammengezählt"
+      ]
+    ],
+    "note": "Zeit summiert sich von unten nach oben: Die Dauer einer Aufgabe ist die Summe ihrer Schritte."
+  },
+  "pricing": {
+    "title": "Was du für heute brauchst, ist kostenlos",
+    "free": {
+      "name": "Kostenlos",
+      "items": [
+        "Der Regenbogen (Terminraster nach Dichte)",
+        "Aufgaben in Schritte zerlegen, die zwei Fragen",
+        "Blitz und Schrittfolge",
+        "Timer in der Dynamic Island und auf dem Sperrbildschirm",
+        "Abgleich mit Rainbow Craft auf dem Mac über iCloud",
+        "Zeitbilanz der letzten zwei Wochen"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: Terminstatistik und Zeitbilanz über zwei Wochen hinaus",
+        "Pro: alles aus Plus, dazu Widgets für Home- und Sperrbildschirm",
+        "Pro: aus dem Kalender importieren und laufend einblenden",
+        "Pro: Termine teilen, nur zum Ansehen",
+        "Pro: schaltet auch Rainbow Craft Pro auf dem Mac frei"
+      ],
+      "note": "Jeweils als Jahresabo oder Einmalkauf auf Lebenszeit"
+    },
+    "note": "Bezahlt wird nur fürs Zurückblicken auf vergangene Wochen und fürs Hinaustragen aus der App. Wer Pro früher gekauft hat oder noch ein Monatsabo hat, bleibt Pro."
+  },
+  "faq": {
+    "title": "Häufige Fragen",
+    "items": [
+      {
+        "q": "Brauche ich ein Konto oder iCloud?",
+        "a": "Allein nicht. Es gibt keine Registrierung, alles bleibt auf deinem Gerät. Für andere Geräte, die Mac-App oder das Teilen meldest du dich bei iCloud an."
+      },
+      {
+        "q": "Die App hat eine Frage falsch beantwortet.",
+        "a": "Tippe auf den Schritt und stell Ja oder Nein um. Deine eigene Antwort hat immer Vorrang. Mit „Zurück zur Einschätzung der App“ gibst du sie wieder ab. Ein Schritt ohne Dauer zählt nicht als Splitter, weil die App nicht weiß, ob er in fünf Minuten fertig wird."
+      },
+      {
+        "q": "Kann ich mit anderen teilen?",
+        "a": "Per Einladungslink teilst du deine Termine nur zum Ansehen (Pro) oder öffnest eine Aufgabenliste, die du mit den Eingeladenen gemeinsam liest und bearbeitest. Jeder mit dem Link kann beitreten, schick ihn also nur an die richtigen Leute. Mit der Apple-Familienfreigabe hat das nichts zu tun."
+      },
+      {
+        "q": "Werden meine Kalendertermine angezeigt?",
+        "a": "Termine aus den gewählten Kalendern erscheinen im Regenbogen und in der Tagesansicht (Pro). Die App liest nur und schreibt nichts in deinen Kalender."
+      },
+      {
+        "q": "Kann ich im Widget abhaken?",
+        "a": "Widgets sind nur zum Ansehen. Ein Tipp öffnet direkt deine Aufgaben, dort hakst du ab."
+      },
+      {
+        "q": "Muss ich die Mac-App extra kaufen?",
+        "a": "Rainbow Craft ist eine eigene macOS-App im Mac App Store. Mit demselben iCloud-Account gleichen sich Aufgaben und Wochenpläne von selbst ab, und das kostet nichts."
+      },
+      {
+        "q": "Sind meine älteren Aufgaben noch da?",
+        "a": "Ja. Aufgaben, Schritte und eingetragene Dauern bleiben erhalten. Labels aus den alten Startbedingungen bewertet die App mit den zwei Fragen neu."
+      },
+      {
+        "q": "Wo werden meine Daten gespeichert?",
+        "a": "Es gibt keinen Server. Alles liegt auf deinem Gerät und in deiner privaten iCloud, der Entwickler sieht nichts davon. Keine Werbe-ID, kein Standort. Die App sendet nur anonyme Nutzungsstatistiken, die dich nicht erkennbar machen und sich in den Einstellungen abschalten lassen."
+      },
+      {
+        "q": "Wie kündige ich ein Abo?",
+        "a": "In der App Einstellungen unter Apple Account > Abonnements. Ohne Kündigung bis spätestens 24 Stunden vor Ablauf verlängert es sich zum gleichen Preis. Lebenszeit ist ein Einmalkauf."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Sieh, wie voll die Woche ist,\nbevor du hineingehst",
+    "cta": "Kostenlos im App Store laden"
+  },
+  "ui": {
+    "skip": "Zum Inhalt springen",
+    "languages": "Sprache",
+    "privacy": "Datenschutz",
+    "contact": "Hängst du irgendwo fest oder wirkt etwas seltsam? Schreib an {email}. In den Einstellungen der App findest du ebenfalls eine Kontaktmöglichkeit."
+  }
+}

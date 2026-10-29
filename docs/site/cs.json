@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: týdenní plánovač, který tmavne s náloží, a dělení úkolů na kroky",
+  "description": "Čím víc se věci překrývají, tím tmavší barva, takže náročný týden uvidíte předem. Velké úkoly rozdělíte na kroky. Základ je zdarma.",
+  "hero": {
+    "headline": "Uvidíte náročný týden předem.\nVyužijete volných pět minut.",
+    "lead": "Čím víc se práce překrývá, tím sytější je duha. Rozdělte velký úkol na kroky a ten, který stihnete ve volné chvíli, už čeká úplně nahoře.",
+    "cta": "Stáhnout zdarma v App Storu",
+    "note": "Duha, dělení úkolů, časovač a synchronizace s Macem jsou zdarma."
+  },
+  "demo": {
+    "title": "Vyzkoušejte si to",
+    "lead": "„Zpráva za 3. čtvrtletí“ je už rozdělená do pěti kroků. Vyberte krok, změňte čas nebo otočte odpověď. Jen krok se dvěma „ano“ se stane střípkem, který zvládnete za pět minut.",
+    "task": "Zpráva za 3. čtvrtletí",
+    "steps": [
+      "Vytáhnout čísla za březen",
+      "Otevřít soubor z minulého čtvrtletí",
+      "Napsat úvod",
+      "Udělat graf podle regionů",
+      "Poslat Mině"
+    ],
+    "total": "Celkem",
+    "time": "Čas",
+    "min": "{n} min",
+    "hr": "{h} h",
+    "hrmin": "{h} h {m} min",
+    "questions": [
+      {
+        "q": "Dokážete začít bez rozjezdu?",
+        "why": "Práce, při které se musíte znovu ponořit do souvislostí, spotřebuje celý střípek jen na rozjezd."
+      },
+      {
+        "q": "Je to hotové do pěti minut?",
+        "why": "Nedokončená práce zanechává zbytky, které ukusují i z dalšího souvislého času."
+      }
+    ],
+    "yes": "Ano",
+    "no": "Ne",
+    "kinds": {
+      "fragment": "Střípek",
+      "short": "Krátký souvislý čas",
+      "block": "Souvislý čas"
+    },
+    "verdicts": {
+      "fragment": "Tohle je střípek. Jakmile se otevře pět minut, pusťte se do něj.",
+      "short": "Tohle je krátký souvislý čas. Musíte se k tomu posadit, ale dokončíte to na jeden zátah.",
+      "block": "Tohle potřebuje souvislý čas. Zařaďte to do času, který máte chráněný."
+    },
+    "pickNow": "Máte pět minut?",
+    "nothing": "Zatím nic",
+    "reset": "Vrátit na posouzení aplikace",
+    "note": "Ukázka odpovídá jen podle času. V aplikaci vychází první odpověď z nastaveného času, a když píšete korejsky nebo anglicky, i z vašich slov. Opravujete jen tehdy, když se splete."
+  },
+  "problem": {
+    "title": "Kalendář vypadá prázdně, a přesto vám týden bere dech?",
+    "text": "Kalendář řekne, jestli je něco naplánované, ne kolik se toho na sobě vrší. Že tři termíny padly do stejného týdne, zjistíte obvykle až uprostřed něj, a volných pět minut mezitím padne na pročítání seznamu úkolů. Rainbow of Desire nakreslí týden jako mřížku, ztmaví místa, kde se věci překrývají, a odloží stranou kroky, které se vejdou do mezery."
+  },
+  "features": [
+    {
+      "title": "Dvě otázky a je jasno",
+      "text": "Když rozdělíte velký úkol, každý krok dostane dvě otázky. Dokážete začít bez rozjezdu? Je to hotové do pěti minut?\nStřípek vznikne jen při dvojím ano. Aplikace odpoví první podle času a slov, vy odpověď otočíte jen tehdy, když nesedí.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Volná chvíle? Podívejte se nahoru",
+      "text": "Přejeďte úkolem doprava, dejte mu blesk a on přeskočí frontu až nahoru. Nemusíte číst celý seznam.\nZda na sebe kroky čekají, určíte jednou pro skupinu. Popořadě ukáže první nehotový krok, Libovolně střípek, který můžete vzít hned.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Vidět i bez otevření aplikace",
+      "text": "Časovač odpočítává do konce události a zbývající čas je vidět i v Dynamic Islandu a na zamčené obrazovce.\nWidgety na plochu a zamčenou obrazovku ukazují, na čem právě jste, co se vejde do pěti minut a duhu tohoto týdne. (Widgety jsou v Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Začnete ve třech krocích",
+    "items": [
+      {
+        "title": "Natáhněte událost",
+        "text": "Podržte prázdné pole v den začátku a klepněte na den konce. Na duze se objeví čára."
+      },
+      {
+        "title": "Rozdělte velké úkoly",
+        "text": "Klepněte na úkol, napište kroky a vyberte čas. Na dvě otázky odpoví nejdřív aplikace."
+      },
+      {
+        "title": "V mezeře koukněte nahoru",
+        "text": "Střípky a úkoly s bleskem se shromáždí nahoře a nečekají na řadu."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Co uvidíte na obrazovce",
+    "rows": [
+      [
+        "Tmavé pole · světlé pole",
+        "dny, kdy na tom opravdu pracujete, a zbytek období do data konce"
+      ],
+      [
+        "Plný řádek",
+        "den, kdy toho běží tolik naráz, že jedno zpoždění posune celý den"
+      ],
+      [
+        "Střípek",
+        "ano na obě otázky; vezměte ho, když máte pět minut"
+      ],
+      [
+        "Krátký souvislý čas",
+        "bez rozjezdu, ale do střípku se nevejde; zvládne se na jedno posezení"
+      ],
+      [
+        "Souvislý čas",
+        "potřebuje rozjezd nebo trvá 45 minut a víc; patří do vyhrazeného času"
+      ],
+      [
+        "Blesk",
+        "vaše vlastní značka „hned teď“; skočí nahoru"
+      ],
+      [
+        "Popořadě · Libovolně",
+        "zda na sebe kroky čekají, nastavuje se jednou pro skupinu"
+      ],
+      [
+        "Deník získaného času",
+        "souhrn týdne: co zbývá, získaný čas a odpočinek, odděleně a nikdy nesčítané"
+      ]
+    ],
+    "note": "Čas se sčítá zdola nahoru: čas úkolu je součet jeho kroků."
+  },
+  "pricing": {
+    "title": "Co potřebujete pro dnešek, je zdarma",
+    "free": {
+      "name": "Zdarma",
+      "items": [
+        "Duha (mřížka hustoty rozvrhu)",
+        "Dělení úkolů na kroky a dvě otázky",
+        "Blesk a pořadí kroků",
+        "Časovač v Dynamic Islandu a na zamčené obrazovce",
+        "Synchronizace s Rainbow Craft na Macu přes iCloud",
+        "Deník za poslední dva týdny"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: statistiky událostí a deník starší než dva týdny",
+        "Pro: vše z Plus a k tomu widgety na plochu a zamčenou obrazovku",
+        "Pro: import z Kalendáře a jeho stálé zobrazení",
+        "Pro: sdílení rozvrhu jen pro čtení",
+        "Pro: odemkne i Rainbow Craft Pro na Macu"
+      ],
+      "note": "Každé jako roční předplatné nebo jednorázový nákup napořád"
+    },
+    "note": "Platíte jen za pohled zpět na minulé týdny a za vynášení věcí mimo aplikaci. Pokud jste si Pro koupili dřív nebo máte ještě měsíční předplatné, Pro vám zůstává."
+  },
+  "faq": {
+    "title": "Časté otázky",
+    "items": [
+      {
+        "q": "Potřebuji účet nebo iCloud?",
+        "a": "Pokud aplikaci používáte sami, ne. Žádná registrace, vše zůstává v zařízení. Pro další zařízení, aplikaci pro Mac nebo sdílení se přihlaste k iCloudu."
+      },
+      {
+        "q": "Aplikace odpověděla na otázku špatně.",
+        "a": "Klepněte na krok a přepněte Ano nebo Ne. Vaše odpověď má vždy přednost. Klepnutím na „Vrátit na posouzení aplikace“ ji aplikaci vrátíte. Krok bez času se nepočítá jako střípek, protože aplikace neví, jestli se stihne za pět minut."
+      },
+      {
+        "q": "Můžu něco sdílet s ostatními?",
+        "a": "Pozvánkou můžete sdílet svůj rozvrh jen pro čtení (Pro) nebo otevřít seznam úkolů, který vy a pozvaní společně čtete a upravujete. Připojit se může kdokoli s odkazem, posílejte ho proto jen těm správným lidem. S Rodinným sdílením od Applu to nesouvisí."
+      },
+      {
+        "q": "Zobrazí se události z Kalendáře?",
+        "a": "Události z vybraných kalendářů se ukážou na duze a v denním zobrazení (Pro). Aplikace je jen čte a nic do nich nezapisuje."
+      },
+      {
+        "q": "Můžu úkoly odškrtávat ve widgetu?",
+        "a": "Widgety slouží jen k náhledu. Klepněte na widget, otevřou se úkoly a odškrtněte je tam."
+      },
+      {
+        "q": "Kupuje se aplikace pro Mac zvlášť?",
+        "a": "Rainbow Craft je samostatná aplikace pro macOS v Mac App Storu. Se stejným účtem iCloud se úkoly a týdenní plány synchronizují samy a nic to nestojí."
+      },
+      {
+        "q": "Zůstaly mi starší úkoly?",
+        "a": "Ano. Úkoly, kroky i nastavené časy zůstávají. Štítky starých podmínek pro začátek aplikace znovu posoudí dvěma otázkami."
+      },
+      {
+        "q": "Kde se ukládají moje data?",
+        "a": "Žádný server není. Vše je ve vašem zařízení a ve vašem soukromém iCloudu, kam vývojář nevidí. Bez reklamního identifikátoru a polohy. Aplikace posílá jen anonymní statistiky používání, podle kterých vás nikdo nepozná, a v Nastavení je lze vypnout."
+      },
+      {
+        "q": "Jak zruším předplatné?",
+        "a": "V Nastavení > Účet Apple > Předplatné. Pokud ho nezrušíte nejpozději 24 hodin před koncem období, obnoví se za stejnou cenu. Nákup napořád se platí jednou."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Podívejte se, jak plný je týden,\nještě než do něj vstoupíte",
+    "cta": "Stáhnout zdarma v App Storu"
+  },
+  "ui": {
+    "skip": "Přeskočit na obsah",
+    "languages": "Jazyk",
+    "privacy": "Zásady ochrany osobních údajů",
+    "contact": "Zasekli jste se nebo něco nesedí? Napište na {email}. Kontakt najdete i v nastavení aplikace."
+  }
+}

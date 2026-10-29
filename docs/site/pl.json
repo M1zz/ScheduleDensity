@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: planer tygodnia, który ciemnieje od nawału, i dzielenie zadań na kroki",
+  "description": "Im więcej się nakłada, tym ciemniejszy kolor, więc ciężki tydzień widać z góry. Duże zadania dzielisz na kroki. Podstawa jest za darmo.",
+  "hero": {
+    "headline": "Zobacz ciężki tydzień z wyprzedzeniem.\nWykorzystaj wolne pięć minut.",
+    "lead": "Im bardziej zadania na siebie zachodzą, tym głębszy kolor tęczy. Podziel duże zadanie na kroki, a ten, który zrobisz w przerwie, już czeka na samej górze.",
+    "cta": "Pobierz za darmo z App Store",
+    "note": "Tęcza, dzielenie zadań, timer i synchronizacja z Makiem są za darmo."
+  },
+  "demo": {
+    "title": "Sprawdź sam",
+    "lead": "„Raport za III kwartał” jest już podzielony na pięć kroków. Wybierz krok, zmień czas albo odwróć odpowiedź. Tylko krok z dwoma „tak” staje się okruchem do zrobienia w pięć minut.",
+    "task": "Raport za III kwartał",
+    "steps": [
+      "Wyciągnąć liczby z marca",
+      "Otworzyć plik z zeszłego kwartału",
+      "Napisać wstęp",
+      "Zrobić wykres według regionów",
+      "Wysłać do Miny"
+    ],
+    "total": "Razem",
+    "time": "Czas",
+    "min": "{n} min",
+    "hr": "{h} godz.",
+    "hrmin": "{h} godz. {m} min",
+    "questions": [
+      {
+        "q": "Da się zacząć bez rozruchu?",
+        "why": "Praca, która wymaga ponownego wczytania kontekstu, zużyje cały okruch na rozruch."
+      },
+      {
+        "q": "Kończy się w pięć minut?",
+        "why": "Niedokończona praca zostawia ślad, który zjada następny ciągły odcinek."
+      }
+    ],
+    "yes": "Tak",
+    "no": "Nie",
+    "kinds": {
+      "fragment": "Okruch",
+      "short": "Krótki odcinek",
+      "block": "Ciągły odcinek"
+    },
+    "verdicts": {
+      "fragment": "To okruch. Gdy pojawi się pięć minut, weź go.",
+      "short": "To krótki odcinek. Trzeba usiąść, ale skończysz za jednym posiedzeniem.",
+      "block": "To zadanie na ciągły odcinek. Umieść je w chronionym czasie."
+    },
+    "pickNow": "Masz pięć minut?",
+    "nothing": "Na razie nic",
+    "reset": "Wróć do oceny aplikacji",
+    "note": "Demo odpowiada wyłącznie na podstawie czasu. W aplikacji pierwsza odpowiedź wynika z ustawionego czasu, a jeśli piszesz po koreańsku lub angielsku, także ze słów. Poprawiasz tylko wtedy, gdy się myli."
+  },
+  "problem": {
+    "title": "Kalendarz wygląda pusto, a tydzień i tak odbiera oddech?",
+    "text": "Kalendarz mówi, czy coś jest zaplanowane, a nie ile się na tym piętrzy. Że trzy terminy wypadają w tym samym tygodniu, odkrywasz zwykle dopiero w jego środku, a wolne pięć minut pomiędzy znika na przeglądaniu listy zadań. Rainbow of Desire rysuje tydzień jako siatkę, przyciemnia miejsca, gdzie sprawy się nakładają, i odkłada na bok kroki, które zmieszczą się w przerwie."
+  },
+  "features": [
+    {
+      "title": "Dwa pytania i wszystko jasne",
+      "text": "Gdy dzielisz duże zadanie, każdy krok dostaje dwa pytania. Da się zacząć bez rozruchu? Kończy się w pięć minut?\nTylko podwójne „tak” daje okruch. Aplikacja odpowiada pierwsza na podstawie czasu i słów, a ty odwracasz odpowiedź tylko wtedy, gdy jest błędna.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Chwila wolnego? Patrz na górę",
+      "text": "Przesuń zadanie w prawo, żeby dać mu błyskawicę, a przeskoczy kolejkę i stanie na górze. Nie musisz czytać całej listy.\nCzy kroki na siebie czekają, ustalasz raz dla grupy. Po kolei pokazuje pierwszy niezrobiony krok, Dowolnie pokazuje okruch, który możesz wziąć teraz.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Widać bez otwierania aplikacji",
+      "text": "Timer odlicza do chwili, gdy kończy się wydarzenie, a pozostały czas widać też w Dynamic Island i na ekranie blokady.\nWidżety na ekranie początkowym i blokady pokazują, czym się zajmujesz, co zmieści się w pięć minut i tęczę tego tygodnia. (Widżety są w Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Start w trzech krokach",
+    "items": [
+      {
+        "title": "Wyznacz wydarzenie",
+        "text": "Przytrzymaj puste pole w dniu początku i stuknij dzień końca. Na tęczy pojawi się linia."
+      },
+      {
+        "title": "Podziel duże zadania",
+        "text": "Stuknij zadanie, wpisz kroki i wybierz czas. Na dwa pytania aplikacja odpowie pierwsza."
+      },
+      {
+        "title": "W przerwie patrz na górę",
+        "text": "Okruchy i zadania z błyskawicą zbierają się na górze bez czekania w kolejce."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Co zobaczysz na ekranie",
+    "rows": [
+      [
+        "Ciemne pole · jasne pole",
+        "dni, w które naprawdę nad tym pracujesz, i reszta okresu do daty końca"
+      ],
+      [
+        "Pełny wiersz",
+        "dzień, w którym dzieje się tyle naraz, że jedno opóźnienie przesuwa cały dzień"
+      ],
+      [
+        "Okruch",
+        "„tak” na oba pytania; bierz, gdy masz pięć minut"
+      ],
+      [
+        "Krótki odcinek",
+        "bez rozruchu, ale nie zmieści się w okruchu; robisz za jednym podejściem"
+      ],
+      [
+        "Ciągły odcinek",
+        "wymaga rozruchu albo trwa 45 minut i dłużej; trafia do zarezerwowanego czasu"
+      ],
+      [
+        "Błyskawica",
+        "twój własny znak „od razu”; wskakuje na górę"
+      ],
+      [
+        "Po kolei · Dowolnie",
+        "czy kroki na siebie czekają, ustawiane raz dla grupy"
+      ],
+      [
+        "Rejestr odzyskanego czasu",
+        "podsumowanie tygodnia: to, co zostało, odzyskany czas i odpoczynek, osobno i bez sumowania"
+      ]
+    ],
+    "note": "Czas sumuje się od dołu: czas zadania to suma jego kroków."
+  },
+  "pricing": {
+    "title": "To, czego potrzebujesz na dziś, jest za darmo",
+    "free": {
+      "name": "Za darmo",
+      "items": [
+        "Tęcza (siatka gęstości planu)",
+        "Dzielenie zadań na kroki i dwa pytania",
+        "Błyskawica i kolejność kroków",
+        "Timer w Dynamic Island i na ekranie blokady",
+        "Synchronizacja z Rainbow Craft na Macu przez iCloud",
+        "Rejestr z ostatnich dwóch tygodni"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: statystyki wydarzeń i rejestr starszy niż dwa tygodnie",
+        "Pro: wszystko z Plus oraz widżety na ekranie początkowym i blokady",
+        "Pro: import z Kalendarza i stałe wyświetlanie",
+        "Pro: udostępnianie wydarzeń tylko do odczytu",
+        "Pro: odblokowuje też Rainbow Craft Pro na Macu"
+      ],
+      "note": "Każdy jako subskrypcja roczna albo jednorazowy zakup na zawsze"
+    },
+    "note": "Płacisz tylko za spojrzenie wstecz na minione tygodnie i za wynoszenie rzeczy poza aplikację. Jeśli kupiłeś Pro wcześniej albo masz jeszcze plan miesięczny, nadal masz Pro."
+  },
+  "faq": {
+    "title": "Częste pytania",
+    "items": [
+      {
+        "q": "Czy potrzebuję konta albo iCloud?",
+        "a": "Jeśli korzystasz sam, nie. Nie ma rejestracji, wszystko zostaje na urządzeniu. Do innych urządzeń, aplikacji na Maca lub udostępniania zaloguj się do iCloud."
+      },
+      {
+        "q": "Aplikacja źle odpowiedziała na pytanie.",
+        "a": "Stuknij krok i przełącz Tak lub Nie. Twoja odpowiedź zawsze ma pierwszeństwo. Stuknij „Wróć do oceny aplikacji”, żeby oddać jej decyzję. Krok bez czasu nie liczy się jako okruch, bo aplikacja nie wie, czy zmieści się w pięciu minutach."
+      },
+      {
+        "q": "Czy mogę coś komuś udostępnić?",
+        "a": "Linkiem z zaproszeniem udostępnisz wydarzenia tylko do odczytu (Pro) albo otworzysz listę zadań, którą ty i zaproszone osoby czytacie i edytujecie razem. Dołączyć może każdy, kto ma link, więc wysyłaj go tylko właściwym osobom. Nie ma to związku z Chmurą rodzinną Apple."
+      },
+      {
+        "q": "Czy widać wydarzenia z Kalendarza?",
+        "a": "Wydarzenia z wybranych kalendarzy pojawiają się na tęczy i w widoku dnia (Pro). Aplikacja tylko je czyta i niczego nie zapisuje."
+      },
+      {
+        "q": "Czy mogę odhaczać w widżecie?",
+        "a": "Widżety służą tylko do podglądu. Stuknij widżet, a otworzy się lista zadań; odhacz tam."
+      },
+      {
+        "q": "Czy aplikację na Maca kupuje się osobno?",
+        "a": "Rainbow Craft to osobna aplikacja na macOS w Mac App Store. Na tym samym koncie iCloud zadania i plany tygodnia synchronizują się same, bez opłat."
+      },
+      {
+        "q": "Czy moje starsze zadania zostały?",
+        "a": "Tak. Zadania, kroki i ustawione czasy zostają. Etykiety dawnych warunków startu aplikacja ocenia na nowo dwoma pytaniami."
+      },
+      {
+        "q": "Gdzie są przechowywane moje dane?",
+        "a": "Nie ma serwera. Wszystko jest na twoim urządzeniu i w twoim prywatnym iCloud, do którego twórca nie ma wglądu. Bez identyfikatora reklamowego i lokalizacji. Aplikacja wysyła tylko anonimowe statystyki użycia, które cię nie identyfikują i które można wyłączyć w Ustawieniach."
+      },
+      {
+        "q": "Jak anulować subskrypcję?",
+        "a": "W Ustawieniach > Konto Apple > Subskrypcje. Odnawia się po tej samej cenie, jeśli nie anulujesz jej najpóźniej 24 godziny przed końcem okresu. Zakup na zawsze opłacasz raz."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Zobacz, jak pełny jest tydzień,\nzanim do niego wejdziesz",
+    "cta": "Pobierz za darmo z App Store"
+  },
+  "ui": {
+    "skip": "Przejdź do treści",
+    "languages": "Język",
+    "privacy": "Polityka prywatności",
+    "contact": "Coś nie działa albo wygląda dziwnie? Napisz na {email}. W ustawieniach aplikacji też znajdziesz opcję kontaktu."
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: lịch tuần đậm màu theo độ dày việc và chia nhỏ công việc",
+  "description": "Việc chồng càng nhiều, màu càng đậm, tuần kín lịch hiện ra từ trước. Chia việc lớn thành bước, bước làm được trong 5 phút luôn ở trên cùng. Miễn phí.",
+  "hero": {
+    "headline": "Thấy trước tuần kín lịch,\nkhông để 5 phút trôi mất",
+    "lead": "Việc càng chồng lên nhau, cầu vồng càng đậm. Chia việc lớn thành từng bước, khi có khoảng trống thì bước làm được ngay đã chờ sẵn trên cùng.",
+    "cta": "Tải miễn phí trên App Store",
+    "note": "Cầu vồng, chia nhỏ việc, bộ hẹn giờ và đồng bộ với Mac đều miễn phí."
+  },
+  "demo": {
+    "title": "Tự tay phân loại thử",
+    "lead": "\"Báo cáo quý 3\" đã được chia thành năm bước. Chọn một bước rồi thử đổi thời gian hoặc lật câu trả lời của hai câu hỏi. Chỉ bước nào được trả lời \"Có\" cả hai mới là mảnh, thứ bạn nhặt lên làm trong 5 phút.",
+    "task": "Báo cáo quý 3",
+    "steps": [
+      "Lấy số liệu tháng 3",
+      "Mở tệp quý trước",
+      "Viết phần mở đầu",
+      "Vẽ biểu đồ theo khu vực",
+      "Gửi cho Mina"
+    ],
+    "total": "Tổng",
+    "time": "Thời gian",
+    "min": "{n} phút",
+    "hr": "{h} giờ",
+    "hrmin": "{h} giờ {m} phút",
+    "questions": [
+      {
+        "q": "Có bắt đầu được ngay mà không cần khởi động không?",
+        "why": "Việc cần nạp lại ngữ cảnh sẽ tiêu hết cả mảnh chỉ để khởi động."
+      },
+      {
+        "q": "Có xong trong năm phút không?",
+        "why": "Việc chưa xong để lại dư âm, ăn mòn cả quãng thời gian tiếp theo."
+      }
+    ],
+    "yes": "Có",
+    "no": "Không",
+    "kinds": {
+      "fragment": "Mảnh",
+      "short": "Quãng ngắn",
+      "block": "Quãng"
+    },
+    "verdicts": {
+      "fragment": "Đây là một mảnh. Khi có năm phút, hãy làm nó.",
+      "short": "Đây là một quãng ngắn. Bạn phải ngồi xuống, nhưng làm một lần là xong.",
+      "block": "Đây là một quãng. Hãy đặt vào khoảng thời gian bạn đã giữ riêng."
+    },
+    "pickNow": "Có 5 phút thì làm",
+    "nothing": "Chưa có",
+    "reset": "Quay về đánh giá của ứng dụng",
+    "note": "Bản dùng thử chỉ dựa vào thời gian để trả lời trước. Trong ứng dụng, câu trả lời đầu tiên đến từ thời gian bạn đặt, và từ chữ bạn viết nếu viết bằng tiếng Hàn hoặc tiếng Anh. Chỉ cần sửa khi nó sai."
+  },
+  "problem": {
+    "title": "Có tuần nào lịch trông trống mà vẫn thấy hụt hơi?",
+    "text": "Lịch chỉ cho biết có việc hay không, không cho biết việc chồng lên nhau bao nhiêu lớp. Ba hạn chót dồn vào cùng một tuần, thường phải bước vào tuần đó mới nhận ra. Còn 5 phút rảnh ở giữa thì trôi qua trong lúc lướt danh sách việc cần làm. Rainbow of Desire vẽ một tuần thành ô lưới, tô đậm theo mức chồng việc và tách riêng những bước làm được trong khoảng trống."
+  },
+  "features": [
+    {
+      "title": "Hai câu hỏi là đủ phân loại",
+      "text": "Khi chia việc lớn thành từng bước, mỗi bước được hỏi hai điều. Có bắt đầu ngay được mà không cần khởi động không? Có làm xong trọn vẹn trong năm phút không?\nChỉ bước nào được trả lời có cả hai mới là mảnh. Ứng dụng trả lời trước dựa trên thời gian và chữ bạn viết, bạn chỉ lật lại khi nó sai.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Có khoảng trống thì chỉ cần nhìn trên cùng",
+      "text": "Vuốt việc cần làm sang phải để gắn tia chớp, nó sẽ vượt lên đứng trên cùng. Không cần đọc hết danh sách, thứ làm được ngay đã nằm ở đó.\nCác bước có chờ nhau hay không, mỗi nhóm chỉ quyết một lần. Theo thứ tự thì bước đầu tiên chưa xong lên trước, tùy ý thì mảnh nào nhặt được ngay lên trước.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Không mở ứng dụng vẫn thấy",
+      "text": "Bộ hẹn giờ đếm đến đúng lúc sự kiện kết thúc, thời gian còn lại hiện cả trên Dynamic Island và Màn hình khóa.\nTiện ích Màn hình chính và Màn hình khóa hiện việc đang làm, thứ làm được trong 5 phút và cầu vồng của tuần này. (Tiện ích thuộc Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Bắt đầu trong ba bước",
+    "items": [
+      {
+        "title": "Kẻ lịch",
+        "text": "Chạm và giữ ô trống ở ngày bắt đầu, chạm thêm ngày kết thúc, một đường sẽ hiện trên cầu vồng."
+      },
+      {
+        "title": "Chia việc lớn",
+        "text": "Chạm vào việc cần làm, ghi các bước và chọn thời gian. Ứng dụng tự trả lời trước hai câu hỏi."
+      },
+      {
+        "title": "Rảnh thì nhìn trên cùng",
+        "text": "Các mảnh và việc gắn tia chớp gom lên trên cùng, không phải chờ lượt."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Những từ bạn sẽ gặp trên màn hình",
+    "rows": [
+      [
+        "Ô đậm · ô nhạt",
+        "ngày thật sự bắt tay vào làm, và phần còn lại cho tới ngày kết thúc"
+      ],
+      [
+        "Cả hàng kín ô",
+        "ngày phải xoay nhiều việc cùng lúc, một việc trễ là cả ngày trễ theo"
+      ],
+      [
+        "Mảnh",
+        "có cho cả hai câu hỏi; bước nhặt lên làm khi có 5 phút"
+      ],
+      [
+        "Quãng ngắn",
+        "không cần khởi động nhưng không xong trong một mảnh; ngồi xuống làm một lèo"
+      ],
+      [
+        "Quãng",
+        "cần khởi động hoặc từ 45 phút trở lên; đặt vào thời gian đã giữ riêng"
+      ],
+      [
+        "Tia chớp",
+        "dấu \"làm ngay\" do bạn tự gắn, vượt lên trên cùng"
+      ],
+      [
+        "Theo thứ tự · Tùy ý",
+        "các bước có chờ nhau không, quyết một lần cho mỗi nhóm"
+      ],
+      [
+        "Sổ thời gian",
+        "bảng tổng kết tuần: việc còn lại, thời gian lấy lại và lúc nghỉ ngơi, ghi riêng không cộng dồn"
+      ]
+    ],
+    "note": "Thời gian cộng dồn từ dưới lên: thời gian của việc lớn là tổng thời gian các bước."
+  },
+  "pricing": {
+    "title": "Những gì cần để sống trọn hôm nay đều miễn phí",
+    "free": {
+      "name": "Miễn phí",
+      "items": [
+        "Cầu vồng (lưới mật độ lịch)",
+        "Chia việc thành bước và hai câu hỏi",
+        "Tia chớp, thứ tự các bước",
+        "Bộ hẹn giờ (Dynamic Island · Màn hình khóa)",
+        "Đồng bộ với ứng dụng Rainbow Craft trên Mac qua iCloud",
+        "Sổ thời gian của 2 tuần gần nhất"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: thống kê sự kiện, Sổ thời gian xa hơn 2 tuần",
+        "Pro: toàn bộ Plus cùng tiện ích Màn hình chính và Màn hình khóa",
+        "Pro: nhập từ Lịch và hiển thị liên tục",
+        "Pro: chia sẻ lịch (chỉ xem)",
+        "Pro: mở luôn Rainbow Craft Pro trên Mac"
+      ],
+      "note": "Mỗi gói có thể mua theo năm hoặc trả một lần dùng trọn đời"
+    },
+    "note": "Chỉ thu phí phần nhìn lại các tuần đã qua và phần đưa dữ liệu ra ngoài ứng dụng. Ai đã mua Pro trước đây hoặc đang dùng gói tháng thì hiện vẫn là Pro."
+  },
+  "faq": {
+    "title": "Câu hỏi thường gặp",
+    "items": [
+      {
+        "q": "Có cần tài khoản hay đăng nhập iCloud không?",
+        "a": "Dùng một mình thì không. Không cần đăng ký, mọi thứ lưu trong máy. Muốn đồng bộ với thiết bị khác hoặc ứng dụng trên Mac, hay dùng tính năng chia sẻ thì cần đăng nhập iCloud."
+      },
+      {
+        "q": "Ứng dụng trả lời sai hai câu hỏi.",
+        "a": "Chạm vào bước rồi đổi giữa Có và Không. Câu trả lời bạn tự chọn luôn được ưu tiên hơn đánh giá của ứng dụng. Muốn giao lại cho ứng dụng thì chạm Quay về đánh giá của ứng dụng. Bước chưa có thời gian sẽ không được tính là mảnh, vì ứng dụng chưa biết nó có xong trong 5 phút không."
+      },
+      {
+        "q": "Có xem chung với người khác được không?",
+        "a": "Bạn có thể gửi liên kết mời để chia sẻ lịch ở chế độ chỉ xem (Pro), hoặc mở một danh sách việc cần làm mà bạn và người được mời cùng đọc, cùng sửa. Ai có liên kết cũng tham gia được, nên chỉ gửi cho người sẽ dùng chung. Tính năng này không liên quan đến Chia sẻ trong gia đình của Apple."
+      },
+      {
+        "q": "Sự kiện trong ứng dụng Lịch có hiện không?",
+        "a": "Sự kiện từ những lịch bạn chọn sẽ hiện trên cầu vồng và màn hình theo ngày (Pro). Ứng dụng chỉ đọc, không ghi gì vào Lịch."
+      },
+      {
+        "q": "Có đánh dấu xong từ tiện ích được không?",
+        "a": "Tiện ích chỉ để xem. Chạm vào sẽ mở thẳng màn hình việc cần làm, bạn đánh dấu trong ứng dụng nhé."
+      },
+      {
+        "q": "Ứng dụng trên Mac có phải mua riêng không?",
+        "a": "Rainbow Craft là một ứng dụng macOS riêng trên Mac App Store. Cùng tài khoản iCloud thì việc cần làm và kế hoạch tuần tự đồng bộ, việc đồng bộ không mất phí."
+      },
+      {
+        "q": "Việc cần làm ghi từ trước còn nguyên không?",
+        "a": "Còn nguyên. Việc cần làm, các bước và thời gian đã đặt đều được giữ. Nhãn điều kiện bắt đầu cũ sẽ được ứng dụng đánh giá lại bằng hai câu hỏi."
+      },
+      {
+        "q": "Nội dung tôi ghi được lưu ở đâu?",
+        "a": "Không có máy chủ. Dữ liệu chỉ nằm trên máy và iCloud riêng của bạn, nhà phát triển không xem được. Không dùng mã định danh quảng cáo hay vị trí, chỉ gửi thống kê sử dụng ẩn danh không nhận ra bạn, có thể tắt trong Cài đặt."
+      },
+      {
+        "q": "Hủy gói đăng ký thế nào?",
+        "a": "Vào ứng dụng Cài đặt > Tài khoản Apple > Đăng ký. Nếu không hủy ít nhất 24 giờ trước khi hết kỳ, gói sẽ tự gia hạn với giá cũ. Gói trọn đời chỉ thanh toán một lần."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Xem tuần này kín đến đâu\ntrước khi bước vào",
+    "cta": "Tải miễn phí trên App Store"
+  },
+  "ui": {
+    "skip": "Chuyển đến nội dung",
+    "languages": "Ngôn ngữ",
+    "privacy": "Chính sách quyền riêng tư",
+    "contact": "Gặp khó khăn hay thấy điều gì lạ, hãy viết cho {email}. Trong Cài đặt của ứng dụng cũng có mục liên hệ."
+  }
+}

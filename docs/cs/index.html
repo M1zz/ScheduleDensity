@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire — týdenní plánovač s pětiminutovými kroky</title>
-<meta name="description" content="Aplikace pro iOS, ve které barva sytí, čím víc se vaše události překrývají. Uvidíte, jak plný je týden, a úkoly rozložíte tak, abyste měli vždy po ruce něco na pět minut. Návod, časté dotazy, soukromí, kontakt." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Na první pohled uvidíte, jak nabitý je týden, a vždy budete mít po ruce krok, který zvládnete za pět minut." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: týdenní plánovač, který tmavne s náloží, a dělení úkolů na kroky</title>
+  <meta name="description" content="Čím víc se věci překrývají, tím tmavší barva, takže náročný týden uvidíte předem. Velké úkoly rozdělíte na kroky. Základ je zdarma.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: týdenní plánovač, který tmavne s náloží, a dělení úkolů na kroky">
+  <meta property="og:description" content="Čím víc se věci překrývají, tím tmavší barva, takže náročný týden uvidíte předem. Velké úkoly rozdělíte na kroky. Základ je zdarma.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/cs/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/cs/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">Přeskočit na obsah</a>
+  <header class="bar">
+    <a class="brand" href="../cs/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Jazyk</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Uvidíte náročný týden předem.<br>Využijete volných pět minut.</h1>
+        <p class="lead">Čím víc se práce překrývá, tím sytější je duha. Rozdělte velký úkol na kroky a ten, který stihnete ve volné chvíli, už čeká úplně nahoře.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">Stáhnout zdarma v App Storu</a><a class="try" href="#try">Vyzkoušejte si to ↓</a></div>
+        <p class="muted small">Duha, dělení úkolů, časovač a synchronizace s Macem jsou zdarma.</p>
+      </div>
+      <div class="plain"><img src="../img/cs/01-rainbow.jpg" alt="Uvidíte náročný týden předem. Využijete volných pět minut." width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">Aplikace pro iOS</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Čím víc se události překrývají, tím je barva sytější. Na první pohled uvidíte, jak nabitý je tento týden, a začnete tím, do čeho se můžete pustit hned teď.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Vyzkoušejte si to</h2>
+      <p class="muted">„Zpráva za 3. čtvrtletí“ je už rozdělená do pěti kroků. Vyberte krok, změňte čas nebo otočte odpověď. Jen krok se dvěma „ano“ se stane střípkem, který zvládnete za pět minut.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Vyzkoušejte si to&quot;, &quot;lead&quot;: &quot;„Zpráva za 3. čtvrtletí“ je už rozdělená do pěti kroků. Vyberte krok, změňte čas nebo otočte odpověď. Jen krok se dvěma „ano“ se stane střípkem, který zvládnete za pět minut.&quot;, &quot;task&quot;: &quot;Zpráva za 3. čtvrtletí&quot;, &quot;steps&quot;: [&quot;Vytáhnout čísla za březen&quot;, &quot;Otevřít soubor z minulého čtvrtletí&quot;, &quot;Napsat úvod&quot;, &quot;Udělat graf podle regionů&quot;, &quot;Poslat Mině&quot;], &quot;total&quot;: &quot;Celkem&quot;, &quot;time&quot;: &quot;Čas&quot;, &quot;min&quot;: &quot;{n} min&quot;, &quot;hr&quot;: &quot;{h} h&quot;, &quot;hrmin&quot;: &quot;{h} h {m} min&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Dokážete začít bez rozjezdu?&quot;, &quot;why&quot;: &quot;Práce, při které se musíte znovu ponořit do souvislostí, spotřebuje celý střípek jen na rozjezd.&quot;}, {&quot;q&quot;: &quot;Je to hotové do pěti minut?&quot;, &quot;why&quot;: &quot;Nedokončená práce zanechává zbytky, které ukusují i z dalšího souvislého času.&quot;}], &quot;yes&quot;: &quot;Ano&quot;, &quot;no&quot;: &quot;Ne&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Střípek&quot;, &quot;short&quot;: &quot;Krátký souvislý čas&quot;, &quot;block&quot;: &quot;Souvislý čas&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Tohle je střípek. Jakmile se otevře pět minut, pusťte se do něj.&quot;, &quot;short&quot;: &quot;Tohle je krátký souvislý čas. Musíte se k tomu posadit, ale dokončíte to na jeden zátah.&quot;, &quot;block&quot;: &quot;Tohle potřebuje souvislý čas. Zařaďte to do času, který máte chráněný.&quot;}, &quot;pickNow&quot;: &quot;Máte pět minut?&quot;, &quot;nothing&quot;: &quot;Zatím nic&quot;, &quot;reset&quot;: &quot;Vrátit na posouzení aplikace&quot;, &quot;note&quot;: &quot;Ukázka odpovídá jen podle času. V aplikaci vychází první odpověď z nastaveného času, a když píšete korejsky nebo anglicky, i z vašich slov. Opravujete jen tehdy, když se splete.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Kalendář vypadá prázdně, a přesto vám týden bere dech?</h2>
+      <p>Kalendář řekne, jestli je něco naplánované, ne kolik se toho na sobě vrší. Že tři termíny padly do stejného týdne, zjistíte obvykle až uprostřed něj, a volných pět minut mezitím padne na pročítání seznamu úkolů. Rainbow of Desire nakreslí týden jako mřížku, ztmaví místa, kde se věci překrývají, a odloží stranou kroky, které se vejdou do mezery.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Duha — nevidíte položky, ale hustotu</h2>
-  <p class="lead">Kalendář vám řekne, jestli je něco naplánované. Duha ukáže, kolik toho je navršeno jedno na druhém.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Kde se to překrývá, je to tmavší</h3>
-      <p>Čím víc se toho nakupí na stejné dny, tím sytější jsou políčka. Stačí posouvat a uvidíte, který týden je přeplněný.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Celé období, nejen jeden den</h3>
-      <p>Nastavte začátek a konec a čára se táhne celou dobu. Dny, kdy na tom opravdu pracujete, jsou tmavé, ostatní zůstanou bledé — nedokončená práce vás totiž drží i tak.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Kde je ještě místo</h3>
-      <p>Navrhne dny, ve kterých zbude místo i po přidání nové události — ne jen ty nejprázdnější.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Dvě otázky a je jasno</h2>
+        <p>Když rozdělíte velký úkol, každý krok dostane dvě otázky. Dokážete začít bez rozjezdu? Je to hotové do pěti minut?<br>Střípek vznikne jen při dvojím ano. Aplikace odpoví první podle času a slov, vy odpověď otočíte jen tehdy, když nesedí.</p>
+      </div>
+      <div class="plain"><img src="../img/cs/03-two-questions.jpg" alt="Dvě otázky a je jasno" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Úkoly — rozkládejte, dokud se něco nevejde do pěti minut</h2>
-  <p class="lead">Seznam, který se nezmenšuje, obvykle není lenost. Spíš vám ještě něco brání se do práce vůbec pustit.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Volná chvíle? Podívejte se nahoru</h2>
+        <p>Přejeďte úkolem doprava, dejte mu blesk a on přeskočí frontu až nahoru. Nemusíte číst celý seznam.<br>Zda na sebe kroky čekají, určíte jednou pro skupinu. Popořadě ukáže první nehotový krok, Libovolně střípek, který můžete vzít hned.</p>
+      </div>
+      <div class="plain"><img src="../img/cs/02-list.jpg" alt="Volná chvíle? Podívejte se nahoru" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Velký úkol rozložte na kroky. Každý krok pak roztřídí dvě otázky, a jen dvě.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Vidět i bez otevření aplikace</h2>
+        <p>Časovač odpočítává do konce události a zbývající čas je vidět i v Dynamic Islandu a na zamčené obrazovce.<br>Widgety na plochu a zamčenou obrazovku ukazují, na čem právě jste, co se vejde do pěti minut a duhu tohoto týdne. (Widgety jsou v Pro)</p>
+      </div>
+      <div class="plain"><img src="../img/cs/05-widgets.jpg" alt="Vidět i bez otevření aplikace" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">První otázka</td><td class="v">Dokážete začít bez rozjezdu? Pokud si musíte znovu vybavovat, kde jste skončili, padne celých pět minut jen na rozjezd.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">Druhá otázka</td><td class="v">Je to hotové do pěti minut? Napůl rozdělaná práce se s vámi táhne i do další hodiny.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Začnete ve třech krocích</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Natáhněte událost</h3><p>Podržte prázdné pole v den začátku a klepněte na den konce. Na duze se objeví čára.</p></li>
+<li class="card"><span class="n">2</span><h3>Rozdělte velké úkoly</h3><p>Klepněte na úkol, napište kroky a vyberte čas. Na dvě otázky odpoví nejdřív aplikace.</p></li>
+<li class="card"><span class="n">3</span><h3>V mezeře koukněte nahoru</h3><p>Střípky a úkoly s bleskem se shromáždí nahoře a nečekají na řadu.</p></li></ol>
+    </section>
 
-  <p><b>Jen krok se dvěma ano je střípek</b> — něco, do čeho se pustíte, když se uvolní pět minut. Všechno ostatní potřebuje souvislý čas, který si vyhradíte předem. Aplikace odpoví sama podle toho, co a na jak dlouho jste napsali; zasáhnete, jen když se splete.</p>
+    <section class="reveal" id="commands">
+      <h2>Co uvidíte na obrazovce</h2>
+      <div class="card table">
+        <dl><div><dt>Tmavé pole · světlé pole</dt><dd>dny, kdy na tom opravdu pracujete, a zbytek období do data konce</dd></div><div><dt>Plný řádek</dt><dd>den, kdy toho běží tolik naráz, že jedno zpoždění posune celý den</dd></div><div><dt>Střípek</dt><dd>ano na obě otázky; vezměte ho, když máte pět minut</dd></div><div><dt>Krátký souvislý čas</dt><dd>bez rozjezdu, ale do střípku se nevejde; zvládne se na jedno posezení</dd></div><div><dt>Souvislý čas</dt><dd>potřebuje rozjezd nebo trvá 45 minut a víc; patří do vyhrazeného času</dd></div><div><dt>Blesk</dt><dd>vaše vlastní značka „hned teď“; skočí nahoru</dd></div><div><dt>Popořadě · Libovolně</dt><dd>zda na sebe kroky čekají, nastavuje se jednou pro skupinu</dd></div><div><dt>Deník získaného času</dt><dd>souhrn týdne: co zbývá, získaný čas a odpočinek, odděleně a nikdy nesčítané</dd></div></dl>
+      </div>
+      <p class="muted">Čas se sčítá zdola nahoru: čas úkolu je součet jeho kroků.</p>
+    </section>
 
-  <h3 class="sub">Proč právě takhle</h3>
-  <ul class="plain">
-    <li>Dvanáct pětiminutových mezer není hodina. Útržky času se nesčítají — rozdíl spolknou náklady na přepínání — a proto je potřeba kroky, které se do mezery vejdou, označit hned od začátku.</li>
-    <li>Návrat k soustředěné práci trvá v průměru asi dvacet tři minut. Nestojí vás to samotné vyrušení, ale znovuobnovení souvislostí.</li>
-    <li>Začít stojí víc sil než pokračovat. Čím dál je první krok od ruky, tím déle se odkládá.</li>
-    <li>Výjimkou je fyzická práce — ta se sčítá, i když ji rozdělíte, a proto se podle velikosti nedělí.</li>
-  </ul>
 
-  <h3 class="sub">Pořadí jednou pro celou skupinu</h3>
-  <p>Kroky na sebe buď čekají, nebo ne — a to rozhodnete jednou pro celou skupinu, místo abyste propojovali závislosti jednu po druhé. Při volbě <b>Popořadě</b> je nahoře první nedokončený krok, při volbě <b>Libovolně</b> střípek, do kterého se můžete pustit hned. Krok přesunete mezi ostatními tak, že ho podržíte a přetáhnete.</p>
+    <section class="reveal" id="pricing">
+      <h2>Co potřebujete pro dnešek, je zdarma</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Zdarma</h3>
+          <ul><li>Duha (mřížka hustoty rozvrhu)</li><li>Dělení úkolů na kroky a dvě otázky</li><li>Blesk a pořadí kroků</li><li>Časovač v Dynamic Islandu a na zamčené obrazovce</li><li>Synchronizace s Rainbow Craft na Macu přes iCloud</li><li>Deník za poslední dva týdny</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: statistiky událostí a deník starší než dva týdny</li><li>Pro: vše z Plus a k tomu widgety na plochu a zamčenou obrazovku</li><li>Pro: import z Kalendáře a jeho stálé zobrazení</li><li>Pro: sdílení rozvrhu jen pro čtení</li><li>Pro: odemkne i Rainbow Craft Pro na Macu</li></ul>
+          <p class="muted">Každé jako roční předplatné nebo jednorázový nákup napořád</p>
+        </div>
+      </div>
+      <p class="muted">Platíte jen za pohled zpět na minulé týdny a za vynášení věcí mimo aplikaci. Pokud jste si Pro koupili dřív nebo máte ještě měsíční předplatné, Pro vám zůstává.</p>
+    </section>
 
-  <h3 class="sub">Blesk</h3>
-  <p>Přejeďte po řádku doprava a přidejte Blesk — svou značku pro „tohle jde udělat hned“. Řádek s Bleskem přeskočí frontu a stojí nahoře, takže když se otevře chvilka, nemusíte procházet seznam, stačí se podívat nahoru. Dalším přejetím značku zase odeberete.</p>
+    <section class="reveal" id="faq">
+      <h2>Časté otázky</h2>
+      <div class="faq"><details><summary>Potřebuji účet nebo iCloud?</summary><p>Pokud aplikaci používáte sami, ne. Žádná registrace, vše zůstává v zařízení. Pro další zařízení, aplikaci pro Mac nebo sdílení se přihlaste k iCloudu.</p></details>
+<details><summary>Aplikace odpověděla na otázku špatně.</summary><p>Klepněte na krok a přepněte Ano nebo Ne. Vaše odpověď má vždy přednost. Klepnutím na „Vrátit na posouzení aplikace“ ji aplikaci vrátíte. Krok bez času se nepočítá jako střípek, protože aplikace neví, jestli se stihne za pět minut.</p></details>
+<details><summary>Můžu něco sdílet s ostatními?</summary><p>Pozvánkou můžete sdílet svůj rozvrh jen pro čtení (Pro) nebo otevřít seznam úkolů, který vy a pozvaní společně čtete a upravujete. Připojit se může kdokoli s odkazem, posílejte ho proto jen těm správným lidem. S Rodinným sdílením od Applu to nesouvisí.</p></details>
+<details><summary>Zobrazí se události z Kalendáře?</summary><p>Události z vybraných kalendářů se ukážou na duze a v denním zobrazení (Pro). Aplikace je jen čte a nic do nich nezapisuje.</p></details>
+<details><summary>Můžu úkoly odškrtávat ve widgetu?</summary><p>Widgety slouží jen k náhledu. Klepněte na widget, otevřou se úkoly a odškrtněte je tam.</p></details>
+<details><summary>Kupuje se aplikace pro Mac zvlášť?</summary><p>Rainbow Craft je samostatná aplikace pro macOS v Mac App Storu. Se stejným účtem iCloud se úkoly a týdenní plány synchronizují samy a nic to nestojí.</p></details>
+<details><summary>Zůstaly mi starší úkoly?</summary><p>Ano. Úkoly, kroky i nastavené časy zůstávají. Štítky starých podmínek pro začátek aplikace znovu posoudí dvěma otázkami.</p></details>
+<details><summary>Kde se ukládají moje data?</summary><p>Žádný server není. Vše je ve vašem zařízení a ve vašem soukromém iCloudu, kam vývojář nevidí. Bez reklamního identifikátoru a polohy. Aplikace posílá jen anonymní statistiky používání, podle kterých vás nikdo nepozná, a v Nastavení je lze vypnout.</p></details>
+<details><summary>Jak zruším předplatné?</summary><p>V Nastavení &gt; Účet Apple &gt; Předplatné. Pokud ho nezrušíte nejpozději 24 hodin před koncem období, obnoví se za stejnou cenu. Nákup napořád se platí jednou.</p></details></div>
+      <p class="contact">Zasekli jste se nebo něco nesedí? Napište na <a href="mailto:leeo@kakao.com">leeo@kakao.com</a>. Kontakt najdete i v nastavení aplikace.</p>
+    </section>
 
-  <h3 class="sub">A ještě</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Widgety na plochu a zamčenou obrazovku</h3>
-      <p>Čtyři: Úkoly, Blesk, Duha a Časovač. Widget Blesk ukazuje jen to, co teď stihnete za pět minut.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Přidávejte odkudkoli</h3>
-      <p>Sdílejte z jiné aplikace a tahle se objeví v nabídce sdílení. Stačí malé okénko a máte z toho úkol.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Pokračuje i na Macu</h3>
-      <p>Rainbow Craft, aplikace pro macOS, používá stejný účet iCloud. Co napíšete na jedné straně, objeví se na druhé.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Podívejte se, jak plný je týden,<br>ještě než do něj vstoupíte</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">Stáhnout zdarma v App Storu</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Sdílení</h2>
-  <p class="lead">Odkaz pošlete jen těm, kdo ho potřebují.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Události (jen pro čtení)</h3>
-      <p>Pošlete odkaz s pozvánkou a druhý člověk uvidí vaše události. Měnit je nemůže.</p>
-    </div>
-    <div class="card">
-      <h3>Úkoly (společně)</h3>
-      <p>Vy a pozvaní lidé čtete a upravujete jeden společný seznam. S Rodinným sdílením od Applu to nijak nesouvisí.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Připojit se může kdokoli, kdo má odkaz s pozvánkou, proto ho posílejte jen lidem, které chcete přizvat. Sdílení vyžaduje přihlášení k iCloudu.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Jazyk"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs" aria-current="page">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi">Suomi</a>
+<a href="../id/" hreflang="id" lang="id">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Zásady ochrany osobních údajů</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Jak začít</h2>
-  <ol class="steps">
-    <li><b>Nakreslete událost</b><span>Podržte prázdné políčko v den začátku a pak znovu v den konce. Zadejte název, dny v týdnu, kdy na tom opravdu pracujete, a počet hodin denně.</span></li>
-    <li><b>Napište úkol</b><span>Pište do prázdného řádku a stiskněte Return. To je celé.</span></li>
-    <li><b>Rozložte, co je velké</b><span>Otevřete řádek a zapište kroky v pořadí, v jakém práce poběží. Aplikace vám řekne, které jsou střípky a které potřebují souvislý čas.</span></li>
-    <li><b>Když se uvolní pět minut, vezměte si střípek</b><span>Co jde udělat hned, stojí na začátku seznamu. Zbytek číst nemusíte.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Časté dotazy</h2>
-
-  <details>
-    <summary>Musím se přihlásit k iCloudu?</summary>
-    <p>Pokud aplikaci používáte jen sami, nemusíte — vše se ukládá v zařízení. iCloud potřebujete k synchronizaci s jiným zařízením nebo s aplikací pro Mac a ke sdílení.</p>
-  </details>
-
-  <details>
-    <summary>Je aplikace v mém jazyce?</summary>
-    <p>Aplikace je ve 23 jazycích včetně češtiny a řídí se jazykem zařízení. Pokud chcete jazyk změnit jen pro ni, otevřete Nastavení v iOS, najděte Rainbow of Desire a zvolte Jazyk.</p>
-  </details>
-
-  <details>
-    <summary>Co když aplikace krok posoudí špatně?</summary>
-    <p>Přejeďte po kroku doleva a odpovězte na obě otázky sami. Vaše odpověď má přednost před odhadem aplikace a už to tak zůstane. Aplikace vychází ze slov, která jste napsali, takže u práce, kterou nezná, se často splete — s tím se počítá.</p>
-  </details>
-
-  <details>
-    <summary>Proč se úkol bez zadaného času nikdy nestane střípkem?</summary>
-    <p>Protože nic neříká, že bude hotový do pěti minut, a tenhle seznam má smysl, jen když je v něm opravdu to, co jde udělat hned. Napište čas — třeba patnáct minut — a úkol se zařadí správně.</p>
-  </details>
-
-  <details>
-    <summary>Dají se úkoly odškrtávat ve widgetu?</summary>
-    <p>Zatím ne — widgety jsou jen pro čtení. Klepněte na widget a hned se otevře obrazovka úkolů.</p>
-  </details>
-
-  <details>
-    <summary>Co je placené?</summary>
-    <p>Jádro aplikace je zdarma: Duha, rozkládání úkolů, dvě otázky a pořadí kroků. Rainbow Pro odemkne pět doplňků: widgety na plochu a zamčenou obrazovku, import z Kalendáře, sdílení rozvrhu, statistiky rozvrhu a Deník získaného času. Vybrat si můžete roční předplatné s prvním týdnem zdarma, měsíční nebo jednorázový doživotní nákup. Používání spolu s Macem je zdarma.</p>
-  </details>
-
-  <details>
-    <summary>Musím si aplikaci pro Mac koupit zvlášť?</summary>
-    <p>Rainbow Craft je samostatná aplikace pro macOS. Na stejném účtu iCloud se úkoly a týdenní plány přenášejí samy.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Soukromí</h2>
-  <p class="lead">Žádný server neexistuje. Co napíšete, zůstane ve vašem zařízení a ve vašem iCloudu.</p>
-  <div class="note">
-    Žádné reklamní identifikátory, žádná poloha, žádná registrace. Odesílají se jen anonymní statistiky používání, podle kterých vás nelze identifikovat, a můžete je vypnout v Nastavení.
-    Podrobnosti najdete v <a href="privacy.html">zásadách ochrany soukromí</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Co je nového</h2>
-  <p class="lead">Každá verze je zapsaná.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Přečíst poznámky k vydání</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Podpora</h2>
-    <p class="lead" style="margin-bottom:0">Pokud vám něco překáží nebo nefunguje, jak má, dejte nám vědět. Kontakt najdete i v Nastavení aplikace.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Zásady ochrany soukromí</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: planner semanal que escurece com a carga e divide tarefas",
+  "description": "Quanto mais as tarefas se sobrepõem, mais escura a cor: você vê antes a semana cheia. Divida o que é grande em passos. O essencial é grátis.",
+  "hero": {
+    "headline": "Veja a semana cheia chegando.\nAproveite os cinco minutos livres.",
+    "lead": "Quanto mais o trabalho se sobrepõe, mais forte fica o arco-íris. Divida uma tarefa grande em passos, e o que dá para fazer numa brecha já está esperando no topo.",
+    "cta": "Baixe grátis na App Store",
+    "note": "O arco-íris, a divisão de tarefas, o timer e a sincronização com o Mac são grátis."
+  },
+  "demo": {
+    "title": "Experimente você mesmo",
+    "lead": "\"Relatório do 3º tri\" já está dividido em cinco passos. Escolha um, mude o tempo ou inverta uma resposta. Só o passo com dois \"sim\" vira um fragmento para fazer em cinco minutos.",
+    "task": "Relatório do 3º tri",
+    "steps": [
+      "Puxar os números de março",
+      "Abrir o arquivo do trimestre passado",
+      "Escrever a introdução",
+      "Fazer o gráfico por região",
+      "Mandar para a Mina"
+    ],
+    "total": "Total",
+    "time": "Tempo",
+    "min": "{n} min",
+    "hr": "{h} h",
+    "hrmin": "{h} h {m} min",
+    "questions": [
+      {
+        "q": "Dá para começar sem aquecer?",
+        "why": "Um trabalho que exige recarregar o contexto gasta o fragmento inteiro só no aquecimento."
+      },
+      {
+        "q": "Termina em até cinco minutos?",
+        "why": "Trabalho inacabado deixa resíduos que consomem o próximo período contínuo."
+      }
+    ],
+    "yes": "Sim",
+    "no": "Não",
+    "kinds": {
+      "fragment": "Fragmento",
+      "short": "Período contínuo curto",
+      "block": "Período contínuo"
+    },
+    "verdicts": {
+      "fragment": "Este é um fragmento. Quando abrirem cinco minutos, faça-o.",
+      "short": "Este é um período contínuo curto. Você precisa se sentar, mas termina numa sentada só.",
+      "block": "Este é um período contínuo. Coloque-o num horário protegido."
+    },
+    "pickNow": "Tem cinco minutos?",
+    "nothing": "Nada ainda",
+    "reset": "Voltar à resposta do app",
+    "note": "Esta demonstração responde só pelo tempo. No app, a primeira resposta vem do tempo que você define e também das suas palavras, se escrever em coreano ou inglês. Você só corrige quando ela erra."
+  },
+  "problem": {
+    "title": "A agenda parece vazia, mas a semana te deixa sem fôlego?",
+    "text": "Uma agenda mostra se algo está marcado, não quanto está empilhado em cima. Que três prazos caíram na mesma semana você só descobre quando já está nela, e os cinco minutos soltos no meio vão embora relendo a lista de tarefas. O Rainbow of Desire desenha a semana como uma grade, escurece onde há sobreposição e separa os passos que cabem numa brecha."
+  },
+  "features": [
+    {
+      "title": "Duas perguntas resolvem",
+      "text": "Ao dividir uma tarefa grande, cada passo recebe duas perguntas. Dá para começar sem aquecer? Termina em até cinco minutos?\nSó um duplo sim faz dele um fragmento. O app responde primeiro pelo tempo e pelas palavras, e você só inverte uma resposta quando ela está errada.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Uma brecha? Olhe só o topo",
+      "text": "Deslize uma tarefa para a direita para dar um raio a ela, e ela fura a fila e vai para o topo. Não precisa ler a lista inteira.\nSe os passos esperam uns pelos outros, você decide uma vez por grupo. Em ordem mostra o primeiro passo pendente; Qualquer ordem, o fragmento que você pode pegar agora.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Dá para ver sem abrir o app",
+      "text": "O timer conta até o fim do evento, e o tempo restante aparece também na Dynamic Island e na Tela Bloqueada.\nOs widgets da Tela de Início e Bloqueada mostram o que você está fazendo, o que cabe em cinco minutos e o arco-íris da semana. (Widgets são Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Comece em três passos",
+    "items": [
+      {
+        "title": "Trace um evento",
+        "text": "Toque e segure uma célula vazia no dia de início e toque no dia de fim: surge uma linha no arco-íris."
+      },
+      {
+        "title": "Divida o que é grande",
+        "text": "Toque numa tarefa, escreva os passos e escolha um tempo. O app responde antes as duas perguntas."
+      },
+      {
+        "title": "Numa brecha, olhe o topo",
+        "text": "Fragmentos e tarefas com raio ficam juntos no topo, sem esperar a vez."
+      }
+    ]
+  },
+  "reference": {
+    "title": "O que você vai ver na tela",
+    "rows": [
+      [
+        "Célula escura · célula clara",
+        "os dias em que você trabalha nisso de fato, e o resto até a data final"
+      ],
+      [
+        "Uma linha cheia",
+        "um dia com tanta coisa junta que um atraso empurra o dia inteiro"
+      ],
+      [
+        "Fragmento",
+        "sim às duas perguntas; pegue quando sobrarem cinco minutos"
+      ],
+      [
+        "Período contínuo curto",
+        "não precisa aquecer, mas não termina num fragmento; sai de uma sentada"
+      ],
+      [
+        "Período contínuo",
+        "precisa aquecer ou leva 45 minutos ou mais; vai para um tempo reservado"
+      ],
+      [
+        "Raio",
+        "sua própria marca de \"agora mesmo\"; pula para o topo"
+      ],
+      [
+        "Em ordem · Qualquer ordem",
+        "se os passos esperam uns pelos outros, definido uma vez por grupo"
+      ],
+      [
+        "Registro de tempo recuperado",
+        "o balanço da semana: o que sobrou, o tempo recuperado e o descanso, separados e nunca somados"
+      ]
+    ],
+    "note": "O tempo soma de baixo para cima: o de uma tarefa é a soma dos seus passos."
+  },
+  "pricing": {
+    "title": "O que você precisa para hoje é grátis",
+    "free": {
+      "name": "Grátis",
+      "items": [
+        "O arco-íris (grade de densidade da agenda)",
+        "Divisão em passos e as duas perguntas",
+        "Raio e ordem dos passos",
+        "Timer na Dynamic Island e na Tela Bloqueada",
+        "Sincronização com o Rainbow Craft no Mac via iCloud",
+        "O registro das últimas duas semanas"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: estatísticas de eventos e registro além de duas semanas",
+        "Pro: tudo do Plus, mais widgets da Tela de Início e Bloqueada",
+        "Pro: importar do Calendário e exibir sempre",
+        "Pro: compartilhar eventos, só leitura",
+        "Pro: libera também o Rainbow Craft Pro no Mac"
+      ],
+      "note": "Cada um como assinatura anual ou compra única vitalícia"
+    },
+    "note": "Você só paga para olhar semanas passadas e para levar coisas para fora do app. Se comprou o Pro antes ou ainda tem o plano mensal, continua Pro."
+  },
+  "faq": {
+    "title": "Perguntas frequentes",
+    "items": [
+      {
+        "q": "Preciso de conta ou de iCloud?",
+        "a": "Usando sozinho, não. Não há cadastro e tudo fica no seu aparelho. Para outro aparelho, o app do Mac ou o compartilhamento, entre no iCloud."
+      },
+      {
+        "q": "O app respondeu errado uma pergunta.",
+        "a": "Toque no passo e troque entre Sim e Não. A sua resposta sempre vale mais que a do app. Toque em \"Voltar à resposta do app\" para devolver a ele. Um passo sem tempo não conta como fragmento, porque o app não sabe se ele termina em cinco minutos."
+      },
+      {
+        "q": "Dá para compartilhar com alguém?",
+        "a": "Com um link de convite, você compartilha seus eventos só para leitura (Pro) ou abre uma lista de tarefas que você e os convidados leem e editam juntos. Qualquer pessoa com o link pode entrar, então mande só para quem você quer. Não tem relação com o Compartilhamento Familiar da Apple."
+      },
+      {
+        "q": "Meus eventos do Calendário aparecem?",
+        "a": "Os eventos dos calendários escolhidos aparecem no arco-íris e na visão do dia (Pro). O app só lê e não escreve nada."
+      },
+      {
+        "q": "Dá para marcar como feito no widget?",
+        "a": "Widgets são só para ver. Toque em um e suas tarefas abrem na hora; marque por lá."
+      },
+      {
+        "q": "O app do Mac é vendido separado?",
+        "a": "O Rainbow Craft é um app de macOS à parte na Mac App Store. Com a mesma conta do iCloud, tarefas e planos da semana sincronizam sozinhos, sem custo."
+      },
+      {
+        "q": "Minhas tarefas antigas continuam lá?",
+        "a": "Sim. Tarefas, passos e tempos definidos ficam como estavam. Os rótulos das antigas condições de início são reavaliados pelo app com as duas perguntas."
+      },
+      {
+        "q": "Onde meus dados ficam guardados?",
+        "a": "Não há servidor. Tudo fica no seu aparelho e no seu iCloud privado, onde o desenvolvedor não vê. Sem identificador de publicidade, sem localização. O app envia só estatísticas de uso anônimas, que não identificam você e podem ser desligadas em Ajustes."
+      },
+      {
+        "q": "Como cancelo uma assinatura?",
+        "a": "Em Ajustes > Conta Apple > Assinaturas. Ela renova pelo mesmo preço se você não cancelar até 24 horas antes do fim do período. A compra vitalícia é paga uma vez só."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Veja o quanto a semana está cheia\nantes de entrar nela",
+    "cta": "Baixe grátis na App Store"
+  },
+  "ui": {
+    "skip": "Pular para o conteúdo",
+    "languages": "Idioma",
+    "privacy": "Política de Privacidade",
+    "contact": "Travou em algo ou viu algo estranho? Escreva para {email}. Nos ajustes do app também há uma opção de contato."
+  }
+}

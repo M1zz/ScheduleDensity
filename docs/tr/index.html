@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire — beş dakikalık adımlarla haftalık planlayıcı</title>
-<meta name="description" content="Etkinlikleriniz çakıştıkça rengi koyulaşan bir iOS uygulaması. Haftanın ne kadar dolu olduğunu görün, görevlerinizi bölün; beş dakikada ele alabileceğiniz bir şey hep olsun. Kılavuz, SSS, gizlilik, iletişim." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Haftanın ne kadar yoğun olduğunu bir bakışta görün; beş dakikada ele alabileceğiniz bir adım hep elinizin altında olsun." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: yük arttıkça koyulaşan haftalık planlayıcı ve görev bölme</title>
+  <meta name="description" content="İşler üst üste bindikçe renk koyulaşır, yoğun haftayı önceden görürsünüz. Büyük işleri adımlara bölersiniz. Temel özellikler ücretsizdir.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: yük arttıkça koyulaşan haftalık planlayıcı ve görev bölme">
+  <meta property="og:description" content="İşler üst üste bindikçe renk koyulaşır, yoğun haftayı önceden görürsünüz. Büyük işleri adımlara bölersiniz. Temel özellikler ücretsizdir.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/tr/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/tr/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">İçeriğe geç</a>
+  <header class="bar">
+    <a class="brand" href="../tr/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Dil</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Yoğun haftayı önceden görün.<br>Boş beş dakikayı kaçırmayın.</h1>
+        <p class="lead">İşler üst üste bindikçe gökkuşağı koyulaşır. Büyük bir işi adımlara bölün, bir boşlukta yapabileceğiniz adım zaten en üstte bekliyor olsun.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">App Store'dan ücretsiz indirin</a><a class="try" href="#try">Kendiniz deneyin ↓</a></div>
+        <p class="muted small">Gökkuşağı, iş bölme, zamanlayıcı ve Mac ile eşzamanlama ücretsizdir.</p>
+      </div>
+      <div class="plain"><img src="../img/tr/01-rainbow.jpg" alt="Yoğun haftayı önceden görün. Boş beş dakikayı kaçırmayın." width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../vi/">Tiếng Việt</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">iOS uygulaması</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Etkinlikleriniz çakıştıkça renk koyulaşır. Bu haftanın ne kadar yoğun olduğunu bir bakışta görün ve hemen ele alabileceğiniz işle başlayın.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Kendiniz deneyin</h2>
+      <p class="muted">"3. Çeyrek Raporu" beş adıma bölünmüş durumda. Bir adım seçin, süresini değiştirin ya da bir yanıtı tersine çevirin. Yalnızca iki soruya da evet alan adım, beş dakikada yapılacak bir parça olur.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Kendiniz deneyin&quot;, &quot;lead&quot;: &quot;\&quot;3. Çeyrek Raporu\&quot; beş adıma bölünmüş durumda. Bir adım seçin, süresini değiştirin ya da bir yanıtı tersine çevirin. Yalnızca iki soruya da evet alan adım, beş dakikada yapılacak bir parça olur.&quot;, &quot;task&quot;: &quot;3. Çeyrek Raporu&quot;, &quot;steps&quot;: [&quot;Mart rakamlarını çıkar&quot;, &quot;Geçen çeyreğin dosyasını aç&quot;, &quot;Girişi yaz&quot;, &quot;Bölgelere göre grafik çiz&quot;, &quot;Mina&#x27;ya gönder&quot;], &quot;total&quot;: &quot;Toplam&quot;, &quot;time&quot;: &quot;Süre&quot;, &quot;min&quot;: &quot;{n} dk&quot;, &quot;hr&quot;: &quot;{h} sa&quot;, &quot;hrmin&quot;: &quot;{h} sa {m} dk&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Isınmadan başlayabilir misiniz?&quot;, &quot;why&quot;: &quot;Bağlamı yeniden yüklemenizi gerektiren bir iş, parçanın tamamını ısınmaya harcar.&quot;}, {&quot;q&quot;: &quot;Beş dakika içinde biter mi?&quot;, &quot;why&quot;: &quot;Bitmemiş iş, sonraki odak süresini de kemiren bir kalıntı bırakır.&quot;}], &quot;yes&quot;: &quot;Evet&quot;, &quot;no&quot;: &quot;Hayır&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Parça&quot;, &quot;short&quot;: &quot;Kısa odak süresi&quot;, &quot;block&quot;: &quot;Odak süresi&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Bu bir parça. Beş dakika açıldığında bunu ele alın.&quot;, &quot;short&quot;: &quot;Bu kısa bir odak süresi. Oturmanız gerekir ama tek oturuşta biter.&quot;, &quot;block&quot;: &quot;Bu bir odak süresi işi. Koruduğunuz bir zamana koyun.&quot;}, &quot;pickNow&quot;: &quot;Beş dakikanız mı var?&quot;, &quot;nothing&quot;: &quot;Henüz yok&quot;, &quot;reset&quot;: &quot;Uygulamanın yanıtına dön&quot;, &quot;note&quot;: &quot;Bu deneme yalnızca süreye bakarak yanıt verir. Uygulamada ilk yanıt belirlediğiniz süreden, Korece ya da İngilizce yazarsanız sözcüklerinizden de gelir. Yalnızca yanıldığında düzeltirsiniz.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Takvim boş görünüyor ama hafta yine de nefesinizi mi kesiyor?</h2>
+      <p>Takvim bir şeyin planlanıp planlanmadığını söyler, üstüne ne kadar yük bindiğini söylemez. Üç teslim tarihinin aynı haftaya düştüğünü genellikle o haftanın içindeyken fark edersiniz; aradaki boş beş dakika da yapılacaklar listesini okumakla geçer. Rainbow of Desire haftanızı bir ızgara olarak çizer, çakışan yerleri koyulaştırır ve boşluğa sığan adımları ayrıca ayırır.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Gökkuşağı: kayıtları değil, yoğunluğu görün</h2>
-  <p class="lead">Takvim size bir işin planlanıp planlanmadığını söyler. Bu uygulama ise ne kadar işin üst üste yığıldığını gösterir.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Çakıştıkça koyulaşır</h3>
-      <p>Aynı günlere ne kadar çok iş binerse hücreler o kadar koyulaşır. Yalnızca kaydırarak hangi haftanın fazla dolu olduğunu görürsünüz.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Yalnızca günü değil, dönemi</h3>
-      <p>Bir başlangıç ve bitiş belirleyin, çizgi baştan sona uzansın. Gerçekten çalıştığınız günler koyu, diğerleri soluk kalır; çünkü bitmemiş iş sizi yine de bağlı tutar.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Nerede yer var</h3>
-      <p>Yalnızca en boş günleri değil, yeni etkinlik eklendikten sonra da yeri kalan günleri önerir.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>İki soru, her şey netleşir</h2>
+        <p>Büyük bir işi böldüğünüzde her adıma iki soru sorulur. Isınmadan başlayabilir misiniz? Beş dakika içinde biter mi?<br>Yalnızca iki evet onu bir parça yapar. Uygulama süreye ve sözcüklere bakarak önce yanıtlar, siz yalnızca yanlışsa çevirirsiniz.</p>
+      </div>
+      <div class="plain"><img src="../img/tr/03-two-questions.jpg" alt="İki soru, her şey netleşir" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Görevler: beş dakikaya sığan bir şey çıkana kadar bölün</h2>
-  <p class="lead">Hiç kısalmayan bir liste çoğu zaman tembellikten değildir. İşe el atabilmeniz için önünde hâlâ bir engel vardır.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Boşluk mu çıktı? Sadece en üste bakın</h2>
+        <p>Bir işi sağa kaydırıp şimşek ekleyin, sırayı atlayıp en üste geçsin. Bütün listeyi okumanıza gerek kalmaz.<br>Adımların birbirini bekleyip beklemediğini her grup için bir kez belirlersiniz. Sırayla seçeneği bitmemiş ilk adımı, Sırasız seçeneği şimdi alabileceğiniz parçayı öne çıkarır.</p>
+      </div>
+      <div class="plain"><img src="../img/tr/02-list.jpg" alt="Boşluk mu çıktı? Sadece en üste bakın" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Büyük bir işi adımlara bölün. Her adım iki soruyla, yalnızca iki soruyla ayrılır.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Uygulamayı açmadan görünür</h2>
+        <p>Zamanlayıcı etkinliğin bittiği ana kadar sayar; kalan süre Dynamic Island'da ve Kilitli Ekran'da da görünür.<br>Ana Ekran ve Kilitli Ekran araç takımları üzerinde çalıştığınız işi, beş dakikaya sığanları ve bu haftanın gökkuşağını gösterir. (Araç takımları Pro'ya dahildir)</p>
+      </div>
+      <div class="plain"><img src="../img/tr/05-widgets.jpg" alt="Uygulamayı açmadan görünür" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">Birinci soru</td><td class="v">Isınmadan başlayabilir misiniz? Nerede kaldığınızı yeniden hatırlamanız gerekiyorsa beş dakikalık boşluk ısınmaya gider, o kadar.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">İkinci soru</td><td class="v">Beş dakika içinde baştan sona biter mi? Yarım bıraktığınız iş sizi bir sonraki saate kadar izler.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Üç adımda başlayın</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Etkinliği çizin</h3><p>Başlangıç gününde boş bir hücreye basılı tutun, bitiş gününe dokunun. Gökkuşağında bir çizgi belirir.</p></li>
+<li class="card"><span class="n">2</span><h3>Büyük işleri bölün</h3><p>Bir işe dokunun, adımlarını yazın ve süre seçin. İki soruyu önce uygulama yanıtlar.</p></li>
+<li class="card"><span class="n">3</span><h3>Boşlukta en üste bakın</h3><p>Parçalar ve şimşekli işler sıra beklemeden en üstte toplanır.</p></li></ol>
+    </section>
 
-  <p><b>Yalnızca iki soruya da evet diyen adım bir parçadır</b>; beş dakika açıldığında ele alınır. Gerisi odak süresi ister ve ayırdığınız zamana aittir. Yazdığınız sözcüklere ve süreye bakıp önce uygulama yanıtlar; siz yalnızca yanıldığında devreye girersiniz.</p>
+    <section class="reveal" id="commands">
+      <h2>Ekranda karşılaşacaklarınız</h2>
+      <div class="card table">
+        <dl><div><dt>Koyu hücre · açık hücre</dt><dd>gerçekten üzerinde çalıştığınız günler ve bitiş tarihine kadar kalan süre</dd></div><div><dt>Dolu bir satır</dt><dd>aynı anda o kadar çok iş dönen bir gün ki tek bir gecikme bütün günü kaydırır</dd></div><div><dt>Parça</dt><dd>iki soruya da evet; beş dakikanız olduğunda alın</dd></div><div><dt>Kısa odak süresi</dt><dd>ısınma gerekmez ama bir parçada bitmez; tek oturuşta tamamlanır</dd></div><div><dt>Odak süresi</dt><dd>ısınma ister ya da 45 dakika ve üzeri sürer; ayırdığınız zamana koyun</dd></div><div><dt>Şimşek</dt><dd>kendi "hemen şimdi" işaretiniz; en üste çıkar</dd></div><div><dt>Sırayla · Sırasız</dt><dd>adımların birbirini bekleyip beklemediği, grup başına bir kez belirlenir</dd></div><div><dt>Geri Kazanım Defteri</dt><dd>haftanın dökümü: kalanlar, geri kazanılan zaman ve dinlenme, ayrı tutulur ve asla toplanmaz</dd></div></dl>
+      </div>
+      <p class="muted">Süre aşağıdan yukarı toplanır: bir işin süresi adımlarının toplamıdır.</p>
+    </section>
 
-  <h3 class="sub">Neden böyle bölünüyor</h3>
-  <ul class="plain">
-    <li>On iki kez beş dakika bir saat etmez. Parça zamanlar toplanıp bir bütüne dönüşmez, aradaki farkı geçiş maliyeti yer; bu yüzden bir boşluğa sığan adımlar baştan ayrıca işaretlenmelidir.</li>
-    <li>Derin bir işe yeniden dönmek ortalama yirmi üç dakika sürer. Asıl maliyet bölünmenin kendisi değil, bağlamı yeniden kurmaktır.</li>
-    <li>Başlamak, sürdürmekten daha çok güç ister. İlk hamle elinizden ne kadar uzaksa iş o kadar ertelenir.</li>
-    <li>Bedensel işler istisnadır: bölünseler de birikirler, bu yüzden boyutlarına göre kesilmezler.</li>
-  </ul>
 
-  <h3 class="sub">Sıra, her grup için bir kez</h3>
-  <p>Adımlar ya birbirini bekler ya beklemez; bağımlılıkları tek tek kurmak yerine buna bütün grup için bir kez karar verirsiniz. <b>Sırayla</b> seçildiğinde henüz bitmemiş ilk adım, <b>Sırasız</b> seçildiğinde şu an alınabilecek parça en üstte durur. Bir adımı aynı düzeydekiler arasında taşımak için basılı tutup sürükleyin.</p>
+    <section class="reveal" id="pricing">
+      <h2>Bugün için gereken her şey ücretsiz</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Ücretsiz</h3>
+          <ul><li>Gökkuşağı (program yoğunluğu ızgarası)</li><li>İşleri adımlara bölme ve iki soru</li><li>Şimşek ve adım sırası</li><li>Dynamic Island ve Kilitli Ekran'da zamanlayıcı</li><li>Mac'teki Rainbow Craft ile iCloud üzerinden eşzamanlama</li><li>Son iki haftanın Geri Kazanım Defteri</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: etkinlik istatistikleri ve iki haftadan eski defter</li><li>Pro: Plus'ın tamamı ve Ana Ekran ile Kilitli Ekran araç takımları</li><li>Pro: Takvim'den içe aktarma ve sürekli gösterme</li><li>Pro: etkinlik paylaşımı, yalnızca görüntüleme</li><li>Pro: Mac'teki Rainbow Craft Pro'nun da kilidini açar</li></ul>
+          <p class="muted">Her biri yıllık abonelik ya da tek seferlik ömür boyu satın alma olarak</p>
+        </div>
+      </div>
+      <p class="muted">Yalnızca geçmiş haftalara dönüp bakmak ve verileri uygulamanın dışına taşımak için ödeme yaparsınız. Daha önce Pro aldıysanız ya da aylık aboneliğiniz sürüyorsa hâlâ Pro'sunuz.</p>
+    </section>
 
-  <h3 class="sub">Şimşek</h3>
-  <p>Bir satırı sağa kaydırıp Şimşek ekleyin; bu, “bu iş hemen yapılabilir” diyen kendi işaretinizdir. Şimşekli satır sırayı atlayıp en üste geçer; böylece bir boşluk açıldığında listeyi taramanız gerekmez, en üste bakmanız yeter. İşareti kaldırmak için yeniden kaydırın.</p>
+    <section class="reveal" id="faq">
+      <h2>Sık sorulan sorular</h2>
+      <div class="faq"><details><summary>Hesap ya da iCloud gerekli mi?</summary><p>Tek başınıza kullanıyorsanız hayır. Kayıt yok, her şey cihazda kalır. Başka cihazlar, Mac uygulaması ya da paylaşım için iCloud'a giriş yapın.</p></details>
+<details><summary>Uygulama bir soruyu yanlış yanıtladı.</summary><p>Adıma dokunup Evet ile Hayır arasında geçiş yapın. Kendi yanıtınız her zaman önce gelir. Kararı geri vermek için "Uygulamanın yanıtına dön"e dokunun. Süresi girilmemiş bir adım parça sayılmaz, çünkü uygulama beş dakikada bitip bitmeyeceğini bilemez.</p></details>
+<details><summary>Başkalarıyla paylaşabilir miyim?</summary><p>Davet bağlantısıyla etkinliklerinizi yalnızca görüntülenecek şekilde paylaşabilir (Pro) ya da davet ettiğiniz kişilerle birlikte okuyup düzenlediğiniz bir yapılacaklar listesi açabilirsiniz. Bağlantıyı alan herkes katılabilir, bu yüzden yalnızca doğru kişilere gönderin. Apple'ın Aile Paylaşımı ile ilgisi yoktur.</p></details>
+<details><summary>Takvim etkinliklerim görünür mü?</summary><p>Seçtiğiniz takvimlerdeki etkinlikler gökkuşağında ve gün görünümünde yer alır (Pro). Uygulama yalnızca okur, takvime hiçbir şey yazmaz.</p></details>
+<details><summary>Araç takımından işaretleyebilir miyim?</summary><p>Araç takımları yalnızca görüntüleme içindir. Birine dokunduğunuzda görevler hemen açılır, işaretlemeyi orada yapın.</p></details>
+<details><summary>Mac uygulaması ayrıca mı satın alınıyor?</summary><p>Rainbow Craft, Mac App Store'da ayrı bir macOS uygulamasıdır. Aynı iCloud hesabıyla görevler ve haftalık planlar kendiliğinden eşzamanlanır, bunun bir ücreti yoktur.</p></details>
+<details><summary>Eski görevlerim duruyor mu?</summary><p>Evet. Görevler, adımlar ve girdiğiniz süreler korunur. Eski başlama koşulu etiketlerini uygulama iki soruyla yeniden değerlendirir.</p></details>
+<details><summary>Verilerim nerede saklanıyor?</summary><p>Sunucu yoktur. Her şey cihazınızda ve kendi iCloud'unuzda durur, geliştirici göremez. Reklam tanımlayıcısı ve konum kullanılmaz. Uygulama yalnızca sizi tanımlamayan anonim kullanım istatistikleri gönderir; bunları Ayarlar'dan kapatabilirsiniz.</p></details>
+<details><summary>Aboneliği nasıl iptal ederim?</summary><p>Ayarlar &gt; Apple Hesabı &gt; Abonelikler bölümünden. Dönem bitmeden en az 24 saat önce iptal edilmezse aynı fiyatla yenilenir. Ömür boyu satın alma bir kez ödenir.</p></details></div>
+      <p class="contact">Takıldınız mı ya da bir şey tuhaf mı görünüyor? <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> adresine yazın. Uygulamanın ayarlarında da bir iletişim seçeneği var.</p>
+    </section>
 
-  <h3 class="sub">Ayrıca</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Ana Ekran ve Kilitli Ekran araç takımları</h3>
-      <p>Dört tane: Görevler, Şimşek, Gökkuşağı ve Zamanlayıcı. Şimşek araç takımı yalnızca şu an beş dakikada yapılabilecekleri listeler.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Her yerden ekleyin</h3>
-      <p>Başka bir uygulamadan paylaştığınızda bu uygulama paylaşım sayfasında görünür. Küçük bir pencereyle onu hemen göreve dönüştürürsünüz.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Mac’e de gelir</h3>
-      <p>macOS uygulaması Rainbow Craft aynı iCloud hesabını kullanır. Bir tarafta yazdığınız diğer tarafta görünür.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Haftanın ne kadar dolu olduğunu<br>içine girmeden görün</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">App Store'dan ücretsiz indirin</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Paylaşım</h2>
-  <p class="lead">Bağlantıyı yalnızca ihtiyacı olan kişilere gönderin.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Etkinlikler (salt okunur)</h3>
-      <p>Bir davet bağlantısı gönderin, karşı taraf etkinliklerinizi görebilsin. Ama değiştiremez.</p>
-    </div>
-    <div class="card">
-      <h3>Görevler (birlikte)</h3>
-      <p>Siz ve davet ettiğiniz kişiler ortak bir listeyi birlikte okuyup yazarsınız. Bunun Apple Aile Paylaşımı ile bir ilgisi yoktur.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Davet bağlantısına sahip olan herkes katılabilir; bu yüzden bağlantıyı yalnızca dahil etmek istediğiniz kişilere gönderin. Paylaşım için iCloud’a giriş yapmanız gerekir.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Dil"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi">Suomi</a>
+<a href="../id/" hreflang="id" lang="id">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr" aria-current="page">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Gizlilik Politikası</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Başlarken</h2>
-  <ol class="steps">
-    <li><b>Bir etkinlik çizin</b><span>Başlangıç günü için boş bir hücreye basılı tutun, sonra bitiş günü için bir kez daha. Bir başlık, gerçekten çalışacağınız günleri ve günlük saati girin.</span></li>
-    <li><b>Bir görev yazın</b><span>Boş satıra yazıp Return tuşuna basın. Hepsi bu.</span></li>
-    <li><b>Büyük olanı bölün</b><span>Satırı açıp adımları işin ilerlediği sırayla yazın. Hangilerinin parça, hangilerinin odak süresi işi olduğunu uygulama söyler.</span></li>
-    <li><b>Beş dakika açılınca bir parça alın</b><span>Hemen yapılabilecek olan her şey listenin en üstünde durur. Gerisini okumanız gerekmez.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Sık sorulan sorular</h2>
-
-  <details>
-    <summary>iCloud’a giriş yapmam gerekiyor mu?</summary>
-    <p>Tek başınıza kullanmak için gerekmez; her şey aygıtta saklanır. Başka bir aygıtla ya da Mac uygulamasıyla eşzamanlamak ve paylaşımı kullanmak için iCloud gerekir.</p>
-  </details>
-
-  <details>
-    <summary>Uygulama Türkçe mi?</summary>
-    <p>Uygulama Türkçe dahil 23 dili destekler ve aygıtınızın dilini izler. Yalnızca bu uygulamanın dilini değiştirmek için iOS Ayarlar’ında Rainbow of Desire’ı bulup Dil’i seçin.</p>
-  </details>
-
-  <details>
-    <summary>Uygulama bir adımı yanlış değerlendirirse ne olur?</summary>
-    <p>O adımı sola kaydırıp iki soruyu kendiniz yanıtlayın. Sizin yanıtınız uygulamanın tahmininin önüne geçer ve öyle kalır. Uygulama yazdığınız sözcükleri okuduğu için başkasının işi hakkında sık sık yanılır; bu beklenen bir durumdur.</p>
-  </details>
-
-  <details>
-    <summary>Süresi yazılmamış bir görev neden hiç parça olmuyor?</summary>
-    <p>Çünkü beş dakikada kapandığını gösteren hiçbir şey yok ve bu liste ancak içindekiler gerçekten hazırsa bir işe yarar. Bir süre yazın, örneğin on beş dakika; doğru şekilde ayrılır.</p>
-  </details>
-
-  <details>
-    <summary>Araç takımında işleri işaretleyebilir miyim?</summary>
-    <p>Henüz değil; araç takımları yalnızca okunurdur. Birine dokunduğunuzda görev ekranı hemen açılır.</p>
-  </details>
-
-  <details>
-    <summary>Neler ücretli?</summary>
-    <p>Uygulamanın özü ücretsizdir: gökkuşağı, görevleri bölme, iki soru ve adım sırası. Rainbow Pro beş ek özelliği açar: Ana Ekran ve Kilitli Ekran araç takımları, takvimden içe aktarma, etkinlik paylaşımı, etkinlik istatistikleri ve Geri Kazanım Defteri. İlk haftası ücretsiz yıllık, aylık ya da tek seferlik ömür boyu satın alma arasından seçin. Mac ile birlikte kullanmak ücretsizdir.</p>
-  </details>
-
-  <details>
-    <summary>Mac uygulamasını ayrıca satın almam gerekiyor mu?</summary>
-    <p>Rainbow Craft ayrı bir macOS uygulamasıdır. Aynı iCloud hesabında görevler ve haftalık planlar kendiliğinden karşıya geçer.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Gizlilik</h2>
-  <p class="lead">Sunucu yoktur. Yazdıklarınız aygıtınızda ve kendi iCloud’unuzda kalır.</p>
-  <div class="note">
-    Reklam kimliği yok, konum yok, kayıt yok. Yalnızca sizi tanımlayamayan anonim kullanım istatistikleri gönderilir ve bunları Ayarlar’dan kapatabilirsiniz.
-    Ayrıntılar <a href="privacy.html">gizlilik politikasında</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Neler değişti</h2>
-  <p class="lead">Her sürüm kayıt altında.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Sürüm notlarını okuyun</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Destek</h2>
-    <p class="lead" style="margin-bottom:0">Yolunuza çıkan ya da yanlış görünen bir şey olursa lütfen bize bildirin. Uygulamanın Ayarlar bölümünde de bir iletişim seçeneği var.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Gizlilik Politikası</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../fi/">Suomi</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../vi/">Tiếng Việt</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

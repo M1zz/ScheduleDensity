@@ -1,280 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rainbow of Desire – viikkoplanneri viiden minuutin askelin</title>
-<meta name="description" content="iOS-appi, jossa väri tummuu sitä mukaa kuin tapahtumasi menevät päällekkäin. Näe, kuinka täynnä viikko on, ja pilko tehtäväsi niin, että aina on jotain viiden minuutin pätkään. Opas, usein kysytyt, tietosuoja ja yhteystiedot." />
-<meta property="og:title" content="Rainbow of Desire" />
-<meta property="og:description" content="Näe yhdellä silmäyksellä, kuinka raskas viikko on, ja pidä aina tarjolla vaihe, jonka voi tehdä viidessä minuutissa." />
-<link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/" />
-<link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/" />
-<link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/" />
-<link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/" />
-<link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/" />
-<link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/" />
-<link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/" />
-<link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/" />
-<link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/" />
-<link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/" />
-<link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/" />
-<link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/" />
-<link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/" />
-<link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/" />
-<link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/" />
-<link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/" />
-<link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/" />
-<link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/" />
-<link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/" />
-<link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/" />
-<link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/" />
-<link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/" />
-<link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/fi/" />
-<link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/" />
-<style>
-  :root {
-    --red:#FF3B30; --orange:#FF9500; --yellow:#FFCC00; --green:#34C759;
-    --blue:#007AFF; --indigo:#5856D6; --purple:#AF52DE;
-    --ink:#1c1c1e; --sub:#6b6b70; --line:#e6e6ea; --bg:#ffffff; --card:#f7f7f9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --ink:#f2f2f7; --sub:#a1a1aa; --line:#2c2c2e; --bg:#000000; --card:#1c1c1e; }
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", Roboto, sans-serif;
-    line-height:1.7; -webkit-font-smoothing:antialiased;
-  }
-  .rainbow-bar { height:6px; background:linear-gradient(90deg,var(--red),var(--orange),var(--yellow),var(--green),var(--blue),var(--indigo),var(--purple)); }
-  .wrap { max-width:780px; margin:0 auto; padding:0 24px; }
-  header.hero { text-align:center; padding:72px 24px 56px; }
-  .badge { display:inline-block; font-size:13px; font-weight:600; color:var(--blue); background:color-mix(in srgb, var(--blue) 12%, transparent); padding:5px 14px; border-radius:999px; letter-spacing:.02em; }
-  h1 { font-size:clamp(34px,6vw,52px); margin:18px 0 10px; letter-spacing:-0.02em; font-weight:800; }
-  .tagline { font-size:18px; color:var(--sub); margin:0 auto; max-width:560px; }
-  section { padding:40px 0; border-top:1px solid var(--line); }
-  section:first-of-type { border-top:none; }
-  h2 { font-size:24px; font-weight:700; margin:0 0 8px; letter-spacing:-0.01em; }
-  h2 .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:10px; vertical-align:middle; }
-  .lead { color:var(--sub); margin:0 0 24px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
-  .card h3 { margin:0 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--sub); font-size:15px; }
-  .emoji { font-size:22px; display:block; margin-bottom:10px; }
-  ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
-  ol.steps li { position:relative; padding:14px 0 14px 52px; border-bottom:1px solid var(--line); }
-  ol.steps li:last-child { border-bottom:none; }
-  ol.steps li::before {
-    counter-increment:s; content:counter(s);
-    position:absolute; left:0; top:12px; width:34px; height:34px; border-radius:50%;
-    background:var(--blue); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px;
-  }
-  ol.steps b { display:block; }
-  ol.steps span { color:var(--sub); font-size:15px; }
-  details { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:4px 18px; margin-bottom:12px; }
-  details summary { cursor:pointer; font-weight:600; padding:14px 0; list-style:none; outline:none; }
-  details summary::-webkit-details-marker { display:none; }
-  details summary::after { content:"+"; float:right; color:var(--sub); font-weight:400; font-size:20px; line-height:1; }
-  details[open] summary::after { content:"\2013"; }
-  details p { margin:0 0 16px; color:var(--sub); }
-  .contact { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; text-align:center; }
-  .contact a.btn { display:inline-block; margin-top:14px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; padding:12px 26px; border-radius:12px; }
-  .contact a.btn:hover { opacity:.9; }
-  a { color:var(--blue); }
-  footer { text-align:center; color:var(--sub); font-size:14px; padding:48px 24px 64px; border-top:1px solid var(--line); }
-  footer .fam { margin-top:6px; font-size:13px; }
-  .muted { color:var(--sub); font-size:14px; }
-  table.attrs { width:100%; border-collapse:collapse; margin-top:8px; }
-  table.attrs td { padding:12px 8px; border-bottom:1px solid var(--line); vertical-align:top; font-size:15px; }
-  table.attrs tr:last-child td { border-bottom:none; }
-  table.attrs td.k { white-space:nowrap; font-weight:700; width:1%; padding-right:18px; }
-  table.attrs td.v { color:var(--sub); }
-  .note { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--blue); border-radius:10px; padding:16px 18px; color:var(--sub); font-size:15px; }
-  h3.sub { font-size:17px; margin:26px 0 6px; }
-  ul.plain { padding-left:20px; color:var(--sub); }
-  ul.plain li { margin:6px 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow of Desire: viikkosuunnittelija, joka tummuu kuormasta, ja tehtävien pilkkominen</title>
+  <meta name="description" content="Mitä enemmän menee päällekkäin, sitä tummempi väri, joten raskaan viikon näkee ajoissa. Pilko isot tehtävät vaiheiksi. Perusosa on ilmainen.">
+  <meta name="theme-color" content="#007AFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-itunes-app" content="app-id=6755280882">
+  <link rel="canonical" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="ko" href="https://m1zz.github.io/ScheduleDensity/">
+  <link rel="alternate" hreflang="en" href="https://m1zz.github.io/ScheduleDensity/en/">
+  <link rel="alternate" hreflang="zh-Hant" href="https://m1zz.github.io/ScheduleDensity/zh-Hant/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://m1zz.github.io/ScheduleDensity/zh-Hans/">
+  <link rel="alternate" hreflang="ja" href="https://m1zz.github.io/ScheduleDensity/ja/">
+  <link rel="alternate" hreflang="de" href="https://m1zz.github.io/ScheduleDensity/de/">
+  <link rel="alternate" hreflang="es" href="https://m1zz.github.io/ScheduleDensity/es/">
+  <link rel="alternate" hreflang="fr" href="https://m1zz.github.io/ScheduleDensity/fr/">
+  <link rel="alternate" hreflang="it" href="https://m1zz.github.io/ScheduleDensity/it/">
+  <link rel="alternate" hreflang="pt-BR" href="https://m1zz.github.io/ScheduleDensity/pt-BR/">
+  <link rel="alternate" hreflang="ru" href="https://m1zz.github.io/ScheduleDensity/ru/">
+  <link rel="alternate" hreflang="cs" href="https://m1zz.github.io/ScheduleDensity/cs/">
+  <link rel="alternate" hreflang="da" href="https://m1zz.github.io/ScheduleDensity/da/">
+  <link rel="alternate" hreflang="el" href="https://m1zz.github.io/ScheduleDensity/el/">
+  <link rel="alternate" hreflang="fi" href="https://m1zz.github.io/ScheduleDensity/fi/">
+  <link rel="alternate" hreflang="id" href="https://m1zz.github.io/ScheduleDensity/id/">
+  <link rel="alternate" hreflang="nb" href="https://m1zz.github.io/ScheduleDensity/nb/">
+  <link rel="alternate" hreflang="nl" href="https://m1zz.github.io/ScheduleDensity/nl/">
+  <link rel="alternate" hreflang="pl" href="https://m1zz.github.io/ScheduleDensity/pl/">
+  <link rel="alternate" hreflang="sv" href="https://m1zz.github.io/ScheduleDensity/sv/">
+  <link rel="alternate" hreflang="th" href="https://m1zz.github.io/ScheduleDensity/th/">
+  <link rel="alternate" hreflang="tr" href="https://m1zz.github.io/ScheduleDensity/tr/">
+  <link rel="alternate" hreflang="vi" href="https://m1zz.github.io/ScheduleDensity/vi/">
+  <link rel="alternate" hreflang="x-default" href="https://m1zz.github.io/ScheduleDensity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Rainbow of Desire: viikkosuunnittelija, joka tummuu kuormasta, ja tehtävien pilkkominen">
+  <meta property="og:description" content="Mitä enemmän menee päällekkäin, sitä tummempi väri, joten raskaan viikon näkee ajoissa. Pilko isot tehtävät vaiheiksi. Perusosa on ilmainen.">
+  <meta property="og:url" content="https://m1zz.github.io/ScheduleDensity/fi/">
+  <meta property="og:image" content="https://m1zz.github.io/ScheduleDensity/img/fi/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="../demo.css">
+  <style>:root{--accent:#007AFF}@media (prefers-color-scheme:dark){:root{--accent:#0A84FF}}</style>
+  <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <a class="skip" href="#main">Siirry sisältöön</a>
+  <header class="bar">
+    <a class="brand" href="../fi/"><img src="../icon.png" alt="" width="32" height="32">Rainbow of Desire</a>
+    <a class="lang-link" href="#languages">Kieli</a>
+  </header>
 
-<div class="rainbow-bar"></div>
+  <main id="main">
+    <section class="hero">
+      <div class="copy">
+        <h1>Näe raskas viikko ajoissa.<br>Käytä vapaat viisi minuuttia.</h1>
+        <p class="lead">Mitä enemmän työt menevät päällekkäin, sitä syvemmäksi sateenkaari värittyy. Pilko iso tehtävä vaiheiksi, niin raossa tehtävä vaihe odottaa jo ylimpänä.</p>
+        <div class="actions"><a class="cta" href="https://apps.apple.com/app/id6755280882">Lataa ilmaiseksi App Storesta</a><a class="try" href="#try">Kokeile itse ↓</a></div>
+        <p class="muted small">Sateenkaari, tehtävien pilkkominen, ajastin ja synkronointi Macin kanssa ovat ilmaisia.</p>
+      </div>
+      <div class="plain"><img src="../img/fi/01-rainbow.jpg" alt="Näe raskas viikko ajoissa. Käytä vapaat viisi minuuttia." width="720" height="1560" decoding="async"></div>
+    </section>
 
-<p class="wrap" style="padding-top:20px; margin:0"><a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></p>
 
-<header class="hero" style="padding-top:32px">
-  <span class="badge">iOS-appi</span>
-  <h1>Rainbow of Desire</h1>
-  <p class="tagline">Väri tummuu sitä mukaa kuin tapahtumasi menevät päällekkäin. Näe yhdellä silmäyksellä, kuinka raskas tämä viikko on, ja aloita siitä, mihin voit oikeasti tarttua juuri nyt.</p>
-</header>
+    <section class="reveal" id="try">
+      <h2>Kokeile itse</h2>
+      <p class="muted">”Q3-raportti” on jo pilkottu viiteen vaiheeseen. Valitse vaihe, muuta aikaa tai käännä vastaus. Vain vaihe, joka saa kaksi kyllää, on pätkä, jonka teet viidessä minuutissa.</p>
+      <div id="demo" class="card demo-card" data-text="{&quot;title&quot;: &quot;Kokeile itse&quot;, &quot;lead&quot;: &quot;”Q3-raportti” on jo pilkottu viiteen vaiheeseen. Valitse vaihe, muuta aikaa tai käännä vastaus. Vain vaihe, joka saa kaksi kyllää, on pätkä, jonka teet viidessä minuutissa.&quot;, &quot;task&quot;: &quot;Q3-raportti&quot;, &quot;steps&quot;: [&quot;Kaiva maaliskuun luvut&quot;, &quot;Avaa edellisen kvartaalin tiedosto&quot;, &quot;Kirjoita johdanto&quot;, &quot;Tee kaavio alueittain&quot;, &quot;Lähetä Minalle&quot;], &quot;total&quot;: &quot;Yhteensä&quot;, &quot;time&quot;: &quot;Aika&quot;, &quot;min&quot;: &quot;{n} min&quot;, &quot;hr&quot;: &quot;{h} h&quot;, &quot;hrmin&quot;: &quot;{h} h {m} min&quot;, &quot;questions&quot;: [{&quot;q&quot;: &quot;Pääsetkö alkuun ilman lämmittelyä?&quot;, &quot;why&quot;: &quot;Työ, jossa asiayhteys pitää ladata takaisin päähän, kuluttaa koko pätkän pelkkään käynnistymiseen.&quot;}, {&quot;q&quot;: &quot;Valmistuuko se viidessä minuutissa?&quot;, &quot;why&quot;: &quot;Keskeneräinen työ jättää jäänteitä, jotka syövät seuraavaa jaksoa.&quot;}], &quot;yes&quot;: &quot;Kyllä&quot;, &quot;no&quot;: &quot;Ei&quot;, &quot;kinds&quot;: {&quot;fragment&quot;: &quot;Pätkä&quot;, &quot;short&quot;: &quot;Lyhyt jakso&quot;, &quot;block&quot;: &quot;Jakso&quot;}, &quot;verdicts&quot;: {&quot;fragment&quot;: &quot;Tämä on pätkä. Tartu siihen, kun viisi minuuttia vapautuu.&quot;, &quot;short&quot;: &quot;Tämä on lyhyt jakso. Sinun on istuttava alas, mutta se valmistuu yhdellä istumalla.&quot;, &quot;block&quot;: &quot;Tämä on jakso. Sijoita se aikaan, jonka olet suojannut.&quot;}, &quot;pickNow&quot;: &quot;Viisi minuuttia aikaa?&quot;, &quot;nothing&quot;: &quot;Ei vielä mitään&quot;, &quot;reset&quot;: &quot;Palaa apin arvioon&quot;, &quot;note&quot;: &quot;Kokeilu vastaa pelkän ajan perusteella. Apissa ensimmäinen vastaus tulee asettamastasi ajasta ja, jos kirjoitat koreaksi tai englanniksi, myös sanoistasi. Korjaat vain, kun se on väärässä.&quot;}"></div>
+    </section>
 
-<main class="wrap">
+    <section class="problem reveal">
+      <h2>Kalenteri näyttää tyhjältä, mutta viikko vie silti hengen?</h2>
+      <p>Kalenteri kertoo, onko jotain sovittu, ei sitä, kuinka paljon päällä on. Sen, että kolme määräaikaa osui samalle viikolle, huomaa usein vasta keskellä viikkoa, ja väliin jäävät viisi minuuttia kuluvat tehtävälistan selaamiseen. Rainbow of Desire piirtää viikon ruudukoksi, tummentaa päällekkäisyydet ja nostaa sivuun vaiheet, jotka mahtuvat rakoon.</p>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--red)"></span>Sateenkaari – näe tiheys, ei pelkkiä merkintöjä</h2>
-  <p class="lead">Kalenteri kertoo, onko jokin aikataulussa. Tämä näyttää, kuinka paljon on kasautunut päällekkäin.</p>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">🌈</span>
-      <h3>Tummempi, missä menee päällekkäin</h3>
-      <p>Mitä enemmän samoille päiville kasautuu, sitä tummemmiksi ruudut muuttuvat. Pelkkä vierittäminen paljastaa, mikä viikko on liikaa.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">📅</span>
-      <h3>Koko ajanjakso, ei vain päivä</h3>
-      <p>Aseta alku ja loppu, niin viiva kulkee koko matkan. Päivät, joina oikeasti teet työtä, ovat tummia, muut jäävät haaleiksi – koska keskeneräinen työ sitoo sinua silti.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔍</span>
-      <h3>Missä on tilaa</h3>
-      <p>Appi ehdottaa päiviä, joille jää väljyyttä vielä uuden tapahtuman jälkeenkin – ei vain tyhjimpiä.</p>
-    </div>
-  </div>
-</section>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Kaksi kysymystä ja asia selviää</h2>
+        <p>Kun pilkot ison tehtävän, jokainen vaihe saa kaksi kysymystä. Pääsetkö alkuun ilman lämmittelyä? Valmistuuko se viidessä minuutissa?<br>Vain kaksi kyllää tekee siitä pätkän. Appi vastaa ensin ajan ja sanojen perusteella, ja sinä käännät vastauksen vain, kun se on väärä.</p>
+      </div>
+      <div class="plain"><img src="../img/fi/03-two-questions.jpg" alt="Kaksi kysymystä ja asia selviää" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Tehtävät – pilko, kunnes jokin mahtuu viiteen minuuttiin</h2>
-  <p class="lead">Lista, joka ei koskaan lyhene, ei yleensä johdu laiskuudesta. Jokin on yhä tiellä, ennen kuin asiaan voi edes tarttua.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Rako tuli? Katso ylintä</h2>
+        <p>Pyyhkäise tehtävä oikealle ja anna sille salama, niin se ohittaa jonon ja nousee ylimmäksi. Koko listaa ei tarvitse lukea.<br>Odottavatko vaiheet toisiaan, päätät kerran ryhmää kohden. Järjestyksessä näyttää ensimmäisen keskeneräisen vaiheen, Vapaa järjestys pätkän, jonka voit ottaa nyt.</p>
+      </div>
+      <div class="plain"><img src="../img/fi/02-list.jpg" alt="Rako tuli? Katso ylintä" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <p>Pilko iso työ vaiheiksi. Jokainen vaihe lajitellaan sitten kahdella kysymyksellä, vain kahdella.</p>
+    <section class="feature reveal">
+      <div class="copy">
+        <h2>Näkyy avaamatta appia</h2>
+        <p>Ajastin laskee siihen hetkeen, kun tapahtuma päättyy, ja jäljellä oleva aika näkyy myös Dynamic Islandissa ja lukitusnäytöllä.<br>Koti- ja lukitusnäytön widgetit näyttävät, mitä teet nyt, mikä mahtuu viiteen minuuttiin ja tämän viikon sateenkaaren. (Widgetit kuuluvat Pro-tasoon)</p>
+      </div>
+      <div class="plain"><img src="../img/fi/05-widgets.jpg" alt="Näkyy avaamatta appia" width="720" height="1560" loading="lazy" decoding="async"></div>
+    </section>
 
-  <table class="attrs">
-    <tr><td class="k" style="color:var(--green)">Kysymys yksi</td><td class="v">Pääsetkö alkuun ilman lämmittelyä? Jos ensin pitää palauttaa mieleen, mihin jäit, viiden minuutin rako kuluu pelkkään lämmittelyyn.</td></tr>
-    <tr><td class="k" style="color:var(--indigo)">Kysymys kaksi</td><td class="v">Valmistuuko se viidessä minuutissa? Kesken jättämäsi työ seuraa sinua seuraavaan tuntiin.</td></tr>
-  </table>
+    <section class="reveal">
+      <h2>Alkuun kolmessa vaiheessa</h2>
+      <ol class="steps"><li class="card"><span class="n">1</span><h3>Vedä tapahtuma</h3><p>Paina pitkään tyhjää ruutua alkupäivänä ja napauta loppupäivää. Sateenkaareen ilmestyy viiva.</p></li>
+<li class="card"><span class="n">2</span><h3>Pilko isot tehtävät</h3><p>Napauta tehtävää, kirjoita vaiheet ja valitse aika. Kahteen kysymykseen appi vastaa ensin.</p></li>
+<li class="card"><span class="n">3</span><h3>Raossa katso ylös</h3><p>Pätkät ja salamalla merkityt tehtävät kerääntyvät ylös vuoroa odottamatta.</p></li></ol>
+    </section>
 
-  <p><b>Vain vaihe, jossa molempiin vastataan kyllä, on pätkä</b> – siihen tartut, kun viisi minuuttia vapautuu. Kaikki muu on jakso ja kuuluu aikaan, jonka olet varannut. Appi vastaa ensin kirjoittamiesi sanojen ja ajan perusteella; puutut vain, kun se on väärässä.</p>
+    <section class="reveal" id="commands">
+      <h2>Mitä näet näytöllä</h2>
+      <div class="card table">
+        <dl><div><dt>Tumma ruutu · vaalea ruutu</dt><dd>päivät, joina oikeasti teet asiaa, ja loppujakso päättymispäivään asti</dd></div><div><dt>Täysi rivi</dt><dd>päivä, jona niin moni asia on käynnissä, että yksi viivästys siirtää koko päivää</dd></div><div><dt>Pätkä</dt><dd>kyllä kumpaankin kysymykseen; ota, kun sinulla on viisi minuuttia</dd></div><div><dt>Lyhyt jakso</dt><dd>ei lämmittelyä, mutta ei valmistu pätkässä; hoituu yhdellä istumalla</dd></div><div><dt>Jakso</dt><dd>vaatii lämmittelyn tai kestää vähintään 45 minuuttia; kuuluu varattuun aikaan</dd></div><div><dt>Salama</dt><dd>oma ”heti”-merkkisi; nousee ylimmäksi</dd></div><div><dt>Järjestyksessä · Vapaa järjestys</dt><dd>odottavatko vaiheet toisiaan, asetetaan kerran ryhmää kohden</dd></div><div><dt>Tilikirja</dt><dd>viikon tilinpäätös: jäljellä oleva, takaisin saatu aika ja palautuminen erikseen, koskaan yhteen laskematta</dd></div></dl>
+      </div>
+      <p class="muted">Aika summautuu alhaalta ylös: tehtävän aika on sen vaiheiden summa.</p>
+    </section>
 
-  <h3 class="sub">Miksi pilkotaan näin</h3>
-  <ul class="plain">
-    <li>Kaksitoista viiden minuutin rakoa ei ole tunti. Ajan sirpaleet eivät summaudu – vaihtaminen syö erotuksen – joten rakoon mahtuvat vaiheet on merkittävä erikseen alusta asti.</li>
-    <li>Paluu syventymistä vaativaan työhön vie keskimäärin noin kaksikymmentäkolme minuuttia. Hinta ei ole itse keskeytys vaan asiayhteyden rakentaminen uudelleen.</li>
-    <li>Aloittaminen vaatii enemmän voimaa kuin jatkaminen. Mitä kauempana ensimmäinen liike on, sitä pidempään sitä lykätään.</li>
-    <li>Fyysinen työ on poikkeus – se kertyy, vaikka sen pilkkoisi, joten sitä ei pilkota koon mukaan.</li>
-  </ul>
 
-  <h3 class="sub">Järjestys päätetään kerran ryhmää kohden</h3>
-  <p>Vaiheet joko odottavat toisiaan tai eivät, ja päätät sen kerran koko ryhmälle sen sijaan, että kytkisit riippuvuuksia yksitellen. <b>Järjestyksessä</b> näyttää ensimmäisen keskeneräisen vaiheen; <b>Vapaa järjestys</b> näyttää pätkän, johon voit tarttua nyt. Paina vaihetta pitkään ja vedä se uuteen kohtaan muiden joukossa.</p>
+    <section class="reveal" id="pricing">
+      <h2>Kaikki tähän päivään tarvittava on ilmaista</h2>
+      <div class="plans">
+        <div class="card plan free">
+          <h3>Ilmainen</h3>
+          <ul><li>Sateenkaari (aikataulun tiheysruudukko)</li><li>Tehtävien pilkkominen vaiheiksi ja kaksi kysymystä</li><li>Salama ja vaiheiden järjestys</li><li>Ajastin Dynamic Islandissa ja lukitusnäytöllä</li><li>Synkronointi Rainbow Craftin kanssa Macilla iCloudin kautta</li><li>Kahden viime viikon tilikirja</li></ul>
+          
+        </div>
+        <div class="card plan pro">
+          <h3>Rainbow Plus · Rainbow Pro</h3>
+          <ul><li>Plus: tapahtumatilastot ja tilikirja kahta viikkoa kauemmas</li><li>Pro: kaikki Plussasta sekä koti- ja lukitusnäytön widgetit</li><li>Pro: tuonti kalenterista ja jatkuva näyttö</li><li>Pro: tapahtumien jakaminen vain luettavaksi</li><li>Pro: avaa myös Rainbow Craft Pron Macilla</li></ul>
+          <p class="muted">Kumpikin vuositilauksena tai kertaostona pysyvästi</p>
+        </div>
+      </div>
+      <p class="muted">Maksat vain menneiden viikkojen tarkastelusta ja asioiden viemisestä appin ulkopuolelle. Jos ostit Pron aiemmin tai sinulla on yhä kuukausitilaus, olet edelleen Pro.</p>
+    </section>
 
-  <h3 class="sub">Salama</h3>
-  <p>Pyyhkäise riviä oikealle, niin siihen tulee salama – oma merkintäsi siitä, että tämän voi tehdä heti. Salamalla merkitty rivi ohittaa jonon ja nousee ylimmäksi, joten raon auetessa katsot vain sinne etkä selaa listaa. Pyyhkäise uudelleen poistaaksesi merkinnän.</p>
+    <section class="reveal" id="faq">
+      <h2>Usein kysyttyä</h2>
+      <div class="faq"><details><summary>Tarvitsenko tilin tai iCloudin?</summary><p>Yksin käyttäessä et. Rekisteröitymistä ei ole, ja kaikki pysyy laitteella. Muita laitteita, Mac-appia tai jakamista varten kirjaudu iCloudiin.</p></details>
+<details><summary>Appi vastasi kysymykseen väärin.</summary><p>Napauta vaihetta ja vaihda Kyllä tai Ei. Oma vastauksesi menee aina edelle. Napauta ”Palaa apin arvioon”, niin annat päätöksen takaisin. Vaihetta ilman aikaa ei lasketa pätkäksi, koska appi ei tiedä, valmistuuko se viidessä minuutissa.</p></details>
+<details><summary>Voinko jakaa muiden kanssa?</summary><p>Kutsulinkillä jaat tapahtumasi vain luettavaksi (Pro) tai avaat tehtävälistan, jota sinä ja kutsutut luette ja muokkaatte yhdessä. Kuka tahansa linkin saanut voi liittyä, joten lähetä se vain oikeille ihmisille. Sillä ei ole tekemistä Applen Perhejaon kanssa.</p></details>
+<details><summary>Näkyvätkö kalenterini tapahtumat?</summary><p>Valitsemiesi kalenterien tapahtumat näkyvät sateenkaaressa ja päivänäkymässä (Pro). Appi vain lukee niitä eikä kirjoita mitään takaisin.</p></details>
+<details><summary>Voinko kuitata widgetistä?</summary><p>Widgetit ovat vain katseltavia. Napauta widgetiä, niin tehtävät aukeavat suoraan, ja kuittaa siellä.</p></details>
+<details><summary>Ostetaanko Mac-appi erikseen?</summary><p>Rainbow Craft on erillinen macOS-appi Mac App Storessa. Samalla iCloud-tilillä tehtävät ja viikkosuunnitelmat synkronoituvat itsestään, eikä se maksa mitään.</p></details>
+<details><summary>Ovatko vanhat tehtäväni tallessa?</summary><p>Ovat. Tehtävät, vaiheet ja asettamasi ajat säilyvät. Vanhojen aloitusehtojen tunnisteet appi arvioi uudelleen kahdella kysymyksellä.</p></details>
+<details><summary>Mihin tietoni tallennetaan?</summary><p>Palvelinta ei ole. Kaikki on laitteellasi ja omassa iCloudissasi, jonne kehittäjä ei näe. Ei mainostunnistetta, ei sijaintia. Appi lähettää vain nimettömiä käyttötilastoja, joista sinua ei tunnista ja jotka voi laittaa pois Asetuksista.</p></details>
+<details><summary>Miten peruutan tilauksen?</summary><p>Asetukset &gt; Apple-tili &gt; Tilaukset. Tilaus uusiutuu samaan hintaan, ellet peru sitä viimeistään 24 tuntia ennen jakson päättymistä. Pysyvä osto maksetaan kerran.</p></details></div>
+      <p class="contact">Jäikö jokin jumiin tai näyttääkö jokin oudolta? Kirjoita osoitteeseen <a href="mailto:leeo@kakao.com">leeo@kakao.com</a>. Yhteydenottovalinta löytyy myös appin asetuksista.</p>
+    </section>
 
-  <h3 class="sub">Lisäksi</h3>
-  <div class="grid">
-    <div class="card">
-      <span class="emoji">📲</span>
-      <h3>Koti- ja lukitusnäytön widgetit</h3>
-      <p>Neljä kappaletta – Tehtävät, Salama, Sateenkaari ja Ajastin. Salama-widget näyttää vain sen, mihin voit tarttua nyt viidessä minuutissa.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🔗</span>
-      <h3>Lisää mistä tahansa</h3>
-      <p>Jaa toisesta apista, niin tämä appi näkyy jakovalikossa. Pieni ikkuna riittää muuttamaan sen tehtäväksi.</p>
-    </div>
-    <div class="card">
-      <span class="emoji">🖥</span>
-      <h3>Kulkee mukana Macille</h3>
-      <p>Rainbow Craft, macOS-appi, käyttää samaa iCloud-tiliä. Kirjoita toisella puolella, niin se näkyy toisella.</p>
-    </div>
-  </div>
-</section>
+    <section class="closing reveal">
+      <h2>Katso, kuinka täysi viikko on,<br>ennen kuin astut siihen</h2>
+      <a class="cta" href="https://apps.apple.com/app/id6755280882">Lataa ilmaiseksi App Storesta</a>
+    </section>
+  </main>
 
-<section>
-  <h2><span class="dot" style="background:var(--purple)"></span>Jakaminen</h2>
-  <p class="lead">Lähetä linkki vain niille, jotka sitä tarvitsevat.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Tapahtumat (vain luku)</h3>
-      <p>Lähetä kutsulinkki, niin vastaanottaja näkee tapahtumasi. Hän ei voi muuttaa niitä.</p>
-    </div>
-    <div class="card">
-      <h3>Tehtävät (yhdessä)</h3>
-      <p>Sinä ja kutsumasi ihmiset luette ja kirjoitatte yhteistä listaa. Tällä ei ole mitään tekemistä Applen Perhejaon kanssa.</p>
-    </div>
-  </div>
-  <p class="muted" style="margin-top:16px">Kuka tahansa kutsulinkin saanut voi liittyä, joten lähetä se vain niille, jotka haluat mukaan. Jakaminen vaatii iCloud-kirjautumisen.</p>
-</section>
+  <footer>
+    <nav id="languages" class="langs" aria-label="Kieli"><a href="../" hreflang="ko" lang="ko">한국어</a>
+<a href="../en/" hreflang="en" lang="en">English</a>
+<a href="../zh-Hant/" hreflang="zh-Hant" lang="zh-Hant">繁體中文</a>
+<a href="../zh-Hans/" hreflang="zh-Hans" lang="zh-Hans">简体中文</a>
+<a href="../ja/" hreflang="ja" lang="ja">日本語</a>
+<a href="../de/" hreflang="de" lang="de">Deutsch</a>
+<a href="../es/" hreflang="es" lang="es">Español</a>
+<a href="../fr/" hreflang="fr" lang="fr">Français</a>
+<a href="../it/" hreflang="it" lang="it">Italiano</a>
+<a href="../pt-BR/" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a>
+<a href="../ru/" hreflang="ru" lang="ru">Русский</a>
+<a href="../cs/" hreflang="cs" lang="cs">Čeština</a>
+<a href="../da/" hreflang="da" lang="da">Dansk</a>
+<a href="../el/" hreflang="el" lang="el">Ελληνικά</a>
+<a href="../fi/" hreflang="fi" lang="fi" aria-current="page">Suomi</a>
+<a href="../id/" hreflang="id" lang="id">Bahasa Indonesia</a>
+<a href="../nb/" hreflang="nb" lang="nb">Norsk bokmål</a>
+<a href="../nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a href="../pl/" hreflang="pl" lang="pl">Polski</a>
+<a href="../sv/" hreflang="sv" lang="sv">Svenska</a>
+<a href="../th/" hreflang="th" lang="th">ไทย</a>
+<a href="../tr/" hreflang="tr" lang="tr">Türkçe</a>
+<a href="../vi/" hreflang="vi" lang="vi">Tiếng Việt</a></nav>
+    <p><a href="privacy.html">Tietosuojakäytäntö</a> · <a href="mailto:leeo@kakao.com">leeo@kakao.com</a> · © 2026 Rainbow Craft</p>
+  </footer>
 
-<section>
-  <h2><span class="dot" style="background:var(--blue)"></span>Näin pääset alkuun</h2>
-  <ol class="steps">
-    <li><b>Piirrä tapahtuma</b><span>Paina pitkään tyhjää ruutua alkupäivän kohdalla ja sitten päättymispäivän kohdalla. Anna sille otsikko, viikonpäivät, joina oikeasti teet sitä, ja tunnit päivässä.</span></li>
-    <li><b>Kirjoita tehtävä</b><span>Kirjoita tyhjälle riville ja paina rivinvaihtoa. Siinä kaikki.</span></li>
-    <li><b>Pilko isot asiat</b><span>Avaa rivi ja kirjoita vaiheet siinä järjestyksessä kuin työ etenee. Appi kertoo, mitkä ovat pätkiä ja mitkä jaksoja.</span></li>
-    <li><b>Tartu pätkään, kun viisi minuuttia vapautuu</b><span>Juuri nyt valmis asia on listan kärjessä. Muuta ei tarvitse lukea.</span></li>
-  </ol>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--yellow)"></span>Usein kysyttyä</h2>
-
-  <details>
-    <summary>Pitääkö minun kirjautua iCloudiin?</summary>
-    <p>Ei, jos käytät appia yksin – kaikki tallentuu laitteelle. iCloudia tarvitaan synkronointiin toisen laitteen tai Mac-apin kanssa sekä jakamiseen.</p>
-  </details>
-
-  <details>
-    <summary>Onko appi suomeksi?</summary>
-    <p>Kyllä. Appi on saatavilla 23 kielellä ja noudattaa laitteesi kieltä. Jos haluat vaihtaa kielen vain tähän appiin, avaa iOS:n Asetukset, valitse Rainbow of Desire ja sitten Kieli.</p>
-  </details>
-
-  <details>
-    <summary>Entä jos appi arvioi vaiheen väärin?</summary>
-    <p>Pyyhkäise vaihetta vasemmalle ja vastaa kahteen kysymykseen itse. Vastauksesi ohittaa apin arvauksen ja pysyy voimassa. Appi lukee kirjoittamasi sanat, joten se erehtyy usein toisten työstä – se on odotettavaa.</p>
-  </details>
-
-  <details>
-    <summary>Miksi tehtävästä ilman aikaa ei koskaan tule pätkää?</summary>
-    <p>Koska mikään ei kerro, että se valmistuu viidessä minuutissa, ja lista on arvokas vain, jos siinä oleva on oikeasti valmista tehtäväksi. Kirjoita aika – vaikkapa viisitoista minuuttia – niin se lajitellaan oikein.</p>
-  </details>
-
-  <details>
-    <summary>Voinko kuitata asioita tehdyiksi widgetissä?</summary>
-    <p>Ei vielä – widgetit ovat vain luku -tilassa. Napauta sitä, niin Tehtävät-näkymä avautuu heti.</p>
-  </details>
-
-  <details>
-    <summary>Mikä on maksullista?</summary>
-    <p>Apin ydin on ilmainen: sateenkaari, tehtävien pilkkominen, kaksi kysymystä ja vaiheiden järjestys. Rainbow Pro avaa viisi lisäominaisuutta: koti- ja lukitusnäytön widgetit, tuonnin kalenterista, tapahtumien jakamisen, tapahtumatilastot ja tilikirjan. Valitse vuositilaus (ensimmäinen viikko ilmainen), kuukausitilaus tai kertaostona elinikäinen käyttöoikeus. Käyttö Macin kanssa on ilmaista.</p>
-  </details>
-
-  <details>
-    <summary>Pitääkö Mac-appi ostaa erikseen?</summary>
-    <p>Rainbow Craft on erillinen macOS-appi. Samalla iCloud-tilillä tehtävät ja viikkosuunnitelmat siirtyvät itsestään.</p>
-  </details>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--green)"></span>Tietosuoja</h2>
-  <p class="lead">Palvelinta ei ole. Kirjoittamasi pysyy laitteellasi ja omassa iCloudissasi.</p>
-  <div class="note">
-    Ei mainostunnisteita, ei sijaintia, ei rekisteröitymistä. Vain nimettömiä käyttötilastoja, joista sinua ei voi tunnistaa, lähetetään, ja voit laittaa ne pois päältä Asetuksissa.
-    Tarkemmat tiedot ovat <a href="privacy.html">tietosuojakäytännössä</a>.
-  </div>
-</section>
-
-<section>
-  <h2><span class="dot" style="background:var(--indigo)"></span>Mitä on muuttunut</h2>
-  <p class="lead">Jokainen versio on kirjattu.</p>
-  <p><a href="https://github.com/M1zz/ScheduleDensity/blob/main/docs/RELEASE_NOTES.md">Lue julkaisutiedot</a></p>
-</section>
-
-<section>
-  <div class="contact">
-    <h2 style="margin-bottom:6px">Tuki</h2>
-    <p class="lead" style="margin-bottom:0">Jos jokin on tiellä tai näyttää väärältä, kerro siitä. Apin asetuksissa on myös yhteydenottokohta.</p>
-    <a class="btn" href="mailto:leeo@kakao.com">leeo@kakao.com</a>
-  </div>
-</section>
-
-</main>
-
-<footer>
-  <div>2026 Rainbow Craft</div>
-  <div class="fam">Rainbow of Desire (iOS) · Rainbow Craft (macOS)</div>
-  <div class="fam"><a href="privacy.html">Tietosuojakäytäntö</a> · <a href="../index.html">한국어</a> · <a href="../en/">English</a> · <a href="../zh-Hant/">繁體中文</a> · <a href="../zh-Hans/">简体中文</a> · <a href="../ja/">日本語</a> · <a href="../de/">Deutsch</a> · <a href="../es/">Español</a> · <a href="../fr/">Français</a> · <a href="../it/">Italiano</a> · <a href="../pt-BR/">Português (Brasil)</a> · <a href="../ru/">Русский</a> · <a href="../cs/">Čeština</a> · <a href="../da/">Dansk</a> · <a href="../el/">Ελληνικά</a> · <a href="../id/">Bahasa Indonesia</a> · <a href="../nb/">Norsk bokmål</a> · <a href="../nl/">Nederlands</a> · <a href="../pl/">Polski</a> · <a href="../sv/">Svenska</a> · <a href="../th/">ไทย</a> · <a href="../tr/">Türkçe</a> · <a href="../vi/">Tiếng Việt</a></div>
-</footer>
+  <script>
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) }
+    }), { rootMargin: "0px 0px -10% 0px" });
+    document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+  </script>
+  <script src="../demo.js"></script>
 </body>
 </html>

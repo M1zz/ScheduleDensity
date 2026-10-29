@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: viikkosuunnittelija, joka tummuu kuormasta, ja tehtävien pilkkominen",
+  "description": "Mitä enemmän menee päällekkäin, sitä tummempi väri, joten raskaan viikon näkee ajoissa. Pilko isot tehtävät vaiheiksi. Perusosa on ilmainen.",
+  "hero": {
+    "headline": "Näe raskas viikko ajoissa.\nKäytä vapaat viisi minuuttia.",
+    "lead": "Mitä enemmän työt menevät päällekkäin, sitä syvemmäksi sateenkaari värittyy. Pilko iso tehtävä vaiheiksi, niin raossa tehtävä vaihe odottaa jo ylimpänä.",
+    "cta": "Lataa ilmaiseksi App Storesta",
+    "note": "Sateenkaari, tehtävien pilkkominen, ajastin ja synkronointi Macin kanssa ovat ilmaisia."
+  },
+  "demo": {
+    "title": "Kokeile itse",
+    "lead": "”Q3-raportti” on jo pilkottu viiteen vaiheeseen. Valitse vaihe, muuta aikaa tai käännä vastaus. Vain vaihe, joka saa kaksi kyllää, on pätkä, jonka teet viidessä minuutissa.",
+    "task": "Q3-raportti",
+    "steps": [
+      "Kaiva maaliskuun luvut",
+      "Avaa edellisen kvartaalin tiedosto",
+      "Kirjoita johdanto",
+      "Tee kaavio alueittain",
+      "Lähetä Minalle"
+    ],
+    "total": "Yhteensä",
+    "time": "Aika",
+    "min": "{n} min",
+    "hr": "{h} h",
+    "hrmin": "{h} h {m} min",
+    "questions": [
+      {
+        "q": "Pääsetkö alkuun ilman lämmittelyä?",
+        "why": "Työ, jossa asiayhteys pitää ladata takaisin päähän, kuluttaa koko pätkän pelkkään käynnistymiseen."
+      },
+      {
+        "q": "Valmistuuko se viidessä minuutissa?",
+        "why": "Keskeneräinen työ jättää jäänteitä, jotka syövät seuraavaa jaksoa."
+      }
+    ],
+    "yes": "Kyllä",
+    "no": "Ei",
+    "kinds": {
+      "fragment": "Pätkä",
+      "short": "Lyhyt jakso",
+      "block": "Jakso"
+    },
+    "verdicts": {
+      "fragment": "Tämä on pätkä. Tartu siihen, kun viisi minuuttia vapautuu.",
+      "short": "Tämä on lyhyt jakso. Sinun on istuttava alas, mutta se valmistuu yhdellä istumalla.",
+      "block": "Tämä on jakso. Sijoita se aikaan, jonka olet suojannut."
+    },
+    "pickNow": "Viisi minuuttia aikaa?",
+    "nothing": "Ei vielä mitään",
+    "reset": "Palaa apin arvioon",
+    "note": "Kokeilu vastaa pelkän ajan perusteella. Apissa ensimmäinen vastaus tulee asettamastasi ajasta ja, jos kirjoitat koreaksi tai englanniksi, myös sanoistasi. Korjaat vain, kun se on väärässä."
+  },
+  "problem": {
+    "title": "Kalenteri näyttää tyhjältä, mutta viikko vie silti hengen?",
+    "text": "Kalenteri kertoo, onko jotain sovittu, ei sitä, kuinka paljon päällä on. Sen, että kolme määräaikaa osui samalle viikolle, huomaa usein vasta keskellä viikkoa, ja väliin jäävät viisi minuuttia kuluvat tehtävälistan selaamiseen. Rainbow of Desire piirtää viikon ruudukoksi, tummentaa päällekkäisyydet ja nostaa sivuun vaiheet, jotka mahtuvat rakoon."
+  },
+  "features": [
+    {
+      "title": "Kaksi kysymystä ja asia selviää",
+      "text": "Kun pilkot ison tehtävän, jokainen vaihe saa kaksi kysymystä. Pääsetkö alkuun ilman lämmittelyä? Valmistuuko se viidessä minuutissa?\nVain kaksi kyllää tekee siitä pätkän. Appi vastaa ensin ajan ja sanojen perusteella, ja sinä käännät vastauksen vain, kun se on väärä.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Rako tuli? Katso ylintä",
+      "text": "Pyyhkäise tehtävä oikealle ja anna sille salama, niin se ohittaa jonon ja nousee ylimmäksi. Koko listaa ei tarvitse lukea.\nOdottavatko vaiheet toisiaan, päätät kerran ryhmää kohden. Järjestyksessä näyttää ensimmäisen keskeneräisen vaiheen, Vapaa järjestys pätkän, jonka voit ottaa nyt.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Näkyy avaamatta appia",
+      "text": "Ajastin laskee siihen hetkeen, kun tapahtuma päättyy, ja jäljellä oleva aika näkyy myös Dynamic Islandissa ja lukitusnäytöllä.\nKoti- ja lukitusnäytön widgetit näyttävät, mitä teet nyt, mikä mahtuu viiteen minuuttiin ja tämän viikon sateenkaaren. (Widgetit kuuluvat Pro-tasoon)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Alkuun kolmessa vaiheessa",
+    "items": [
+      {
+        "title": "Vedä tapahtuma",
+        "text": "Paina pitkään tyhjää ruutua alkupäivänä ja napauta loppupäivää. Sateenkaareen ilmestyy viiva."
+      },
+      {
+        "title": "Pilko isot tehtävät",
+        "text": "Napauta tehtävää, kirjoita vaiheet ja valitse aika. Kahteen kysymykseen appi vastaa ensin."
+      },
+      {
+        "title": "Raossa katso ylös",
+        "text": "Pätkät ja salamalla merkityt tehtävät kerääntyvät ylös vuoroa odottamatta."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Mitä näet näytöllä",
+    "rows": [
+      [
+        "Tumma ruutu · vaalea ruutu",
+        "päivät, joina oikeasti teet asiaa, ja loppujakso päättymispäivään asti"
+      ],
+      [
+        "Täysi rivi",
+        "päivä, jona niin moni asia on käynnissä, että yksi viivästys siirtää koko päivää"
+      ],
+      [
+        "Pätkä",
+        "kyllä kumpaankin kysymykseen; ota, kun sinulla on viisi minuuttia"
+      ],
+      [
+        "Lyhyt jakso",
+        "ei lämmittelyä, mutta ei valmistu pätkässä; hoituu yhdellä istumalla"
+      ],
+      [
+        "Jakso",
+        "vaatii lämmittelyn tai kestää vähintään 45 minuuttia; kuuluu varattuun aikaan"
+      ],
+      [
+        "Salama",
+        "oma ”heti”-merkkisi; nousee ylimmäksi"
+      ],
+      [
+        "Järjestyksessä · Vapaa järjestys",
+        "odottavatko vaiheet toisiaan, asetetaan kerran ryhmää kohden"
+      ],
+      [
+        "Tilikirja",
+        "viikon tilinpäätös: jäljellä oleva, takaisin saatu aika ja palautuminen erikseen, koskaan yhteen laskematta"
+      ]
+    ],
+    "note": "Aika summautuu alhaalta ylös: tehtävän aika on sen vaiheiden summa."
+  },
+  "pricing": {
+    "title": "Kaikki tähän päivään tarvittava on ilmaista",
+    "free": {
+      "name": "Ilmainen",
+      "items": [
+        "Sateenkaari (aikataulun tiheysruudukko)",
+        "Tehtävien pilkkominen vaiheiksi ja kaksi kysymystä",
+        "Salama ja vaiheiden järjestys",
+        "Ajastin Dynamic Islandissa ja lukitusnäytöllä",
+        "Synkronointi Rainbow Craftin kanssa Macilla iCloudin kautta",
+        "Kahden viime viikon tilikirja"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: tapahtumatilastot ja tilikirja kahta viikkoa kauemmas",
+        "Pro: kaikki Plussasta sekä koti- ja lukitusnäytön widgetit",
+        "Pro: tuonti kalenterista ja jatkuva näyttö",
+        "Pro: tapahtumien jakaminen vain luettavaksi",
+        "Pro: avaa myös Rainbow Craft Pron Macilla"
+      ],
+      "note": "Kumpikin vuositilauksena tai kertaostona pysyvästi"
+    },
+    "note": "Maksat vain menneiden viikkojen tarkastelusta ja asioiden viemisestä appin ulkopuolelle. Jos ostit Pron aiemmin tai sinulla on yhä kuukausitilaus, olet edelleen Pro."
+  },
+  "faq": {
+    "title": "Usein kysyttyä",
+    "items": [
+      {
+        "q": "Tarvitsenko tilin tai iCloudin?",
+        "a": "Yksin käyttäessä et. Rekisteröitymistä ei ole, ja kaikki pysyy laitteella. Muita laitteita, Mac-appia tai jakamista varten kirjaudu iCloudiin."
+      },
+      {
+        "q": "Appi vastasi kysymykseen väärin.",
+        "a": "Napauta vaihetta ja vaihda Kyllä tai Ei. Oma vastauksesi menee aina edelle. Napauta ”Palaa apin arvioon”, niin annat päätöksen takaisin. Vaihetta ilman aikaa ei lasketa pätkäksi, koska appi ei tiedä, valmistuuko se viidessä minuutissa."
+      },
+      {
+        "q": "Voinko jakaa muiden kanssa?",
+        "a": "Kutsulinkillä jaat tapahtumasi vain luettavaksi (Pro) tai avaat tehtävälistan, jota sinä ja kutsutut luette ja muokkaatte yhdessä. Kuka tahansa linkin saanut voi liittyä, joten lähetä se vain oikeille ihmisille. Sillä ei ole tekemistä Applen Perhejaon kanssa."
+      },
+      {
+        "q": "Näkyvätkö kalenterini tapahtumat?",
+        "a": "Valitsemiesi kalenterien tapahtumat näkyvät sateenkaaressa ja päivänäkymässä (Pro). Appi vain lukee niitä eikä kirjoita mitään takaisin."
+      },
+      {
+        "q": "Voinko kuitata widgetistä?",
+        "a": "Widgetit ovat vain katseltavia. Napauta widgetiä, niin tehtävät aukeavat suoraan, ja kuittaa siellä."
+      },
+      {
+        "q": "Ostetaanko Mac-appi erikseen?",
+        "a": "Rainbow Craft on erillinen macOS-appi Mac App Storessa. Samalla iCloud-tilillä tehtävät ja viikkosuunnitelmat synkronoituvat itsestään, eikä se maksa mitään."
+      },
+      {
+        "q": "Ovatko vanhat tehtäväni tallessa?",
+        "a": "Ovat. Tehtävät, vaiheet ja asettamasi ajat säilyvät. Vanhojen aloitusehtojen tunnisteet appi arvioi uudelleen kahdella kysymyksellä."
+      },
+      {
+        "q": "Mihin tietoni tallennetaan?",
+        "a": "Palvelinta ei ole. Kaikki on laitteellasi ja omassa iCloudissasi, jonne kehittäjä ei näe. Ei mainostunnistetta, ei sijaintia. Appi lähettää vain nimettömiä käyttötilastoja, joista sinua ei tunnista ja jotka voi laittaa pois Asetuksista."
+      },
+      {
+        "q": "Miten peruutan tilauksen?",
+        "a": "Asetukset > Apple-tili > Tilaukset. Tilaus uusiutuu samaan hintaan, ellet peru sitä viimeistään 24 tuntia ennen jakson päättymistä. Pysyvä osto maksetaan kerran."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Katso, kuinka täysi viikko on,\nennen kuin astut siihen",
+    "cta": "Lataa ilmaiseksi App Storesta"
+  },
+  "ui": {
+    "skip": "Siirry sisältöön",
+    "languages": "Kieli",
+    "privacy": "Tietosuojakäytäntö",
+    "contact": "Jäikö jokin jumiin tai näyttääkö jokin oudolta? Kirjoita osoitteeseen {email}. Yhteydenottovalinta löytyy myös appin asetuksista."
+  }
+}

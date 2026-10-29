@@ -1,0 +1,130 @@
+{
+  "title": "Rainbow of Desire: see how full your week is, and break tasks into steps",
+  "description": "The color deepens wherever your work overlaps, so you spot the heavy week early. Split big jobs into steps and keep what fits a five-minute gap on top. The core app is free.",
+  "hero": {
+    "headline": "See the heavy week coming.\nUse the five minutes you get.",
+    "lead": "The more your work overlaps, the deeper the rainbow gets. Break a big job into steps, and the one you can grab in a spare moment is already waiting at the top.",
+    "cta": "Get it free on the App Store",
+    "note": "The Rainbow, task breakdown, the timer and syncing with the Mac are free."
+  },
+  "demo": {
+    "title": "Sort it yourself",
+    "lead": "“Q3 report” is already split into five steps. Pick a step, change its time or flip an answer. Only a step that gets a yes to both questions becomes a fragment you can grab in five minutes.",
+    "task": "Q3 report",
+    "steps": ["Pull the March numbers", "Open last quarter's file", "Write the intro", "Chart sales by region", "Send it to Mina"],
+    "total": "Total",
+    "time": "Time",
+    "min": "{n} min",
+    "hr": "{h} hr",
+    "hrmin": "{h} hr {m} min",
+    "questions": [
+      {"q": "Does it start with no warm-up?", "why": "Work that needs its context reloaded spends the whole fragment warming up."},
+      {"q": "Does it run all the way through in five minutes?", "why": "Unfinished work leaves residue that eats into the next block of time."}
+    ],
+    "yes": "Yes",
+    "no": "No",
+    "kinds": {"fragment": "Fragment", "short": "Short block", "block": "Block"},
+    "verdicts": {
+      "fragment": "This is a fragment. When five minutes open up, take it.",
+      "short": "This is a short block. You have to sit down, but one sitting finishes it.",
+      "block": "This is a block. Give it time you've set aside."
+    },
+    "pickNow": "Got five minutes?",
+    "nothing": "Nothing yet",
+    "reset": "Back to the app's call",
+    "note": "This demo answers from the time alone. The app also reads the words you write, answers first, and you only step in when it's wrong."
+  },
+  "problem": {
+    "title": "Ever had a week that looked empty on the calendar and still left you gasping?",
+    "text": "A calendar tells you whether something is scheduled, not how much is piled on top of it. You find out three deadlines landed in the same week only once you're in it, and the five minutes you get in between go to rereading the to-do list. Rainbow of Desire draws your week as a grid, shades it darker where work overlaps, and sets aside the steps that fit a gap."
+  },
+  "features": [
+    {
+      "title": "Two questions settle it",
+      "text": "Split a big job into steps and each one gets two questions. Can you start it cold? Does it run all the way through in five minutes?\nOnly a yes to both makes it a fragment. The app answers first from the words and time you wrote, and you only flip an answer when it's wrong.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "When a gap opens, look at the top",
+      "text": "Swipe a to-do to the right to add a Bolt, and it skips the line to stand at the top. No reading the whole list to find something to do.\nDecide once per group whether steps wait for each other. In order puts the first unfinished step up front; Any order puts whatever fragment you could grab right now.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Visible without opening the app",
+      "text": "The timer counts down to the moment an event ends, and the time left shows in the Dynamic Island and on the Lock Screen.\nHome and Lock Screen widgets show the job you're on, what fits five minutes, and this week's rainbow. (Widgets are Pro.)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Three steps to start",
+    "items": [
+      {"title": "Draw an event", "text": "Press and hold an empty cell on the start day, tap the end day, and a line appears on the rainbow."},
+      {"title": "Split the big jobs", "text": "Tap a to-do, list its steps and pick a time for each. The app answers the two questions for you."},
+      {"title": "Look at the top", "text": "Fragments and bolted rows gather at the top, no waiting their turn."}
+    ]
+  },
+  "reference": {
+    "title": "What you'll see on screen",
+    "rows": [
+      ["Dark cell · pale cell", "a day you actually work on it, and the rest of its span until it ends"],
+      ["A full row", "a day juggling so much that one slip pushes the whole day"],
+      ["Fragment", "yes to both questions; grab it when five minutes open up"],
+      ["Short block", "starts cold but won't finish in a fragment; one sitting does it"],
+      ["Block", "needs a warm-up or runs 45 minutes or more; give it time you've set aside"],
+      ["Bolt", "your own “ready right now” mark; it jumps to the top"],
+      ["In order · Any order", "whether steps wait for each other, set once per group"],
+      ["Ledger", "the week's tally: what's left over, time won back, and recovery, kept apart"]
+    ],
+    "note": "Time adds up from the bottom: a job's time is the sum of its steps."
+  },
+  "pricing": {
+    "title": "What you need to live today is free",
+    "free": {
+      "name": "Free",
+      "items": [
+        "The Rainbow density grid",
+        "Splitting tasks into steps, and the two questions",
+        "Bolt and step order",
+        "Timer, in the Dynamic Island and on the Lock Screen",
+        "Syncing with Rainbow Craft on the Mac over iCloud",
+        "The last two weeks of the Ledger"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: event stats, and the Ledger past two weeks",
+        "Pro: everything in Plus, plus Home and Lock Screen widgets",
+        "Pro: import from Calendar and mirror it",
+        "Pro: share your events, read only",
+        "Pro: unlocks Rainbow Craft Pro on the Mac too"
+      ],
+      "note": "Each as a yearly subscription or a one-time lifetime purchase"
+    },
+    "note": "You only pay for looking back over past weeks and taking things beyond the app. If you bought Pro earlier or still have a monthly plan, you're Pro today."
+  },
+  "faq": {
+    "title": "Questions",
+    "items": [
+      {"q": "Do I need an account or iCloud?", "a": "Not on your own. There's no sign-up and everything stays on your device. To see it on another device or the Mac app, or to share, sign in to iCloud."},
+      {"q": "The app answered a question wrong.", "a": "Tap the step and switch Yes or No. Your own answer always beats the app's call. Tap Back to the app's call to hand it back. A step with no time set isn't counted as a fragment, because the app can't tell whether it finishes in five minutes."},
+      {"q": "Can I share with someone?", "a": "Send an invite link to share your events read only (Pro), or open one to-do list that you and the people you invite read and write together. Anyone with the link can join, so only send it to people you mean to. It has nothing to do with Apple Family Sharing."},
+      {"q": "Does it show my Calendar events?", "a": "Events from the calendars you pick appear on the rainbow and in your day view (Pro). It only reads them and never writes anything back."},
+      {"q": "Can I check things off from a widget?", "a": "Widgets are view only. Tap one to jump straight to your to-dos and check it off there."},
+      {"q": "Do I have to buy the Mac app separately?", "a": "Rainbow Craft is a separate macOS app on the Mac App Store. On the same iCloud account, to-dos and weekly plans sync on their own, and syncing costs nothing."},
+      {"q": "Are my older to-dos still there?", "a": "Yes. To-dos, steps and the times you set are all kept. Labels from the old start conditions are sorted again by the two questions."},
+      {"q": "Where is my data stored?", "a": "There's no server. It stays on your device and in your own private iCloud, where the developer can't see it. No advertising identifiers, no location. The app sends anonymous usage statistics that can't identify you, and you can turn them off in Settings."},
+      {"q": "How do I cancel a subscription?", "a": "In Settings > Apple Account > Subscriptions. It renews at the same price unless you cancel at least 24 hours before the period ends. Lifetime is a single charge."}
+    ]
+  },
+  "closing": {
+    "headline": "See how full the week is\nbefore you walk into it",
+    "cta": "Get it free on the App Store"
+  },
+  "ui": {
+    "skip": "Skip to content",
+    "languages": "Language",
+    "privacy": "Privacy Policy",
+    "contact": "Stuck, or something looks off? Write to {email}. You'll also find a contact option in the app's Settings."
+  }
+}

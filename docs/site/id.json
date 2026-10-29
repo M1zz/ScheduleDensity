@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: perencana mingguan yang makin pekat saat padat, dan pemecah tugas",
+  "description": "Makin banyak yang tumpang tindih, makin pekat warnanya, jadi minggu padat terlihat lebih awal. Pecah tugas besar jadi langkah. Fitur intinya gratis.",
+  "hero": {
+    "headline": "Lihat minggu padat sebelum tiba.\nPakai lima menit yang kamu punya.",
+    "lead": "Makin banyak pekerjaan yang bertumpuk, makin pekat warna pelanginya. Pecah tugas besar jadi langkah, dan langkah yang bisa dikerjakan di sela waktu sudah menunggu di paling atas.",
+    "cta": "Unduh gratis di App Store",
+    "note": "Pelangi, memecah tugas, timer, dan sinkron dengan Mac gratis."
+  },
+  "demo": {
+    "title": "Coba pilah sendiri",
+    "lead": "\"Laporan Kuartal 3\" sudah dipecah jadi lima langkah. Pilih satu, ubah durasinya, atau balik jawabannya. Hanya langkah yang dijawab ya untuk kedua pertanyaan yang jadi kepingan, bisa kamu ambil dalam lima menit.",
+    "task": "Laporan Kuartal 3",
+    "steps": [
+      "Tarik angka bulan Maret",
+      "Buka file kuartal lalu",
+      "Tulis pendahuluan",
+      "Buat grafik per wilayah",
+      "Kirim ke Mina"
+    ],
+    "total": "Total",
+    "time": "Durasi",
+    "min": "{n} mnt",
+    "hr": "{h} jam",
+    "hrmin": "{h} jam {m} mnt",
+    "questions": [
+      {
+        "q": "Bisa mulai tanpa pemanasan?",
+        "why": "Pekerjaan yang mengharuskan Anda memuat ulang konteks akan menghabiskan seluruh kepingan hanya untuk pemanasan."
+      },
+      {
+        "q": "Selesai dalam lima menit?",
+        "why": "Pekerjaan yang belum tuntas meninggalkan sisa yang menggerogoti sesi fokus berikutnya."
+      }
+    ],
+    "yes": "Ya",
+    "no": "Tidak",
+    "kinds": {
+      "fragment": "Kepingan",
+      "short": "Sesi fokus singkat",
+      "block": "Sesi fokus"
+    },
+    "verdicts": {
+      "fragment": "Ini kepingan. Saat ada lima menit luang, ambil.",
+      "short": "Ini sesi fokus singkat. Anda harus duduk khusus, tapi selesai sekali duduk.",
+      "block": "Ini sesi fokus. Taruh di waktu yang sudah Anda lindungi."
+    },
+    "pickNow": "Punya lima menit?",
+    "nothing": "Belum ada",
+    "reset": "Kembali ke penilaian app",
+    "note": "Demo ini menjawab hanya dari durasi. Di app, jawaban pertama datang dari durasi yang kamu atur, dan juga dari kata-katamu kalau kamu menulis dalam bahasa Korea atau Inggris. Kamu cukup mengoreksi kalau keliru."
+  },
+  "problem": {
+    "title": "Kalender terlihat kosong, tapi minggunya bikin sesak napas?",
+    "text": "Kalender hanya memberi tahu ada jadwal atau tidak, bukan seberapa banyak yang menumpuk di atasnya. Tiga tenggat jatuh di minggu yang sama sering baru ketahuan saat sudah di dalamnya, dan lima menit luang di sela-selanya habis untuk membaca ulang daftar tugas. Rainbow of Desire menggambar minggumu sebagai kisi, menggelapkan bagian yang tumpang tindih, dan menyisihkan langkah yang muat di sela waktu."
+  },
+  "features": [
+    {
+      "title": "Dua pertanyaan, langsung jelas",
+      "text": "Saat kamu memecah tugas besar, setiap langkah ditanya dua hal. Bisa mulai tanpa pemanasan? Selesai dalam lima menit?\nHanya yang dijawab ya dua kali yang jadi kepingan. App menjawab lebih dulu dari durasi dan kata-katamu, kamu cukup membalik jawaban yang salah.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Ada sela waktu? Lihat paling atas",
+      "text": "Geser tugas ke kanan untuk memberinya kilat, dan tugas itu menyalip antrean ke paling atas. Tidak perlu membaca seluruh daftar.\nApakah langkah saling menunggu, kamu tentukan sekali per kelompok. Berurutan menampilkan langkah pertama yang belum selesai, Bebas urutan menampilkan kepingan yang bisa diambil sekarang.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Terlihat tanpa membuka app",
+      "text": "Timer menghitung sampai acara selesai, dan sisa waktunya juga tampil di Dynamic Island dan Layar Terkunci.\nWidget Layar Utama dan Layar Terkunci menampilkan tugas yang sedang dikerjakan, yang muat dalam lima menit, dan pelangi minggu ini. (Widget termasuk Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Mulai dalam tiga langkah",
+    "items": [
+      {
+        "title": "Tarik jadwal",
+        "text": "Tekan lama sel kosong di hari mulai, lalu ketuk hari selesai. Satu garis muncul di pelangi."
+      },
+      {
+        "title": "Pecah tugas besar",
+        "text": "Ketuk tugas, tulis langkahnya, dan pilih durasi. Dua pertanyaan dijawab app lebih dulu."
+      },
+      {
+        "title": "Saat luang, lihat atas",
+        "text": "Kepingan dan tugas berkilat berkumpul di atas tanpa menunggu giliran."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Istilah yang akan kamu temui",
+    "rows": [
+      [
+        "Sel pekat · sel pucat",
+        "hari kamu benar-benar mengerjakannya, dan sisa rentang sampai tanggal selesai"
+      ],
+      [
+        "Satu baris penuh",
+        "hari dengan begitu banyak yang berjalan bersamaan sehingga satu molor, semua ikut molor"
+      ],
+      [
+        "Kepingan",
+        "ya untuk kedua pertanyaan; ambil saat ada lima menit"
+      ],
+      [
+        "Sesi fokus singkat",
+        "tidak perlu pemanasan, tapi tidak selesai dalam satu kepingan; tuntaskan sekali duduk"
+      ],
+      [
+        "Sesi fokus",
+        "perlu pemanasan atau 45 menit lebih; taruh di waktu yang sudah disisihkan"
+      ],
+      [
+        "Kilat",
+        "tanda \"sekarang juga\" buatanmu sendiri; melompat ke atas"
+      ],
+      [
+        "Berurutan · Bebas urutan",
+        "apakah langkah saling menunggu, ditentukan sekali per kelompok"
+      ],
+      [
+        "Catatan Waktu Kembali",
+        "rekap mingguan: sisa pekerjaan, waktu yang kembali, dan istirahat, dicatat terpisah dan tidak dijumlahkan"
+      ]
+    ],
+    "note": "Waktu dijumlah dari bawah ke atas: durasi sebuah tugas adalah jumlah langkah-langkahnya."
+  },
+  "pricing": {
+    "title": "Yang kamu perlukan untuk hari ini gratis",
+    "free": {
+      "name": "Gratis",
+      "items": [
+        "Pelangi (kisi kepadatan jadwal)",
+        "Memecah tugas jadi langkah dan dua pertanyaan",
+        "Kilat dan urutan langkah",
+        "Timer di Dynamic Island dan Layar Terkunci",
+        "Sinkron dengan Rainbow Craft di Mac lewat iCloud",
+        "Catatan Waktu Kembali dua minggu terakhir"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: statistik jadwal dan catatan lebih dari dua minggu ke belakang",
+        "Pro: semua isi Plus ditambah widget Layar Utama dan Layar Terkunci",
+        "Pro: impor dari Kalender dan tampilkan terus",
+        "Pro: bagikan jadwal, hanya baca",
+        "Pro: membuka juga Rainbow Craft Pro di Mac"
+      ],
+      "note": "Masing-masing berupa langganan tahunan atau sekali bayar seumur hidup"
+    },
+    "note": "Yang berbayar hanya melihat ke minggu-minggu lalu dan membawa data keluar app. Kalau dulu sudah membeli Pro atau masih berlangganan bulanan, kamu tetap Pro."
+  },
+  "faq": {
+    "title": "Pertanyaan umum",
+    "items": [
+      {
+        "q": "Perlu akun atau iCloud?",
+        "a": "Kalau dipakai sendiri, tidak. Tanpa pendaftaran, semuanya tersimpan di perangkat. Untuk perangkat lain, app Mac, atau berbagi, masuk ke iCloud."
+      },
+      {
+        "q": "App salah menjawab pertanyaan.",
+        "a": "Ketuk langkahnya lalu ganti Ya atau Tidak. Jawabanmu selalu didahulukan. Ketuk \"Kembali ke penilaian app\" untuk menyerahkannya lagi. Langkah tanpa durasi tidak dihitung sebagai kepingan karena app belum tahu apakah selesai dalam lima menit."
+      },
+      {
+        "q": "Bisa berbagi dengan orang lain?",
+        "a": "Lewat tautan undangan kamu bisa membagikan jadwal dalam mode hanya baca (Pro), atau membuka satu daftar tugas yang dibaca dan diubah bersama orang yang kamu undang. Siapa pun yang punya tautan bisa bergabung, jadi kirim hanya ke orang yang dimaksud. Ini tidak berkaitan dengan Berbagi Keluarga Apple."
+      },
+      {
+        "q": "Apakah acara di Kalender ikut tampil?",
+        "a": "Acara dari kalender yang kamu pilih tampil di pelangi dan tampilan harian (Pro). App hanya membaca dan tidak menulis apa pun."
+      },
+      {
+        "q": "Bisa mencentang dari widget?",
+        "a": "Widget hanya untuk melihat. Ketuk widget untuk langsung membuka daftar tugas, lalu centang di sana."
+      },
+      {
+        "q": "Apakah app Mac dibeli terpisah?",
+        "a": "Rainbow Craft adalah app macOS tersendiri di Mac App Store. Dengan akun iCloud yang sama, tugas dan rencana mingguan tersinkron sendiri, dan sinkronnya gratis."
+      },
+      {
+        "q": "Tugas lamaku masih ada?",
+        "a": "Masih. Tugas, langkah, dan durasi yang sudah diisi tetap tersimpan. Label syarat mulai yang lama dinilai ulang oleh app dengan dua pertanyaan."
+      },
+      {
+        "q": "Di mana dataku disimpan?",
+        "a": "Tidak ada server. Semuanya ada di perangkat dan iCloud pribadimu, dan pengembang tidak bisa melihatnya. Tanpa pengenal iklan, tanpa lokasi. App hanya mengirim statistik penggunaan anonim yang tidak mengenali dirimu, dan bisa dimatikan di Pengaturan."
+      },
+      {
+        "q": "Bagaimana cara membatalkan langganan?",
+        "a": "Di app Pengaturan > Akun Apple > Langganan. Langganan diperpanjang dengan harga sama kecuali dibatalkan paling lambat 24 jam sebelum periode berakhir. Seumur hidup cukup dibayar sekali."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Lihat seberapa penuh minggu ini\nsebelum kamu masuk",
+    "cta": "Unduh gratis di App Store"
+  },
+  "ui": {
+    "skip": "Langsung ke konten",
+    "languages": "Bahasa",
+    "privacy": "Kebijakan Privasi",
+    "contact": "Bingung atau ada yang aneh? Tulis ke {email}. Di pengaturan app juga ada pilihan untuk menghubungi kami."
+  }
+}

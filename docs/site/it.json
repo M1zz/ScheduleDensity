@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: agenda settimanale che si scurisce col carico e spezza le attività",
+  "description": "Più le attività si sovrappongono, più il colore si scurisce: vedi prima la settimana piena. Spezza il lavoro grande in passi. L’essenziale è gratis.",
+  "hero": {
+    "headline": "Vedi arrivare la settimana piena.\nSfrutta i cinque minuti che hai.",
+    "lead": "Più il lavoro si sovrappone, più l’arcobaleno diventa intenso. Spezza un’attività grande in passi e quello che puoi fare in un momento libero ti aspetta già in cima.",
+    "cta": "Scaricala gratis dall’App Store",
+    "note": "Arcobaleno, suddivisione delle attività, timer e sincronizzazione con il Mac sono gratis."
+  },
+  "demo": {
+    "title": "Provalo tu",
+    "lead": "«Report del T3» è già diviso in cinque passi. Scegline uno, cambia la durata o capovolgi una risposta. Solo un passo con due sì diventa un frammento da fare in cinque minuti.",
+    "task": "Report del T3",
+    "steps": [
+      "Estrarre i numeri di marzo",
+      "Aprire il file del trimestre scorso",
+      "Scrivere l’introduzione",
+      "Fare il grafico per regione",
+      "Mandarlo a Mina"
+    ],
+    "total": "Totale",
+    "time": "Durata",
+    "min": "{n} min",
+    "hr": "{h} h",
+    "hrmin": "{h} h {m} min",
+    "questions": [
+      {
+        "q": "Riesci a iniziare senza tempo di avvio?",
+        "why": "Il lavoro che richiede di riprendere il filo consuma l’intero frammento solo per partire."
+      },
+      {
+        "q": "Si finisce in cinque minuti?",
+        "why": "Il lavoro lasciato a metà lascia residui che si mangiano il tempo di concentrazione successivo."
+      }
+    ],
+    "yes": "Sì",
+    "no": "No",
+    "kinds": {
+      "fragment": "Frammento",
+      "short": "Concentrazione breve",
+      "block": "Tempo di concentrazione"
+    },
+    "verdicts": {
+      "fragment": "Questo è un frammento. Quando si aprono cinque minuti, prendilo.",
+      "short": "Richiede poco tempo di concentrazione. Devi sederti, ma si chiude in una sola seduta.",
+      "block": "Questo richiede tempo di concentrazione. Mettilo in un orario protetto."
+    },
+    "pickNow": "Hai cinque minuti?",
+    "nothing": "Ancora niente",
+    "reset": "Torna alla valutazione dell’app",
+    "note": "Questa demo risponde solo in base alla durata. Nell’app la prima risposta arriva dalla durata che imposti e anche dalle tue parole, se scrivi in coreano o in inglese. Correggi solo quando sbaglia."
+  },
+  "problem": {
+    "title": "Il calendario sembra vuoto, eppure la settimana ti toglie il fiato?",
+    "text": "Un calendario dice se c’è qualcosa in programma, non quanto ci si accumula sopra. Che tre scadenze cadano nella stessa settimana lo scopri quando ci sei dentro, e i cinque minuti liberi in mezzo se ne vanno a rileggere la lista delle cose da fare. Rainbow of Desire disegna la settimana come una griglia, scurisce dove si sovrappone e mette da parte i passi che stanno in un buco."
+  },
+  "features": [
+    {
+      "title": "Due domande e tutto è chiaro",
+      "text": "Quando spezzi un’attività grande, ogni passo riceve due domande. Riesci a iniziare senza tempo di avvio? Si finisce in cinque minuti?\nSolo un doppio sì lo rende un frammento. L’app risponde per prima in base alla durata e alle parole, tu capovolgi una risposta solo se è sbagliata.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Un momento libero? Guarda in cima",
+      "text": "Scorri un’attività verso destra per darle un fulmine: salta la fila e finisce in cima. Non serve rileggere tutta la lista.\nSe i passi si aspettano a vicenda lo decidi una volta per gruppo. In ordine mostra il primo passo da fare, Qualsiasi ordine il frammento che puoi prendere adesso.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Si vede senza aprire l’app",
+      "text": "Il timer conta fino alla fine dell’evento e il tempo rimasto compare anche nella Dynamic Island e sulla schermata di blocco.\nI widget per Home e schermata di blocco mostrano ciò che stai facendo, ciò che sta in cinque minuti e l’arcobaleno della settimana. (I widget sono Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Si parte in tre passi",
+    "items": [
+      {
+        "title": "Traccia un evento",
+        "text": "Tieni premuta una casella vuota nel giorno d’inizio e tocca il giorno di fine: compare una linea sull’arcobaleno."
+      },
+      {
+        "title": "Spezza il lavoro grande",
+        "text": "Tocca un’attività, scrivi i passi e scegli una durata. Alle due domande risponde prima l’app."
+      },
+      {
+        "title": "Nei buchi guarda in cima",
+        "text": "Frammenti e attività con il fulmine si raccolgono in cima senza aspettare il turno."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Cosa vedrai sullo schermo",
+    "rows": [
+      [
+        "Casella scura · casella chiara",
+        "i giorni in cui ci lavori davvero, e il resto fino alla data di fine"
+      ],
+      [
+        "Una riga piena",
+        "un giorno con così tanto in parallelo che un solo ritardo sposta tutto"
+      ],
+      [
+        "Frammento",
+        "sì a entrambe le domande; da prendere quando hai cinque minuti"
+      ],
+      [
+        "Concentrazione breve",
+        "nessun avvio, ma non finisce in un frammento; si chiude in una seduta"
+      ],
+      [
+        "Tempo di concentrazione",
+        "serve un avvio o dura 45 minuti e più; va nel tempo riservato"
+      ],
+      [
+        "Fulmine",
+        "il tuo segno di «subito»; salta in cima"
+      ],
+      [
+        "In ordine · Qualsiasi ordine",
+        "se i passi si aspettano, deciso una volta per gruppo"
+      ],
+      [
+        "Registro del tempo recuperato",
+        "il bilancio della settimana: ciò che resta, il tempo recuperato e il riposo, tenuti separati e mai sommati"
+      ]
+    ],
+    "note": "Il tempo si somma dal basso: la durata di un’attività è la somma dei suoi passi."
+  },
+  "pricing": {
+    "title": "Quello che serve per oggi è gratis",
+    "free": {
+      "name": "Gratis",
+      "items": [
+        "L’arcobaleno (griglia di densità degli impegni)",
+        "Suddivisione in passi e le due domande",
+        "Fulmine e ordine dei passi",
+        "Timer nella Dynamic Island e sulla schermata di blocco",
+        "Sincronizzazione con Rainbow Craft su Mac tramite iCloud",
+        "Il registro delle ultime due settimane"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: statistiche eventi e registro oltre le due settimane",
+        "Pro: tutto Plus, più i widget per Home e schermata di blocco",
+        "Pro: importa da Calendario e mostralo sempre",
+        "Pro: condividi il programma, sola lettura",
+        "Pro: sblocca anche Rainbow Craft Pro su Mac"
+      ],
+      "note": "Ciascuno come abbonamento annuale o acquisto unico a vita"
+    },
+    "note": "Paghi solo per guardare indietro alle settimane passate e per portare le cose fuori dall’app. Se hai comprato Pro in passato o hai ancora il piano mensile, sei sempre Pro."
+  },
+  "faq": {
+    "title": "Domande frequenti",
+    "items": [
+      {
+        "q": "Serve un account o iCloud?",
+        "a": "Se la usi da solo, no. Nessuna registrazione, tutto resta sul dispositivo. Per un altro dispositivo, l’app per Mac o la condivisione, accedi a iCloud."
+      },
+      {
+        "q": "L’app ha risposto male a una domanda.",
+        "a": "Tocca il passo e passa da Sì a No. La tua risposta vale sempre più di quella dell’app. Tocca «Torna alla valutazione dell’app» per restituirgliela. Un passo senza durata non conta come frammento, perché l’app non sa se finisce in cinque minuti."
+      },
+      {
+        "q": "Posso condividere con qualcuno?",
+        "a": "Con un link d’invito condividi il programma in sola lettura (Pro) oppure apri una lista di attività che tu e gli invitati leggete e modificate insieme. Chiunque abbia il link può entrare, quindi mandalo solo a chi vuoi. Non c’entra con In famiglia di Apple."
+      },
+      {
+        "q": "Vedo gli eventi di Calendario?",
+        "a": "Gli eventi dei calendari scelti compaiono sull’arcobaleno e nella vista del giorno (Pro). L’app li legge soltanto e non scrive nulla."
+      },
+      {
+        "q": "Posso spuntare da un widget?",
+        "a": "I widget servono solo a guardare. Toccane uno e si aprono subito le attività: spunta lì."
+      },
+      {
+        "q": "L’app per Mac si compra a parte?",
+        "a": "Rainbow Craft è un’app macOS a sé sul Mac App Store. Con lo stesso account iCloud attività e piani settimanali si sincronizzano da soli, e non costa nulla."
+      },
+      {
+        "q": "Le mie attività di prima ci sono ancora?",
+        "a": "Sì. Attività, passi e durate restano dove sono. Le etichette delle vecchie condizioni di avvio vengono rivalutate dall’app con le due domande."
+      },
+      {
+        "q": "Dove sono salvati i miei dati?",
+        "a": "Non c’è un server. Tutto sta sul tuo dispositivo e nel tuo iCloud privato, dove lo sviluppatore non può vederlo. Niente identificativo pubblicitario, niente posizione. L’app invia solo statistiche d’uso anonime, che non ti identificano e si disattivano in Impostazioni."
+      },
+      {
+        "q": "Come disdico un abbonamento?",
+        "a": "In Impostazioni > Account Apple > Abbonamenti. Si rinnova allo stesso prezzo se non disdici almeno 24 ore prima della fine del periodo. L’acquisto a vita si paga una volta sola."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Guarda quanto è piena la settimana\nprima di entrarci",
+    "cta": "Scaricala gratis dall’App Store"
+  },
+  "ui": {
+    "skip": "Vai al contenuto",
+    "languages": "Lingua",
+    "privacy": "Privacy",
+    "contact": "Ti sei bloccato o qualcosa non torna? Scrivi a {email}. Anche nelle impostazioni dell’app trovi un modo per contattarci."
+  }
+}

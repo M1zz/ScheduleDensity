@@ -1,0 +1,51 @@
+/* 욕망의 무지개 웹 체험. 조각은 앱처럼 초록(⚡ 5분에 집기), 짧은 덩어리는 주황, 덩어리는 회색. */
+.demo-card { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5); align-items: start;
+             --frag: #248A3D; --short: #C93400; }
+@media (prefers-color-scheme: dark) { .demo-card { --frag: #30D158; --short: #FF9F0A; } }
+
+.sp-stage { background: var(--bg); border-radius: var(--r-inner); padding: var(--s5); }
+.sp-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); margin-bottom: var(--s3); }
+.sp-head strong { font-size: 1.25rem; }
+.sp-list { list-style: none; margin: 0 0 var(--s4); padding: 0; display: grid; gap: var(--s2); }
+.sp-row { width: 100%; min-height: 52px; display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s3);
+          align-items: center; text-align: start; font: inherit; color: var(--text); cursor: pointer;
+          background: var(--surface); border: 0; border-radius: 12px; padding: var(--s2) var(--s3);
+          box-shadow: inset 0 0 0 2px transparent; transition: box-shadow .2s var(--ease), transform .15s var(--ease); }
+.sp-row:hover { box-shadow: inset 0 0 0 2px var(--line); }
+.sp-row.on { box-shadow: inset 0 0 0 2px var(--accent); }
+.sp-row:active { transform: scale(.98); }
+.sp-name { font-weight: 600; }
+.sp-row .muted { grid-column: 1; }
+.sp-badge { grid-row: 1 / span 2; grid-column: 2; font-size: .8125rem; font-weight: 600; white-space: nowrap;
+            padding: 2px var(--s2); border-radius: 999px; color: var(--muted); background: var(--bg); }
+.sp-badge.fragment { color: var(--frag); background: color-mix(in srgb, var(--frag) 14%, transparent); }
+.sp-badge.short { color: var(--short); background: color-mix(in srgb, var(--short) 12%, transparent); }
+.sp-now { margin: 0; font-size: .9375rem; }
+.sp-now span { color: var(--frag); font-weight: 600; }
+
+.sp-title { font-size: 1.25rem; font-weight: 700; margin-bottom: var(--s3); }
+.sp-time { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s4); }
+.sp-time .muted { margin-right: auto; }
+.sp-time output { min-width: 6.5em; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sp-step { width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer; font: inherit; font-size: 1.25rem;
+           color: var(--accent); background: var(--bg); transition: transform .15s var(--ease); }
+.sp-step:active { transform: scale(.92); }
+
+.sp-q { border: 0; margin: 0 0 var(--s3); padding: var(--s3) var(--s4); background: var(--bg); border-radius: 12px; }
+.sp-q legend { float: left; width: 100%; padding: 0; font-weight: 600; margin-bottom: var(--s1); }
+.sp-q p { clear: both; margin-bottom: var(--s2); }
+.sp-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 10px; background: var(--line); }
+.sp-seg button { min-height: 44px; font: inherit; font-weight: 600; border: 0; border-radius: 8px; cursor: pointer;
+                 color: var(--muted); background: transparent; transition: background .2s var(--ease), color .2s var(--ease); }
+.sp-seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgb(0 0 0 / .12); }
+
+.sp-verdict { font-weight: 600; padding: var(--s3) var(--s4); border-radius: 12px; background: var(--bg); margin-bottom: var(--s2);
+              animation: sp-in .35s var(--ease); }
+.sp-verdict.fragment { color: var(--frag); background: color-mix(in srgb, var(--frag) 12%, transparent); }
+.sp-verdict.short { color: var(--short); background: color-mix(in srgb, var(--short) 10%, transparent); }
+@keyframes sp-in { from { opacity: .4; transform: translateY(4px); } }
+.sp-reset { font: inherit; color: var(--accent); background: none; border: 0; padding: var(--s2) 0; min-height: 44px; cursor: pointer; }
+.sp-reset:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) { .sp-verdict { animation: none; } .sp-row, .sp-step { transition: none; } }
+@media (max-width: 760px) { .demo-card { grid-template-columns: 1fr; } }

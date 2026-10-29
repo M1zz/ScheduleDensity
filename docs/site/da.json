@@ -1,0 +1,206 @@
+{
+  "title": "Rainbow of Desire: ugeplan der farver travle uger og deler opgaver i trin",
+  "description": "Jo mere der overlapper, jo mørkere farve: du ser den travle uge i forvejen. Del store opgaver i trin, og hav de små øverst. Kernen er gratis.",
+  "hero": {
+    "headline": "Se den travle uge komme.\nBrug de fem minutter, du får.",
+    "lead": "Jo mere dine opgaver overlapper, jo dybere farve får regnbuen. Del en stor opgave op i trin, så venter det trin, du kan klare i en lomme, allerede øverst.",
+    "cta": "Hent gratis i App Store",
+    "note": "Regnbuen, opdeling af opgaver, timeren og synkronisering med Mac er gratis."
+  },
+  "demo": {
+    "title": "Prøv selv",
+    "lead": "„Kvartalsrapport Q3“ er allerede delt i fem trin. Vælg et trin, skift tiden, eller vend et svar. Kun et trin med ja til begge spørgsmål bliver en tidslomme, du kan nå på fem minutter.",
+    "task": "Kvartalsrapport Q3",
+    "steps": [
+      "Træk tallene for marts",
+      "Åbn sidste kvartals fil",
+      "Skriv indledningen",
+      "Lav graf pr. region",
+      "Send den til Mina"
+    ],
+    "total": "I alt",
+    "time": "Tid",
+    "min": "{n} min.",
+    "hr": "{h} t.",
+    "hrmin": "{h} t. {m} min.",
+    "questions": [
+      {
+        "q": "Kan du gå i gang uden opvarmning?",
+        "why": "Arbejde, hvor du skal have konteksten ind i hovedet igen, bruger hele tidslommen på bare at varme op."
+      },
+      {
+        "q": "Bliver den færdig inden for fem minutter?",
+        "why": "Uafsluttet arbejde efterlader rester, der æder af den næste fokusblok."
+      }
+    ],
+    "yes": "Ja",
+    "no": "Nej",
+    "kinds": {
+      "fragment": "Tidslomme",
+      "short": "Kort fokusblok",
+      "block": "Fokusblok"
+    },
+    "verdicts": {
+      "fragment": "Dette er en tidslomme. Når der opstår fem minutter, så tag den.",
+      "short": "Dette er en kort fokusblok. Du skal sætte dig ned til den, men den bliver færdig i ét stræk.",
+      "block": "Dette er en fokusblok. Giv den tid, du har sat af."
+    },
+    "pickNow": "Fem minutter fri?",
+    "nothing": "Intet endnu",
+    "reset": "Tilbage til appens vurdering",
+    "note": "Demoen svarer kun ud fra tiden. I appen kommer det første svar fra den tid, du vælger, og også fra dine ord, hvis du skriver på koreansk eller engelsk. Du retter kun, når den tager fejl."
+  },
+  "problem": {
+    "title": "Ser kalenderen tom ud, men ugen tager alligevel pusten fra dig?",
+    "text": "En kalender viser, om noget er planlagt, ikke hvor meget der ligger oven i det. At tre deadlines lander i samme uge, opdager du ofte først midt i den, og de fem minutter imellem går med at læse to do-listen igennem. Rainbow of Desire tegner ugen som et gitter, farver overlap mørkere og lægger trinene til små huller til side."
+  },
+  "features": [
+    {
+      "title": "To spørgsmål, så er det afgjort",
+      "text": "Når du deler en stor opgave op, får hvert trin to spørgsmål. Kan du gå i gang uden opvarmning? Bliver den færdig inden for fem minutter?\nKun to gange ja giver en tidslomme. Appen svarer først ud fra tid og ordlyd, og du vender kun et svar, når det er forkert.",
+      "shot": "03-two-questions"
+    },
+    {
+      "title": "Et hul i kalenderen? Kig øverst",
+      "text": "Swipe en opgave til højre for at give den et lyn, så springer den køen over og står øverst. Du behøver ikke læse hele listen.\nOm trin venter på hinanden, bestemmer du én gang pr. gruppe. I rækkefølge viser det første åbne trin, Vilkårlig rækkefølge den tidslomme, du kan tage nu.",
+      "shot": "02-list"
+    },
+    {
+      "title": "Synligt uden at åbne appen",
+      "text": "Timeren tæller ned til det øjeblik, en begivenhed slutter, og tiden tilbage vises også i Dynamic Island og på låseskærmen.\nWidgets til hjemme- og låseskærm viser, hvad du er i gang med, hvad der passer i fem minutter, og ugens regnbue. (Widgets er Pro)",
+      "shot": "05-widgets"
+    }
+  ],
+  "steps": {
+    "title": "Kom i gang i tre trin",
+    "items": [
+      {
+        "title": "Tegn en begivenhed",
+        "text": "Hold fingeren på et tomt felt på startdagen, og tryk på slutdagen. Så står der en streg i regnbuen."
+      },
+      {
+        "title": "Del de store opgaver",
+        "text": "Tryk på en opgave, skriv trinene, og vælg en tid. De to spørgsmål svarer appen på først."
+      },
+      {
+        "title": "Kig øverst, når der er hul",
+        "text": "Tidslommer og opgaver med lyn samles øverst uden at vente på tur."
+      }
+    ]
+  },
+  "reference": {
+    "title": "Det, du møder på skærmen",
+    "rows": [
+      [
+        "Mørkt felt · lyst felt",
+        "dage, du faktisk arbejder på det, og resten frem til slutdatoen"
+      ],
+      [
+        "En fuld række",
+        "en dag med så meget samtidig, at én forsinkelse skubber hele dagen"
+      ],
+      [
+        "Tidslomme",
+        "ja til begge spørgsmål; tag den, når der er fem minutter"
+      ],
+      [
+        "Kort fokusblok",
+        "ingen opvarmning, men bliver ikke færdig i en tidslomme; klares i ét stræk"
+      ],
+      [
+        "Fokusblok",
+        "kræver opvarmning eller tager 45 minutter eller mere; læg den i reserveret tid"
+      ],
+      [
+        "Lyn",
+        "dit eget „klar nu“-mærke; springer op øverst"
+      ],
+      [
+        "I rækkefølge · Vilkårlig rækkefølge",
+        "om trin venter på hinanden, valgt én gang pr. gruppe"
+      ],
+      [
+        "Tidsregnskab",
+        "ugens opgørelse: det tilbageværende, vundet tid og restitution, holdt adskilt og aldrig lagt sammen"
+      ]
+    ],
+    "note": "Tid lægges sammen nedefra: en opgaves tid er summen af dens trin."
+  },
+  "pricing": {
+    "title": "Det, du har brug for i dag, er gratis",
+    "free": {
+      "name": "Gratis",
+      "items": [
+        "Regnbuen (gitter over hvor travlt der er)",
+        "Opdeling i trin og de to spørgsmål",
+        "Lyn og rækkefølge for trin",
+        "Timer i Dynamic Island og på låseskærmen",
+        "Synkronisering med Rainbow Craft på Mac via iCloud",
+        "Tidsregnskab for de seneste to uger"
+      ]
+    },
+    "pro": {
+      "name": "Rainbow Plus · Rainbow Pro",
+      "items": [
+        "Plus: statistik over begivenheder og tidsregnskab længere tilbage end to uger",
+        "Pro: alt i Plus samt widgets til hjemme- og låseskærm",
+        "Pro: import fra Kalender, der hele tiden vises",
+        "Pro: deling af begivenheder, kun visning",
+        "Pro: låser også Rainbow Craft Pro op på Mac"
+      ],
+      "note": "Hver som årsabonnement eller engangskøb for altid"
+    },
+    "note": "Du betaler kun for at se tilbage på tidligere uger og for at tage ting med ud af appen. Har du købt Pro tidligere eller et månedsabonnement, er du stadig Pro."
+  },
+  "faq": {
+    "title": "Spørgsmål og svar",
+    "items": [
+      {
+        "q": "Skal jeg have en konto eller iCloud?",
+        "a": "Ikke hvis du bruger den alene. Der er ingen tilmelding, og alt bliver på din enhed. Til andre enheder, Mac-appen eller deling skal du logge ind på iCloud."
+      },
+      {
+        "q": "Appen har svaret forkert på et spørgsmål.",
+        "a": "Tryk på trinnet, og skift mellem Ja og Nej. Dit eget svar går altid forud. Tryk på „Tilbage til appens vurdering“ for at give det tilbage. Et trin uden tid tæller ikke som tidslomme, fordi appen ikke ved, om det bliver færdigt på fem minutter."
+      },
+      {
+        "q": "Kan jeg dele med andre?",
+        "a": "Med et invitationslink deler du dine begivenheder, så de kun kan ses (Pro), eller du åbner en opgaveliste, som du og de inviterede læser og skriver i sammen. Alle med linket kan være med, så send det kun til dem, det er tiltænkt. Det har intet med Apples Familiedeling at gøre."
+      },
+      {
+        "q": "Vises mine kalenderbegivenheder?",
+        "a": "Begivenheder fra de kalendere, du vælger, vises i regnbuen og i dagsoversigten (Pro). Appen læser kun og skriver intet tilbage."
+      },
+      {
+        "q": "Kan jeg afkrydse fra en widget?",
+        "a": "Widgets er kun til visning. Tryk på en, så åbner dine opgaver direkte, og kryds af der."
+      },
+      {
+        "q": "Skal Mac-appen købes for sig?",
+        "a": "Rainbow Craft er en selvstændig macOS-app i Mac App Store. På samme iCloud-konto synkroniseres opgaver og ugeplaner af sig selv, og det koster ingenting."
+      },
+      {
+        "q": "Er mine ældre opgaver der stadig?",
+        "a": "Ja. Opgaver, trin og de tider, du har sat, bevares. Mærker fra de gamle startbetingelser vurderer appen igen med de to spørgsmål."
+      },
+      {
+        "q": "Hvor gemmes mine data?",
+        "a": "Der er ingen server. Alt ligger på din enhed og i din egen iCloud, hvor udvikleren ikke kan se det. Ingen reklame-id, ingen lokalitet. Appen sender kun anonym brugsstatistik, som ikke kan føres tilbage til dig, og som kan slås fra i Indstillinger."
+      },
+      {
+        "q": "Hvordan opsiger jeg et abonnement?",
+        "a": "I Indstillinger > Apple-konto > Abonnementer. Det fornyes til samme pris, medmindre du opsiger senest 24 timer før periodens udløb. For altid er en engangsbetaling."
+      }
+    ]
+  },
+  "closing": {
+    "headline": "Se, hvor fuld ugen er,\nfør du træder ind i den",
+    "cta": "Hent gratis i App Store"
+  },
+  "ui": {
+    "skip": "Spring til indhold",
+    "languages": "Sprog",
+    "privacy": "Privatlivspolitik",
+    "contact": "Sidder du fast, eller virker noget forkert? Skriv til {email}. Du finder også en kontaktmulighed i appens indstillinger."
+  }
+}
