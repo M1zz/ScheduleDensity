@@ -149,6 +149,12 @@ struct DayTimeAnalysisView: View {
 
     // MARK: - 머리말
 
+    /// '오늘' 배지 바탕. 시스템 빨강은 흰 글자와 3.4~3.6:1 이라 작은 글자에 모자란다 —
+    /// 같은 색조에서 밝기만 낮춰 두 화면 모두 4.5:1 을 넘긴다 (#DE332A · #D93B31).
+    private static let todayBadgeRed = Color(UIColor { $0.userInterfaceStyle == .dark
+        ? UIColor(red: 217/255, green: 59/255, blue: 49/255, alpha: 1)
+        : UIColor(red: 222/255, green: 51/255, blue: 42/255, alpha: 1) })
+
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
@@ -161,7 +167,7 @@ struct DayTimeAnalysisView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.red))
+                        .background(Capsule().fill(Self.todayBadgeRed))
                 }
                 Spacer()
             }
