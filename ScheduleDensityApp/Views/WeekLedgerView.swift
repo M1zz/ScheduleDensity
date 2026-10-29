@@ -177,7 +177,7 @@ struct WeekLedgerView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 10) {
                         Image(systemName: kind.symbol)
-                            .font(.system(size: 13, weight: .semibold))
+                            .scaledFont(size: 13, weight: .semibold)
                             .foregroundStyle(kind == .block ? Color.indigo : Color.green)
                             .frame(width: 22)
                         Text(kind.name)
@@ -212,7 +212,7 @@ struct WeekLedgerView: View {
             }
         } label: {
             Image(systemName: "plus.circle.fill")
-                .font(.system(size: 22))
+                .scaledFont(size: 22)
                 .symbolRenderingMode(.hierarchical)
         }
         .accessibilityLabel("\(kind.name) 회수한 시간 적기")
@@ -224,7 +224,7 @@ struct WeekLedgerView: View {
         Section {
             HStack(spacing: 10) {
                 Image(systemName: "wind")
-                    .font(.system(size: 13, weight: .semibold))
+                    .scaledFont(size: 13, weight: .semibold)
                     .foregroundStyle(.teal)
                     .frame(width: 22)
                 Text("숨 돌리기")
@@ -245,7 +245,7 @@ struct WeekLedgerView: View {
                     }
                 } label: {
                     Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 22))
+                        .scaledFont(size: 22)
                         .symbolRenderingMode(.hierarchical)
                 }
                 .accessibilityLabel("숨 돌린 것 적기")

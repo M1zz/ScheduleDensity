@@ -153,11 +153,11 @@ struct DayTimeAnalysisView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
                 Text(formatWeekday(date))
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .scaledFont(size: 20, weight: .bold, design: .rounded)
                     .foregroundStyle(isToday ? Color.red : .primary)
                 if isToday {
                     Text("오늘")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .scaledFont(size: 11, weight: .bold, design: .rounded)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 3)
@@ -188,12 +188,12 @@ struct DayTimeAnalysisView: View {
     private func statPill(icon: String, label: String, value: String, tint: Color) -> some View {
         HStack(spacing: 5) {
             Image(systemName: icon)
-                .font(.system(size: 11, weight: .bold))
+                .scaledFont(size: 11, weight: .bold)
             Text(label)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .scaledFont(size: 12, weight: .medium, design: .rounded)
                 .opacity(0.8)
             Text(value)
-                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .scaledFont(size: 13, weight: .bold, design: .rounded)
                 .monospacedDigit()
                 .contentTransition(.numericText())
         }
@@ -297,6 +297,8 @@ struct DayTimeAnalysisView: View {
                             // 무엇을 눌렀는지 알 길이 없었다. 타이머는 그 카드에서 켠다 (→ TimerView.swift).
                             .contentShape(Rectangle())
                             .onTapGesture { inspected = day.subject(for: seg) }
+                            .accessibilityAddTraits(.isButton)
+                            .accessibilityAction { inspected = day.subject(for: seg) }
                             .offset(x: Self.gutter + box.minX, y: box.minY)
                             .zIndex(seg.isNested || seg.isFlexible ? 2 : 1)
                             // 하루가 설 때 위에서부터 하나씩 톡톡 튀어 오른다.
@@ -657,12 +659,12 @@ struct DayTimeAnalysisView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 Image(systemName: "link")
-                    .font(.system(size: 11, weight: .bold))
+                    .scaledFont(size: 11, weight: .bold)
                 Text("매여 있는 일")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .scaledFont(size: 13, weight: .bold, design: .rounded)
                 Spacer()
                 Text("오늘 시각은 안 정함")
-                    .font(.system(size: 11, design: .rounded))
+                    .scaledFont(size: 11, design: .rounded)
                     .foregroundStyle(.tertiary)
             }
             .foregroundStyle(.secondary)
@@ -672,11 +674,11 @@ struct DayTimeAnalysisView: View {
                     DayGlyph(symbol: nil, title: item.title, color: item.color, size: 28, dashed: true)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(item.title)
-                            .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .lineLimit(1)
+                            .scaledFont(size: 14, weight: .semibold, design: .rounded)
+                            .lineLimit(3)
                         Text(verbatim: [formatShortDate(item.end), item.stepPhrase]
                             .compactMap { $0 }.joined(separator: " · "))
-                            .font(.system(size: 11, design: .rounded))
+                            .scaledFont(size: 11, design: .rounded)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
@@ -697,7 +699,7 @@ struct DayTimeAnalysisView: View {
     private func dDayPill(_ days: Int) -> some View {
         let tint: Color = days <= 1 ? .red : (days <= 3 ? .orange : .secondary)
         return Text(verbatim: days <= 0 ? "D-day" : "D-\(days)")
-            .font(.system(size: 12, weight: .bold, design: .rounded))
+            .scaledFont(size: 12, weight: .bold, design: .rounded)
             .monospacedDigit()
             .foregroundStyle(tint)
             .padding(.horizontal, 8)
@@ -715,9 +717,9 @@ struct DayTimeAnalysisView: View {
         return VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 Image(systemName: "bolt.fill")
-                    .font(.system(size: 11, weight: .bold))
+                    .scaledFont(size: 11, weight: .bold)
                 Text("빈 시간에 집을 조각")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .scaledFont(size: 13, weight: .bold, design: .rounded)
                 Spacer()
             }
             .foregroundStyle(.orange)
@@ -728,11 +730,11 @@ struct DayTimeAnalysisView: View {
                              color: item.color, size: 28, dashed: !item.isMarked)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(item.title)
-                            .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .lineLimit(1)
+                            .scaledFont(size: 14, weight: .semibold, design: .rounded)
+                            .lineLimit(3)
                         if let parent = item.parentTitle {
                             Text(parent)
-                                .font(.system(size: 11, design: .rounded))
+                                .scaledFont(size: 11, design: .rounded)
                                 .foregroundStyle(.secondary)
                                 .lineLimit(1)
                         }
@@ -740,7 +742,7 @@ struct DayTimeAnalysisView: View {
                     Spacer(minLength: 6)
                     if item.minutes > 0 {
                         Text("\(item.minutes)분")
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                            .scaledFont(size: 12, weight: .semibold, design: .rounded)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                     }
@@ -751,7 +753,7 @@ struct DayTimeAnalysisView: View {
 
             if day.pickups.count > shown.count {
                 Text("외 \(day.pickups.count - shown.count)개")
-                    .font(.system(size: 11, design: .rounded))
+                    .scaledFont(size: 11, design: .rounded)
                     .foregroundStyle(.tertiary)
             }
         }
@@ -773,7 +775,7 @@ struct DayTimeAnalysisView: View {
     private var overflow: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("하루에 안 들어갔어요", systemImage: "exclamationmark.triangle.fill")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .scaledFont(size: 15, weight: .semibold, design: .rounded)
                 .foregroundStyle(.red)
 
             ForEach(day.unplaced) { event in
@@ -781,9 +783,9 @@ struct DayTimeAnalysisView: View {
                     DayGlyph(symbol: nil, title: event.title, color: event.color, size: 28, dashed: true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(event.title)
-                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .scaledFont(size: 15, weight: .semibold, design: .rounded)
                         Text(formatHours(event.hours))
-                            .font(.system(size: 12, design: .rounded))
+                            .scaledFont(size: 12, design: .rounded)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                     }
@@ -806,7 +808,7 @@ struct DayTimeAnalysisView: View {
     private var unavailableNotice: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label("하루 뼈대를 못 읽었어요", systemImage: "icloud.slash")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .scaledFont(size: 15, weight: .semibold, design: .rounded)
             Text("수면·출근 같은 고정 루틴은 맥앱 ‘무지개 공방’에 적어 둔 것을 iCloud로 읽어 옵니다. iCloud에 로그인되어 있는지 확인해주세요.")
                 .font(.caption)
                 .foregroundStyle(.secondary)

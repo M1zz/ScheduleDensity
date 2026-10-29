@@ -189,7 +189,7 @@ struct UsageStatsView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             Text(value)
-                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .scaledFont(size: 30, weight: .semibold, design: .rounded)
                 .monospacedDigit()
             if let note {
                 Text(note)

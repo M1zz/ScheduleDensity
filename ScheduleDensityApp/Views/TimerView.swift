@@ -109,25 +109,25 @@ struct TimerBar: View {
                         .rotationEffect(.degrees(-90))
                         .animation(.linear(duration: 0.5), value: left)
                     Image(systemName: icon)
-                        .font(.system(size: 13, weight: .semibold))
+                        .scaledFont(size: 13, weight: .semibold)
                         .foregroundStyle(tint)
                 }
                 .frame(width: 30, height: 30)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title)
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .scaledFont(size: 14, weight: .semibold, design: .rounded)
                         .lineLimit(1)
                         .truncationMode(.tail)
                     Text(caption)
-                        .font(.system(size: 11, design: .rounded))
+                        .scaledFont(size: 11, design: .rounded)
                         .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 6)
 
                 // 숫자는 절대 잘리지 않는다 — 제목이 먼저 줄어든다.
                 Text(time)
-                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .scaledFont(size: 17, weight: .bold, design: .rounded)
                     .monospacedDigit()
                     .foregroundStyle(tint)
                     .contentTransition(.numericText())

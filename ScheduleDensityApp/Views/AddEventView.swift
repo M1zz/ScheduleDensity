@@ -228,6 +228,7 @@ struct AddEventView: View {
                                         Image(systemName: "xmark.circle.fill")
                                             .foregroundColor(.red)
                                     }
+                                    .accessibilityLabel("\(formatDateShort(date)) 제외 해제")
                                 }
                                 .padding(.vertical, 4)
                             }
@@ -324,8 +325,9 @@ struct AddEventView: View {
                                                 .font(.caption)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 2)
-                                                .background(scoreColor(slot.score))
-                                                .foregroundColor(.white)
+                                                // 초록·주황 위의 흰 글씨는 대비가 모자랐다 — 옅은 바탕에 본문 글자색.
+                                                .background(scoreColor(slot.score).opacity(0.25))
+                                                .foregroundColor(.primary)
                                                 .cornerRadius(4)
                                         }
 
@@ -488,6 +490,8 @@ struct AddEventView: View {
                                 )
                         }
                     }
+                    // 레인 색 견본 — 위 글이 이미 말한 것을 그림으로 한 번 더 보여 줄 뿐이다.
+                    .accessibilityHidden(true)
                 }
 
                 // 삭제 버튼 (수정 모드일 때만 표시)
@@ -763,6 +767,7 @@ struct AddEventView: View {
                                     .foregroundColor(hoursPerDay == hours ? .white : .primary)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityAddTraits(hoursPerDay == hours ? .isSelected : [])
                         }
                     }
 
@@ -1116,6 +1121,9 @@ struct AddEventView: View {
                         .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(weekdayName(weekday))
+                    .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -1225,6 +1233,8 @@ struct AddEventView: View {
                                     )
                             }
                             .buttonStyle(.plain)
+                            .accessibilityLabel("\(week + 1)주 \(weekdayName(day + 1))")
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
                 }

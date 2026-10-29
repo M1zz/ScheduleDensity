@@ -265,6 +265,8 @@ struct StatisticsView: View {
                             .foregroundColor(.secondary)
                             .frame(width: 35, alignment: .trailing)
                     }
+                    // 막대는 그림이다. 요일과 숫자를 한 줄로 읽는다.
+                    .accessibilityElement(children: .combine)
                 }
             }
         }
@@ -311,6 +313,7 @@ struct StatisticsView: View {
                                 .foregroundColor(.secondary)
                                 .frame(width: 30, alignment: .trailing)
                         }
+                        .accessibilityElement(children: .combine)
                     }
                 }
             }
@@ -433,7 +436,7 @@ struct StatCard: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
-                .font(.system(size: 32))
+                .scaledFont(size: 32)
                 .foregroundColor(color)
 
             Text(value)
@@ -449,6 +452,7 @@ struct StatCard: View {
         .background(Color(.systemBackground))
         .cornerRadius(10)
         .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -487,6 +491,7 @@ struct ImportanceRow: View {
                 .foregroundColor(.secondary)
                 .frame(width: 40, alignment: .trailing)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var percentage: Double {

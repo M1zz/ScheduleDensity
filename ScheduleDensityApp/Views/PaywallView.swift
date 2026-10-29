@@ -53,7 +53,7 @@ struct PaywallView: View {
                     // 두 앱은 서로 다른 앱이지만, 한쪽에서 산 칸이 다른 쪽도 연다 (→ ProMark.swift).
                     // 두 번 사는 줄 알고 망설이는 사람이 가장 오래 쓸 사람이다. 값 앞에서 말해 둔다.
                     Label("산 칸은 맥 '무지개 공방'에서도 그대로 열립니다.", systemImage: "laptopcomputer")
-                        .font(.system(size: 13))
+                        .scaledFont(size: 13)
                         .foregroundStyle(.secondary)
                     // 요금제를 못 불러온 것은 `plansStatus` 가 직접 말한다(다시 불러오기 단추와 함께).
                     // 같은 말을 여기 주황 경고로 또 띄우면 '결제가 고장 났다'로 읽힌다. 1.1.8 심사 2.1(b).
@@ -110,9 +110,9 @@ struct PaywallView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("쌓여야 보이는 것을 엽니다")
-                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .scaledFont(size: 22, weight: .bold, design: .rounded)
             Text("오늘을 사는 데 필요한 것은 그대로 무료입니다. 맥 '무지개 공방'과 오가는 것도 무료입니다.")
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -204,7 +204,7 @@ struct PaywallView: View {
                     ProgressView().tint(.white)
                 } else {
                     Text(title)
-                        .font(.system(size: 17, weight: .semibold, design: .rounded))
+                        .scaledFont(size: 17, weight: .semibold, design: .rounded)
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 28)
@@ -307,11 +307,11 @@ struct PaywallView: View {
     private func cardTitle(_ title: String, current: Bool) -> some View {
         HStack(spacing: 8) {
             Text(title)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .scaledFont(size: 18, weight: .bold, design: .rounded)
                 .accessibilityAddTraits(.isHeader)
             if current {
                 Text("지금 쓰는 칸")
-                    .font(.system(size: 10.5, weight: .semibold))
+                    .scaledFont(size: 10.5, weight: .semibold)
                     .foregroundStyle(Color.accentColor)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 1)
@@ -325,12 +325,12 @@ struct PaywallView: View {
                      highlighted: Bool = false) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .semibold))
+                .scaledFont(size: 14, weight: .semibold)
                 .foregroundStyle(highlighted ? Color.accentColor : .secondary)
                 .frame(width: 22)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.system(size: 15, weight: .medium))
-                Text(note).font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(title).scaledFont(size: 15, weight: .medium)
+                Text(note).scaledFont(size: 12).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)

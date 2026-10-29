@@ -45,6 +45,7 @@ struct ScheduleShareView: View {
                     } label: {
                         Image(systemName: "arrow.clockwise")
                     }
+                    .accessibilityLabel("새로고침")
                     .disabled(store.isBusy)
                 }
             }

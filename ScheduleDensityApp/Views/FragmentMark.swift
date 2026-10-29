@@ -88,7 +88,7 @@ struct FragmentQuestionRows: View {
 
             HStack(alignment: .top, spacing: 4) {
                 Image(systemName: answer.isUserSet ? "hand.point.up.left.fill" : "sparkles")
-                    .font(.system(size: 10))
+                    .scaledFont(size: 10)
                     .foregroundStyle(.tertiary)
                     .padding(.top, 1)
                 Text(answer.reason)

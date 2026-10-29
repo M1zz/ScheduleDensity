@@ -67,3 +67,49 @@ extension View {
             shadowRadius: shadowRadius))
     }
 }
+
+// MARK: - 더 큰 텍스트
+
+/// `.font(.system(size:))` 대신. 지금 크기를 기본으로 두고 '더 큰 텍스트'를 따라 함께 커진다.
+/// 크기에 가까운 텍스트 스타일을 기준으로 커지므로, 본문은 본문만큼 · 캡션은 캡션만큼 자란다.
+///
+/// ⚠️ 칸 크기가 정해진 그림(무지개 격자 · 하루 시계의 알약)은 이걸 쓰지 않는다 — 글자만 커지면 칸을 뚫는다.
+///    그런 곳은 누르면 뜨는 카드가 큰 글씨로 다 읽어 준다.
+struct ScaledSystemFont: ViewModifier {
+    @ScaledMetric private var size: CGFloat
+    let weight: Font.Weight
+    let design: Font.Design
+
+    init(size: CGFloat, weight: Font.Weight, design: Font.Design) {
+        _size = ScaledMetric(wrappedValue: size, relativeTo: Self.textStyle(near: size))
+        self.weight = weight
+        self.design = design
+    }
+
+    func body(content: Content) -> some View {
+        content.font(.system(size: size, weight: weight, design: design))
+    }
+
+    /// 기본 크기(큰 글씨 끔)에서 이 크기에 가장 가까운 텍스트 스타일.
+    private static func textStyle(near size: CGFloat) -> Font.TextStyle {
+        switch size {
+        case ..<11.5: return .caption2
+        case ..<12.5: return .caption
+        case ..<14:   return .footnote
+        case ..<15.5: return .subheadline
+        case ..<16.5: return .callout
+        case ..<19:   return .body
+        case ..<21:   return .title3
+        case ..<25:   return .title2
+        case ..<31:   return .title
+        default:      return .largeTitle
+        }
+    }
+}
+
+extension View {
+    /// 글자 크기 설정을 따르는 `.font(.system(size:weight:design:))`.
+    func scaledFont(size: CGFloat, weight: Font.Weight = .regular, design: Font.Design = .default) -> some View {
+        modifier(ScaledSystemFont(size: size, weight: weight, design: design))
+    }
+}

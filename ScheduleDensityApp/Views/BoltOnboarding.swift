@@ -44,7 +44,7 @@ struct BoltHintRow: View {
             header
             demo
             Text("‘지금 바로 되는 일’에 붙이는 표시예요. 붙인 줄은 차례를 안 기다리고 이 위에 모입니다.")
-                .font(.system(size: 12.5))
+                .scaledFont(size: 12.5)
                 .tracking(-0.2)
                 .lineSpacing(3)
                 .foregroundStyle(.secondary)
@@ -59,11 +59,11 @@ struct BoltHintRow: View {
     private var header: some View {
         HStack(spacing: 6) {
             Image(systemName: "bolt.fill")
-                .font(.system(size: 11, weight: .semibold))
+                .scaledFont(size: 11, weight: .semibold)
                 .foregroundStyle(TodoView.nowGreen)
 
             Text("오른쪽으로 밀면 번개")
-                .font(.system(size: 14.5, weight: .semibold))
+                .scaledFont(size: 14.5, weight: .semibold)
                 .tracking(-0.3)
 
             Spacer(minLength: 8)
@@ -71,14 +71,14 @@ struct BoltHintRow: View {
             // 자세한 뜻은 눌러서 들어간다. 여기서 세 문단을 펴면 목록이 읽을 거리가 된다.
             Button(action: onDetail) {
                 Text("자세히")
-                    .font(.system(size: 12.5, weight: .medium))
+                    .scaledFont(size: 12.5, weight: .medium)
                     .foregroundStyle(TodoView.nowGreen)
             }
             .buttonStyle(.plain)
 
             Button(action: onDismiss) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 10.5, weight: .semibold))
+                    .scaledFont(size: 10.5, weight: .semibold)
                     .foregroundStyle(.tertiary)
                     .frame(width: 26, height: 26)
                     .contentShape(Rectangle())
@@ -98,7 +98,7 @@ struct BoltHintRow: View {
                 .frame(width: Self.travel - 6, height: 30)
                 .overlay(
                     Image(systemName: "bolt.fill")
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(size: 12, weight: .semibold)
                         .foregroundStyle(.white)
                 )
                 .opacity(slid ? 1 : 0)
@@ -106,7 +106,7 @@ struct BoltHintRow: View {
             // 밀리는 줄. 미는 손가락은 줄에 얹혀 같이 움직인다 —
             // 따로 놀면 '줄이 저절로 간다'로 읽힌다.
             Text("우유 사 오기")
-                .font(.system(size: 12.5))
+                .scaledFont(size: 12.5)
                 .tracking(-0.2)
                 .foregroundStyle(.secondary)
                 // 손가락이 앉을 자리를 왼쪽에 비워 둔다. 글자 위에 얹히면 둘 다 안 읽힌다.
@@ -120,7 +120,7 @@ struct BoltHintRow: View {
                 )
                 .overlay(alignment: .leading) {
                     Image(systemName: "hand.point.up.left.fill")
-                        .font(.system(size: 13))
+                        .scaledFont(size: 13)
                         .foregroundStyle(.primary.opacity(0.5))
                         .offset(x: 8, y: 10)
                 }
@@ -182,17 +182,17 @@ struct BoltMeaningView: View {
                     .frame(width: 46, height: 44)
                     .overlay(
                         Image(systemName: "bolt.fill")
-                            .font(.system(size: 16, weight: .semibold))
+                            .scaledFont(size: 16, weight: .semibold)
                             .foregroundStyle(.white)
                     )
 
                 HStack(spacing: 8) {
                     Text("우유 사 오기")
-                        .font(.system(size: 15))
+                        .scaledFont(size: 15)
                         .tracking(-0.3)
                     Spacer(minLength: 8)
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .scaledFont(size: 12, weight: .semibold)
                         .foregroundStyle(.tertiary)
                 }
                 .padding(.horizontal, 12)
@@ -205,7 +205,7 @@ struct BoltMeaningView: View {
             }
 
             Image(systemName: "arrow.down")
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(size: 13, weight: .semibold)
                 .foregroundStyle(.tertiary)
 
             // 붙인 줄이 올라가 서는 자리.
@@ -225,7 +225,7 @@ struct BoltMeaningView: View {
                 .foregroundStyle(marked ? TodoView.nowGreen : Color.secondary.opacity(0.5))
                 .frame(width: 16)
             Text(title)
-                .font(.system(size: 15))
+                .scaledFont(size: 15)
                 .tracking(-0.3)
                 .foregroundStyle(marked ? .primary : .secondary)
             Spacer(minLength: 8)

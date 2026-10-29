@@ -199,6 +199,9 @@ private struct RainbowDayRow: View {
                 }
             }
         }
+        // 칸은 색 그림이라 소리로 안 읽힌다. 날짜와 그날 굴리는 일의 수로 읽는다.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "\(dayLabel), \(String(localized: "\(day.cells.filter(\.isWorking).count)개"))"))
     }
 
     private func fill(for cell: RainbowWidgetSnapshot.Cell?) -> Color {
@@ -282,6 +285,8 @@ private struct RainbowRectangularView: View {
                     }
                 }
             }
+            // 위 줄이 오늘을 이미 말했다. 작은 격자는 그림일 뿐이다.
+            .accessibilityHidden(true)
         }
         .widgetAccentable()
     }

@@ -49,7 +49,7 @@ struct MeaningPage<Diagram: View>: View {
                         .padding(.bottom, 10)
 
                     Text(title)
-                        .font(.system(size: 30, weight: .bold))
+                        .scaledFont(size: 30, weight: .bold)
                         .tracking(-0.9)
                         .lineSpacing(6)
                         .fixedSize(horizontal: false, vertical: true)
@@ -80,16 +80,16 @@ struct MeaningPage<Diagram: View>: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 9) {
                 Image(systemName: item.icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .scaledFont(size: 14, weight: .semibold)
                     .foregroundStyle(accent)
                     .frame(width: 20)
                 Text(item.heading)
-                    .font(.system(size: 17, weight: .semibold))
+                    .scaledFont(size: 17, weight: .semibold)
                     .tracking(-0.4)
             }
 
             Text(item.body)
-                .font(.system(size: 16))
+                .scaledFont(size: 16)
                 .tracking(-0.25)
                 .lineSpacing(8)
                 .foregroundStyle(.secondary)
@@ -103,7 +103,7 @@ struct MeaningPage<Diagram: View>: View {
         VStack(spacing: 12) {
             if let footnote {
                 Text(footnote)
-                    .font(.system(size: 13))
+                    .scaledFont(size: 13)
                     .tracking(-0.2)
                     .lineSpacing(4)
                     .foregroundStyle(.tertiary)
@@ -114,7 +114,7 @@ struct MeaningPage<Diagram: View>: View {
             if showsDoneButton {
                 Button(action: onDone) {
                     Text(buttonTitle)
-                        .font(.system(size: 17, weight: .semibold))
+                        .scaledFont(size: 17, weight: .semibold)
                         .tracking(-0.3)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 15)

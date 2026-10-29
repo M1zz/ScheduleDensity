@@ -56,6 +56,7 @@ struct EventManagementView: View {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.secondary)
                         }
+                        .accessibilityLabel("검색어 지우기")
                     }
                 }
                 .padding(12)
@@ -78,9 +79,9 @@ struct EventManagementView: View {
                         }) {
                             HStack(spacing: 4) {
                                 Image(systemName: option.icon)
-                                    .font(.system(size: 12))
+                                    .scaledFont(size: 12)
                                 Text(option.label)
-                                    .font(.system(size: 13))
+                                    .scaledFont(size: 13)
                             }
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
@@ -255,7 +256,7 @@ struct EventManagementRow: View {
                 VStack(alignment: .leading, spacing: 6) {
                     // 제목
                     Text(event.title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .scaledFont(size: 16, weight: .semibold)
                         .lineLimit(1)
                         .foregroundColor(.primary)
 
@@ -263,9 +264,9 @@ struct EventManagementRow: View {
                     HStack(spacing: 8) {
                         HStack(spacing: 4) {
                             Image(systemName: "calendar")
-                                .font(.system(size: 12))
+                                .scaledFont(size: 12)
                             Text("\(formatDate(event.startDate)) - \(formatDate(event.endDate))")
-                                .font(.system(size: 13))
+                                .scaledFont(size: 13)
                         }
                         .foregroundColor(.secondary)
 
@@ -274,9 +275,9 @@ struct EventManagementRow: View {
 
                         HStack(spacing: 4) {
                             Image(systemName: "clock")
-                                .font(.system(size: 12))
+                                .scaledFont(size: 12)
                             Text("\(durationText(event))")
-                                .font(.system(size: 13))
+                                .scaledFont(size: 13)
                         }
                         .foregroundColor(.secondary)
                     }
@@ -284,9 +285,9 @@ struct EventManagementRow: View {
                     // 하루 시간
                     HStack(spacing: 4) {
                         Image(systemName: "hourglass")
-                            .font(.system(size: 12))
+                            .scaledFont(size: 12)
                         Text(String(format: String(localized: "%.1f시간/일"), event.hoursPerDay))
-                            .font(.system(size: 13))
+                            .scaledFont(size: 13)
                     }
                     .foregroundColor(.orange)
 
@@ -294,9 +295,9 @@ struct EventManagementRow: View {
                     if let weekdays = event.selectedWeekdays, !weekdays.isEmpty {
                         HStack(spacing: 4) {
                             Image(systemName: "repeat")
-                                .font(.system(size: 12))
+                                .scaledFont(size: 12)
                             Text(weekdayText(weekdays))
-                                .font(.system(size: 13))
+                                .scaledFont(size: 13)
                         }
                         .foregroundColor(.purple)
                     }
@@ -306,7 +307,7 @@ struct EventManagementRow: View {
 
                 // 수정 아이콘 (터치 가능 표시)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
+                    .scaledFont(size: 14, weight: .semibold)
                     .foregroundColor(.secondary)
             }
         }

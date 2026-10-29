@@ -113,7 +113,7 @@ struct CategoryManagerView: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: category.iconName)
-                        .font(.system(size: 15))
+                        .scaledFont(size: 15)
                         .foregroundStyle(category.displayColor)
                         .frame(width: 26)
                     Text(category.name)
@@ -135,7 +135,7 @@ struct CategoryManagerView: View {
                             .font(.footnote)
                             .monospacedDigit()
                         Image(systemName: "list.bullet")
-                            .font(.system(size: 10, weight: .semibold))
+                            .scaledFont(size: 10, weight: .semibold)
                     }
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 8)
@@ -151,7 +151,7 @@ struct CategoryManagerView: View {
                 editing = category
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .scaledFont(size: 13, weight: .semibold)
                     .foregroundStyle(.tertiary)
             }
             .buttonStyle(.borderless)
@@ -228,7 +228,7 @@ private struct CategoryEditSheet: View {
                         // 지금 고르고 있는 것이 어떻게 보이는지. 색과 기호를 따로 고르면
                         // 합쳐진 모습을 상상해야 하는데, 그럴 필요 없이 여기 있다.
                         Image(systemName: iconName)
-                            .font(.system(size: 17))
+                            .scaledFont(size: 17)
                             .foregroundStyle(paletteColor(colorName))
                             .frame(width: 28)
                         TextField("분류 이름", text: $name)
@@ -252,6 +252,8 @@ private struct CategoryEditSheet: View {
                                             Image(systemName: "checkmark")
                                                 .font(.system(size: 12, weight: .bold))
                                                 .foregroundStyle(.white)
+                                                // 노랑 위의 흰 체크가 사라지지 않게 가는 그림자로 떼어 낸다.
+                                                .shadow(color: .black.opacity(0.45), radius: 1)
                                         }
                                     }
                             }
@@ -282,7 +284,6 @@ private struct CategoryEditSheet: View {
                                     }
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(icon)
                             .accessibilityAddTraits(iconName == icon ? [.isSelected] : [])
                         }
                     }

@@ -51,6 +51,7 @@ struct SpotlightCoachOverlay<Actions: View>: View {
     @ViewBuilder var actions: () -> Actions
 
     @State private var pulse = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -60,6 +61,8 @@ struct SpotlightCoachOverlay<Actions: View>: View {
         }
         .frame(width: containerSize.width, height: containerSize.height)
         .onAppear {
+            // 동작 줄이기를 켰으면 번지는 맥박 없이 테두리만 둔다.
+            guard !reduceMotion else { return }
             withAnimation(.easeOut(duration: 1.2).repeatForever(autoreverses: false)) {
                 pulse = true
             }

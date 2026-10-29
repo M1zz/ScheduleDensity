@@ -201,7 +201,7 @@ struct TodoView: View {
                         addRequest += 1
                     } label: {
                         Image(systemName: "plus")
-                            .font(.system(size: 17, weight: .semibold))
+                            .scaledFont(size: 17, weight: .semibold)
                     }
                     .accessibilityLabel("할 일 추가")
                     .accessibilityInputLabels([Text("할 일 추가"), Text("추가"), Text("새 할 일")])
@@ -513,7 +513,7 @@ struct TodoView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16))
+                    .scaledFont(size: 16)
                     .foregroundStyle(.green.opacity(0.7))
                 Text("완료한 것 \(count)개")
                     .foregroundStyle(.secondary)
@@ -644,7 +644,7 @@ struct TodoView: View {
     {
         HStack(spacing: 3) {
             Image(systemName: symbol)
-                .font(.system(size: 10, weight: .semibold))
+                .scaledFont(size: 10, weight: .semibold)
             Text("\(count)")
                 .font(.footnote.weight(.semibold))
                 .monospacedDigit()
@@ -959,6 +959,8 @@ struct TodoView: View {
         } label: {
             Image(systemName: family.isSharing ? "person.2.fill" : "person.2")
         }
+        .accessibilityLabel(family.isSharing ? "공유 중" : "공유")
+        .accessibilityInputLabels([Text("공유")])
         .disabled(!family.iCloudAvailable)
     }
 
@@ -1036,7 +1038,7 @@ struct TodoView: View {
 
         return HStack(spacing: 12) {
             Image(systemName: "arrow.triangle.branch")
-                .font(.system(size: 18))
+                .scaledFont(size: 18)
                 .foregroundStyle(.tint)
                 .frame(width: 22)
 
@@ -1470,6 +1472,8 @@ struct TodoRow: View {
                 checkIcon
             }
             .buttonStyle(.plain)
+            // 그림만 있는 단추다. 끝낸 줄을 다시 누르면 마지막 단계가 되돌아온다 (→ advance).
+            .accessibilityLabel(item.isCompleted ? "\(displayTitle) 되돌리기" : "\(displayTitle) 끝내기")
 
             // 접혀 있으면 밀고, 펼쳐져 있으면 오른쪽 판에 연다 (→ FoldPanes.swift).
             TodoDetailLink(root: item) {
@@ -1707,6 +1711,7 @@ private struct FamilyTodoRow: View {
                     .foregroundStyle(todo.isCompleted ? .green : Color.secondary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(todo.isCompleted ? "\(todo.title) 되돌리기" : "\(todo.title) 끝내기")
 
             Text(todo.title)
                 .strikethrough(todo.isCompleted)

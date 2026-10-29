@@ -326,7 +326,7 @@ struct TodoDetailView: View {
             if stepCount > 1 {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text("\(doneCount)/\(stepCount)")
-                        .font(.system(size: 30, weight: .semibold, design: .rounded))
+                        .scaledFont(size: 30, weight: .semibold, design: .rounded)
                         .monospacedDigit()
                         .foregroundStyle(doneCount == stepCount ? Color.green : Color.accentColor)
                     Text("단계")
@@ -426,7 +426,7 @@ struct TodoDetailView: View {
     private func chip(icon: String, text: String, tint: Color, dim: Bool) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 10, weight: .semibold))
+                .scaledFont(size: 10, weight: .semibold)
             Text(text)
                 .font(.caption)
                 .lineLimit(1)
@@ -489,6 +489,7 @@ struct TodoDetailView: View {
                     Image(systemName: step.isCompleted ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 18))
                         .foregroundStyle(step.isCompleted ? Color.green : Color.secondary)
+                        .accessibilityHidden(true)
                     Text(step.title)
                         .strikethrough(step.isCompleted)
                         .foregroundStyle(step.isCompleted ? Color.secondary : Color.primary)
@@ -499,6 +500,8 @@ struct TodoDetailView: View {
                         .monospacedDigit()
                         .foregroundStyle(.tertiary)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityValue(step.isCompleted ? Text("완료") : Text(verbatim: ""))
             }
             .onDelete { offsets in
                 for index in offsets { remove(steps[index]) }
@@ -864,7 +867,7 @@ struct TodoDetailView: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "lightbulb")
-                        .font(.system(size: 16))
+                        .scaledFont(size: 16)
                         .foregroundStyle(.orange)
                         .frame(width: 22)
                     VStack(alignment: .leading, spacing: 2) {
@@ -1349,6 +1352,9 @@ private struct StepRow: View {
                     .foregroundStyle(item.isCompleted ? .green : (isCurrent ? .orange : Color.secondary))
             }
             .buttonStyle(.plain)
+            // 동그라미 · 화살표는 그림이라 소리로 안 읽힌다. 무엇을 하는 단추인지 말로 적는다.
+            .accessibilityLabel(item.isCompleted ? "\(item.title) 되돌리기" : "\(item.title) 끝내기")
+            .accessibilityValue(isCurrent ? Text("진행 중") : Text(verbatim: ""))
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(item.title)
@@ -1376,11 +1382,11 @@ private struct StepRow: View {
             if let share {
                 VStack(alignment: .trailing, spacing: 1) {
                     Text("\(Int((share * 100).rounded()))%")
-                        .font(.system(size: 14, weight: .semibold))
+                        .scaledFont(size: 14, weight: .semibold)
                         .monospacedDigit()
                         .foregroundStyle(item.isCompleted ? Color.secondary : Color.primary)
                     Text(formatDuration(item.durationHours))
-                        .font(.system(size: 11))
+                        .scaledFont(size: 11)
                         .monospacedDigit()
                         .foregroundStyle(.tertiary)
                 }

@@ -2772,3 +2772,16 @@ Gói năm và gói tháng tự động gia hạn với cùng mức giá nếu kh
 Điều khoản sử dụng (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 Chính sách quyền riêng tư: https://m1zz.github.io/ScheduleDensity/vi/privacy.html
 ```
+
+## 손쉬운 사용
+
+<!-- DeployBar 가 App Store Connect '앱의 손쉬운 사용' 에 올린다. 실제로 확인한 것만 적는다. -->
+
+### iPhone
+voiceOver
+voiceControl
+largerText
+darkInterface
+differentiateWithoutColor
+sufficientContrast
+reducedMotion

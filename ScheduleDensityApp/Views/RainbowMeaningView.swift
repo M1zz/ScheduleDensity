@@ -56,7 +56,7 @@ struct RainbowMeaningView: View {
                     .stroke(Color.secondary.opacity(0.45), lineWidth: 1.5)
                     .frame(width: 8, height: CGFloat(days.count) * 34 - 4)
                 Text("매여 있는\n기간")
-                    .font(.system(size: 13))
+                    .scaledFont(size: 13)
                     .tracking(-0.2)
                     .lineSpacing(3)
                     .foregroundStyle(.secondary)

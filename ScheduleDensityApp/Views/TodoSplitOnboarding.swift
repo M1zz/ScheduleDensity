@@ -88,24 +88,24 @@ struct SplitMeaningView: View {
                 .frame(height: 48)
                 .overlay(
                     Text("보고서 쓰기")
-                        .font(.system(size: 15, weight: .medium))
+                        .scaledFont(size: 15, weight: .medium)
                         .tracking(-0.3)
                         .foregroundStyle(.secondary)
                 )
 
             Image(systemName: "arrow.down")
-                .font(.system(size: 13, weight: .semibold))
+                .scaledFont(size: 13, weight: .semibold)
                 .foregroundStyle(.tertiary)
 
             VStack(spacing: 6) {
                 ForEach(Array(sampleSteps.enumerated()), id: \.offset) { index, step in
                     HStack(spacing: 10) {
                         Text(step)
-                            .font(.system(size: 15))
+                            .scaledFont(size: 15)
                             .tracking(-0.3)
                         Spacer(minLength: 8)
                         Text("\(index + 1)")
-                            .font(.system(size: 13, weight: .semibold))
+                            .scaledFont(size: 13, weight: .semibold)
                             .monospacedDigit()
                             .foregroundStyle(.tertiary)
                     }

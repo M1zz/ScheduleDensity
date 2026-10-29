@@ -198,7 +198,7 @@ struct SettingsView: View {
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .scaledFont(size: 14, weight: .semibold)
                                     .foregroundColor(.secondary)
                             }
                         }
@@ -259,7 +259,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -283,7 +283,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                         .padding(.vertical, 4)
@@ -310,7 +310,7 @@ struct SettingsView: View {
                             Spacer()
                             if !purchases.allows(.statistics) { ProLockBadge(for: .statistics) }
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -335,7 +335,7 @@ struct SettingsView: View {
                             Spacer()
                             if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -360,7 +360,7 @@ struct SettingsView: View {
                             Spacer()
                             if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -385,7 +385,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -408,7 +408,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -435,7 +435,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
@@ -781,10 +781,10 @@ struct SettingsView: View {
                                 Button(action: manualBackupToiCloud) {
                                     HStack {
                                         Image(systemName: "arrow.up.circle.fill")
-                                            .font(.system(size: 20))
+                                            .scaledFont(size: 20)
                                             .frame(width: 28)
                                         Text("수동 백업")
-                                            .font(.system(size: 16))
+                                            .scaledFont(size: 16)
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
@@ -801,10 +801,10 @@ struct SettingsView: View {
                                 Button(action: restoreFromiCloud) {
                                     HStack {
                                         Image(systemName: "arrow.down.circle.fill")
-                                            .font(.system(size: 20))
+                                            .scaledFont(size: 20)
                                             .frame(width: 28)
                                         Text("iCloud에서 복원")
-                                            .font(.system(size: 16))
+                                            .scaledFont(size: 16)
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
@@ -823,10 +823,10 @@ struct SettingsView: View {
                                 }) {
                                     HStack {
                                         Image(systemName: "trash.circle.fill")
-                                            .font(.system(size: 20))
+                                            .scaledFont(size: 20)
                                             .frame(width: 28)
                                         Text("iCloud 데이터 삭제")
-                                            .font(.system(size: 16))
+                                            .scaledFont(size: 16)
                                         Spacer()
                                     }
                                     .padding(.vertical, 8)
@@ -1047,7 +1047,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
+                                .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }

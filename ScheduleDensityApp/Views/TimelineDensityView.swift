@@ -346,7 +346,7 @@ struct TimelineDensityView: View {
 
     private var toastView: some View {
         Text(toastMessage)
-            .font(.system(size: 15, weight: .medium))
+            .scaledFont(size: 15, weight: .medium)
             .foregroundColor(.white)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
@@ -406,6 +406,7 @@ struct TimelineDensityView: View {
                     }
                     .padding(.vertical, 8)
                     .background(Color(.systemBackground))
+                    .accessibilityHidden(true)
 
                     Divider()
 
@@ -589,6 +590,7 @@ struct TimelineDensityView: View {
                         .foregroundColor(.gray)
                         .font(.title3)
                 }
+                .accessibilityLabel("닫기")
             }
             .padding()
             .background(Color(.systemBackground))
@@ -681,6 +683,7 @@ struct TimelineDensityView: View {
 
     private func showToastMessage(_ message: String) {
         toastMessage = message
+        A11yAnnounce.post(message)
         withAnimation(.easeInOut(duration: 0.3)) {
             showToast = true
         }
@@ -979,6 +982,10 @@ struct DateRow: View {
             .onTapGesture {
                 onDateLabelTap()
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(dayData.date.formatted(.dateTime.month(.wide).day().weekday(.wide)))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { onDateLabelTap() }
 
             Divider()
 
@@ -1218,6 +1225,32 @@ struct GridCell: View {
             }
         }
         .confirmsEventDeletion($deletionRequest)
+        // VoiceOver: 칸 하나가 한 덩어리다. 꾹 누르기 대신 이름 붙은 동작으로 기간을 고른다.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+        .accessibilityAddTraits(isDraggedDate ? [.isButton, .isSelected] : .isButton)
+        .accessibilityAction {
+            if isActive { onTap() }
+            else if isDraggingSelection { onDragStart() }
+            else { onEmptyCellTap() }
+        }
+        .accessibilityActions {
+            if !isActive {
+                Button(isDraggingSelection ? "종료일로 선택" : "시작일로 선택") { onDragStart() }
+            }
+        }
+    }
+
+    /// 화면 읽기가 말할 칸의 이름 — 날짜, 레인, 그리고 무엇이 들었는지.
+    private var accessibilityText: String {
+        let date = dayData.date.formatted(.dateTime.month(.wide).day().weekday(.wide))
+        let lane = String(localized: "레인 \(laneNumber)")
+        guard isActive, let event else {
+            return "\(date), \(lane), \(String(localized: "비어 있음"))"
+        }
+        var parts = [date, lane, event.title]
+        if !isOccurring { parts.append(String(localized: "이어지는 기간")) }
+        return parts.joined(separator: ", ")
     }
 
     /// 칸 안쪽 — 배경, 선택 표시, 일정 블록.
@@ -1457,15 +1490,15 @@ struct EventListCard: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(event.title)
-                    .font(.system(size: 16, weight: .semibold))
+                    .scaledFont(size: 16, weight: .semibold)
 
                 HStack(spacing: 4) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 12))
+                        .scaledFont(size: 12)
                         .foregroundColor(.secondary)
 
                     Text("\(formattedDate(event.startDate)) - \(formattedDate(event.endDate))")
-                        .font(.system(size: 13))
+                        .scaledFont(size: 13)
                         .foregroundColor(.secondary)
                 }
             }
@@ -1839,7 +1872,7 @@ struct EventQuickLookView: View {
     private func infoRow(icon: String, label: String, value: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: icon)
-                .font(.system(size: 14))
+                .scaledFont(size: 14)
                 .foregroundColor(.secondary)
                 .frame(width: 20)
             Text(label)

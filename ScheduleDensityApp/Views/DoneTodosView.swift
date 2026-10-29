@@ -63,7 +63,7 @@ struct DoneTodosView: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 22))
+                    .scaledFont(size: 22)
                     .foregroundStyle(.green.opacity(0.7))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(item.title)
