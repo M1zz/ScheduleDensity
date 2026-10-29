@@ -461,6 +461,14 @@ struct TodoView: View {
                 if !done.isEmpty {
                     doneLinkRow(done.count)
                 }
+
+                // 7. 고마운 순간 — 할 일을 막 끝낸 자리에, Pro 를 다 가진 사람에게만 드물게 팁 부탁.
+                //    아직 안 가진 사람에게는 페이월이 맞는 길이다(→ RainbowTipMoments).
+                if purchases.tier == .pro, let tipJar = purchases.store.tipJar {
+                    LeeoTipAskSlot<ScheduleDensityAppSpec>(
+                        tipJar: tipJar,
+                        reached: RainbowTipMoments.reached(done: tree.roots.filter(\.isCompleted).count))
+                }
             } footer: {
                 listFooter(items: items, errands: errands, marked: marked, done: done)
             }

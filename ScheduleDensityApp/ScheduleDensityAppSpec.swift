@@ -76,7 +76,9 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
                 productID: ProEntitlement.giftProductID,
                 grantsProductID: ProEntitlement.proLifetimeID,
                 containerIdentifier: "iCloud.com.Ysoup.FeedbackHub"
-            )))
+            ),
+            // 개발자 응원 팁. Pro 를 다 가진 사람이 고마울 때 조금 더 낸다(→ TodoTipMoments).
+            tipJar: LeeoTipJarConfig(productIDs: ProEntitlement.tipProductIDs)))
 
     /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
     enum Gate {

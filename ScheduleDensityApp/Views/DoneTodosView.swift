@@ -13,6 +13,7 @@
 
 import SwiftUI
 import SwiftData
+import LeeoKit
 
 struct DoneTodosView: View {
     /// 지우기 직전에 세우는 물음 (→ TodoDeletion.swift).
@@ -112,5 +113,24 @@ struct DoneTodosView: View {
 
     private func save() {
         try? context.save()
+    }
+}
+
+// MARK: - 고마운 순간 (팁 부탁)
+
+/// 이 앱이 그 사람에게 도움이 됐다는 것이 **숫자로 보이는 순간** — 지금까지 끝낸 할 일 수.
+/// 할 일 목록에서 줄 하나를 막 끝낸 자리('완료한 것' 줄 아래)에 카드가 선다(→ TodoView).
+/// 얼마나 드물게 묻는지는 LeeoKit 의 규칙(`LeeoTipAskPolicy`)이 정한다.
+enum RainbowTipMoments {
+    /// 끝낸 최상위 할 일 수. 큰 것부터.
+    static let done = [300, 100, 30]
+
+    /// 넘어선 순간, **인상적인 것부터**.
+    static func reached(done count: Int) -> [LeeoTipMoment] {
+        done.filter { count >= $0 }.map { threshold in
+            LeeoTipMoment(id: "done.\(threshold)",
+                          message: String(localized: "지금까지 할 일 \(count)개를 끝냈어요",
+                                          comment: "Tip ask card: how many to-dos the person has finished so far"))
+        }
     }
 }

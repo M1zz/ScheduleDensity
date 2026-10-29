@@ -232,6 +232,13 @@ struct SettingsView: View {
                     GiftRows(gift: gift, isPro: purchases.tier == .pro)
                 }
 
+                // 개발자 응원하기 — 선물 바로 아래. 팁 상품이 서야 줄이 선다.
+                if let tipJar = purchases.store.tipJar {
+                    Section {
+                        LeeoTipJarLink<ScheduleDensityAppSpec>(tipJar: tipJar)
+                    }
+                }
+
                 Group {
                     // 일정 관리 섹션
                     Section {

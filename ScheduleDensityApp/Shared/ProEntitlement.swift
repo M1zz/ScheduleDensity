@@ -144,6 +144,14 @@ enum ProEntitlement {
     /// App Store Connect 에 소모성 상품으로 만들어야 뜬다. 없으면 설정의 선물 줄이 숨는다.
     static let giftProductID = "com.example.ScheduleDensityApp.gift.pro"
 
+    /// 개발자 응원 팁 (소모성 셋, 작은 것부터). 아무것도 열지 않는다(`LeeoTipJar`).
+    /// ⚠️ 선물처럼 `productIDs` · `tierByProduct` 에 넣지 않는다 — 넣으면 팁을 낸 사람이 Pro 가 된다.
+    static let tipProductIDs = [
+        "com.example.ScheduleDensityApp.tip.small",
+        "com.example.ScheduleDensityApp.tip.medium",
+        "com.example.ScheduleDensityApp.tip.large",
+    ]
+
     /// 페이월이 불러올 상품. 판매를 멈춘 월 구독은 없다.
     ///
     /// ⚠️ 언제나 평생 패스 상품은 여기 넣지 않는다. 패스는 `LeeoForeverPass` 가 따로 판정한다.
