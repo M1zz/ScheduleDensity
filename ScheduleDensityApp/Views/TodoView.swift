@@ -32,6 +32,8 @@ struct TodoView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.foldLayout) private var fold
     @Environment(\.colorSchemeContrast) private var contrast
+    /// 처음 온 사람의 집중 모드 (→ FirstRunStart.swift). 있으면 할 일 적기 하나만 남긴다.
+    @Environment(\.focusStart) private var focusStart
 
     @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
     private var allItems: [BacklogItem]
@@ -175,7 +177,16 @@ struct TodoView: View {
                 deadlinePickerSheet(for: item)
             }
             .toolbar {
-                if visibleTab == .mine {
+                if let focusStart {
+                    // 집중 모드에서는 결산 대신 모든 기능을 바로 여는 문 하나.
+                    // 기다리기 싫은 사람이 갇히지 않게 늘 같은 자리에 둔다.
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("모든 기능") {
+                            focusStart.unlock()
+                        }
+                        .accessibilityInputLabels([Text("모든 기능"), Text("모든 기능 열기")])
+                    }
+                } else if visibleTab == .mine {
                     ToolbarItem(placement: .topBarLeading) {
                         // 장부는 **누구에게나 열린다.** 최근 2주는 무료고, 그보다 거슬러
                         // 올라갈 때 잠긴다 (→ WeekLedgerView). 문을 통째로 잠가 두면
@@ -364,14 +375,14 @@ struct TodoView: View {
             Section {
                 // 1. 번개 안내. 화면을 덮는 대신 목록의 줄 하나로 선다 —
                 //    뒤가 계속 보이고, 그동안 아무거나 할 수 있다 (→ BoltOnboarding.swift).
-                if showsBoltHint(items: items, errands: errands) {
+                if focusStart == nil, showsBoltHint(items: items, errands: errands) {
                     BoltHintRow(onDetail: { showingBoltMeaning = true },
                                 onDismiss: { withAnimation { hasSeenBoltOnboarding = true } })
                         // 연두를 아주 옅게만 깐다. 이 줄이 말하려는 색이 연두라서
                         // 색은 있어야 하지만, 진하면 할 일보다 안내가 먼저 읽힌다.
                         .listRowBackground(Self.hintTint)
                         .transition(.opacity.combined(with: .move(edge: .top)))
-                } else if MacHandoffTip().shouldDisplay {
+                } else if focusStart == nil, MacHandoffTip().shouldDisplay {
                     // 번개 안내와 한꺼번에 세우지 않는다. 안내 둘이 겹치면 할 일보다 먼저 읽힌다.
                     TipView(MacHandoffTip()) { action in
                         if action.id == "learn" { showingMacCompanion = true }
@@ -462,6 +473,14 @@ struct TodoView: View {
                     doneLinkRow(done.count)
                 }
 
+                // 집중 모드: 할 일이 손에 익으면 나머지를 열자고 한 줄 (→ FirstRunStart.swift).
+                if let focusStart,
+                   FirstRunGate.suggestsUnlock(written: tree.roots.count,
+                                               completed: tree.roots.filter(\.isCompleted).count) {
+                    FocusUnlockRow(onUnlock: focusStart.unlock)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+
                 // 7. 고마운 순간 — 할 일을 막 끝낸 자리에, Pro 를 다 가진 사람에게만 드물게 팁 부탁.
                 //    아직 안 가진 사람에게는 페이월이 맞는 길이다(→ RainbowTipMoments).
                 if purchases.tier == .pro, let tipJar = purchases.store.tipJar {
@@ -474,6 +493,15 @@ struct TodoView: View {
             }
         }
         .listStyle(.insetGrouped)
+        // 집중 모드의 빈 화면: 가운데 단추 하나 (→ FocusEmptyState).
+        .overlay {
+            if focusStart != nil, tree.roots.isEmpty, !(isAdding || inputFocused || !newTitle.isEmpty) {
+                FocusEmptyState { addRequest += 1 }
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: tree.roots.isEmpty)
+        .animation(.easeInOut(duration: 0.25), value: isAdding)
         // 입력이 목록 안에 있으므로 스크롤로 키보드를 바로 내리면 적다가 끊긴다.
         // 손가락을 따라 내려가게 두고, 다 적었으면 빈 줄에서 엔터로 닫는다.
         .scrollDismissesKeyboard(.interactively)
@@ -605,7 +633,10 @@ struct TodoView: View {
                             marked: [BacklogItem],
                             done: [BacklogItem]) -> some View
     {
-        if items.isEmpty && errands.isEmpty && marked.isEmpty && done.isEmpty {
+        if focusStart != nil && items.isEmpty && errands.isEmpty && marked.isEmpty && done.isEmpty {
+            // 집중 모드의 빈 화면은 가운데 단추가 말한다. 같은 말을 아래에 한 번 더 적지 않는다.
+            EmptyView()
+        } else if items.isEmpty && errands.isEmpty && marked.isEmpty && done.isEmpty {
             // 셈줄이 빈 화면의 유일한 글이던 시절이 있었다. 셈이 없어졌으니
             // 여기서는 다음에 뭘 하면 되는지만 말한다.
             Text("오른쪽 위 + 를 눌러 이번 주에 할 일을 적어보세요.")

@@ -146,6 +146,8 @@
 		F6775F776DC09C9C978F3F6D /* UsageReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B330E760ABA84DFA92851926 /* UsageReporting.swift */; };
 		F87263CC4CC579F6FB9B845A /* ScheduleShareStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7548E6B2701A45C102F43B6 /* ScheduleShareStore.swift */; };
 		F9A50FFB68444FE788B5CED7 /* TodoTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1DFC2876EC6FE5666C43486 /* TodoTree.swift */; };
+		FA988F2E2B4D81F70FACD4AF /* FirstRunUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A6AC30CE3754C326965551B /* FirstRunUITests.swift */; };
+		FB3E75B8ECD21EB26B8DE1A6 /* FirstRunStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB80B328A1EC1177ED851C5E /* FirstRunStart.swift */; };
 		FB55A604A2B9C3F1D484365C /* RainbowEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF011048734C0513008149AB /* RainbowEvent.swift */; };
 		FDD795001175EF2B314A3484 /* TimerActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD55D4646CC08F9037882688 /* TimerActivity.swift */; };
 		FEC04360BC23FA65C85A607D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FD190E36511B72612020479E /* Localizable.xcstrings */; };
@@ -273,6 +275,7 @@
 		979A4AF622853CA818289703 /* TodoWidgetSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoWidgetSync.swift; sourceTree = "<group>"; };
 		9986D50F72A622E5CA223199 /* ScheduleClock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleClock.swift; sourceTree = "<group>"; };
 		998B70300E7474EF72D813EB /* TodoShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodoShare.entitlements; sourceTree = "<group>"; };
+		9A6AC30CE3754C326965551B /* FirstRunUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunUITests.swift; sourceTree = "<group>"; };
 		9CB08C0B861AECD504249346 /* UsageDiary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageDiary.swift; sourceTree = "<group>"; };
 		9DE68BE86040DC668D87543A /* EventDeletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDeletion.swift; sourceTree = "<group>"; };
 		9E0573DC980E40DA752B45DC /* ScheduleDensityAppRoadmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityAppRoadmap.swift; sourceTree = "<group>"; };
@@ -305,6 +308,7 @@
 		C88214AD2EEFE9C1DBD3BDF2 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		CA8FFF09CAB99DC6FB56A1BB /* BacklogCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogCategory.swift; sourceTree = "<group>"; };
 		CB3700DE7959B6C0D6FF3AC4 /* WeekLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekLedger.swift; sourceTree = "<group>"; };
+		CB80B328A1EC1177ED851C5E /* FirstRunStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunStart.swift; sourceTree = "<group>"; };
 		CCF1AED059EB801B4CC2F8E2 /* TodoWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TodoWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD1FA07D33E72BA4A2A63C80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CF201C300CA9D8A22F45494C /* StartTimerControlIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTimerControlIntent.swift; sourceTree = "<group>"; };
@@ -373,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				6C5F73107965B0B20D6107E3 /* CoreFlowUITests.swift */,
+				9A6AC30CE3754C326965551B /* FirstRunUITests.swift */,
 			);
 			path = ScheduleDensityAppUITests;
 			sourceTree = "<group>";
@@ -399,6 +404,7 @@
 				4ECBA157204B5F06367463A9 /* DoneTodosView.swift */,
 				9DE68BE86040DC668D87543A /* EventDeletion.swift */,
 				E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */,
+				CB80B328A1EC1177ED851C5E /* FirstRunStart.swift */,
 				D5AF13BA064577118A497C7A /* FoldPanes.swift */,
 				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
 				7F639EF2609D3366C4F4C482 /* MacCompanionView.swift */,
@@ -919,6 +925,7 @@
 				2C42BE9F0BFFCA51FA4634B3 /* EventKitManager.swift in Sources */,
 				9B6F46D482A94A78ACF3D475 /* EventManagementView.swift in Sources */,
 				07FC5C932B3420EFA68FBDBB /* FamilyShareStore.swift in Sources */,
+				FB3E75B8ECD21EB26B8DE1A6 /* FirstRunStart.swift in Sources */,
 				9A9CD734F20FDC66EB7F8CBB /* FoldPanes.swift in Sources */,
 				6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */,
 				86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */,
@@ -999,6 +1006,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19F12F928EDBAFED1E43B803 /* CoreFlowUITests.swift in Sources */,
+				FA988F2E2B4D81F70FACD4AF /* FirstRunUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

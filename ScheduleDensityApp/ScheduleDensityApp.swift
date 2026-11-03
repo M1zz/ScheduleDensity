@@ -141,6 +141,8 @@ struct ScheduleDensityApp: App {
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
     @State private var schedule = ScheduleViewModel()
+    /// 처음 온 사람이 어디까지 왔는가 (→ FirstRunStart.swift). init 에서 한 번 정한다.
+    @AppStorage(FirstRunStage.storageKey) private var firstRunStage = FirstRunStage.full.rawValue
 
     init() {
         _ = LaunchSafety.isSafeMode
@@ -166,6 +168,38 @@ struct ScheduleDensityApp: App {
         // 동기화 엔진이 남기는 말을 받아 적기 시작한다 (→ CloudSyncLog.swift).
         // 스토어를 열기 **전에** 걸어야 준비(setup) 결과를 놓치지 않는다.
         CloudSyncLog.shared.start()
+        decideFirstRunStage()
+    }
+
+    /// 처음 온 사람이면 튜토리얼부터, 아니면 모든 기능으로. **한 번만** 정한다 (→ FirstRunGate).
+    private func decideFirstRunStage() {
+        let defaults = UserDefaults.standard
+        let stored = defaults.string(forKey: FirstRunStage.storageKey)
+        guard stored == nil else { return }
+        let usedBefore = defaults.bool(forKey: AppSettingsKey.hasSeenRainbowOnboarding)
+            || defaults.bool(forKey: AppSettingsKey.hasSeenBoltOnboarding)
+            || defaults.bool(forKey: AppSettingsKey.hasSeenSplitOnboarding)
+            || defaults.string(forKey: AppSettingsKey.lastSeenWhatsNewVersion) != nil
+        // 스토어에 든 것도 본다. 실행 횟수를 세기 전 버전부터 쓰던 사람을 처음 온 사람으로 잘못 보지 않게.
+        let todos = (try? ModelContext(todoContainer).fetchCount(FetchDescriptor<BacklogItem>())) ?? 0
+        let events = (try? ModelContext(sharedModelContainer).fetchCount(FetchDescriptor<Event>())) ?? 0
+        let stage = FirstRunGate.decide(storedStage: stored,
+                                        launchCount: LeeoEngagement.shared.launchCount,
+                                        hasUsedBefore: usedBefore,
+                                        hasData: todos + events > 0)
+        defaults.set(stage.rawValue, forKey: FirstRunStage.storageKey)
+        AppLog.launch.notice("👋 [FirstRun] \(stage.rawValue, privacy: .public)")
+    }
+
+    private var stage: FirstRunStage { FirstRunStage(rawValue: firstRunStage) ?? .full }
+
+    /// 집중 모드를 끝내고 모든 기능을 연다. 할 일 탭에 그대로 머문다 — 보던 것을 잃지 않게.
+    private func unlockAllFeatures() {
+        guard stage != .full else { return }
+        withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) {
+            firstRunStage = FirstRunStage.full.rawValue
+        }
+        AppLog.ui.notice("🔓 [FirstRun] 모든 기능을 열었다")
     }
 
     var sharedModelContainer: ModelContainer = {
@@ -365,6 +399,8 @@ struct ScheduleDensityApp: App {
             // 아이폰 듀오를 펴면 탭마다 접힌 선 양쪽에 짝이 선다 (→ Views/FoldPanes.swift).
             // 접혀 있거나 보통 아이폰이면 `FoldSplitView` 는 왼쪽(고르는 쪽)만 그린다 — 지금 화면 그대로.
             // ⚠️ 타이머 막대는 고르는 쪽 안에만 단다. 탭 전체에 달면 펼친 화면에서 접힌 선을 가로지른다.
+            ZStack {
+            if stage == .full {
             TabView(selection: $selectedTab) {
                 // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
                 FoldSplitView {
@@ -412,6 +448,40 @@ struct ScheduleDensityApp: App {
             .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.allows(.scheduleShare)),
                         selected: selectedTab == .day ? .rainbow : selectedTab) { selectedTab = $0 }
             .foldDayTabRedirect(selectedTab: $selectedTab)
+            .transition(.opacity)
+            } else {
+                // 처음 온 사람: 탭 막대 없이 할 일 화면 하나 (→ FirstRunStart.swift).
+                TodoView()
+                    .modelContainer(todoContainer)
+                    .environment(\.focusStart, FocusStart(unlock: unlockAllFeatures))
+                    .transition(.opacity)
+            }
+            }
+            .fullScreenCover(isPresented: Binding(
+                get: { stage == .tutorial },
+                // ⚠️ 닫힘을 여기서 '봤다'로 적지 않는다. 다른 창이 같이 뜨려다 시스템이 덮개를 걷어도
+                //    이 setter 가 불려서, 한 번도 못 본 사람이 튜토리얼을 영영 건너뛰었다.
+                //    넘어가는 길은 튜토리얼의 두 단추(다음 끝 · 건너뛰기)뿐이다.
+                set: { _ in })
+            ) {
+                WelcomeTutorialView { startWriting in
+                    firstRunStage = FirstRunStage.focus.rawValue
+                    // 닫히고 나서 빈 줄을 연다. 할 일 화면이 받아 첫 줄에 커서를 둔다 (→ QuickTodoBridge).
+                    if startWriting {
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(450))
+                            QuickTodoBridge.requestAdd()
+                        }
+                    }
+                }
+            }
+            // 위젯 · 딥링크로 다른 탭이 불렸다 — 이미 쓰고 있는 사람이다. 집중 모드를 끝낸다.
+            .onChange(of: selectedTab) { _, tab in
+                if tab != .todo, stage != .full { unlockAllFeatures() }
+            }
+            .onChange(of: timerSheet) { _, open in
+                if open, stage != .full { unlockAllFeatures() }
+            }
             // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
             .foldAware()
             // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).

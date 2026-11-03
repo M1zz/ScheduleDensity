@@ -75,6 +75,8 @@ struct SettingsView: View {
     @AppStorage("showInsightCards") private var showInsightCards = false
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
     @AppStorage(AppSettingsKey.hasSeenRainbowOnboarding) private var hasSeenRainbowOnboarding = false
+    /// 처음 안내(움직이는 그림 세 장)를 다시 보는 중 (→ FirstRunStart.swift). 기능을 다시 잠그지는 않는다.
+    @State private var showingTutorial = false
     @AppStorage(AppSettingsKey.hasSeenBoltOnboarding) private var hasSeenBoltOnboarding = false
 
     private let cloudKitManager = CloudKitManager.shared
@@ -556,6 +558,28 @@ struct SettingsView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.vertical, 4)
+
+                    // 처음 안내 다시 보기 — 그림만 다시 본다. 집중 모드로 되돌리지 않는다.
+                    Button {
+                        showingTutorial = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "play.rectangle")
+                                .foregroundColor(.blue)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("처음 안내 다시 보기")
+                                    .font(.headline)
+                                Text("적고 끝내는 법을 그림으로 다시 봅니다")
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 4)
+                    .fullScreenCover(isPresented: $showingTutorial) {
+                        WelcomeTutorialView { _ in showingTutorial = false }
+                    }
                 } header: {
                     Text("일정")
                 } footer: {

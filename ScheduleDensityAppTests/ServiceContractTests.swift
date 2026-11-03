@@ -104,3 +104,34 @@ final class RemoteFlagTests: XCTestCase {
         XCTAssertTrue(LeeoRemoteFlags.isEnabled(Never()))
     }
 }
+
+/// 처음 온 사람만 튜토리얼 → 집중 모드를 탄다. 쓰던 사람은 절대 갇히지 않는다 (→ FirstRunStart.swift).
+final class FirstRunGateTests: XCTestCase {
+
+    func testNewcomerGetsTutorial() {
+        XCTAssertEqual(FirstRunGate.decide(storedStage: nil, launchCount: 1,
+                                           hasUsedBefore: false, hasData: false), .tutorial)
+    }
+
+    func testExistingUserGoesStraightToFull() {
+        XCTAssertEqual(FirstRunGate.decide(storedStage: nil, launchCount: 5,
+                                           hasUsedBefore: false, hasData: false), .full)
+        XCTAssertEqual(FirstRunGate.decide(storedStage: nil, launchCount: 1,
+                                           hasUsedBefore: true, hasData: false), .full)
+        XCTAssertEqual(FirstRunGate.decide(storedStage: nil, launchCount: 1,
+                                           hasUsedBefore: false, hasData: true), .full)
+    }
+
+    func testStoredStageWins() {
+        XCTAssertEqual(FirstRunGate.decide(storedStage: "focus", launchCount: 9,
+                                           hasUsedBefore: true, hasData: true), .focus)
+        XCTAssertEqual(FirstRunGate.decide(storedStage: "full", launchCount: 1,
+                                           hasUsedBefore: false, hasData: false), .full)
+    }
+
+    func testUnlockSuggestion() {
+        XCTAssertFalse(FirstRunGate.suggestsUnlock(written: 2, completed: 0))
+        XCTAssertTrue(FirstRunGate.suggestsUnlock(written: 3, completed: 0))
+        XCTAssertTrue(FirstRunGate.suggestsUnlock(written: 1, completed: 1))
+    }
+}
