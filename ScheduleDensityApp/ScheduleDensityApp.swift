@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import AppIntents
 import CloudKit
 import LeeoKit
 import WidgetKit
@@ -151,6 +152,9 @@ struct ScheduleDensityApp: App {
         _purchases = State(initialValue: PurchaseManager.shared)
         _schedule = State(initialValue: ScheduleViewModel())
         sharedModelContainer = Self.openEventContainer()
+        // Siri 인텐트가 같은 일정 저장소를 읽게 한다 (→ Utilities/DensityIntents.swift)
+        let events = sharedModelContainer
+        AppDependencyManager.shared.add(dependency: events)
         todoContainer = Self.openTodoContainer()
 
         _ = LaunchSafety.isSafeMode
