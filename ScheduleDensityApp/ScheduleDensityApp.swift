@@ -126,7 +126,7 @@ struct ScheduleDensityApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppSettingsKey.showShareTab) private var showShareTab = false
     /// 곁다리 다섯을 열었는가 (→ ProEntitlement.swift).
-    @State private var purchases = PurchaseManager.shared
+    @State private var purchases: PurchaseManager
     @State private var selectedTab: AppTab = .todo
     /// '하루' 탭이 보고 있는 날. 무지개에서 날짜를 누르면 여기를 바꾸고 그 탭으로 넘긴다.
     @State private var dayTabDate = Calendar.current.startOfDay(for: Date())
@@ -140,11 +140,19 @@ struct ScheduleDensityApp: App {
     @State private var graduationSheet = false
     /// 일정(무지개) 뷰모델은 앱이 들고 있는다. 할 일 화면에서 데드라인을 정하면
     /// 이 뷰모델을 통해 무지개에 줄이 그어지므로, 무지개 탭을 안 열어도 살아 있어야 한다.
-    @State private var schedule = ScheduleViewModel()
+    @State private var schedule: ScheduleViewModel
     /// 처음 온 사람이 어디까지 왔는가 (→ FirstRunStart.swift). init 에서 한 번 정한다.
     @AppStorage(FirstRunStage.storageKey) private var firstRunStage = FirstRunStage.full.rawValue
 
     init() {
+        // 백업 금고는 무엇보다 먼저 — 예약된 복원을 저장소 · 설정이 열리기 전에 적용하고, 업데이트 직후면
+        // 직전 상태를 떠 둔다. 그래서 설정을 읽는 것들과 두 스토어는 저장 프로퍼티 초기값이 아니라 여기서 이 뒤에 만든다.
+        LeeoVault.start(ScheduleDensityAppSpec.self)
+        _purchases = State(initialValue: PurchaseManager.shared)
+        _schedule = State(initialValue: ScheduleViewModel())
+        sharedModelContainer = Self.openEventContainer()
+        todoContainer = Self.openTodoContainer()
+
         _ = LaunchSafety.isSafeMode
         LeeoEngagement.shared.registerLaunch()
         #if DEBUG
@@ -202,7 +210,9 @@ struct ScheduleDensityApp: App {
         AppLog.ui.notice("🔓 [FirstRun] 모든 기능을 열었다")
     }
 
-    var sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer
+
+    private static func openEventContainer() -> ModelContainer {
         // 이 기기에만 있는 일정(Event) 스토어. iCloud 사본이 없는 유일본이라 열기 **전에** 통째로 떠 둔다
         // (→ DataVault.swift). 아래 복구 갈래가 새 파일을 만들기 전의 바이트가 남는다.
         let support = URL.applicationSupportDirectory
@@ -363,7 +373,7 @@ struct ScheduleDensityApp: App {
                 }
             }
         }
-    }()
+    }
 
     /// 할 일 화면이 쓰는 컨테이너 — **미러와 같은 하나의 스토어**다.
     ///
@@ -373,7 +383,9 @@ struct ScheduleDensityApp: App {
     ///    안 건너왔다** — 맥에는 1개, 아이폰에는 4개가 각자 쌓여 있었다.
     ///    이제 스토어는 한 채고, 그 한 채를 WeekBlocksStore가 세운다.
     ///    (→ WeekBlocksStore.sharedContainer, Event 스토어와는 여전히 별개다)
-    var todoContainer: ModelContainer = {
+    let todoContainer: ModelContainer
+
+    private static func openTodoContainer() -> ModelContainer {
         // iOS 샌드박스에는 Application Support 디렉터리가 없을 수 있어 먼저 만들어 둔다.
         try? FileManager.default.createDirectory(at: .applicationSupportDirectory, withIntermediateDirectories: true)
 
@@ -392,7 +404,7 @@ struct ScheduleDensityApp: App {
         let container = try! ModelContainer(for: WeekBlocksStore.schema, configurations: [memory])
         CloudDiagnostics.todoContainer = container
         return container
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {

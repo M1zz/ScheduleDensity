@@ -15,6 +15,9 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
     //    "com.example이 남아 있네" 하고 정리하지 말 것 — 양쪽 다 깨진다.
     static let feedback = LeeoFeedbackConfig(containerIdentifier: "iCloud.com.Ysoup.FeedbackHub", appIdentifier: "com.example.ScheduleDensityApp")
 
+    /// 백업 금고(LeeoVault)가 함께 담는 앱 그룹 — 위젯과 나눠 쓰는 할 일.
+    static let appGroups = ["group.com.devkoan.ScheduleDensity"]
+
     /// 소개·개인정보 페이지의 언어별 뿌리.
     /// 한국어는 `docs/`, 영어는 `docs/en/`, 번체 중국어는 `docs/zh-Hant/` 에 있다 (GitHub Pages).
     /// ⚠️ 여기 값은 **App Store Connect 의 지원 URL·개인정보 처리방침 URL 과 같아야 한다.**
