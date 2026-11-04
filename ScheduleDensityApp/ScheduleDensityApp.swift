@@ -156,6 +156,9 @@ struct ScheduleDensityApp: App {
         let events = sharedModelContainer
         AppDependencyManager.shared.add(dependency: events)
         todoContainer = Self.openTodoContainer()
+        // 할 일도 Siri · Spotlight 가 같은 저장소를 읽게 한다
+        let todos = todoContainer
+        AppDependencyManager.shared.add(dependency: TodoStore(container: todos))
 
         _ = LaunchSafety.isSafeMode
         LeeoEngagement.shared.registerLaunch()
@@ -601,8 +604,14 @@ struct ScheduleDensityApp: App {
             // 상관없이, 잠겨 있던 때 닫힌 채 찍힌 이 기기의 줄을 켤 때마다 연다 (→ TodoSharing.swift).
             // 비어 있으면 아무 일도 안 하므로 켤 때마다 불러도 된다.
             .task { TodoSharing.openMyItems(in: todoContainer.mainContext) }
+            .task { await TodoLibrary.reindex(todoContainer) }
+            // Siri · Spotlight 에서 할 일을 눌렀다 — 그 탭으로 (상세는 TodoView 가 연다).
+            .onChange(of: TodoRouter.shared.token) { _, token in
+                if token != nil { selectedTab = .todo }
+            }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .background {
+                    Task { await TodoLibrary.reindex(todoContainer) }
                     // 쓰던 것을 안전망에 반영해 둔다. 다음에 스토어가 비어도 여기까지는 남는다.
                     TodoArchive.write(from: todoContainer.mainContext)
                     // 모든 것을 한 벌 — 같은 내용이면 금고가 알아서 건너뛴다 (→ DataVault.swift).

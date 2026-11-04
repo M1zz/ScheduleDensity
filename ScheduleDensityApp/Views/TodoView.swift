@@ -290,6 +290,7 @@ struct TodoView: View {
         // 콜드 런치는 이 .task 가, 이미 떠 있으면 아래 알림이 받는다.
         .task { await reconcileStepStates() }
         .task { consumeQuickAddRequest() }
+        .onChange(of: TodoRouter.shared.token, initial: true) { _, _ in consumeOpenRequest() }
         .onReceive(NotificationCenter.default.publisher(for: .quickTodoAddRequested)) { _ in
             consumeQuickAddRequest()
         }
@@ -565,6 +566,15 @@ struct TodoView: View {
         } else {
             pushedTodo = item
         }
+    }
+
+    /// Siri · Spotlight 에서 연 할 일을 '내 할 일'에서 연다 (→ DensityIntents.swift).
+    private func consumeOpenRequest() {
+        guard let token = TodoRouter.shared.token else { return }
+        TodoRouter.shared.token = nil
+        guard let item = allItems.first(where: { $0.dragToken == token }) else { return }
+        tab = .mine
+        open(item)
     }
 
     /// 제어센터에서 온 요청을 거둔다. **플래그를 거두는 곳은 여기 하나뿐이다** —
