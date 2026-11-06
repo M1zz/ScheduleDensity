@@ -1,5 +1,247 @@
 # 릴리즈 노트
 
+## 1.1.17
+
+### 앱스토어 (한국어)
+
+```
+Siri에게 이번 주 가장 빽빽한 날을 물어보세요
+아직 안 끝낸 할 일을 iPhone 검색에서 바로 열어요
+매일 자동으로 백업하고 iCloud나 파일로 되살려요
+처음 쓰는 분을 위한 움직이는 안내가 생겼어요
+VoiceOver와 큰 글씨에서 더 편하게 쓸 수 있어요
+```
+
+### 앱스토어 (English)
+
+```
+Ask Siri which day this week is busiest
+Find open to-dos right in iPhone Search
+Daily backups, restore from iCloud
+A new animated guide for first-timers
+Better with VoiceOver and larger text
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+Ask Siri which day this week is busiest
+Find open to-dos right in iPhone Search
+Daily backups, restore from iCloud
+A new animated guide for first-timers
+Better with VoiceOver and larger text
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+問問 Siri 這週哪天最忙
+在 iPhone 搜尋中直接打開未完成的待辦
+每天自動備份，可從 iCloud 或檔案回復
+新增給第一次使用者的動態導覽
+使用旁白和大字體時更加順手
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+问问 Siri 这周哪天最忙
+在 iPhone 搜索中直接打开未完成的待办
+每天自动备份，可从 iCloud 或文件恢复
+新增给首次使用者的动态引导
+使用旁白和大字体时更加顺手
+```
+
+### 앱스토어 (일본어)
+
+```
+Siriに今週いちばん忙しい日を聞けます
+未完了のToDoをiPhoneの検索から開けます
+毎日自動でバックアップし復元もできます
+はじめての方向けに動くガイドを追加
+VoiceOverや大きな文字で使いやすく
+```
+
+### 앱스토어 (독일어)
+
+```
+Frag Siri nach dem vollsten Tag
+Offene Aufgaben direkt in der Suche
+Tägliches Backup, wiederherstellbar
+Neue animierte Einführung für den Start
+Besser mit VoiceOver und großem Text
+```
+
+### 앱스토어 (스페인어)
+
+```
+Pregunta a Siri qué día está más lleno
+Busca tus tareas pendientes
+Copia diaria, restaurable desde iCloud
+Nueva guía animada para empezar
+Mejor con VoiceOver y texto grande
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Demandez à Siri le jour le plus chargé
+Vos tâches en cours dans Recherche
+Sauvegarde quotidienne et restauration
+Un guide animé pour bien démarrer
+Mieux avec VoiceOver et le texte agrandi
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Chiedi a Siri il giorno più pieno
+Trova le attività aperte nella Ricerca
+Backup giornaliero, da iCloud o da file
+Nuova guida animata per iniziare
+Meglio con VoiceOver e testo grande
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Pergunte à Siri o dia mais cheio
+Ache tarefas abertas na Busca do iPhone
+Backup diário, restaure pelo iCloud
+Novo guia animado para começar
+Melhor com VoiceOver e texto grande
+```
+
+### 앱스토어 (러시아어)
+
+```
+Спросите Siri о самом загруженном дне
+Открытые задачи — в Поиске iPhone
+Ежедневная копия с восстановлением
+Новый анимированный гид для новичков
+Удобнее с VoiceOver и крупным текстом
+```
+
+### 앱스토어 (체코어)
+
+```
+Zeptejte se Siri na nejnabitější den
+Nehotové úkoly najdete ve Vyhledávání
+Denní záloha s obnovou z iCloudu
+Nový animovaný průvodce pro začátek
+Lepší s VoiceOverem a velkým písmem
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Spørg Siri om ugens travleste dag
+Find åbne opgaver i Søgning
+Daglig backup, gendan fra iCloud
+Ny animeret guide til nye brugere
+Bedre med VoiceOver og stor tekst
+```
+
+### 앱스토어 (그리스어)
+
+```
+Ρωτήστε τη Siri για την πιο γεμάτη μέρα
+Οι εκκρεμείς εργασίες στην Αναζήτηση
+Καθημερινό αντίγραφο με επαναφορά
+Νέος κινούμενος οδηγός για αρχάριους
+Καλύτερο με VoiceOver και μεγάλο κείμενο
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Kysy Siriltä viikon kiireisintä päivää
+Avoimet tehtävät löytyvät hausta
+Päivittäinen varmuuskopio ja palautus
+Uusi animoitu opas aloittajille
+Parempi VoiceOverilla ja isolla fontilla
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Tanya Siri hari terpadat minggu ini
+Cari tugas yang belum selesai
+Cadangan harian, pulihkan dari iCloud
+Panduan animasi baru untuk pemula
+Nyaman dengan VoiceOver dan teks besar
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Spør Siri om ukens travleste dag
+Finn åpne gjøremål i Søk
+Daglig kopi som kan gjenopprettes
+Ny animert veiviser for nye brukere
+Bedre med VoiceOver og stor tekst
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Vraag Siri naar je drukste dag
+Open taken vind je via Zoeken
+Dagelijkse back-up, herstel via iCloud
+Nieuwe geanimeerde uitleg voor beginners
+Beter met VoiceOver en grote tekst
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Zapytaj Siri o najbardziej zajęty dzień
+Otwarte zadania w Wyszukiwaniu
+Codzienna kopia z przywracaniem
+Nowy animowany przewodnik na start
+Lepiej z VoiceOver i dużym tekstem
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Fråga Siri vilken dag som är fullast
+Hitta öppna uppgifter i Sök
+Daglig säkerhetskopia, återställ enkelt
+Ny animerad guide för nya användare
+Bättre med VoiceOver och stor text
+```
+
+### 앱스토어 (태국어)
+
+```
+ถาม Siri ว่าวันไหนของสัปดาห์แน่นที่สุด
+ค้นหางานที่ยังไม่เสร็จใน iPhone ได้
+สำรองทุกวัน กู้คืนจาก iCloud หรือไฟล์ได้
+มีคำแนะนำแบบเคลื่อนไหวสำหรับผู้ใช้ใหม่
+ใช้ง่ายขึ้นกับ VoiceOver และตัวใหญ่
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Haftanın en yoğun gününü Siri'ye sorun
+Açık görevler artık iPhone aramasında
+Günlük yedek, iCloud'dan geri yükleme
+Yeni başlayanlar için hareketli rehber
+VoiceOver ve büyük yazıyla daha rahat
+```
+
+### 앱스토어 (베트남어)
+
+```
+Hỏi Siri ngày nào trong tuần bận nhất
+Mở việc chưa xong ngay từ Tìm kiếm
+Sao lưu mỗi ngày, khôi phục từ iCloud
+Hướng dẫn động mới cho người mới dùng
+Dễ dùng hơn với VoiceOver và chữ lớn
+```
+
 ## 1.1.16
 
 ### 앱스토어 (한국어)
