@@ -122,6 +122,7 @@
 		C3570B640BED636DC7372662 /* LeeoKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3B0B7D594FCCABF21917463C /* LeeoKit */; };
 		C4519E74D66C3CC3D2AD7495 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A79039642EBC6F76CFDD72F2 /* PrivacyInfo.xcprivacy */; };
 		C5A8628CA718CEF5D0C15249 /* DoneTodosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ECBA157204B5F06367463A9 /* DoneTodosView.swift */; };
+		C7245A2729B900B1AA6B248F /* PaywallShowcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE47C86F3A60CDE56958987 /* PaywallShowcase.swift */; };
 		C7EE0ABFE9FF68662F159866 /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = EDE2BE20CC2D5A5D12D36A4D /* AppShortcuts.xcstrings */; };
 		CB298C12B23FF6BBBD9B23DD /* CloudSyncLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059E898FF838C334CC121045 /* CloudSyncLog.swift */; };
 		CB523D8E557C1B3985468738 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 0EA73C01E663B2E7E1A5958A /* InfoPlist.xcstrings */; };
@@ -320,6 +321,7 @@
 		CB80B328A1EC1177ED851C5E /* FirstRunStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunStart.swift; sourceTree = "<group>"; };
 		CCF1AED059EB801B4CC2F8E2 /* TodoWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TodoWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD1FA07D33E72BA4A2A63C80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CDE47C86F3A60CDE56958987 /* PaywallShowcase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallShowcase.swift; sourceTree = "<group>"; };
 		CF201C300CA9D8A22F45494C /* StartTimerControlIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTimerControlIntent.swift; sourceTree = "<group>"; };
 		CFBA5BD1F5101F6EAC163F67 /* WeekBlocksStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekBlocksStore.swift; sourceTree = "<group>"; };
 		D1EFC7D8766C57DAEF2CB283 /* RainbowWidgetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowWidgetSnapshot.swift; sourceTree = "<group>"; };
@@ -419,6 +421,7 @@
 				2A25397A90AF67293DBF60A2 /* FragmentMark.swift */,
 				7F639EF2609D3366C4F4C482 /* MacCompanionView.swift */,
 				2E4CB493D00C71A3EE298B98 /* MeaningPage.swift */,
+				CDE47C86F3A60CDE56958987 /* PaywallShowcase.swift */,
 				1832BF9F6714B639A8E0D9C6 /* PaywallView.swift */,
 				7A5EF904E1E47DF7E2D6E33E /* RainbowMeaningView.swift */,
 				DA082B6DD71E8446DE8FFE09 /* RainbowOnboardingView.swift */,
@@ -951,6 +954,7 @@
 				60C4121A7DCB81DF4293BBEB /* MacCompanionView.swift in Sources */,
 				328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */,
 				4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */,
+				C7245A2729B900B1AA6B248F /* PaywallShowcase.swift in Sources */,
 				311CA0F21D2F2B2823AE65BC /* PaywallView.swift in Sources */,
 				EB98703B23BF321621A819D6 /* PlanBlock.swift in Sources */,
 				61C8EBC20259E7FF658CDC03 /* PressHaptics.swift in Sources */,

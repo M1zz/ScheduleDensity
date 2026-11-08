@@ -18,7 +18,8 @@ extension View {
         #if DEBUG
         // 덮지 않고 **바꿔 낀다.** 덮으면 온보딩(풀스크린 커버)이 그 위로 올라온다.
         if let productID = UserDefaults.standard.string(forKey: "reviewShot") {
-            ReviewShotView(productID: productID)
+            // `-reviewShot paywall` 은 페이월(기능 그림 확인 · 스크린샷용)
+            if productID == "paywall" { PaywallView() } else { ReviewShotView(productID: productID) }
         } else {
             self
         }

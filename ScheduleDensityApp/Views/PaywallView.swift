@@ -2,8 +2,9 @@
 //  PaywallView.swift
 //  ScheduleDensityApp
 //
-//  무지개의 세 칸(무료 · Plus · Pro)을 파는 한 장. 틀은 LeeoKit `LeeoPurchaseScaffold` —
-//  응원 · 선물 화면과 같다: 칸 카드를 눌러 고르고, 늘 떠 있는 단추 하나로 산다.
+//  무지개의 세 칸(무료 · Plus · Pro)을 파는 한 장. 틀은 LeeoKit `LeeoShowcasePaywall` —
+//  고른 칸의 기능 그림을 옆으로 넘겨 보이고(→ PaywallShowcase.swift), 칸 카드를 눌러 고르고,
+//  늘 떠 있는 단추 하나로 산다. 무료 칸 카드는 머리말이 한 줄로 말하고, 자세한 것은 아래에 둔다.
 //
 //  ⚠️ 맥앱 '무지개 공방'의 같은 이름 파일과 **같은 순서**로 말한다.
 //     무엇이 그대로 무료인지 → Plus → Pro (칸마다 연 구독과 평생) → 언제나 평생 패스 → 약관.
@@ -79,14 +80,14 @@ struct PaywallView: View {
         }
     }
 
-    /// 한 틀(LeeoKit `LeeoPurchaseScaffold`): 무엇이 무료인지 → 칸 카드(고르기) → 떠 있는 단추 하나.
-    /// 약관 · 복원 · 코드 사용은 스크롤한 아래에.
+    /// 그림으로 파는 틀(LeeoKit `LeeoShowcasePaywall`, 클립키보드와 같다):
+    /// 머리말 → 고른 칸의 기능 그림(옆으로 넘김) → 칸 카드(고르기 · 길) → 떠 있는 단추 하나.
+    /// 무엇이 그대로 무료인지 · 약관 · 복원 · 코드 사용은 스크롤한 아래에.
     private var page: some View {
-        LeeoPurchaseScaffold {
-            header.padding(.horizontal, LeeoPurchaseScaffoldMetrics.margin)
-        } options: {
+        LeeoShowcasePaywall(showcases: (selectedTier ?? .pro).showcases(highlight: highlight)) {
+            header
+        } plans: {
             VStack(alignment: .leading, spacing: 14) {
-                freeCard
                 plansStatus
                 tierCard(.plus)
                 tierCard(.pro)
@@ -95,6 +96,7 @@ struct PaywallView: View {
             if let tier = selectedTier { buyButton(tier) }
         } details: {
             VStack(alignment: .leading, spacing: 18) {
+                freeCard
                 // 세 칸 아래 한 줄. 이 앱의 Pro 평생을 가진 사람에게는 패스를 올리기 값으로 판다.
                 LeeoForeverPassLine(pass: purchases.foreverPass,
                                     ownsLifetimePro: purchases.ownsLifetime(.pro))
@@ -174,16 +176,11 @@ struct PaywallView: View {
                 }
                 cardTitle(tier.title, current: purchases.tier == tier)
             }
-            if tier == .pro {
-                row("square.stack.3d.up", "Plus 전부", "회수 장부 전체 기간과 일정 통계까지 함께 열립니다.")
-            }
-            ForEach(features(in: tier)) { feature in
-                row(feature.systemImage, LocalizedStringKey(feature.title), LocalizedStringKey(feature.note),
-                    highlighted: feature == highlight)
-            }
-            if tier == .pro {
-                row("laptopcomputer", "맥 '무지개 공방' Pro", "맥 앱도 Pro로 함께 열립니다.")
-            }
+            // 무엇이 열리는지는 위 그림이 보인다. 카드에는 이름만 한 줄로.
+            Text(featureLine(tier))
+                .scaledFont(size: 13)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
             // 이미 이 칸 이상이면 살 것이 없다. 구독을 평생으로 바꾸는 길은 설정에 있다.
             if selected {
                 LeeoTermPicker(term: term(for: tier), yearly: yearly(tier), lifetime: lifetime(tier))
@@ -199,11 +196,14 @@ struct PaywallView: View {
         .accessibilityAction(named: Text(tier.title)) { if purchasable { chosenTier = tier } }
     }
 
-    /// 그 칸에서 새로 열리는 것. 지금 누른 자리가 맨 위.
-    private func features(in tier: ProTier) -> [ProFeature] {
-        let opened = ProFeature.opened(by: tier)
-        guard let highlight, opened.contains(highlight) else { return opened }
-        return [highlight] + opened.filter { $0 != highlight }
+    /// 그 칸에서 열리는 것의 이름 한 줄. Pro 는 Plus 전부와 맥 앱까지.
+    private func featureLine(_ tier: ProTier) -> String {
+        var names = ProFeature.opened(by: tier).map(\.title)
+        if tier == .pro {
+            names.insert(String(localized: "Plus 전부"), at: 0)
+            names.append(String(localized: "맥 '무지개 공방' Pro"))
+        }
+        return names.joined(separator: " · ")
     }
 
     private func term(for tier: ProTier) -> Binding<LeeoPlanTerm> {
