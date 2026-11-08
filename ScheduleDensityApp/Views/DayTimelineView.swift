@@ -1246,13 +1246,10 @@ struct DayTimeAnalysisView: View {
         }
 
         func details(of e: Event) -> [DetailLine] {
-            let f = DateFormatter()
-            f.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMd", options: 0, locale: .autoupdatingCurrent)
-            f.locale = .autoupdatingCurrent
             var lines: [DetailLine] = []
             let period = e.isInfinite
-                ? String(localized: "\(f.string(from: e.startDate))부터 끝없이")
-                : "\(f.string(from: e.startDate)) – \(f.string(from: e.endDate))"
+                ? String(localized: "\(e.startDate.formatted(template: "yMMMd"))부터 끝없이")
+                : "\(e.startDate.formatted(template: "yMMMd")) – \(e.endDate.formatted(template: "yMMMd"))"
             lines.append(DetailLine(icon: "calendar", label: String(localized: "기간"), value: period))
             lines.append(DetailLine(icon: "clock", label: String(localized: "하루에"), value: formatHours(e.hoursPerDay)))
             let sessions = e.sessions
@@ -1317,12 +1314,8 @@ struct DayTimeAnalysisView: View {
     // MARK: - 글자
 
     private func formatDateFull(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "MMMd")
     }
 
     /// "9월 26일까지".
@@ -1331,12 +1324,8 @@ struct DayTimeAnalysisView: View {
     }
 
     private func formatWeekday(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "EEEE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "EEEE")
     }
 }
 

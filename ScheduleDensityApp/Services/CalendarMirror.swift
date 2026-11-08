@@ -135,7 +135,7 @@ final class CalendarMirror {
         for (id, group) in recurring {
             result.append(contentsOf: Self.series(id: id, group.sorted { $0.startDate < $1.startDate }))
         }
-        print("📅 [CalendarMirror] 캘린더 \(calendars.count)개 → 일정 \(occurrences.count)건을 \(result.count)줄로")
+        AppLog.sync.trace("📅 [CalendarMirror] 캘린더 \(calendars.count)개 → 일정 \(occurrences.count)건을 \(result.count)줄로")
         return result
     }
 

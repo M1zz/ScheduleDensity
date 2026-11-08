@@ -77,10 +77,10 @@ class CloudKitManager {
         if let recordName = event.cloudKitRecordName {
             let recordID = CKRecord.ID(recordName: recordName)
             record = CKRecord(recordType: "Event", recordID: recordID)
-            print("🔄 [CloudKit] Updating existing record: \(recordName)")
+            AppLog.sync.trace("🔄 [CloudKit] Updating existing record: \(recordName)")
         } else {
             record = CKRecord(recordType: "Event")
-            print("➕ [CloudKit] Creating new record")
+            AppLog.sync.trace("➕ [CloudKit] Creating new record")
         }
 
         record["title"] = event.title as CKRecordValue
@@ -106,11 +106,11 @@ class CloudKitManager {
         database.save(record) { savedRecord, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("❌ [CloudKit] Save failed: \(error.localizedDescription)")
+                    AppLog.sync.trace("❌ [CloudKit] Save failed: \(error.localizedDescription)")
                     completion(.failure(error))
                 } else if let savedRecord = savedRecord {
                     let recordName = savedRecord.recordID.recordName
-                    print("✅ [CloudKit] Saved: \(recordName)")
+                    AppLog.sync.trace("✅ [CloudKit] Saved: \(recordName)")
                     completion(.success(recordName))
                 } else {
                     completion(.failure(NSError(domain: "CloudKit", code: -1, userInfo: [NSLocalizedDescriptionKey: "No record returned"])))
@@ -124,15 +124,15 @@ class CloudKitManager {
         let database = container.privateCloudDatabase
         let recordID = CKRecord.ID(recordName: recordName)
 
-        print("🗑️ [CloudKit] Deleting record: \(recordName)")
+        AppLog.sync.trace("🗑️ [CloudKit] Deleting record: \(recordName)")
 
         database.delete(withRecordID: recordID) { deletedRecordID, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("❌ [CloudKit] Delete failed: \(error.localizedDescription)")
+                    AppLog.sync.trace("❌ [CloudKit] Delete failed: \(error.localizedDescription)")
                     completion(.failure(error))
                 } else {
-                    print("✅ [CloudKit] Deleted: \(recordName)")
+                    AppLog.sync.trace("✅ [CloudKit] Deleted: \(recordName)")
                     completion(.success(()))
                 }
             }
@@ -151,7 +151,7 @@ class CloudKitManager {
                     continuation.resume()
                 case .failure(let error):
                     if let ckError = error as? CKError, ckError.code == .unknownItem {
-                        print("✅ [CloudKit] 이미 없는 레코드다: \(recordName)")
+                        AppLog.sync.trace("✅ [CloudKit] 이미 없는 레코드다: \(recordName)")
                         continuation.resume()
                     } else {
                         continuation.resume(throwing: error)
@@ -178,7 +178,7 @@ class CloudKitManager {
             return
         }
 
-        print("📤 [CloudKit] Starting batch save: \(totalCount) events")
+        AppLog.sync.trace("📤 [CloudKit] Starting batch save: \(totalCount) events")
 
         // CKRecord 배열 생성
         let records = events.map { event -> CKRecord in
@@ -203,70 +203,70 @@ class CloudKitManager {
                 record["weeklyPatternData"] = weeklyPatternData as CKRecordValue
             }
 
-            print("📝 [CloudKit] Created record: \(event.title)")
+            AppLog.sync.trace("📝 [CloudKit] Created record: \(event.title)")
             return record
         }
 
-        print("🔧 [CloudKit] Created \(records.count) records, creating operation...")
+        AppLog.sync.trace("🔧 [CloudKit] Created \(records.count) records, creating operation...")
 
         // 단순화: 한 번에 모든 레코드 저장
         let operation = CKModifyRecordsOperation(recordsToSave: records, recordIDsToDelete: nil)
-        print("✨ [CloudKit] Operation created")
+        AppLog.sync.trace("✨ [CloudKit] Operation created")
 
         // 개별 레코드 저장 진행률 추적
         var savedCount = 0
         operation.perRecordSaveBlock = { recordID, result in
-            print("🔄 [CloudKit] perRecordSaveBlock called for \(recordID)")
+            AppLog.sync.trace("🔄 [CloudKit] perRecordSaveBlock called for \(recordID)")
             DispatchQueue.main.async {
                 switch result {
                 case .success:
                     savedCount += 1
                     progress(savedCount, totalCount)
-                    print("📦 [CloudKit] Saved \(savedCount)/\(totalCount)")
+                    AppLog.sync.trace("📦 [CloudKit] Saved \(savedCount)/\(totalCount)")
                 case .failure(let error):
-                    print("⚠️ [CloudKit] Record \(recordID) failed: \(error.localizedDescription)")
+                    AppLog.sync.trace("⚠️ [CloudKit] Record \(recordID) failed: \(error.localizedDescription)")
                 }
             }
         }
-        print("🎯 [CloudKit] perRecordSaveBlock set")
+        AppLog.sync.trace("🎯 [CloudKit] perRecordSaveBlock set")
 
         operation.modifyRecordsResultBlock = { result in
-            print("🏁 [CloudKit] modifyRecordsResultBlock called")
+            AppLog.sync.trace("🏁 [CloudKit] modifyRecordsResultBlock called")
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    print("✅ [CloudKit] All \(totalCount) events saved successfully")
-                    print("✅ [CloudKit] Saved count: \(savedCount)")
+                    AppLog.sync.trace("✅ [CloudKit] All \(totalCount) events saved successfully")
+                    AppLog.sync.trace("✅ [CloudKit] Saved count: \(savedCount)")
                     completion(.success(()))
                 case .failure(let error):
-                    print("❌ [CloudKit] Save failed: \(error.localizedDescription)")
-                    print("❌ [CloudKit] Error code: \((error as NSError).code)")
-                    print("❌ [CloudKit] Error domain: \((error as NSError).domain)")
-                    print("❌ [CloudKit] Error details: \(error)")
+                    AppLog.sync.trace("❌ [CloudKit] Save failed: \(error.localizedDescription)")
+                    AppLog.sync.trace("❌ [CloudKit] Error code: \((error as NSError).code)")
+                    AppLog.sync.trace("❌ [CloudKit] Error domain: \((error as NSError).domain)")
+                    AppLog.sync.trace("❌ [CloudKit] Error details: \(error)")
                     if let ckError = error as? CKError {
-                        print("❌ [CloudKit] CKError code: \(ckError.errorCode)")
-                        print("❌ [CloudKit] Partial errors: \(String(describing: ckError.partialErrorsByItemID))")
+                        AppLog.sync.trace("❌ [CloudKit] CKError code: \(ckError.errorCode)")
+                        AppLog.sync.trace("❌ [CloudKit] Partial errors: \(String(describing: ckError.partialErrorsByItemID))")
                     }
                     completion(.failure(error))
                 }
             }
         }
-        print("🎯 [CloudKit] modifyRecordsResultBlock set")
+        AppLog.sync.trace("🎯 [CloudKit] modifyRecordsResultBlock set")
 
         // Quality of Service 설정
         operation.qualityOfService = .userInitiated
-        print("⚙️ [CloudKit] QoS set to userInitiated")
+        AppLog.sync.trace("⚙️ [CloudKit] QoS set to userInitiated")
 
-        print("🚀 [CloudKit] Adding operation to database...")
+        AppLog.sync.trace("🚀 [CloudKit] Adding operation to database...")
         database.add(operation)
-        print("✈️ [CloudKit] Operation added to database")
+        AppLog.sync.trace("✈️ [CloudKit] Operation added to database")
     }
 
     // CloudKit에서 모든 Event 가져오기
     func fetchEvents(completion: @escaping (Result<[CKRecord], Error>) -> Void) {
         let database = container.privateCloudDatabase
 
-        print("📥 [CloudKit] Fetching events from iCloud...")
+        AppLog.sync.trace("📥 [CloudKit] Fetching events from iCloud...")
         // 쿼리 대신 레코드를 직접 스캔하는 방식
         fetchAllRecordsRecursively(database: database, recordType: "Event", cursor: nil, existingRecords: []) { result in
             completion(result)
@@ -293,9 +293,9 @@ class CloudKitManager {
             switch result {
             case .success(let record):
                 allRecords.append(record)
-                print("📦 [CloudKit] Fetched record: \(record["title"] ?? "Unknown")")
+                AppLog.sync.trace("📦 [CloudKit] Fetched record: \(record["title"] ?? "Unknown")")
             case .failure(let error):
-                print("⚠️ [CloudKit] Failed to fetch record \(recordID): \(error.localizedDescription)")
+                AppLog.sync.trace("⚠️ [CloudKit] Failed to fetch record \(recordID): \(error.localizedDescription)")
             }
         }
 
@@ -303,38 +303,38 @@ class CloudKitManager {
             switch result {
             case .success(let cursor):
                 if let cursor = cursor {
-                    print("📥 [CloudKit] More records available, fetching... (current: \(allRecords.count))")
+                    AppLog.sync.trace("📥 [CloudKit] More records available, fetching... (current: \(allRecords.count))")
                     // 더 많은 레코드가 있으면 재귀 호출
                     self.fetchAllRecordsRecursively(database: database, recordType: recordType, cursor: cursor, existingRecords: allRecords, completion: completion)
                 } else {
                     // 모든 레코드를 가져왔음
                     DispatchQueue.main.async {
-                        print("✅ [CloudKit] Fetched \(allRecords.count) records total")
+                        AppLog.sync.trace("✅ [CloudKit] Fetched \(allRecords.count) records total")
                         if allRecords.isEmpty {
-                            print("⚠️ [CloudKit] WARNING: No records found in CloudKit!")
-                            print("⚠️ [CloudKit] Possible reasons:")
-                            print("   1. No data was saved yet")
-                            print("   2. Container is empty")
-                            print("   3. Permission issue")
+                            AppLog.sync.trace("⚠️ [CloudKit] WARNING: No records found in CloudKit!")
+                            AppLog.sync.trace("⚠️ [CloudKit] Possible reasons:")
+                            AppLog.sync.trace("   1. No data was saved yet")
+                            AppLog.sync.trace("   2. Container is empty")
+                            AppLog.sync.trace("   3. Permission issue")
                         }
                         completion(.success(allRecords))
                     }
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
-                    print("❌ [CloudKit] Fetch failed: \(error.localizedDescription)")
-                    print("❌ [CloudKit] Error code: \((error as NSError).code)")
-                    print("❌ [CloudKit] Error domain: \((error as NSError).domain)")
+                    AppLog.sync.trace("❌ [CloudKit] Fetch failed: \(error.localizedDescription)")
+                    AppLog.sync.trace("❌ [CloudKit] Error code: \((error as NSError).code)")
+                    AppLog.sync.trace("❌ [CloudKit] Error domain: \((error as NSError).domain)")
 
                     // Error code 15 = Zone doesn't support this operation
                     if (error as NSError).code == 15 {
-                        print("⚠️ [CloudKit] This is a zone compatibility error")
-                        print("⚠️ [CloudKit] Trying alternative fetch method...")
+                        AppLog.sync.trace("⚠️ [CloudKit] This is a zone compatibility error")
+                        AppLog.sync.trace("⚠️ [CloudKit] Trying alternative fetch method...")
                         // 대안: 레코드를 하나씩 가져오기는 비효율적이므로 에러 반환
                     }
 
                     if let ckError = error as? CKError {
-                        print("❌ [CloudKit] CKError code: \(ckError.errorCode)")
+                        AppLog.sync.trace("❌ [CloudKit] CKError code: \(ckError.errorCode)")
                     }
                     completion(.failure(error))
                 }
@@ -346,12 +346,12 @@ class CloudKitManager {
 
     // CloudKit에서 Event 복원 (CKRecord → Event 변환)
     func restoreEvents(progress: @escaping (Int, Int) -> Void, completion: @escaping (Result<[Event], Error>) -> Void) {
-        print("🔄 [CloudKit] Starting restore process...")
+        AppLog.sync.trace("🔄 [CloudKit] Starting restore process...")
 
         fetchEvents { result in
             switch result {
             case .success(let records):
-                print("📦 [CloudKit] Converting \(records.count) records to Events...")
+                AppLog.sync.trace("📦 [CloudKit] Converting \(records.count) records to Events...")
 
                 var events: [Event] = []
                 let totalCount = records.count
@@ -363,7 +363,7 @@ class CloudKitManager {
                           let endDate = record["endDate"] as? Date,
                           let color = record["color"] as? String,
                           let hoursPerDay = record["hoursPerDay"] as? Double else {
-                        print("⚠️ [CloudKit] Skipping invalid record: \(record.recordID)")
+                        AppLog.sync.trace("⚠️ [CloudKit] Skipping invalid record: \(record.recordID)")
                         continue
                     }
 
@@ -394,17 +394,17 @@ class CloudKitManager {
 
                     DispatchQueue.main.async {
                         progress(index + 1, totalCount)
-                        print("📦 [CloudKit] Converted \(index + 1)/\(totalCount): \(title)")
+                        AppLog.sync.trace("📦 [CloudKit] Converted \(index + 1)/\(totalCount): \(title)")
                     }
                 }
 
-                print("✅ [CloudKit] Successfully converted \(events.count) events")
+                AppLog.sync.trace("✅ [CloudKit] Successfully converted \(events.count) events")
                 DispatchQueue.main.async {
                     completion(.success(events))
                 }
 
             case .failure(let error):
-                print("❌ [CloudKit] Restore failed: \(error.localizedDescription)")
+                AppLog.sync.trace("❌ [CloudKit] Restore failed: \(error.localizedDescription)")
                 DispatchQueue.main.async {
                     completion(.failure(error))
                 }

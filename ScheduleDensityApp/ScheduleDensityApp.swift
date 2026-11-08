@@ -413,61 +413,14 @@ struct ScheduleDensityApp: App {
         return container
     }
 
-    var body: some Scene {
-        WindowGroup {
-            // 아이폰 듀오를 펴면 탭마다 접힌 선 양쪽에 짝이 선다 (→ Views/FoldPanes.swift).
-            // 접혀 있거나 보통 아이폰이면 `FoldSplitView` 는 왼쪽(고르는 쪽)만 그린다 — 지금 화면 그대로.
-            // ⚠️ 타이머 막대는 고르는 쪽 안에만 단다. 탭 전체에 달면 펼친 화면에서 접힌 선을 가로지른다.
-            ZStack {
+    // MARK: - 첫 화면
+
+    /// 처음 온 사람은 할 일 화면 하나, 그다음부터는 탭 (→ FirstRunStart.swift).
+    /// ⚠️ `body` 에서 떼어 둔다. 탭 · 시트 · 할 일이 한 식이면 타입 검사가 한 덩어리로 1초 넘게 걸렸다.
+    private var rootContent: some View {
+        ZStack {
             if stage == .full {
-            TabView(selection: $selectedTab) {
-                // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
-                FoldSplitView {
-                    TodoView().timerBar()
-                } result: {
-                    FoldTodoResultPane(schedule: schedule)
-                }
-                .modelContainer(todoContainer)
-                .foldTabBarRoom()
-                .tabItem { Label("할 일", systemImage: "checklist") }
-                .tag(AppTab.todo)
-                // 펴면 왼쪽 격자 | 오른쪽 고른 날의 하루. 날짜를 누르면 탭을 넘기지 않고 오른쪽만 바뀐다.
-                FoldSplitView {
-                    ContentView(viewModel: schedule).timerBar()
-                } result: {
-                    DayTab(viewModel: schedule, date: $dayTabDate)
-                        .environment(\.foldLayout, .single)
-                }
-                .foldTabBarRoom()
-                .tabItem { Label("무지개", systemImage: "rainbow") }
-                .tag(AppTab.rainbow)
-                // 하루 타임라인은 무지개 칸을 눌러야만 뜨는 시트였다. 매일 보는 화면이라 탭으로 따로 둔다.
-                // 무지개에서 날짜를 눌러도 시트가 아니라 이 탭이 그 날로 열린다.
-                DayTab(viewModel: schedule, date: $dayTabDate)
-                    .timerBar()
-                    .tabItem { Label("하루", systemImage: "calendar.day.timeline.left") }
-                    .tag(AppTab.day)
-                // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
-                // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
-                // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
-                if showShareTab, purchases.allows(.scheduleShare) {
-                    FoldSplitView {
-                        ScheduleShareView().timerBar()
-                    } result: {
-                        DayTab(viewModel: schedule, date: $dayTabDate)
-                            .environment(\.foldLayout, .single)
-                    }
-                    .foldTabBarRoom()
-                    .tabItem { Label("공유", systemImage: "person.2.circle") }
-                    .tag(AppTab.share)
-                }
-            }
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
-            // 펴면 시스템 탭바 대신 고르는 쪽 판 바닥에 막대가 선다. 하루는 무지개의 오른쪽 판이 된다.
-            .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.allows(.scheduleShare)),
-                        selected: selectedTab == .day ? .rainbow : selectedTab) { selectedTab = $0 }
-            .foldDayTabRedirect(selectedTab: $selectedTab)
-            .transition(.opacity)
+                mainTabs
             } else {
                 // 처음 온 사람: 탭 막대 없이 할 일 화면 하나 (→ FirstRunStart.swift).
                 TodoView()
@@ -475,58 +428,124 @@ struct ScheduleDensityApp: App {
                     .environment(\.focusStart, FocusStart(unlock: unlockAllFeatures))
                     .transition(.opacity)
             }
+        }
+    }
+
+    /// 할 일 · 무지개 · 하루 · (공유) 탭.
+    /// 아이폰 듀오를 펴면 탭마다 접힌 선 양쪽에 짝이 선다 (→ Views/FoldPanes.swift).
+    /// 접혀 있거나 보통 아이폰이면 `FoldSplitView` 는 왼쪽(고르는 쪽)만 그린다 — 지금 화면 그대로.
+    /// ⚠️ 타이머 막대는 고르는 쪽 안에만 단다. 탭 전체에 달면 펼친 화면에서 접힌 선을 가로지른다.
+    private var mainTabs: some View {
+        TabView(selection: $selectedTab) {
+            // 할 일이 먼저다 — 매일 여는 화면이고, 무지개는 그 일들이 언제 걸려 있는지 보는 곳이다.
+            FoldSplitView {
+                TodoView().timerBar()
+            } result: {
+                FoldTodoResultPane(schedule: schedule)
             }
-            .fullScreenCover(isPresented: Binding(
-                get: { stage == .tutorial },
-                // ⚠️ 닫힘을 여기서 '봤다'로 적지 않는다. 다른 창이 같이 뜨려다 시스템이 덮개를 걷어도
-                //    이 setter 가 불려서, 한 번도 못 본 사람이 튜토리얼을 영영 건너뛰었다.
-                //    넘어가는 길은 튜토리얼의 두 단추(다음 끝 · 건너뛰기)뿐이다.
-                set: { _ in })
-            ) {
-                WelcomeTutorialView { startWriting in
-                    firstRunStage = FirstRunStage.focus.rawValue
-                    // 닫히고 나서 빈 줄을 연다. 할 일 화면이 받아 첫 줄에 커서를 둔다 (→ QuickTodoBridge).
-                    if startWriting {
-                        Task { @MainActor in
-                            try? await Task.sleep(for: .milliseconds(450))
-                            QuickTodoBridge.requestAdd()
-                        }
+            .modelContainer(todoContainer)
+            .foldTabBarRoom()
+            .tabItem { Label("할 일", systemImage: "checklist") }
+            .tag(AppTab.todo)
+            // 펴면 왼쪽 격자 | 오른쪽 고른 날의 하루. 날짜를 누르면 탭을 넘기지 않고 오른쪽만 바뀐다.
+            FoldSplitView {
+                ContentView(viewModel: schedule).timerBar()
+            } result: {
+                DayTab(viewModel: schedule, date: $dayTabDate)
+                    .environment(\.foldLayout, .single)
+            }
+            .foldTabBarRoom()
+            .tabItem { Label("무지개", systemImage: "rainbow") }
+            .tag(AppTab.rainbow)
+            // 하루 타임라인은 무지개 칸을 눌러야만 뜨는 시트였다. 매일 보는 화면이라 탭으로 따로 둔다.
+            // 무지개에서 날짜를 눌러도 시트가 아니라 이 탭이 그 날로 열린다.
+            DayTab(viewModel: schedule, date: $dayTabDate)
+                .timerBar()
+                .tabItem { Label("하루", systemImage: "calendar.day.timeline.left") }
+                .tag(AppTab.day)
+            // 공유 탭은 설정 > 일정 > '공유 탭 표시'로 켤 때만 노출된다.
+            // 값을 받고 여는 것 중 하나이므로 잠겨 있으면 켜 뒀어도 안 뜬다 —
+            // 설정의 스위치만 막으면, 전에 켜 둔 사람은 잠금을 그냥 통과한다.
+            if showShareTab, purchases.allows(.scheduleShare) {
+                FoldSplitView {
+                    ScheduleShareView().timerBar()
+                } result: {
+                    DayTab(viewModel: schedule, date: $dayTabDate)
+                        .environment(\.foldLayout, .single)
+                }
+                .foldTabBarRoom()
+                .tabItem { Label("공유", systemImage: "person.2.circle") }
+                .tag(AppTab.share)
+            }
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedTab)
+        // 펴면 시스템 탭바 대신 고르는 쪽 판 바닥에 막대가 선다. 하루는 무지개의 오른쪽 판이 된다.
+        .foldTabBar(items: AppTab.foldTabItems(showsShare: showShareTab && purchases.allows(.scheduleShare)),
+                    selected: selectedTab == .day ? .rainbow : selectedTab) { selectedTab = $0 }
+        .foldDayTabRedirect(selectedTab: $selectedTab)
+        .transition(.opacity)
+    }
+
+    /// 첫 화면 위에 뜨는 것들: 튜토리얼 · 시트 · 페이월 · 복구 물음.
+    /// 생명주기(`.task` · 알림 · 딥링크)는 `body` 에 둔다. 한 사슬이면 타입 검사가 1초 걸렸다.
+    private var presentedRoot: some View {
+        rootContent
+        .fullScreenCover(isPresented: Binding(
+            get: { stage == .tutorial },
+            // ⚠️ 닫힘을 여기서 '봤다'로 적지 않는다. 다른 창이 같이 뜨려다 시스템이 덮개를 걷어도
+            //    이 setter 가 불려서, 한 번도 못 본 사람이 튜토리얼을 영영 건너뛰었다.
+            //    넘어가는 길은 튜토리얼의 두 단추(다음 끝 · 건너뛰기)뿐이다.
+            set: { _ in })
+        ) {
+            WelcomeTutorialView { startWriting in
+                firstRunStage = FirstRunStage.focus.rawValue
+                // 닫히고 나서 빈 줄을 연다. 할 일 화면이 받아 첫 줄에 커서를 둔다 (→ QuickTodoBridge).
+                if startWriting {
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .milliseconds(450))
+                        QuickTodoBridge.requestAdd()
                     }
                 }
             }
-            // 위젯 · 딥링크로 다른 탭이 불렸다 — 이미 쓰고 있는 사람이다. 집중 모드를 끝낸다.
-            .onChange(of: selectedTab) { _, tab in
-                if tab != .todo, stage != .full { unlockAllFeatures() }
-            }
-            .onChange(of: timerSheet) { _, open in
-                if open, stage != .full { unlockAllFeatures() }
-            }
-            // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
-            .foldAware()
-            // DEBUG 에서 `-reviewShot <선물 상품>` 으로 켜면 앱 화면 대신 인앱 상품 심사 이미지 장면을 그린다 (→ ReviewShot.swift).
-            .reviewShotOverlay()
-            // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).
-            .vaultRecoveryPrompt()
-            // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
-            .timerNotifyAsk()
-            .paywall(for: .widget, isPresented: $widgetPaywall)
-            // 타이머 위젯을 눌렀을 때 뜨는 시트. 탭마다 선 줄이 아니라 루트에 하나만 둔다.
-            .sheet(isPresented: $timerSheet) {
-                TimerSheet(slot: ScheduleClockStore.shared.current())
-                    .presentationDragIndicator(.visible)
-            }
-            .sheet(isPresented: $showWhatsNew) {
-                WhatsNewView()
-                    .presentationDragIndicator(.visible)
-            }
-            .sheet(isPresented: $graduationSheet) {
-                LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
-                    await purchases.refresh()
-                }
-                // 실제로 보인 때를 적는다. 다른 시트에 밀려 못 뜬 판은 세지 않는다.
-                .onAppear { purchases.markGraduationOffered() }
+        }
+        // 위젯 · 딥링크로 다른 탭이 불렸다 — 이미 쓰고 있는 사람이다. 집중 모드를 끝낸다.
+        .onChange(of: selectedTab) { _, tab in
+            if tab != .todo, stage != .full { unlockAllFeatures() }
+        }
+        .onChange(of: timerSheet) { _, open in
+            if open, stage != .full { unlockAllFeatures() }
+        }
+        // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
+        .foldAware()
+        // DEBUG 에서 `-reviewShot <선물 상품>` 으로 켜면 앱 화면 대신 인앱 상품 심사 이미지 장면을 그린다 (→ ReviewShot.swift).
+        .reviewShotOverlay()
+        // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).
+        .vaultRecoveryPrompt()
+        // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).
+        .timerNotifyAsk()
+        .paywall(for: .widget, isPresented: $widgetPaywall)
+        // 타이머 위젯을 눌렀을 때 뜨는 시트. 탭마다 선 줄이 아니라 루트에 하나만 둔다.
+        .sheet(isPresented: $timerSheet) {
+            TimerSheet(slot: ScheduleClockStore.shared.current())
                 .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showWhatsNew) {
+            WhatsNewView()
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $graduationSheet) {
+            LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
+                await purchases.refresh()
             }
+            // 실제로 보인 때를 적는다. 다른 시트에 밀려 못 뜬 판은 세지 않는다.
+            .onAppear { purchases.markGraduationOffered() }
+            .presentationDragIndicator(.visible)
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            presentedRoot
             // 첫 화면이 섰다. 몇 초 버티면 이번 실행은 무사히 뜬 것으로 적는다 (→ LaunchSafety).
             .task {
                 LaunchSafety.launchGuard.markLaunchSucceededAfterSurvivalDelay()
@@ -720,7 +739,7 @@ enum StoreFallback {
 
     static func memoryContainer(schema: Schema, after error: Error) -> ModelContainer {
         isActive = true
-        print("⚠️ 저장소를 열지 못해 이번 실행은 메모리에서 엽니다: \(error)")
+        AppLog.launch.trace("⚠️ 저장소를 열지 못해 이번 실행은 메모리에서 엽니다: \(error)")
         do {
             return try ModelContainer(
                 for: schema,

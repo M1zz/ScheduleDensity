@@ -392,12 +392,8 @@ struct StatisticsView: View {
     }
 
     private func formatDateFull(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMdE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "yMMMdE")
     }
 
     private func weekdayName(_ weekday: Int) -> String {

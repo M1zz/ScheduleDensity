@@ -51,7 +51,7 @@ final class EventKitManager {
             .filter { $0.allowsContentModifications }
             .sorted { $0.title < $1.title }
 
-        print("📅 [EventKit] 사용 가능한 캘린더 \(calendars.count)개 발견")
+        AppLog.sync.trace("📅 [EventKit] 사용 가능한 캘린더 \(calendars.count)개 발견")
     }
 
     // MARK: - Event Fetching
@@ -70,7 +70,7 @@ final class EventKitManager {
         )
 
         let allEvents = eventStore.events(matching: predicate)
-        print("📅 [EventKit] 3개월간 \(allEvents.count)개 일정 발견 (중복 포함)")
+        AppLog.sync.trace("📅 [EventKit] 3개월간 \(allEvents.count)개 일정 발견 (중복 포함)")
 
         // 반복 일정 중복 제거: calendarItemIdentifier로 그룹화
         // calendarItemIdentifier는 반복 일정의 모든 발생에 대해 동일함
@@ -85,7 +85,7 @@ final class EventKitManager {
         }
 
         let events = Array(uniqueEvents.values)
-        print("📅 [EventKit] 중복 제거 후 \(events.count)개 일정")
+        AppLog.sync.trace("📅 [EventKit] 중복 제거 후 \(events.count)개 일정")
         return events
     }
 

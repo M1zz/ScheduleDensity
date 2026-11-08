@@ -634,12 +634,8 @@ struct TimelineDensityView: View {
     }
 
     private func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMMMdE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "yMMMdE")
     }
 
     private func isToday(_ date: Date) -> Bool {
@@ -647,20 +643,13 @@ struct TimelineDensityView: View {
     }
 
     private func monthDay(from date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 
     private func weekday(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "E")
     }
 
     private func isWeekend(_ date: Date) -> Bool {
@@ -1060,20 +1049,13 @@ struct DateRow: View {
     }
 
     private func monthDay(from date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 
     private func weekday(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "E")
     }
 }
 
@@ -1455,20 +1437,13 @@ struct TimelineDayRow: View {
     }
 
     private func monthDay(from date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 
     private func weekday(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "E", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "E")
     }
 
     private func isWeekend(_ date: Date) -> Bool {
@@ -1516,12 +1491,8 @@ struct EventListCard: View {
     @Environment(\.colorScheme) private var colorScheme
 
     private func formattedDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 }
 
@@ -1886,11 +1857,8 @@ struct EventQuickLookView: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yMd", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "yMd")
     }
 }
 
@@ -2155,12 +2123,8 @@ struct FreestDayCard: View {
     }
 
     private var dateString: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MdE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: insight.date)
+        return insight.date.formatted(template: "MdE")
     }
 }
 
@@ -2209,11 +2173,7 @@ struct BusiestDayCard: View {
     }
 
     private var dateString: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MdE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: insight.date)
+        return insight.date.formatted(template: "MdE")
     }
 }

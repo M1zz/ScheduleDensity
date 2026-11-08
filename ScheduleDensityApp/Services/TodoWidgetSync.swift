@@ -26,7 +26,7 @@ enum TodoWidgetSync {
             WidgetCenter.shared.reloadTimelines(ofKind: TodoWidgetBridge.widgetKind)
             WidgetCenter.shared.reloadTimelines(ofKind: TodoWidgetBridge.fragmentWidgetKind)
         } catch {
-            print("⚠️ [Widget] 할 일 조회 실패, 스냅샷 갱신 생략: \(error)")
+            AppLog.ui.trace("⚠️ [Widget] 할 일 조회 실패, 스냅샷 갱신 생략: \(error)")
         }
     }
 

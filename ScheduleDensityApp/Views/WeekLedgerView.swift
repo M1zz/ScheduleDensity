@@ -77,10 +77,7 @@ struct WeekLedgerView: View {
 
     /// "9월 8일 주". 지난 주를 볼 때 제목에 선다.
     private var weekLabel: String {
-        let f = DateFormatter()
-        f.locale = .autoupdatingCurrent
-        f.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0, locale: .autoupdatingCurrent)
-        return String(localized: "\(f.string(from: week)) 주")
+        return String(localized: "\(week.formatted(template: "MMMd")) 주")
     }
 
     var body: some View {

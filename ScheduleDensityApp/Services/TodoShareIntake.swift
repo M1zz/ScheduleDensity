@@ -52,7 +52,7 @@ enum TodoShareIntake {
         } catch {
             // 저장에 실패하면 상자는 이미 비운 뒤라 되돌릴 수 없다.
             // 흔치 않은 경우라 로그만 남기고 넘어간다 (사용자에게는 줄이 안 생긴 것으로 보인다).
-            print("⚠️ [Share] 받은 할 일 저장 실패: \(error)")
+            AppLog.store.trace("⚠️ [Share] 받은 할 일 저장 실패: \(error)")
             return 0
         }
         TodoWidgetSync.refresh(context: context)

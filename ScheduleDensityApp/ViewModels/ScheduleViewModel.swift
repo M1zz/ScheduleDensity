@@ -432,11 +432,8 @@ class ScheduleViewModel {
         // ⚠️ 로케일을 못 박지 않는다. 예전에 ko_KR 로 고정돼 있어서 영어로 쓰는 분에게도
         //    "9월 3일"이 나왔다. 형식은 템플릿(MMMd)으로만 말하고, 실제 글자 순서와
         //    낱말은 기기 언어가 정하게 둔다.
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
-        formatter.setLocalizedDateFormatFromTemplate("MMMd")
 
-        return "\(formatter.string(from: currentWeekStart)) - \(formatter.string(from: weekEnd))"
+        return "\(currentWeekStart.formatted(template: "MMMd")) - \(weekEnd.formatted(template: "MMMd"))"
     }
     
     // MARK: - Event Management
@@ -998,15 +995,7 @@ class ScheduleViewModel {
             let eventsInLane = eventLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
             laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
             for event in eventsInLane {
-                let cells = event.actualCellCount()
-                let weekdaysStr = formatWeekdays(event.selectedWeekdays)
-                let dateFormatter = DateFormatter()
-                // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-                dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                            locale: .autoupdatingCurrent)
-                let startStr = dateFormatter.string(from: event.startDate)
-                let endStr = dateFormatter.string(from: event.endDate)
-                laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                laneLog(laneLine(event))
             }
         }
 
@@ -1016,15 +1005,7 @@ class ScheduleViewModel {
 
         laneLog("\n      미배치 일정: \(unassignedEvents.count)개")
         for event in unassignedEvents {
-            let cells = event.actualCellCount()
-            let weekdaysStr = formatWeekdays(event.selectedWeekdays)
-            let dateFormatter = DateFormatter()
-            // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-            dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                        locale: .autoupdatingCurrent)
-            let startStr = dateFormatter.string(from: event.startDate)
-            let endStr = dateFormatter.string(from: event.endDate)
-            laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+            laneLog(laneLine(event))
         }
 
         var gapFilledCount = 0
@@ -1116,15 +1097,7 @@ class ScheduleViewModel {
                     let eventsInLane = gapFilledLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
                     laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
                     for event in eventsInLane {
-                        let cells = event.actualCellCount()
-                        let weekdaysStr = formatWeekdays(event.selectedWeekdays)
-                        let dateFormatter = DateFormatter()
-                        // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-                        dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                                    locale: .autoupdatingCurrent)
-                        let startStr = dateFormatter.string(from: event.startDate)
-                        let endStr = dateFormatter.string(from: event.endDate)
-                        laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                        laneLog(laneLine(event))
                     }
                 }
             } else {
@@ -1235,15 +1208,7 @@ class ScheduleViewModel {
             let eventsInLane = compactedLanes.filter { $0.lane == lane }.map { $0.event }.sorted { $0.startDate < $1.startDate }
             laneLog("      레인 \(lane + 1): \(eventsInLane.count)개 일정")
             for event in eventsInLane {
-                let cells = event.actualCellCount()
-                let weekdaysStr = formatWeekdays(event.selectedWeekdays)
-                let dateFormatter = DateFormatter()
-                // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-                dateFormatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                            locale: .autoupdatingCurrent)
-                let startStr = dateFormatter.string(from: event.startDate)
-                let endStr = dateFormatter.string(from: event.endDate)
-                laneLog("         - '\(event.title)' (\(startStr)~\(endStr), \(cells)칸, \(weekdaysStr))")
+                laneLog(laneLine(event))
             }
         }
         laneLog(String(repeating: "=", count: 60) + "\n")
@@ -1295,11 +1260,18 @@ class ScheduleViewModel {
     }
 
     /// 레인 배정 과정을 눈으로 따라가기 위한 기록. **출시 빌드에서는 아무 일도 안 한다** —
-    /// 배정 한 번에 열댓 줄이 찍히고 그중 하나는 일정마다 `DateFormatter`를 새로 만든다.
+    /// 메시지는 `@autoclosure` 라 출시 빌드에서는 만들지도 않는다.
     private func laneLog(_ message: @autoclosure () -> String) {
 #if DEBUG
         print(message())
 #endif
+    }
+
+    /// 레인 기록의 일정 한 줄. `laneLog` 안에서만 만들어진다 — 출시 빌드에서는 날짜 글자도 칸 수도 세지 않는다.
+    /// ⚠️ 재료를 `laneLog` 바깥에서 먼저 만들면 출시 빌드에서도 일정마다 그 값이 든다(전에 그랬다).
+    private func laneLine(_ event: Event) -> String {
+        "         - '\(event.title)' (\(event.startDate.formatted(template: "Md"))~\(event.endDate.formatted(template: "Md")), "
+            + "\(event.actualCellCount())칸, \(formatWeekdays(event.selectedWeekdays)))"
     }
 
     // 두 일정이 겹치는지 확인

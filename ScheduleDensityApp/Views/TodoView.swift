@@ -161,7 +161,9 @@ struct TodoView: View {
         showsFamilyTab ? tab : .mine
     }
 
-    var body: some View {
+    /// 목록 · 제목 · 도구 막대 · 밀어 넣는 화면. 시트 · 알림 · 생명주기는 `body` 에 둔다.
+    /// ⚠️ `body` 에서 떼어 둔다. 한 식이면 타입 검사가 한 덩어리로 0.8초 걸렸다.
+    private var listStack: some View {
         NavigationStack {
             Group {
                 switch visibleTab {
@@ -235,6 +237,12 @@ struct TodoView: View {
                 MacCompanionView()
             }
         }
+    }
+
+    /// 목록 위에 뜨는 것들: 장부 시트 · 지우기 물음 · 알림 · 밀어 넣는 상세 · 접힘 따라가기.
+    /// 생명주기(`.task` · `onChange` · 알림)는 `body` 에 둔다. 한 사슬이면 타입 검사가 0.9초 걸렸다.
+    private var presentedList: some View {
+        listStack
         .sheet(isPresented: $showingLedger) {
             WeekLedgerView(weekStart: weekStart, work: remainingSteps)
         }
@@ -273,6 +281,10 @@ struct TodoView: View {
                 pushedTodo = item
             }
         }
+    }
+
+    var body: some View {
+        presentedList
         .task {
             pullForwardOverdueWeeks()
             refreshPeriods()
@@ -1102,11 +1114,8 @@ struct TodoView: View {
     }
 
     private func shortDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 
     private func hourText(_ hours: Double) -> String {

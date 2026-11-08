@@ -98,7 +98,7 @@ final class RainbowBridge {
             try JSONEncoder().encode(ledger).write(to: Self.ledgerURL, options: .atomic)
             cachedLedger = ledger
         } catch {
-            print("❌ [RainbowBridge] 장부 저장 실패: \(error)")
+            AppLog.sync.trace("❌ [RainbowBridge] 장부 저장 실패: \(error)")
         }
     }
 
@@ -166,10 +166,12 @@ final class RainbowBridge {
                             sessions: Data? = nil) -> String {
         func day(_ d: Date) -> String { String(Int(d.timeIntervalSince1970)) }
         // ⚠️ 매주(1)는 글자에 넣지 않는다 — 장부에 남은 옛 지문과 그대로 같아야 '고쳤다'로 읽지 않는다.
-        let weekdaysText = (weekdays.map { $0.sorted().map(String.init).joined(separator: ",") } ?? "-")
-            + (pattern == nil && repeatWeeks > 1 ? "/\(repeatWeeks)w" : "")
-            + (sessions.map { "/s:" + $0.base64EncodedString() } ?? "")
-        return [
+        // 타입을 적어 둔다 — 옵셔널 · 삼항 · 배열이 한 식이면 타입 추론이 0.3초 걸렸다.
+        let days: String = weekdays.map { $0.sorted().map(String.init).joined(separator: ",") } ?? "-"
+        let every: String = pattern == nil && repeatWeeks > 1 ? "/\(repeatWeeks)w" : ""
+        let sessionText: String = sessions.map { "/s:" + $0.base64EncodedString() } ?? ""
+        let weekdaysText = days + every + sessionText
+        let fields: [String] = [
             title,
             day(start), infinite ? "inf" : day(end),
             color.uppercased(),
@@ -179,7 +181,8 @@ final class RainbowBridge {
             importance,
             excluded.map(day).sorted().joined(separator: ","),
             todo ?? "-",
-        ].joined(separator: "|")
+        ]
+        return fields.joined(separator: "|")
     }
 
     static func fingerprint(_ e: Event) -> String {
@@ -334,7 +337,7 @@ final class RainbowBridge {
         let unexplained = gone.keys.filter { !intentionalDeletes.contains($0) }
         let massLoss = unexplained.count > Self.massLossThreshold && unexplained.count * 2 > ledger.links.count
         if massLoss {
-            print("🛑 [RainbowBridge] 원본 \(unexplained.count)개가 한꺼번에 사라졌다 — 지운 것으로 보지 않고 사본에서 되살린다")
+            AppLog.sync.trace("🛑 [RainbowBridge] 원본 \(unexplained.count)개가 한꺼번에 사라졌다 — 지운 것으로 보지 않고 사본에서 되살린다")
         }
         var restoredFromCopies: [(Event, String)] = []
         for (key, link) in gone {
@@ -388,14 +391,14 @@ final class RainbowBridge {
                 copyByUUID[twin.uuid] = nil
                 linkedUUIDs.remove(twin.uuid)
                 linkedUUIDs.insert(r.uuid)
-                print("🔗 [RainbowBridge] \"\(e.title)\" 다른 아이폰 사본에 다시 이음 — 내 사본은 걷음")
+                AppLog.sync.trace("🔗 [RainbowBridge] \"\(e.title)\" 다른 아이폰 사본에 다시 이음 — 내 사본은 걷음")
             } else {
                 // 내 사본이 이긴다 — 저쪽 사본 행만 걷는다. 저쪽 폰도 같은 규칙으로 내 사본에 다시 잇는다.
                 // 장부에 올려 두어 6번이 이 uuid로 원본을 만들지 않게 한다 (저쪽 폰이 3번으로 잠깐 되살려도).
                 ledger.knownUUIDs.insert(r.uuid)
                 for row in rowsByUUID[r.uuid] ?? [] { sharedContext.delete(row) }
                 copyByUUID[r.uuid] = nil
-                print("🔗 [RainbowBridge] \"\(r.title)\" 다른 아이폰이 따로 세운 같은 사본을 걷음")
+                AppLog.sync.trace("🔗 [RainbowBridge] \"\(r.title)\" 다른 아이폰이 따로 세운 같은 사본을 걷음")
             }
             sharedChanged = true
         }
@@ -415,7 +418,7 @@ final class RainbowBridge {
                 r.deletedAt = Date()
                 r.updatedAt = Date()
                 sharedChanged = true
-                print("🔗 [RainbowBridge] \"\(r.title)\" 같은 할 일에 기한이 둘 — 하나로 합침")
+                AppLog.sync.trace("🔗 [RainbowBridge] \"\(r.title)\" 같은 할 일에 기한이 둘 — 하나로 합침")
             }
         }
 
@@ -458,7 +461,7 @@ final class RainbowBridge {
                 // 이쪽에서 고쳤다 — 또는 둘 다 고쳤다. 둘 다면 저쪽 값을 떠 두고 이쪽 값을 올린다.
                 // 이 값이 남는다는 보장은 없다 — 저쪽 폰도 같은 판단으로 자기 값을 올린다 (→ 머리 주석 1번).
                 if pr != link.fingerprint {
-                    print("⚠️ [RainbowBridge] \"\(e.title)\" 두 기기에서 함께 고침 — 저쪽 값을 떠 두고 이 기기 것을 올린다")
+                    AppLog.sync.trace("⚠️ [RainbowBridge] \"\(e.title)\" 두 기기에서 함께 고침 — 저쪽 값을 떠 두고 이 기기 것을 올린다")
                     backup([BackupRow(r)], folder: "Conflicts", reason: "overwritten-remote")
                 }
                 Self.copy(e, into: r)
@@ -510,7 +513,7 @@ final class RainbowBridge {
             do {
                 try eventContext.save()
             } catch {
-                print("❌ [RainbowBridge] 일정 저장 실패: \(error)")
+                AppLog.sync.trace("❌ [RainbowBridge] 일정 저장 실패: \(error)")
                 pendingNew.removeAll()
                 return   // 장부를 안 고친다 — 다음에 같은 일을 다시 한다.
             }
@@ -519,7 +522,7 @@ final class RainbowBridge {
             do {
                 try sharedContext.save()
             } catch {
-                print("❌ [RainbowBridge] 사본 저장 실패: \(error)")
+                AppLog.sync.trace("❌ [RainbowBridge] 사본 저장 실패: \(error)")
                 pendingNew.removeAll()
                 return
             }
@@ -538,7 +541,7 @@ final class RainbowBridge {
             saveLedger(ledger)
         }
         if eventsChanged {
-            print("🌈 [RainbowBridge] 맥에서 온 변경을 이 기기 일정에 옮겼다")
+            AppLog.sync.trace("🌈 [RainbowBridge] 맥에서 온 변경을 이 기기 일정에 옮겼다")
             NotificationCenter.default.post(name: .rainbowBridgeDidApply, object: nil)
             // 무지개 화면은 이 알림에 이미 다시 그린다 (→ ScheduleViewModel.planChangeObserver).
             NotificationCenter.default.post(name: .weekBlocksPlanDidChange, object: nil)
@@ -604,7 +607,7 @@ final class RainbowBridge {
                                            options: .atomic)
             return true
         } catch {
-            print("❌ [RainbowBridge] \(folder) 백업 실패: \(error)")
+            AppLog.sync.trace("❌ [RainbowBridge] \(folder) 백업 실패: \(error)")
             return false
         }
     }

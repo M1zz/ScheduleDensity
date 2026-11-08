@@ -192,16 +192,12 @@ private struct SharedEventRow: View {
     }
 
     private var dateRangeText: String {
-        let f = DateFormatter()
-        f.locale = Locale.autoupdatingCurrent
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        f.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        let start = f.string(from: event.startDate)
+        let start = event.startDate.formatted(template: "MMMd")
         if event.isInfinite {
             return String(localized: "\(start)부터 계속")
         }
-        let end = f.string(from: event.endDate)
+        let end = event.endDate.formatted(template: "MMMd")
         return start == end ? start : "\(start) ~ \(end)"
     }
 }

@@ -77,12 +77,15 @@ extension Date {
         return calendar.date(from: newComponents) ?? self
     }
     
-    // 날짜 포맷팅
+    /// 형식(`"yyyy-MM-dd"` 같은)으로 적는다. 포맷터는 형식마다 하나를 다시 쓴다 (→ `DateTextCache`).
     func formatted(_ format: String) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
-        formatter.dateFormat = format
-        return formatter.string(from: self)
+        DateTextCache.formatter(format: format).string(from: self)
+    }
+
+    /// 템플릿(`"MMMdE"` 같은)으로 적는다. 낱말과 순서는 기기 언어가 정한다.
+    /// 형식을 손으로 적지 않을 때는 늘 이것을 쓴다.
+    func formatted(template: String) -> String {
+        DateTextCache.formatter(template: template).string(from: self)
     }
     
     // 주차 표시 (예: "3월 1주차", "Mar, week 1")
@@ -116,5 +119,35 @@ extension Calendar {
         }
         
         return slots
+    }
+}
+
+// MARK: - 날짜 글자의 포맷터
+
+/// **형식마다 포맷터 하나.** `DateFormatter` 는 만드는 값이 비싸다(로케일 · 달력 자료를 읽는다).
+/// 무지개 · 차트는 칸마다 날짜를 적으므로, 그릴 때마다 새로 만들면 스크롤하는 내내 그 값이 든다.
+///
+/// ⚠️ 로케일은 `.autoupdatingCurrent` 라 기기 언어를 바꿔도 따라간다(언어를 바꾸면 앱이 다시 뜬다).
+/// ⚠️ `NSCache` 는 여러 스레드에서 불러도 안전하고, `string(from:)` 도 그렇다.
+private enum DateTextCache {
+    private static let cache = NSCache<NSString, DateFormatter>()
+
+    static func formatter(format: String) -> DateFormatter {
+        cached("f|" + format) { format }
+    }
+
+    static func formatter(template: String) -> DateFormatter {
+        cached("t|" + template) {
+            DateFormatter.dateFormat(fromTemplate: template, options: 0, locale: .autoupdatingCurrent) ?? template
+        }
+    }
+
+    private static func cached(_ key: String, format: () -> String) -> DateFormatter {
+        if let hit = cache.object(forKey: key as NSString) { return hit }
+        let formatter = DateFormatter()
+        formatter.locale = .autoupdatingCurrent
+        formatter.dateFormat = format()
+        cache.setObject(formatter, forKey: key as NSString)
+        return formatter
     }
 }

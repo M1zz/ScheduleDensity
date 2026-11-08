@@ -52,3 +52,15 @@ enum AppLog {
         return try await work()
     }
 }
+
+extension Logger {
+    /// 따라가 보려고 남기는 한 줄(예전의 `print`). **디버그 빌드에서만 남고, 출시 빌드에서는 글자도 만들지 않는다**
+    /// (메시지가 `@autoclosure`). 출시 빌드에서 남겨야 하는 일은 `warning` · `error` 로 따로 적는다.
+    /// ⚠️ 사람이 적은 글자가 섞일 수 있어 기본값(private)으로 둔다.
+    func trace(_ message: @autoclosure () -> String) {
+        #if DEBUG
+        let text = message()
+        debug("\(text)")
+        #endif
+    }
+}

@@ -47,9 +47,9 @@ class DensityCalculator {
         // 디버그: 중복 확인
         let uniqueColors = Set(activeEvents.map { $0.color })
         if activeEvents.count != uniqueColors.count {
-            print("⚠️ [DensityCalculator] 중복 색상 발견! 날짜: \(checkDate), 이벤트 수: \(activeEvents.count), 고유 색상 수: \(uniqueColors.count)")
+            AppLog.schedule.trace("⚠️ [DensityCalculator] 중복 색상 발견! 날짜: \(checkDate), 이벤트 수: \(activeEvents.count), 고유 색상 수: \(uniqueColors.count)")
             for event in activeEvents {
-                print("   - \(event.title): \(event.color)")
+                AppLog.schedule.trace("   - \(event.title): \(event.color)")
             }
         }
 

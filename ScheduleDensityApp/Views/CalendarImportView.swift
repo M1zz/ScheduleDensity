@@ -503,14 +503,10 @@ struct CalendarImportView: View {
     }
 
     private func formatDateRange(_ event: Event) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
 
-        let start = formatter.string(from: event.startDate)
-        let end = formatter.string(from: event.endDate)
+        let start = event.startDate.formatted(template: "Md")
+        let end = event.endDate.formatted(template: "Md")
 
         if start == end {
             return start

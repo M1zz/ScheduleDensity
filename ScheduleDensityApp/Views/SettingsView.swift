@@ -1401,12 +1401,12 @@ struct SettingsView: View {
         let events = viewModel.fetchEvents()
 
         // 1단계: iCloud 데이터 전체 삭제 (로컬과 동기화)
-        print("🗑️ [SettingsView] Deleting all iCloud events before backup...")
+        AppLog.ui.trace("🗑️ [SettingsView] Deleting all iCloud events before backup...")
         cloudKitManager.deleteAllEvents { deleteResult in
             DispatchQueue.main.async {
                 switch deleteResult {
                 case .success:
-                    print("✅ [SettingsView] iCloud data cleared")
+                    AppLog.ui.trace("✅ [SettingsView] iCloud data cleared")
 
                     guard !events.isEmpty else {
                         // 데이터가 없어도 설정은 저장
@@ -1421,7 +1421,7 @@ struct SettingsView: View {
 
                     // 2단계: 로컬 데이터를 iCloud에 업로드
                     syncProgressText = String(localized: "\(events.count)개 일정 백업 중...")
-                    print("📤 [SettingsView] Uploading \(events.count) events to iCloud...")
+                    AppLog.ui.trace("📤 [SettingsView] Uploading \(events.count) events to iCloud...")
 
                     // CloudKit에 저장
                     cloudKitManager.saveEvents(events, progress: { saved, total in
@@ -1512,12 +1512,12 @@ struct SettingsView: View {
         let events = viewModel.fetchEvents()
 
         // 1단계: iCloud 데이터 전체 삭제 (로컬과 동기화)
-        print("🗑️ [SettingsView] Manual backup: Deleting all iCloud events...")
+        AppLog.ui.trace("🗑️ [SettingsView] Manual backup: Deleting all iCloud events...")
         cloudKitManager.deleteAllEvents { deleteResult in
             DispatchQueue.main.async {
                 switch deleteResult {
                 case .success:
-                    print("✅ [SettingsView] iCloud data cleared")
+                    AppLog.ui.trace("✅ [SettingsView] iCloud data cleared")
 
                     guard !events.isEmpty else {
                         // 로컬 데이터가 없으면 iCloud도 비워진 상태로 완료
@@ -1531,7 +1531,7 @@ struct SettingsView: View {
 
                     // 2단계: 로컬 데이터를 iCloud에 업로드
                     syncProgressText = String(localized: "\(events.count)개 일정 백업 중...")
-                    print("📤 [SettingsView] Manual backup: Uploading \(events.count) events to iCloud...")
+                    AppLog.ui.trace("📤 [SettingsView] Manual backup: Uploading \(events.count) events to iCloud...")
 
                     // CloudKit에 저장
                     cloudKitManager.saveEvents(events, progress: { saved, total in
@@ -1642,7 +1642,7 @@ struct SettingsView: View {
                     }
 
                     // 1단계: 로컬 데이터 전체 삭제 (iCloud와 동기화)
-                    print("🗑️ [SettingsView] Deleting all local events before restore...")
+                    AppLog.ui.trace("🗑️ [SettingsView] Deleting all local events before restore...")
                     let localEvents = viewModel.fetchEvents()
                     for event in localEvents {
                         // 로컬만 삭제 (CloudKit은 삭제하지 않음)
@@ -1652,13 +1652,13 @@ struct SettingsView: View {
 
                     do {
                         try viewModel.modelContext?.save()
-                        print("✅ [SettingsView] Local data cleared: \(localEvents.count) events deleted")
+                        AppLog.ui.trace("✅ [SettingsView] Local data cleared: \(localEvents.count) events deleted")
                     } catch {
-                        print("❌ [SettingsView] Failed to clear local data: \(error)")
+                        AppLog.ui.trace("❌ [SettingsView] Failed to clear local data: \(error)")
                     }
 
                     // 2단계: iCloud 데이터로 완전히 교체
-                    print("📥 [SettingsView] Restoring \(events.count) events from iCloud...")
+                    AppLog.ui.trace("📥 [SettingsView] Restoring \(events.count) events from iCloud...")
                     for event in events {
                         // addEvent를 사용하되, CloudKit 동기화는 건너뛰도록 임시로 동기화 OFF
                         let wasSyncEnabled = syncSettings.isSyncEnabled
@@ -1679,7 +1679,7 @@ struct SettingsView: View {
 
                     // 화면 즉시 새로고침 트리거
                     viewModel.dataRefreshTrigger = UUID()
-                    print("🔄 [SettingsView] Triggering UI refresh after restore")
+                    AppLog.ui.trace("🔄 [SettingsView] Triggering UI refresh after restore")
 
                     syncAlertTitle = String(localized: "복원 성공")
                     syncAlertMessage = String(localized: "\(events.count)개의 일정이 iCloud에서 복원되었습니다.\n로컬 데이터가 iCloud와 동기화되었습니다.")
@@ -1727,12 +1727,8 @@ struct SettingsView: View {
     }
 
     private func formatDateShort(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "Md", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "Md")
     }
 }
 

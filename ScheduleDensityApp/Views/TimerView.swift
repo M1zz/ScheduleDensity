@@ -602,11 +602,7 @@ enum TimerStarter {
 
 /// "14:35". 타이머가 말하는 시각은 늘 이 모양이다.
 func formatClockTime(_ date: Date) -> String {
-    let f = DateFormatter()
-    f.locale = Locale.autoupdatingCurrent
-    f.dateFormat = DateFormatter.dateFormat(fromTemplate: "jm", options: 0,
-                                            locale: .autoupdatingCurrent)
-    return f.string(from: date)
+    return date.formatted(template: "jm")
 }
 
 // MARK: - 한 번은 반드시 묻는 자리

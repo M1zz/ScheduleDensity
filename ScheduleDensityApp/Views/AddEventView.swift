@@ -98,376 +98,19 @@ struct AddEventView: View {
 
                 periodSection
 
-                // 요일 선택 섹션
-                Section {
-                    VStack(alignment: .leading, spacing: 16) {
-                        // 패턴 모드 토글
-                        Toggle(isOn: $useAdvancedPattern) {
-                            HStack {
-                                Image(systemName: useAdvancedPattern ? "calendar.badge.clock" : "calendar")
-                                    .foregroundColor(.blue)
-                                Text(useAdvancedPattern ? "5주 패턴 모드" : "간단한 요일 선택")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                            }
-                        }
-                        .onChange(of: useAdvancedPattern) { _, newValue in
-                            if newValue {
-                                // 간단한 모드 -> 고급 모드: weekdays를 pattern으로 변환
-                                convertWeekdaysToPattern()
-                            } else {
-                                // 고급 모드 -> 간단한 모드: pattern을 weekdays로 변환
-                                convertPatternToWeekdays()
-                            }
-                            updateAnalysis()
-                        }
+                weekdaySection
 
-                        Divider()
-
-                        if useAdvancedPattern {
-                            // 5×7 그리드 패턴
-                            advancedPatternView
-                        } else {
-                            // 간단한 요일 선택
-                            simpleWeekdayView
-                        }
-                    }
-                    .id(Self.activeDaysFieldID)
-                    .spotlightAnchor(guideStep == .activeDays)
-                    .padding(.vertical, 8)
-                } header: {
-                    Text("시간 쓰는 날")
-                } footer: {
-                    Text(useAdvancedPattern
-                        ? "5주 단위로 반복되는 패턴을 설정하세요. 격주 스터디처럼 홀수/짝수 주가 다른 일도 적을 수 있습니다."
-                        : "기간 안에서 실제로 시간을 쓰는 요일만 고르세요. 고르지 않은 날도 기간 안이면 무지개에 옅게 남습니다.")
-                }
-
-                // 맥에서 적은 회차 — 여기서는 보기만 한다. 회차가 있으면 요일 대신 이 날들만 진하게 선다.
-                if let event = eventToEdit, !event.sessions.isEmpty {
-                    Section {
-                        ForEach(Array(event.sessions.enumerated()), id: \.element.id) { i, session in
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    Text(session.displayTitle(index: i)).font(.body.weight(.semibold))
-                                    Spacer()
-                                    Text(RainbowEvent.day(session.date).formatted(.dateTime.month().day().weekday()))
-                                        .font(.body)
-                                        .foregroundStyle(.secondary)
-                                }
-                                Text((session.timeRangeText ?? hourText(session.hours)) + (session.note.isEmpty ? "" : " · \(session.note)"))
-                                    .font(.body)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    } header: {
-                        Text("회차")
-                    } footer: {
-                        Text("회차는 맥에서 고칩니다. 회차가 있으면 요일 대신 이 날들만 진하게 섭니다.")
-                    }
-                }
+                sessionsSection
 
                 hoursSection
 
-                // 중요도 선택 섹션
-                Section {
-                    Picker("중요도", selection: $importance) {
-                        ForEach(EventImportance.allCases, id: \.self) { imp in
-                            Text(imp.displayName).tag(imp)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .onChange(of: importance) { _, _ in
-                        showRecommendations = false
-                    }
+                importanceSection
 
-                    HStack(spacing: 8) {
-                        importanceIcon(importance)
-                        Text(importanceDescription(importance))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text("중요도")
-                } footer: {
-                    Text("높은 중요도는 빠른 날짜를, 낮은 중요도는 여유로운 날짜를 추천합니다")
-                }
+                exceptionsSection
 
-                // 예외 날짜 섹션
-                Section {
-                    Button(action: {
-                        showingExceptionDatePicker = true
-                    }) {
-                        HStack {
-                            Image(systemName: "calendar.badge.minus")
-                            Text("예외 날짜 추가")
-                            Spacer()
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
-                        }
-                    }
+                recommendationSection
 
-                    // 미래 예외
-                    if !futureExceptions.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("예정된 예외")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-
-                            ForEach(futureExceptions, id: \.self) { date in
-                                HStack {
-                                    Image(systemName: "calendar.badge.minus")
-                                        .foregroundColor(.orange)
-                                    Text(formatDateShort(date))
-                                        .font(.subheadline)
-                                    Spacer()
-                                    Button(action: {
-                                        removeException(date)
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.red)
-                                    }
-                                    .accessibilityLabel("\(formatDateShort(date)) 제외 해제")
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
-                    }
-
-                    // 과거 예외 (편집 모드에서만)
-                    if eventToEdit != nil && !pastExceptions.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("과거 예외 (30일 후 자동 삭제)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-
-                            ForEach(pastExceptions, id: \.self) { date in
-                                HStack {
-                                    Image(systemName: "calendar.badge.minus")
-                                        .foregroundColor(.gray)
-                                    Text(formatDateShort(date))
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Spacer()
-                                    Text("지남")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
-                    }
-                } header: {
-                    Text("예외 날짜")
-                } footer: {
-                    Text("특정 날짜를 일정에서 제외합니다. 과거 예외는 30일 후 자동 삭제됩니다.")
-                }
-                .sheet(isPresented: $showingExceptionDatePicker) {
-                    NavigationStack {
-                        VStack {
-                            DatePicker("날짜 선택", selection: $newExceptionDate,
-                                      in: startDate...endDate,
-                                      displayedComponents: .date)
-                                .datePickerStyle(.graphical)
-                                .padding()
-                            Spacer()
-                        }
-                        .navigationTitle("예외 날짜 추가")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button("취소") {
-                                    showingExceptionDatePicker = false
-                                }
-                            }
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("추가") {
-                                    addException(newExceptionDate)
-                                    showingExceptionDatePicker = false
-                                }
-                                .disabled(!canAddException(newExceptionDate))
-                            }
-                        }
-                    }
-                }
-
-                // 추천 날짜 섹션 (새 일정 추가 시에만)
-                if eventToEdit == nil {
-                    Section {
-                        Button(action: {
-                            generateRecommendations()
-                        }) {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                Text("최적의 날짜 추천받기")
-                                Spacer()
-                                if showRecommendations {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.green)
-                                }
-                            }
-                        }
-
-                        if showRecommendations && !recommendations.isEmpty {
-                            ForEach(recommendations.prefix(5), id: \.startDate) { slot in
-                                Button(action: {
-                                    startDate = slot.startDate
-                                    endDate = slot.endDate
-                                    updateAnalysis()
-                                }) {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack {
-                                            Text("\(formatDateShort(slot.startDate)) ~ \(formatDateShort(slot.endDate))")
-                                                .fontWeight(.medium)
-                                            Spacer()
-                                            Text(String(format: String(localized: "%.0f점"), slot.score))
-                                                .font(.caption)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 2)
-                                                // 초록·주황 위의 흰 글씨는 대비가 모자랐다 — 옅은 바탕에 본문 글자색.
-                                                .background(scoreColor(slot.score).opacity(0.25))
-                                                .foregroundColor(.primary)
-                                                .cornerRadius(4)
-                                        }
-
-                                        HStack(spacing: 12) {
-                                            // 고를 때 봐야 하는 숫자는 '지금 얼마나 비었나'가 아니라
-                                            // '넣고 나면 얼마나 차나'다. 80%를 넘기면 예상 못한 일
-                                            // 하나에 그 날이 무너진다 (→ LoadLevel).
-                                            Label(String(localized: "넣으면 \(Int((slot.projectedUtilization * 100).rounded()))%"),
-                                                  systemImage: "speedometer")
-                                                .font(.caption)
-                                                .foregroundColor(utilizationColor(slot.projectedUtilization))
-
-                                            Label(String(format: String(localized: "%.1fh 여유"), max(0, slot.availableHours - hoursPerDay)),
-                                                  systemImage: "leaf")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-
-                                            let daysFromNow = Calendar.current.dateComponents([.day], from: Date(), to: slot.startDate).day ?? 0
-                                            Label("\(daysFromNow)일 후", systemImage: "calendar")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                    .padding(.vertical, 4)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        } else if showRecommendations && recommendations.isEmpty {
-                            Text("추천 가능한 날짜가 없습니다")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    } header: {
-                        Text("🤖 AI 추천")
-                    } footer: {
-                        if showRecommendations && !recommendations.isEmpty {
-                            Text("가장 한가한 날이 아니라, 넣고 나서도 여유가 남는 날을 먼저 올립니다.\n하루가 80% 넘게 차면 예상 못한 일 하나에 그 날 전체가 밀립니다. 그 위로는 감점된 추천이니, 굳이 넣어야 할 때만 고르세요.")
-                        }
-                    }
-                }
-
-                // 과부하 분석 정보 섹션
-                if let analysis = periodAnalysis, endDate >= startDate {
-                    Section {
-                        VStack(alignment: .leading, spacing: 12) {
-                            // 총 기간
-                            HStack {
-                                Image(systemName: "calendar")
-                                    .foregroundColor(.blue)
-                                Text("총 기간")
-                                Spacer()
-                                Text("\(analysis.totalDays)일")
-                                    .fontWeight(.semibold)
-                            }
-
-                            Divider()
-
-                            // 최대 겹치는 일정 수
-                            HStack {
-                                Image(systemName: "rectangle.stack")
-                                    .foregroundColor(analysis.maxOverlappingEvents >= 3 ? .red : .orange)
-                                Text("최대 겹치는 일정")
-                                Spacer()
-                                Text("\(analysis.maxOverlappingEvents)개")
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(analysis.maxOverlappingEvents >= 3 ? .red : .primary)
-                            }
-
-                            // 가장 바쁜 날 (개수 기준)
-                            if let busiestDate = analysis.busiestDate, analysis.busiestDateEventCount > 0 {
-                                HStack {
-                                    Image(systemName: "exclamationmark.triangle.fill")
-                                        .foregroundColor(.orange)
-                                    Text("가장 바쁜 날")
-                                    Spacer()
-                                    VStack(alignment: .trailing, spacing: 2) {
-                                        Text(formatDate(busiestDate))
-                                            .fontWeight(.semibold)
-                                        Text("\(analysis.busiestDateEventCount)개 일정")
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                            }
-
-                            Divider()
-
-                            // 최대 하루 소요시간
-                            HStack {
-                                Image(systemName: "clock.fill")
-                                    .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : analysis.maxHoursPerDay > 8 ? .orange : .green)
-                                Text("하루 최대 소요시간")
-                                Spacer()
-                                Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : .primary)
-                            }
-
-                            // 시간 기준 가장 바쁜 날
-                            if let busiestDateByHours = analysis.busiestDateByHours, analysis.maxHoursPerDay > 0 {
-                                HStack {
-                                    Image(systemName: "flame.fill")
-                                        .foregroundColor(.red)
-                                    Text("가장 과부하된 날")
-                                    Spacer()
-                                    VStack(alignment: .trailing, spacing: 2) {
-                                        Text(formatDate(busiestDateByHours))
-                                            .fontWeight(.semibold)
-                                        Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                            }
-
-                            // 경고 메시지
-                            if analysis.maxHoursPerDay > 12 {
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "exclamationmark.circle.fill")
-                                        .foregroundColor(.red)
-                                    Text("하루 12시간 이상 일정이 배정되어 있습니다. 일정 조정을 권장합니다.")
-                                        .font(.caption)
-                                        .foregroundColor(.red)
-                                }
-                                .padding(.top, 4)
-                            } else if analysis.maxOverlappingEvents >= 3 {
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "exclamationmark.circle.fill")
-                                        .foregroundColor(.orange)
-                                    Text("3개 이상의 일정이 겹치는 날이 있습니다.")
-                                        .font(.caption)
-                                        .foregroundColor(.orange)
-                                }
-                                .padding(.top, 4)
-                            }
-                        }
-                    } header: {
-                        Text("📊 과부하 분석")
-                    }
-                }
+                analysisSection
 
                 Section {
                     Text("시작일부터 종료일까지가 이 일정에 매여 있는 기간이고, 그중 고른 날에만 시간이 실제로 들어갑니다.")
@@ -543,12 +186,12 @@ struct AddEventView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("취소") {
-                        print("🚫 [AddEventView] 취소 버튼 클릭")
+                        AppLog.ui.trace("🚫 [AddEventView] 취소 버튼 클릭")
                         viewModel.eventToEdit = nil  // 취소 시 초기화
                         viewModel.lastAddedEventDate = nil  // 취소 시 스크롤 위치 초기화
-                        print("🚫 [AddEventView] lastAddedEventDate = nil 설정")
+                        AppLog.ui.trace("🚫 [AddEventView] lastAddedEventDate = nil 설정")
                         dismiss()
-                        print("🚫 [AddEventView] dismiss() 호출")
+                        AppLog.ui.trace("🚫 [AddEventView] dismiss() 호출")
                     }
                 }
 
@@ -634,6 +277,403 @@ struct AddEventView: View {
 
     // MARK: - 화면 조각
     // (한 덩어리로 두면 타입 체커가 감당을 못 해 빌드가 멈춘다.)
+
+    // MARK: - 칸
+    //
+    // ⚠️ 폼의 칸은 하나씩 속성으로 둔다. `body` 한 식에 다 있으면 타입 검사가 한 덩어리로 0.4초 걸렸다.
+
+    /// 시간 쓰는 날 — 간단한 요일 · 5주 패턴.
+    @ViewBuilder
+    private var weekdaySection: some View {
+        // 요일 선택 섹션
+        Section {
+            VStack(alignment: .leading, spacing: 16) {
+                // 패턴 모드 토글
+                Toggle(isOn: $useAdvancedPattern) {
+                    HStack {
+                        Image(systemName: useAdvancedPattern ? "calendar.badge.clock" : "calendar")
+                            .foregroundColor(.blue)
+                        Text(useAdvancedPattern ? "5주 패턴 모드" : "간단한 요일 선택")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                }
+                .onChange(of: useAdvancedPattern) { _, newValue in
+                    if newValue {
+                        // 간단한 모드 -> 고급 모드: weekdays를 pattern으로 변환
+                        convertWeekdaysToPattern()
+                    } else {
+                        // 고급 모드 -> 간단한 모드: pattern을 weekdays로 변환
+                        convertPatternToWeekdays()
+                    }
+                    updateAnalysis()
+                }
+
+                Divider()
+
+                if useAdvancedPattern {
+                    // 5×7 그리드 패턴
+                    advancedPatternView
+                } else {
+                    // 간단한 요일 선택
+                    simpleWeekdayView
+                }
+            }
+            .id(Self.activeDaysFieldID)
+            .spotlightAnchor(guideStep == .activeDays)
+            .padding(.vertical, 8)
+        } header: {
+            Text("시간 쓰는 날")
+        } footer: {
+            Text(useAdvancedPattern
+                ? "5주 단위로 반복되는 패턴을 설정하세요. 격주 스터디처럼 홀수/짝수 주가 다른 일도 적을 수 있습니다."
+                : "기간 안에서 실제로 시간을 쓰는 요일만 고르세요. 고르지 않은 날도 기간 안이면 무지개에 옅게 남습니다.")
+        }
+    }
+
+    /// 맥에서 적은 회차(보기만).
+    @ViewBuilder
+    private var sessionsSection: some View {
+        // 맥에서 적은 회차 — 여기서는 보기만 한다. 회차가 있으면 요일 대신 이 날들만 진하게 선다.
+        if let event = eventToEdit, !event.sessions.isEmpty {
+            Section {
+                ForEach(Array(event.sessions.enumerated()), id: \.element.id) { i, session in
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack {
+                            Text(session.displayTitle(index: i)).font(.body.weight(.semibold))
+                            Spacer()
+                            Text(RainbowEvent.day(session.date).formatted(.dateTime.month().day().weekday()))
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text((session.timeRangeText ?? hourText(session.hours)) + (session.note.isEmpty ? "" : " · \(session.note)"))
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text("회차")
+            } footer: {
+                Text("회차는 맥에서 고칩니다. 회차가 있으면 요일 대신 이 날들만 진하게 섭니다.")
+            }
+        }
+    }
+
+    /// 중요도.
+    @ViewBuilder
+    private var importanceSection: some View {
+        // 중요도 선택 섹션
+        Section {
+            Picker("중요도", selection: $importance) {
+                ForEach(EventImportance.allCases, id: \.self) { imp in
+                    Text(imp.displayName).tag(imp)
+                }
+            }
+            .pickerStyle(.segmented)
+            .onChange(of: importance) { _, _ in
+                showRecommendations = false
+            }
+
+            HStack(spacing: 8) {
+                importanceIcon(importance)
+                Text(importanceDescription(importance))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.vertical, 4)
+        } header: {
+            Text("중요도")
+        } footer: {
+            Text("높은 중요도는 빠른 날짜를, 낮은 중요도는 여유로운 날짜를 추천합니다")
+        }
+    }
+
+    /// 예외 날짜.
+    @ViewBuilder
+    private var exceptionsSection: some View {
+        // 예외 날짜 섹션
+        Section {
+            Button(action: {
+                showingExceptionDatePicker = true
+            }) {
+                HStack {
+                    Image(systemName: "calendar.badge.minus")
+                    Text("예외 날짜 추가")
+                    Spacer()
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(.blue)
+                }
+            }
+
+            // 미래 예외
+            if !futureExceptions.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("예정된 예외")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    ForEach(futureExceptions, id: \.self) { date in
+                        HStack {
+                            Image(systemName: "calendar.badge.minus")
+                                .foregroundColor(.orange)
+                            Text(formatDateShort(date))
+                                .font(.subheadline)
+                            Spacer()
+                            Button(action: {
+                                removeException(date)
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundColor(.red)
+                            }
+                            .accessibilityLabel("\(formatDateShort(date)) 제외 해제")
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+
+            // 과거 예외 (편집 모드에서만)
+            if eventToEdit != nil && !pastExceptions.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("과거 예외 (30일 후 자동 삭제)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    ForEach(pastExceptions, id: \.self) { date in
+                        HStack {
+                            Image(systemName: "calendar.badge.minus")
+                                .foregroundColor(.gray)
+                            Text(formatDateShort(date))
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("지남")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+        } header: {
+            Text("예외 날짜")
+        } footer: {
+            Text("특정 날짜를 일정에서 제외합니다. 과거 예외는 30일 후 자동 삭제됩니다.")
+        }
+        .sheet(isPresented: $showingExceptionDatePicker) {
+            NavigationStack {
+                VStack {
+                    DatePicker("날짜 선택", selection: $newExceptionDate,
+                              in: startDate...endDate,
+                              displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .padding()
+                    Spacer()
+                }
+                .navigationTitle("예외 날짜 추가")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("취소") {
+                            showingExceptionDatePicker = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("추가") {
+                            addException(newExceptionDate)
+                            showingExceptionDatePicker = false
+                        }
+                        .disabled(!canAddException(newExceptionDate))
+                    }
+                }
+            }
+        }
+    }
+
+    /// 추천 날짜 (새 일정일 때만).
+    @ViewBuilder
+    private var recommendationSection: some View {
+        // 추천 날짜 섹션 (새 일정 추가 시에만)
+        if eventToEdit == nil {
+            Section {
+                Button(action: {
+                    generateRecommendations()
+                }) {
+                    HStack {
+                        Image(systemName: "sparkles")
+                        Text("최적의 날짜 추천받기")
+                        Spacer()
+                        if showRecommendations {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
+                    }
+                }
+
+                if showRecommendations && !recommendations.isEmpty {
+                    ForEach(recommendations.prefix(5), id: \.startDate) { slot in
+                        Button(action: {
+                            startDate = slot.startDate
+                            endDate = slot.endDate
+                            updateAnalysis()
+                        }) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text("\(formatDateShort(slot.startDate)) ~ \(formatDateShort(slot.endDate))")
+                                        .fontWeight(.medium)
+                                    Spacer()
+                                    Text(String(format: String(localized: "%.0f점"), slot.score))
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 2)
+                                        // 초록·주황 위의 흰 글씨는 대비가 모자랐다 — 옅은 바탕에 본문 글자색.
+                                        .background(scoreColor(slot.score).opacity(0.25))
+                                        .foregroundColor(.primary)
+                                        .cornerRadius(4)
+                                }
+
+                                HStack(spacing: 12) {
+                                    // 고를 때 봐야 하는 숫자는 '지금 얼마나 비었나'가 아니라
+                                    // '넣고 나면 얼마나 차나'다. 80%를 넘기면 예상 못한 일
+                                    // 하나에 그 날이 무너진다 (→ LoadLevel).
+                                    Label(String(localized: "넣으면 \(Int((slot.projectedUtilization * 100).rounded()))%"),
+                                          systemImage: "speedometer")
+                                        .font(.caption)
+                                        .foregroundColor(utilizationColor(slot.projectedUtilization))
+
+                                    Label(String(format: String(localized: "%.1fh 여유"), max(0, slot.availableHours - hoursPerDay)),
+                                          systemImage: "leaf")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+
+                                    let daysFromNow = Calendar.current.dateComponents([.day], from: Date(), to: slot.startDate).day ?? 0
+                                    Label("\(daysFromNow)일 후", systemImage: "calendar")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } else if showRecommendations && recommendations.isEmpty {
+                    Text("추천 가능한 날짜가 없습니다")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            } header: {
+                Text("🤖 AI 추천")
+            } footer: {
+                if showRecommendations && !recommendations.isEmpty {
+                    Text("가장 한가한 날이 아니라, 넣고 나서도 여유가 남는 날을 먼저 올립니다.\n하루가 80% 넘게 차면 예상 못한 일 하나에 그 날 전체가 밀립니다. 그 위로는 감점된 추천이니, 굳이 넣어야 할 때만 고르세요.")
+                }
+            }
+        }
+    }
+
+    /// 과부하 분석.
+    @ViewBuilder
+    private var analysisSection: some View {
+        // 과부하 분석 정보 섹션
+        if let analysis = periodAnalysis, endDate >= startDate {
+            Section {
+                VStack(alignment: .leading, spacing: 12) {
+                    // 총 기간
+                    HStack {
+                        Image(systemName: "calendar")
+                            .foregroundColor(.blue)
+                        Text("총 기간")
+                        Spacer()
+                        Text("\(analysis.totalDays)일")
+                            .fontWeight(.semibold)
+                    }
+
+                    Divider()
+
+                    // 최대 겹치는 일정 수
+                    HStack {
+                        Image(systemName: "rectangle.stack")
+                            .foregroundColor(analysis.maxOverlappingEvents >= 3 ? .red : .orange)
+                        Text("최대 겹치는 일정")
+                        Spacer()
+                        Text("\(analysis.maxOverlappingEvents)개")
+                            .fontWeight(.semibold)
+                            .foregroundColor(analysis.maxOverlappingEvents >= 3 ? .red : .primary)
+                    }
+
+                    // 가장 바쁜 날 (개수 기준)
+                    if let busiestDate = analysis.busiestDate, analysis.busiestDateEventCount > 0 {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                            Text("가장 바쁜 날")
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(formatDate(busiestDate))
+                                    .fontWeight(.semibold)
+                                Text("\(analysis.busiestDateEventCount)개 일정")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
+                    Divider()
+
+                    // 최대 하루 소요시간
+                    HStack {
+                        Image(systemName: "clock.fill")
+                            .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : analysis.maxHoursPerDay > 8 ? .orange : .green)
+                        Text("하루 최대 소요시간")
+                        Spacer()
+                        Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
+                            .fontWeight(.semibold)
+                            .foregroundColor(analysis.maxHoursPerDay > 12 ? .red : .primary)
+                    }
+
+                    // 시간 기준 가장 바쁜 날
+                    if let busiestDateByHours = analysis.busiestDateByHours, analysis.maxHoursPerDay > 0 {
+                        HStack {
+                            Image(systemName: "flame.fill")
+                                .foregroundColor(.red)
+                            Text("가장 과부하된 날")
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text(formatDate(busiestDateByHours))
+                                    .fontWeight(.semibold)
+                                Text(String(format: String(localized: "%.1f시간"), analysis.maxHoursPerDay))
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
+                    // 경고 메시지
+                    if analysis.maxHoursPerDay > 12 {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundColor(.red)
+                            Text("하루 12시간 이상 일정이 배정되어 있습니다. 일정 조정을 권장합니다.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                        .padding(.top, 4)
+                    } else if analysis.maxOverlappingEvents >= 3 {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundColor(.orange)
+                            Text("3개 이상의 일정이 겹치는 날이 있습니다.")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+            } header: {
+                Text("📊 과부하 분석")
+            }
+        }
+    }
 
     private var titleSection: some View {
             Section {
@@ -943,21 +983,13 @@ struct AddEventView: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMdE", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "MMMdE")
     }
 
     private func formatDateShort(_ date: Date) -> String {
-        let formatter = DateFormatter()
         // 형식은 템플릿으로만 말한다 — 낱말과 순서는 기기 언어가 정한다.
-        formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMd", options: 0,
-                                                    locale: .autoupdatingCurrent)
-        formatter.locale = Locale.autoupdatingCurrent
-        return formatter.string(from: date)
+        return date.formatted(template: "MMMd")
     }
 
     // 요일 전체 이름 (1=일, 2=월, ...)
@@ -1039,7 +1071,7 @@ struct AddEventView: View {
         )
 
         showRecommendations = true
-        print("💡 [AddEvent] \(recommendations.count)개 추천 생성")
+        AppLog.ui.trace("💡 [AddEvent] \(recommendations.count)개 추천 생성")
     }
 
     // MARK: - Exception Helpers
