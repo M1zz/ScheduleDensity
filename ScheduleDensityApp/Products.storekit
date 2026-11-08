@@ -103,6 +103,26 @@
       "type": "Consumable"
     },
     {
+      "displayPrice": "8.99",
+      "familyShareable": false,
+      "internalID": "045FB1F4-8B2D-449E-A69E-DD64214F1DDC",
+      "localizations": [
+        {
+          "description": "다른 사람에게 Plus 를 선물합니다. 코드를 보내 주세요.",
+          "displayName": "무지개 Plus 선물",
+          "locale": "ko_KR"
+        },
+        {
+          "description": "Give Plus to someone else with a gift code.",
+          "displayName": "Gift Rainbow Plus",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.example.ScheduleDensityApp.gift.plus",
+      "referenceName": "Gift Plus",
+      "type": "Consumable"
+    },
+    {
       "displayPrice": "1.99",
       "familyShareable": false,
       "internalID": "1C9211E2-5F0A-4BC5-B198-49A0CF5C8710",
