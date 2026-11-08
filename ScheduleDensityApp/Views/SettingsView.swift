@@ -239,9 +239,152 @@ struct SettingsView: View {
                     Text("무지개, 할 일 쪼개기, 두 질문, 단계 순서는 값을 받지 않습니다. Plus와 Pro는 연 구독과 평생 중에서 고릅니다.")
                 }
 
-                Group {
-                    // 일정 관리 섹션
-                    Section {
+                // ⚠️ 첫 화면에는 **갈래 이름만** 세우고, 줄은 한 칸 안쪽 화면에 둔다(클립키보드와 같다).
+                //    예전에는 열여섯 칸의 줄이 한 화면에 이어져 있어서, 찾는 줄이 어디 있는지 모르면
+                //    끝까지 내려 봐야 했다. 갈래 화면은 아래 `// MARK: - 갈래 화면` 에 하나씩 있다.
+                Section {
+                    categoryRow("일정", systemImage: "calendar") { scheduleScreen }
+                    categoryRow("할 일", systemImage: "checklist") { todoScreen }
+                    categoryRow("타이머", systemImage: "timer") { timerScreen }
+                    categoryRow("통계", systemImage: "chart.bar.xaxis") { statsScreen }
+                } header: {
+                    Text("매일 쓰는 것")
+                }
+
+                Section {
+                    categoryRow("내 데이터", systemImage: "externaldrive") { dataScreen }
+                    categoryRow("사용법과 문의", systemImage: "questionmark.circle") { helpScreen }
+                    categoryRow("함께 쓰기", systemImage: "square.grid.2x2") { togetherScreen }
+                } header: {
+                    Text("데이터와 도움말")
+                }
+
+                // 사용자가 보는 설정의 맨 끝: 새로 생긴 것 · 앞으로 만들 기능 · 피드백.
+                Section {
+                    // 앞으로 만들 기능 — 원본은 ScheduleDensityAppRoadmap.swift
+                    // 업데이트 때 닫아 버린 안내를 다시 본다.
+                    Button {
+                        showingWhatsNew = true
+                    } label: {
+                        Label("새로 생긴 것", systemImage: "sparkles")
+                    }
+                    NavigationLink(LeeoRoadmapText.entry) { RoadmapScreen() }
+                    LeeoSupportSection<ScheduleDensityAppSpec>()
+                } header: {
+                    Text("지원")
+                }
+            }
+            .navigationTitle("설정")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                // 바꾸는 즉시 저장된다 — 고르고 나서 '저장'을 또 누르게 하지 않는다.
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("완료") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .alert(syncAlertTitle, isPresented: $showingSyncAlert) {
+            Button("확인", role: .cancel) { }
+        } message: {
+            Text(syncAlertMessage)
+        }
+        .sheet(isPresented: $showingEventManagement) {
+            EventManagementView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingUsageStats) {
+            UsageStatsView()
+        }
+        .sheet(isPresented: $showingStatistics) {
+            StatisticsView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingCalendarMirror) {
+            CalendarMirrorView()
+        }
+        .sheet(isPresented: $showingCalendarImport) {
+            CalendarImportView(viewModel: viewModel)
+        }
+        .sheet(item: $paywallFeature) { feature in
+            PaywallView(highlight: feature)
+        }
+        .sheet(isPresented: $showingGraduation) {
+            LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
+                await purchases.refresh()
+            }
+            .presentationDragIndicator(.visible)
+        }
+        .manageSubscriptionsSheet(isPresented: $managingSubscription)
+        .sheet(isPresented: $showingWhatsNew) {
+            WhatsNewView()
+                .presentationDragIndicator(.visible)
+        }
+        .offerCodeRedemption(isPresented: $redeemingCode) { _ in
+            Task {
+                await purchases.refresh()
+                if purchases.tier > .free { RainbowFunnel.reach(.purchased) }
+            }
+        }
+        .sheet(isPresented: $showingCategoryManager) {
+            // ⚠️ 이 설정 화면은 **일정 스토어**에서 돈다. 분류는 할 일 스토어에 있으므로
+            //    컨테이너를 붙여줘야 한다 — 안 붙이면 목록이 통째로 비어 보인다.
+            if let container = TodoEventBridge.shared.todoContainer {
+                CategoryManagerView()
+                    .modelContainer(container)
+            } else {
+                // 앱 진입 직후 다리가 아직 안 붙은 아주 짧은 순간. 빈 화면 대신 이유를 적는다.
+                ContentUnavailableView("잠시 뒤 다시 열어 주세요",
+                                       systemImage: "hourglass",
+                                       description: Text("할 일 저장소를 아직 준비하는 중입니다."))
+            }
+        }
+        .task { await purchases.refresh() }
+        .task { await loadSyncDiagnostics() }
+        .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
+            Button("취소", role: .cancel) { }
+            Button("삭제", role: .destructive) {
+                deleteiCloudData()
+            }
+        } message: {
+            Text("iCloud에 백업된 모든 일정 데이터를 삭제하시겠습니까?\n\n로컬 데이터는 유지되며, iCloud 백업만 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.")
+        }
+        .alert("일정 분산 적용", isPresented: $showingBalanceAlert) {
+            Button("취소", role: .cancel) { }
+            Button("적용", role: .destructive) {
+                applyScheduleBalance()
+            }
+        } message: {
+            Text("\(balanceSuggestions.count)개의 일정을 새로운 날짜로 이동하시겠습니까?\n\n이 작업은 일정의 시작/종료일을 변경합니다.")
+        }
+        .alert("샘플 데이터 추가", isPresented: $showingAddSampleAlert) {
+            Button("추가") {
+                viewModel.addSampleEvents()
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("5개의 샘플 일정을 추가하시겠습니까?\n(프로젝트 A, B, 출장, 교육 프로그램, 컨퍼런스)")
+        }
+        .confirmsEventDeletion($deletionRequest)
+    }
+
+    // MARK: - 갈래 화면
+    //
+    // ⚠️ 상태와 시트는 전부 이 화면(`SettingsView`)이 들고 있다. 갈래 화면은 같은 값을 쓰는
+    //    안쪽 목록일 뿐이라, 시트 · 알림이 어느 갈래에서 열려도 한 곳에서 뜬다.
+
+    private func categoryRow<Destination: View>(_ title: LocalizedStringKey, systemImage: String,
+                                                @ViewBuilder destination: () -> Destination) -> some View {
+        NavigationLink {
+            destination()
+        } label: {
+            Label(title, systemImage: systemImage)
+        }
+    }
+
+    /// 일정 — 일정 관리 · 캘린더 · 무지개에 그릴 것 · 달력 범위 · 일정 분산.
+    private var scheduleScreen: some View {
+        Form {
+                Section {
                     Button(action: {
                         showingEventManagement = true
                     }) {
@@ -264,58 +407,32 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
-
-                    // ⚠️ 사용 통계는 **무료다.** 이 화면 안에 '개발자에게 보낼까요'를
-                    //    묻는 줄이 있는데, 그걸 페이월 뒤에 두면 돈을 낸 사람에게만
-                    //    동의를 묻는 꼴이 된다. 동의는 파는 것이 아니다.
-                    Button(action: { showingUsageStats = true }) {
-                        HStack {
-                            Image(systemName: "flame")
-                                .foregroundColor(.orange)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("사용 통계")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text("꾸준함, 쪼개기 습관, 완주율, 어디에 시간이 갔나")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .scaledFont(size: 14, weight: .semibold)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.vertical, 4)
-                    }
-
                     Button(action: {
-                        // 잠긴 자리는 아무 일도 안 일어나게 두지 않는다 —
-                        // 왜 안 되는지 그 자리에서 말해준다.
-                        if purchases.allows(.statistics) { showingStatistics = true }
-                        else { paywallFeature = .statistics }
+                        viewModel.showingAddEvent = true
                     }) {
                         HStack {
-                            Image(systemName: "chart.bar.xaxis")
-                                .foregroundColor(.purple)
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
                                 .frame(width: 24)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("일정 통계")
+                                Text("일정 추가")
                                     .font(.headline)
                                     .foregroundColor(.primary)
-                                Text("전체 일정 분석 및 통계")
+                                Text("새로운 일정 만들기")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            if !purchases.allows(.statistics) { ProLockBadge(for: .statistics) }
                             Image(systemName: "chevron.right")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
+                }
 
+                // 캘린더 — 시스템 캘린더를 무지개에 비추거나 들여온다 (Pro).
+                Section {
                     Button(action: {
                         if purchases.allows(.calendarImport) { showingCalendarMirror = true }
                         else { paywallFeature = .calendarImport }
@@ -340,7 +457,6 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
-
                     Button(action: {
                         if purchases.allows(.calendarImport) { showingCalendarImport = true }
                         else { paywallFeature = .calendarImport }
@@ -365,84 +481,10 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                }
 
-                    Divider()
-
-                    Button(action: {
-                        viewModel.showingAddEvent = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("일정 추가")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text("새로운 일정 만들기")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .scaledFont(size: 14, weight: .semibold)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    Button(action: {
-                        showingAddSampleAlert = true
-                    }) {
-                        HStack {
-                            Image(systemName: "tray.and.arrow.down.fill")
-                                .foregroundColor(.orange)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("샘플 데이터 추가")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text("테스트용 샘플 일정 추가")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .scaledFont(size: 14, weight: .semibold)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    Button(action: {
-                        let events = viewModel.fetchEvents()
-                        deletionRequest = EventDeletionRequest(
-                            title: String(localized: "일정 \(events.count)개 삭제"),
-                            plan: viewModel.deletionPlan(for: events)
-                        ) { await viewModel.deleteAllEvents() }
-                    }) {
-                        HStack {
-                            Image(systemName: "trash.fill")
-                                .foregroundColor(.red)
-                                .frame(width: 24)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("모든 일정 삭제")
-                                    .font(.headline)
-                                    .foregroundColor(.red)
-                                Text("모든 일정을 삭제합니다")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .scaledFont(size: 14, weight: .semibold)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    Divider()
-
+                // 무지개에 무엇을 그릴지.
+                Section {
                     // 지나간 이벤트 보기 토글
                     Toggle(isOn: Binding(get: { viewModel.showPastEvents }, set: viewModel.updateShowPastEvents)) {
                         HStack(spacing: 8) {
@@ -536,107 +578,57 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
-
-                    // 무지개 사용법 다시 보기 — 첫 진입 온보딩을 처음부터 다시 띄운다.
-                    Button {
-                        hasSeenRainbowOnboarding = false
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "hand.tap")
-                                .foregroundColor(.blue)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("무지개 사용법 다시 보기")
-                                    .font(.headline)
-                                Text("꾹 눌러 일정 만드는 법을 처음부터 안내")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.vertical, 4)
-
-                    // 처음 안내 다시 보기 — 그림만 다시 본다. 집중 모드로 되돌리지 않는다.
-                    Button {
-                        showingTutorial = true
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "play.rectangle")
-                                .foregroundColor(.blue)
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("처음 안내 다시 보기")
-                                    .font(.headline)
-                                Text("적고 끝내는 법을 그림으로 다시 봅니다")
-                                    .font(.body)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.vertical, 4)
-                    .fullScreenCover(isPresented: $showingTutorial) {
-                        WelcomeTutorialView { _ in showingTutorial = false }
-                    }
-                } header: {
-                    Text("일정")
                 } footer: {
                     Text(viewModel.showPastEvents
                         ? "모든 일정(지나간 일정 포함)을 표시합니다."
                         : "종료일이 오늘 이전인 일정은 자동으로 숨겨집니다.")
                 }
 
-                // 타이머 섹션 — 끝날 때 알릴지 (→ TaskTimer.swift).
-                Section {
-                    Picker(selection: timerNotify) {
-                        Text(TimerNotifyPreference.always.label).tag(TimerNotifyPreference.always)
-                        Text(TimerNotifyPreference.never.label).tag(TimerNotifyPreference.never)
-                        Text(TimerNotifyPreference.ask.label).tag(TimerNotifyPreference.ask)
-                    } label: {
-                        Label("끝나면 알림", systemImage: "bell.badge")
-                    }
-
-                    // 줄을 치우는 자리. 줄에서 길게 눌러 숨긴 사람이 **되돌릴 곳**이기도 하다 —
-                    // 숨기기만 있고 되돌릴 데가 없으면 그건 치운 게 아니라 잃은 것이다.
-                    Picker(selection: timerBar) {
-                        ForEach(TimerBarVisibility.allCases, id: \.self) { option in
-                            Text(option.label).tag(option)
-                        }
-                    } label: {
-                        Label("탭 위 타이머 줄", systemImage: "rectangle.bottomthird.inset.filled")
-                    }
-
-                    // 한 시간이 넘는 숫자의 모양. 앱·아일랜드·위젯이 같이 따른다 (→ CountdownStyle).
-                    Picker(selection: Binding(get: { timer.countdownStyle },
-                                              set: { timer.setCountdownStyle($0) })) {
-                        ForEach(CountdownStyle.allCases, id: \.self) { style in
-                            Text(style.label).tag(style)
-                        }
-                    } label: {
-                        Label("남은 시간 표시", systemImage: "clock")
-                    }
-
-                    // 다이나믹 아일랜드·잠금화면의 타이머. 둘은 하나의 라이브 액티비티라 함께 켜지고 꺼진다.
-                    Toggle(isOn: Binding(get: { timer.showsLiveActivity },
-                                         set: { timer.setShowsLiveActivity($0) })) {
-                        Label("다이나믹 아일랜드에 보기", systemImage: "capsule.fill")
-                            // 새 타이머의 기본값이다. 이번 것만은 타이머 시트에서 바꾼다.
-                    }
-
-                    // 일정 15분 전에 다음 일정을 띄운다 (→ UpcomingTimer). 예약해서 띄우는 길은 iOS 26부터다.
-                    if UpcomingTimer.isSupported {
-                        Toggle(isOn: $showsUpcoming) {
-                            Label("일정 15분 전에 띄우기", systemImage: "clock.badge")
-                        }
-                        .onChange(of: showsUpcoming) {
-                            UpcomingTimer.reschedule(ScheduleClockStore.shared.slots)
+                Group {
+                    Section {
+                    Stepper(value: Binding(get: { viewModel.monthsToShow }, set: viewModel.updateMonthsToShow), in: 1...12) {
+                        HStack {
+                            Text("표시 기간")
+                            Spacer()
+                            Text("오늘 ± \(viewModel.monthsToShow)개월")
+                                .foregroundColor(.secondary)
                         }
                     }
 
+                    Text("오늘을 기준으로 과거 \(viewModel.monthsToShow)개월, 미래 \(viewModel.monthsToShow)개월의 일정을 표시합니다.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 } header: {
-                    Text("타이머")
-                } footer: {
-                    Text(timerFootnote)
+                    Text("달력 범위")
+                }
+
+                Section {
+                    HStack {
+                        Text("총 표시 일수")
+                        Spacer()
+                        Text("약 \(viewModel.monthsToShow * 60)일")
+                            .foregroundColor(.secondary)
+                    }
+                } header: {
+                    Text("정보")
+                }
+
+                Section {
+                    Stepper(value: Binding(get: { viewModel.sleepHoursPerDay }, set: viewModel.updateSleepHours), in: 0...24, step: 0.5) {
+                        HStack {
+                            Text("평균 수면시간")
+                            Spacer()
+                            Text(String(format: String(localized: "%.1f시간"), viewModel.sleepHoursPerDay))
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    Text("시간 분석에서 자유시간 중 수면시간을 별도로 표시합니다.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("수면 시간")
+                }
                 }
 
                 // 일정 분산 섹션
@@ -734,8 +726,233 @@ struct SettingsView: View {
                 } footer: {
                     Text("일정이 몰려있는 날짜를 감지하고, 자유시간과 중요도를 고려하여 자동으로 일정을 재배치합니다. 중요도가 낮은 일정만 이동됩니다.")
                 }
+        }
+        .navigationTitle("일정")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 할 일 — 분류 · 번개 · 조언.
+    private var todoScreen: some View {
+        Form {
+                Section {
+                    Button {
+                        showingCategoryManager = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "tag")
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("분류 만들기·고치기")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("할 일에 붙이는 분류의 이름·색·기호")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .scaledFont(size: 14, weight: .semibold)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("할 일")
+                } footer: {
+                    Text("할 일 상세 화면의 ‘분류’를 눌러서도 바로 만들 수 있습니다.")
                 }
 
+                // 번개(‘바로 하면 되는 일’) — 스와이프에서 글자를 뺐으므로, 그 아이콘이
+                // 무슨 뜻이었는지 잊었을 때 펴 볼 자리가 앱 안에 하나는 있어야 한다.
+                Section {
+                    // 덮어 씌우는 대신 밀어 넣는다. 설정 안의 다른 문들과 같은 손짓이다.
+                    NavigationLink {
+                        BoltMeaningView(eyebrow: String(localized: "할 일 목록의 번개"),
+                                        showsDoneButton: false) { }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "bolt.fill")
+                                .foregroundStyle(TodoView.nowGreen)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("번개가 뭔가요")
+                                    .font(.headline)
+                                Text("‘지금 바로 되는 일’ 표시 — 뜻과 쓰는 법")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Button {
+                        hasSeenBoltOnboarding = false
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.draw")
+                                .foregroundColor(.blue)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("번개 안내 다시 보기")
+                                    .font(.headline)
+                                Text("할 일 목록 맨 위에 안내 줄을 다시 세웁니다")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("번개")
+                }
+
+                Section {
+                    Button {
+                        TodoTips.resetAll()
+                        tipsResetDone = true
+                    } label: {
+                        Label(tipsResetDone ? "다시 보기로 바꿨습니다" : "할 일 조언 다시 보기",
+                              systemImage: tipsResetDone ? "checkmark.circle.fill" : "lightbulb")
+                    }
+                    .disabled(tipsResetDone)
+
+                    Text("할 일 화면에서 닫았던 조언(쪼개기·단계 크기 팁)을 처음부터 다시 봅니다.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("조언")
+                }
+        }
+        .navigationTitle("할 일")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 타이머 — 끝날 때 알림 · 줄 · 숫자 모양 · 잠금화면.
+    private var timerScreen: some View {
+        Form {
+                // 타이머 섹션 — 끝날 때 알릴지 (→ TaskTimer.swift).
+                Section {
+                    Picker(selection: timerNotify) {
+                        Text(TimerNotifyPreference.always.label).tag(TimerNotifyPreference.always)
+                        Text(TimerNotifyPreference.never.label).tag(TimerNotifyPreference.never)
+                        Text(TimerNotifyPreference.ask.label).tag(TimerNotifyPreference.ask)
+                    } label: {
+                        Label("끝나면 알림", systemImage: "bell.badge")
+                    }
+
+                    // 줄을 치우는 자리. 줄에서 길게 눌러 숨긴 사람이 **되돌릴 곳**이기도 하다 —
+                    // 숨기기만 있고 되돌릴 데가 없으면 그건 치운 게 아니라 잃은 것이다.
+                    Picker(selection: timerBar) {
+                        ForEach(TimerBarVisibility.allCases, id: \.self) { option in
+                            Text(option.label).tag(option)
+                        }
+                    } label: {
+                        Label("탭 위 타이머 줄", systemImage: "rectangle.bottomthird.inset.filled")
+                    }
+
+                    // 한 시간이 넘는 숫자의 모양. 앱·아일랜드·위젯이 같이 따른다 (→ CountdownStyle).
+                    Picker(selection: Binding(get: { timer.countdownStyle },
+                                              set: { timer.setCountdownStyle($0) })) {
+                        ForEach(CountdownStyle.allCases, id: \.self) { style in
+                            Text(style.label).tag(style)
+                        }
+                    } label: {
+                        Label("남은 시간 표시", systemImage: "clock")
+                    }
+
+                    // 다이나믹 아일랜드·잠금화면의 타이머. 둘은 하나의 라이브 액티비티라 함께 켜지고 꺼진다.
+                    Toggle(isOn: Binding(get: { timer.showsLiveActivity },
+                                         set: { timer.setShowsLiveActivity($0) })) {
+                        Label("다이나믹 아일랜드에 보기", systemImage: "capsule.fill")
+                            // 새 타이머의 기본값이다. 이번 것만은 타이머 시트에서 바꾼다.
+                    }
+
+                    // 일정 15분 전에 다음 일정을 띄운다 (→ UpcomingTimer). 예약해서 띄우는 길은 iOS 26부터다.
+                    if UpcomingTimer.isSupported {
+                        Toggle(isOn: $showsUpcoming) {
+                            Label("일정 15분 전에 띄우기", systemImage: "clock.badge")
+                        }
+                        .onChange(of: showsUpcoming) {
+                            UpcomingTimer.reschedule(ScheduleClockStore.shared.slots)
+                        }
+                    }
+
+                } header: {
+                    Text("타이머")
+                } footer: {
+                    Text(timerFootnote)
+                }
+        }
+        .navigationTitle("타이머")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 통계 — 사용 통계(무료) · 일정 통계(Plus).
+    private var statsScreen: some View {
+        Form {
+                Section {
+                    // ⚠️ 사용 통계는 **무료다.** 이 화면 안에 '개발자에게 보낼까요'를
+                    //    묻는 줄이 있는데, 그걸 페이월 뒤에 두면 돈을 낸 사람에게만
+                    //    동의를 묻는 꼴이 된다. 동의는 파는 것이 아니다.
+                    Button(action: { showingUsageStats = true }) {
+                        HStack {
+                            Image(systemName: "flame")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("사용 통계")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("꾸준함, 쪼개기 습관, 완주율, 어디에 시간이 갔나")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .scaledFont(size: 14, weight: .semibold)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    Button(action: {
+                        // 잠긴 자리는 아무 일도 안 일어나게 두지 않는다 —
+                        // 왜 안 되는지 그 자리에서 말해준다.
+                        if purchases.allows(.statistics) { showingStatistics = true }
+                        else { paywallFeature = .statistics }
+                    }) {
+                        HStack {
+                            Image(systemName: "chart.bar.xaxis")
+                                .foregroundColor(.purple)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("일정 통계")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("전체 일정 분석 및 통계")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            if !purchases.allows(.statistics) { ProLockBadge(for: .statistics) }
+                            Image(systemName: "chevron.right")
+                                .scaledFont(size: 14, weight: .semibold)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+
+        }
+        .navigationTitle("통계")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 내 데이터 — 백업 · 동기화 진단 · 샘플 · 모두 지우기.
+    private var dataScreen: some View {
+        Form {
                 // 적은 것을 잃지 않게 — 백업이 어디 몇 벌 있는지, 고른 벌에서 되살리기 (→ DataVault.swift).
                 VaultSettingsSection()
 
@@ -1004,66 +1221,19 @@ struct SettingsView: View {
                     Text("맥과 같은 계정이면 '계정 식별자'가 서로 같습니다.\n'맥에서 내려온 계획'이 0이면 iCloud에서 아무것도 안 내려온 것이고, '할 일 저장 위치'가 빨간 글씨면 이 기기에만 쌓이고 있는 것입니다.\n\n'세어 보기'는 iCloud에 실제로 올라가 있는 것을 셉니다. 어떤 타입이 0개면 그건 **아직 안 올라간** 것이고, 대개 CloudKit 콘솔에서 Development → Production 스키마를 배포하지 않아서입니다. 반대로 개수가 있는데 앱 목록이 비었다면 올라온 걸 **못 읽는** 것이라 다른 문제입니다.")
                 }
 
-                Group {
-                    Section {
-                    Stepper(value: Binding(get: { viewModel.monthsToShow }, set: viewModel.updateMonthsToShow), in: 1...12) {
-                        HStack {
-                            Text("표시 기간")
-                            Spacer()
-                            Text("오늘 ± \(viewModel.monthsToShow)개월")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
-                    Text("오늘을 기준으로 과거 \(viewModel.monthsToShow)개월, 미래 \(viewModel.monthsToShow)개월의 일정을 표시합니다.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } header: {
-                    Text("달력 범위")
-                }
-
                 Section {
-                    HStack {
-                        Text("총 표시 일수")
-                        Spacer()
-                        Text("약 \(viewModel.monthsToShow * 60)일")
-                            .foregroundColor(.secondary)
-                    }
-                } header: {
-                    Text("정보")
-                }
-
-                Section {
-                    Stepper(value: Binding(get: { viewModel.sleepHoursPerDay }, set: viewModel.updateSleepHours), in: 0...24, step: 0.5) {
+                    Button(action: {
+                        showingAddSampleAlert = true
+                    }) {
                         HStack {
-                            Text("평균 수면시간")
-                            Spacer()
-                            Text(String(format: String(localized: "%.1f시간"), viewModel.sleepHoursPerDay))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
-                    Text("시간 분석에서 자유시간 중 수면시간을 별도로 표시합니다.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } header: {
-                    Text("수면 시간")
-                }
-                }
-
-                Section {
-                    Button {
-                        showingCategoryManager = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "tag")
-                                .foregroundColor(.accentColor)
+                            Image(systemName: "tray.and.arrow.down.fill")
+                                .foregroundColor(.orange)
                                 .frame(width: 24)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("분류 만들기·고치기")
+                                Text("샘플 데이터 추가")
                                     .font(.headline)
                                     .foregroundColor(.primary)
-                                Text("할 일에 붙이는 분류의 이름·색·기호")
+                                Text("테스트용 샘플 일정 추가")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -1074,47 +1244,55 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
-                } header: {
-                    Text("할 일")
-                } footer: {
-                    Text("할 일 상세 화면의 ‘분류’를 눌러서도 바로 만들 수 있습니다.")
-                }
-
-                // 번개(‘바로 하면 되는 일’) — 스와이프에서 글자를 뺐으므로, 그 아이콘이
-                // 무슨 뜻이었는지 잊었을 때 펴 볼 자리가 앱 안에 하나는 있어야 한다.
-                Section {
-                    // 덮어 씌우는 대신 밀어 넣는다. 설정 안의 다른 문들과 같은 손짓이다.
-                    NavigationLink {
-                        BoltMeaningView(eyebrow: String(localized: "할 일 목록의 번개"),
-                                        showsDoneButton: false) { }
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "bolt.fill")
-                                .foregroundStyle(TodoView.nowGreen)
+                    Button(action: {
+                        let events = viewModel.fetchEvents()
+                        deletionRequest = EventDeletionRequest(
+                            title: String(localized: "일정 \(events.count)개 삭제"),
+                            plan: viewModel.deletionPlan(for: events)
+                        ) { await viewModel.deleteAllEvents() }
+                    }) {
+                        HStack {
+                            Image(systemName: "trash.fill")
+                                .foregroundColor(.red)
                                 .frame(width: 24)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("번개가 뭔가요")
+                                Text("모든 일정 삭제")
                                     .font(.headline)
-                                Text("‘지금 바로 되는 일’ 표시 — 뜻과 쓰는 법")
+                                    .foregroundColor(.red)
+                                Text("모든 일정을 삭제합니다")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .scaledFont(size: 14, weight: .semibold)
+                                .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
+                }
 
+        }
+        .navigationTitle("내 데이터")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 사용법과 문의 — 안내 다시 보기 · 개발자에게 문의.
+    private var helpScreen: some View {
+        Form {
+                Section {
+                    // 무지개 사용법 다시 보기 — 첫 진입 온보딩을 처음부터 다시 띄운다.
                     Button {
-                        hasSeenBoltOnboarding = false
+                        hasSeenRainbowOnboarding = false
                         dismiss()
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: "hand.draw")
+                            Image(systemName: "hand.tap")
                                 .foregroundColor(.blue)
-                                .frame(width: 24)
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("번개 안내 다시 보기")
+                                Text("무지개 사용법 다시 보기")
                                     .font(.headline)
-                                Text("할 일 목록 맨 위에 안내 줄을 다시 세웁니다")
+                                Text("꾹 눌러 일정 만드는 법을 처음부터 안내")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -1122,10 +1300,38 @@ struct SettingsView: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.vertical, 4)
-                } header: {
-                    Text("번개")
+                    // 처음 안내 다시 보기 — 그림만 다시 본다. 집중 모드로 되돌리지 않는다.
+                    Button {
+                        showingTutorial = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "play.rectangle")
+                                .foregroundColor(.blue)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("처음 안내 다시 보기")
+                                    .font(.headline)
+                                Text("적고 끝내는 법을 그림으로 다시 봅니다")
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 4)
+                    .fullScreenCover(isPresented: $showingTutorial) {
+                        WelcomeTutorialView { _ in showingTutorial = false }
+                    }
                 }
 
+                DeveloperContactSection()
+        }
+        .navigationTitle("사용법과 문의")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// 함께 쓰기 — 맥 '무지개 공방' · 같은 개발자의 다른 앱.
+    private var togetherScreen: some View {
+        Form {
                 // 맥 '무지개 공방' — 할 일이 쌓였을 때 한 주에 나눠 놓는 곳 (→ MacCompanionView.swift).
                 // 같은 사람이 만든 다른 앱들은 그 아래 한 줄로. 짝인 무지개 공방이 늘 먼저다
                 // (→ ScheduleDensityAppSpec.familyFeatured).
@@ -1161,131 +1367,9 @@ struct SettingsView: View {
                 } header: {
                     Text("함께 쓰기")
                 }
-
-                Section {
-                    Button {
-                        TodoTips.resetAll()
-                        tipsResetDone = true
-                    } label: {
-                        Label(tipsResetDone ? "다시 보기로 바꿨습니다" : "할 일 조언 다시 보기",
-                              systemImage: tipsResetDone ? "checkmark.circle.fill" : "lightbulb")
-                    }
-                    .disabled(tipsResetDone)
-
-                    Text("할 일 화면에서 닫았던 조언(쪼개기·단계 크기 팁)을 처음부터 다시 봅니다.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } header: {
-                    Text("조언")
-                }
-
-                Section {
-                    // 앞으로 만들 기능 — 원본은 ScheduleDensityAppRoadmap.swift
-                    // 업데이트 때 닫아 버린 안내를 다시 본다.
-                    Button {
-                        showingWhatsNew = true
-                    } label: {
-                        Label("새로 생긴 것", systemImage: "sparkles")
-                    }
-                    NavigationLink(LeeoRoadmapText.entry) { RoadmapScreen() }
-                    LeeoSupportSection<ScheduleDensityAppSpec>()
-                } header: {
-                    Text("지원")
-                }
-
-                DeveloperContactSection()
-            }
-            .navigationTitle("설정")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                // 바꾸는 즉시 저장된다 — 고르고 나서 '저장'을 또 누르게 하지 않는다.
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("완료") {
-                        dismiss()
-                    }
-                }
-            }
         }
-        .alert(syncAlertTitle, isPresented: $showingSyncAlert) {
-            Button("확인", role: .cancel) { }
-        } message: {
-            Text(syncAlertMessage)
-        }
-        .sheet(isPresented: $showingEventManagement) {
-            EventManagementView(viewModel: viewModel)
-        }
-        .sheet(isPresented: $showingUsageStats) {
-            UsageStatsView()
-        }
-        .sheet(isPresented: $showingStatistics) {
-            StatisticsView(viewModel: viewModel)
-        }
-        .sheet(isPresented: $showingCalendarMirror) {
-            CalendarMirrorView()
-        }
-        .sheet(isPresented: $showingCalendarImport) {
-            CalendarImportView(viewModel: viewModel)
-        }
-        .sheet(item: $paywallFeature) { feature in
-            PaywallView(highlight: feature)
-        }
-        .sheet(isPresented: $showingGraduation) {
-            LeeoGraduationOfferView(graduate: purchases.product(ProEntitlement.graduateID)) {
-                await purchases.refresh()
-            }
-            .presentationDragIndicator(.visible)
-        }
-        .manageSubscriptionsSheet(isPresented: $managingSubscription)
-        .sheet(isPresented: $showingWhatsNew) {
-            WhatsNewView()
-                .presentationDragIndicator(.visible)
-        }
-        .offerCodeRedemption(isPresented: $redeemingCode) { _ in
-            Task {
-                await purchases.refresh()
-                if purchases.tier > .free { RainbowFunnel.reach(.purchased) }
-            }
-        }
-        .sheet(isPresented: $showingCategoryManager) {
-            // ⚠️ 이 설정 화면은 **일정 스토어**에서 돈다. 분류는 할 일 스토어에 있으므로
-            //    컨테이너를 붙여줘야 한다 — 안 붙이면 목록이 통째로 비어 보인다.
-            if let container = TodoEventBridge.shared.todoContainer {
-                CategoryManagerView()
-                    .modelContainer(container)
-            } else {
-                // 앱 진입 직후 다리가 아직 안 붙은 아주 짧은 순간. 빈 화면 대신 이유를 적는다.
-                ContentUnavailableView("잠시 뒤 다시 열어 주세요",
-                                       systemImage: "hourglass",
-                                       description: Text("할 일 저장소를 아직 준비하는 중입니다."))
-            }
-        }
-        .task { await purchases.refresh() }
-        .task { await loadSyncDiagnostics() }
-        .alert("iCloud 데이터 삭제", isPresented: $showingDeleteiCloudAlert) {
-            Button("취소", role: .cancel) { }
-            Button("삭제", role: .destructive) {
-                deleteiCloudData()
-            }
-        } message: {
-            Text("iCloud에 백업된 모든 일정 데이터를 삭제하시겠습니까?\n\n로컬 데이터는 유지되며, iCloud 백업만 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.")
-        }
-        .alert("일정 분산 적용", isPresented: $showingBalanceAlert) {
-            Button("취소", role: .cancel) { }
-            Button("적용", role: .destructive) {
-                applyScheduleBalance()
-            }
-        } message: {
-            Text("\(balanceSuggestions.count)개의 일정을 새로운 날짜로 이동하시겠습니까?\n\n이 작업은 일정의 시작/종료일을 변경합니다.")
-        }
-        .alert("샘플 데이터 추가", isPresented: $showingAddSampleAlert) {
-            Button("추가") {
-                viewModel.addSampleEvents()
-            }
-            Button("취소", role: .cancel) { }
-        } message: {
-            Text("5개의 샘플 일정을 추가하시겠습니까?\n(프로젝트 A, B, 출장, 교육 프로그램, 컨퍼런스)")
-        }
-        .confirmsEventDeletion($deletionRequest)
+        .navigationTitle("함께 쓰기")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: - iCloud Sync Functions
