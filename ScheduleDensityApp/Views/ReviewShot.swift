@@ -12,12 +12,13 @@ import SwiftUI
 import LeeoKit
 
 extension View {
-    /// DEBUG 에서 `-reviewShot` 이 있으면 그 선물 화면으로 덮는다. 출시 빌드에서는 아무것도 하지 않는다.
+    /// DEBUG 에서 `-reviewShot` 이 있으면 앱 화면 대신 그 선물 화면을 그린다. 출시 빌드에서는 아무것도 하지 않는다.
     @ViewBuilder
     func reviewShotOverlay() -> some View {
         #if DEBUG
+        // 덮지 않고 **바꿔 낀다.** 덮으면 온보딩(풀스크린 커버)이 그 위로 올라온다.
         if let productID = UserDefaults.standard.string(forKey: "reviewShot") {
-            self.overlay { ReviewShotView(productID: productID) }
+            ReviewShotView(productID: productID)
         } else {
             self
         }
