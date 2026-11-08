@@ -63,6 +63,11 @@ final class PurchaseManager {
     ///    중에도 값이 바뀌었다고 알려 오는데, 그 알림에 대고 아직 빈 권한을 캐시에
     ///    적어 버리면 **처음 켠 구매자가 '무료'로 못박힌다.** 그 순간 위젯도 같이 잠긴다.
     @ObservationIgnored private var entitlementsChecked = false
+
+    /// 평생 래치(Keychain)와 구독 표식(만료일). 영수증 조회가 비어도 산 사람이 잠기지 않게 한다
+    /// (→ EntitlementLatch.swift). 올리는 건 바로, 내리는 건 환불 · 만료를 확인했을 때만.
+    @ObservationIgnored private var lifetimeLatch = LifetimeLatchStore.load()
+    @ObservationIgnored private var subscriptionMark = SubscriptionMarkStore.load()
     @ObservationIgnored private var observations: [AnyCancellable] = []
 
     private init() {
@@ -95,6 +100,7 @@ final class PurchaseManager {
         await store.refreshEntitlements()
         await foreverPass.refresh()
         if ProEntitlement.sellsPro { await store.loadProducts() }
+        await reconcileLatches()
         entitlementsChecked = true
         await syncCrossPlatformMark()
         subscription = await LeeoGraduation.currentSubscription(among: ProEntitlement.subscriptionIDs)
@@ -129,8 +135,42 @@ final class PurchaseManager {
                                                             in: context))
     }
 
-    /// 이 앱의 영수증이 여는 칸.
-    private var receiptTier: ProTier { ProEntitlement.tier(owning: store.purchasedProductIDs) }
+    /// 이 앱의 영수증이 여는 칸. 평생 래치와 구독 표식을 함께 본다 — 조회가 한 번 비었다고
+    /// 맥에 '무료' 표를 적으면 맥도 같이 잠긴다.
+    private var receiptTier: ProTier {
+        EntitlementLatch.tier(lifetime: lifetimeLatch, subscription: subscriptionMark,
+                              receipt: ReceiptSnapshot(owned: store.purchasedProductIDs), now: .now)
+    }
+
+    // MARK: - 래치 (→ EntitlementLatch.swift)
+
+    /// `Transaction.all` 로 환불을, `currentEntitlements` 로 구독 만료일을 읽어 두 표식을 맞춘다.
+    /// 래치를 **내리는** 길은 여기 하나뿐이다.
+    private func reconcileLatches() async {
+        let receipt = await readReceipt()
+        lifetimeLatch = EntitlementLatch.latchedLifetime(current: lifetimeLatch, receipt: receipt)
+        LifetimeLatchStore.save(lifetimeLatch)
+        subscriptionMark = EntitlementLatch.latchedSubscription(current: subscriptionMark, receipt: receipt, now: .now)
+        SubscriptionMarkStore.save(subscriptionMark)
+    }
+
+    private func readReceipt() async -> ReceiptSnapshot {
+        var receipt = ReceiptSnapshot(owned: store.purchasedProductIDs)
+        for await result in Transaction.all {
+            guard case .verified(let tx) = result, tx.revocationDate != nil,
+                  ProEntitlement.entitlementIDs.contains(tx.productID) else { continue }
+            receipt.refunded.insert(tx.productID)
+        }
+        for await result in Transaction.currentEntitlements {
+            guard case .verified(let tx) = result, tx.revocationDate == nil,
+                  ProEntitlement.subscriptionIDs.contains(tx.productID),
+                  let tier = ProEntitlement.tier(of: tx.productID), let expires = tx.expirationDate else { continue }
+            let mark = SubscriptionMark(tier: tier, expires: expires)
+            if let best = receipt.subscription, (best.tier, best.expires) >= (mark.tier, mark.expires) { continue }
+            receipt.subscription = mark
+        }
+        return receipt
+    }
 
     /// 맥에서 산 칸.
     @ObservationIgnored private var crossPlatformTier: ProTier = .free
@@ -156,6 +196,7 @@ final class PurchaseManager {
     ///    구매가 오류로 끝났다. 1.1.8 심사가 iPad Air에서 그걸로 2.1(b) 거절을 냈다.
     func purchase(_ product: Product, using action: PurchaseAction) async {
         _ = await store.purchase(product) { try await action($0) }
+        await reconcileLatches()
         entitlementsChecked = true
         subscription = await LeeoGraduation.currentSubscription(among: ProEntitlement.subscriptionIDs)
         pull()
@@ -165,6 +206,7 @@ final class PurchaseManager {
     func restore() async {
         await store.restore()
         await foreverPass.refresh()
+        await reconcileLatches()
         entitlementsChecked = true
         pull()
         if tier == .free, failureMessage == nil {
@@ -184,7 +226,14 @@ final class PurchaseManager {
         // ⚠️ 물어보기 전에는 캐시에 쓰지 않는다 (위 `entitlementsChecked` 주석).
         // 영수증 · 패스 · 맥에서 산 표 가운데 가장 높은 칸이다.
         if entitlementsChecked {
-            let owned = ProEntitlement.tier(owning: store.purchasedProductIDs, foreverPass: foreverPass.isActive)
+            // 평생은 보이는 즉시 래치에 올린다(내리는 건 `reconcileLatches` 만).
+            let raised = EntitlementLatch.latchedLifetime(
+                current: lifetimeLatch, receipt: ReceiptSnapshot(owned: store.purchasedProductIDs))
+            if raised != lifetimeLatch {
+                lifetimeLatch = raised
+                LifetimeLatchStore.save(raised)
+            }
+            let owned = foreverPass.isActive ? ProTier.pro : receiptTier
             ProEntitlement.setTier(max(owned, crossPlatformTier))
         }
 

@@ -139,10 +139,17 @@ enum ProEntitlement {
     /// Pro 월 구독. **판매는 멈췄고 권한은 그대로다.** 구독자는 끝날 때까지 Pro.
     static let monthlyID = "com.example.ScheduleDensityApp.pro.monthly"
 
-    /// Pro 선물 (소모성). 산 사람이 아니라 **코드를 받은 사람**에게 Pro 평생(`proLifetimeID`)을 연다(`LeeoGiftStore`).
+    /// Pro 선물 (소모성). 산 사람이 아니라 **선물 받은 사람**에게 Pro 평생(`proLifetimeID`)을 App Store 오퍼 코드로 연다.
     /// ⚠️ `productIDs` · `tierByProduct` 에 넣지 않는다 — 넣으면 선물을 산 사람이 Pro 가 되고, 결제가 코드 없이 끝난다.
     /// App Store Connect 에 소모성 상품으로 만들어야 뜬다. 없으면 설정의 선물 줄이 숨는다.
     static let giftProductID = "com.example.ScheduleDensityApp.gift.pro"
+    /// Plus 선물 (소모성). 받는 사람에게 Plus 평생(`plusLifetimeID`)이 App Store 오퍼 코드로 열린다.
+    /// ⚠️ 이것도 `productIDs` · `tierByProduct` 에 넣지 않는다.
+    static let plusGiftProductID = "com.example.ScheduleDensityApp.gift.plus"
+    /// Plus 선물의 오퍼 코드 묶음 열쇠. 허브(FeedbackHub `GiftCodePool.tierPools`)가 같은 열쇠로 채운다.
+    static let plusGiftPoolKey = "com.example.ScheduleDensityApp#com.example.ScheduleDensityApp.plus"
+    /// 파는 선물 상품 전부. 권한 상품과 겹치면 안 된다(테스트가 지킨다).
+    static let giftProductIDs: Set<String> = [giftProductID, plusGiftProductID]
 
     /// 개발자 응원 팁 (소모성 셋, 작은 것부터). 아무것도 열지 않는다(`LeeoTipJar`).
     /// ⚠️ 선물처럼 `productIDs` · `tierByProduct` 에 넣지 않는다 — 넣으면 팁을 낸 사람이 Pro 가 된다.

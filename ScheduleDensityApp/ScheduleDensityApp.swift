@@ -503,6 +503,8 @@ struct ScheduleDensityApp: App {
             }
             // 창 크기로 접힘을 재서 아래로 흘린다. 시트 · 알림창도 접힌 선을 비킨다 (LeeoKit Fold).
             .foldAware()
+            // DEBUG 에서 `-reviewShot <선물 상품>` 으로 켜면 인앱 상품 심사 이미지 장면을 덮는다 (→ ReviewShot.swift).
+            .reviewShotOverlay()
             // 사람이 지우지 않았는데 없어진 것이 있으면 되살릴지 묻는다 (→ VaultMonitor.swift).
             .vaultRecoveryPrompt()
             // 알림을 드릴지 묻는 두 물음은 **앱에 한 번만** 선다 (→ TimerView.swift).

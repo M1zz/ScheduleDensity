@@ -2,7 +2,8 @@
 //  PaywallView.swift
 //  ScheduleDensityApp
 //
-//  무지개의 세 칸(무료 · Plus · Pro)을 파는 한 장.
+//  무지개의 세 칸(무료 · Plus · Pro)을 파는 한 장. 틀은 LeeoKit `LeeoPurchaseScaffold` —
+//  응원 · 선물 화면과 같다: 칸 카드를 눌러 고르고, 늘 떠 있는 단추 하나로 산다.
 //
 //  ⚠️ 맥앱 '무지개 공방'의 같은 이름 파일과 **같은 순서**로 말한다.
 //     무엇이 그대로 무료인지 → Plus → Pro (칸마다 연 구독과 평생) → 언제나 평생 패스 → 약관.
@@ -23,6 +24,8 @@ import LeeoKit
 struct PaywallView: View {
     /// 어디서 들어왔는가. 그 기능이 든 칸을 강조하고, 그 칸 맨 위에 세운다.
     var highlight: ProFeature?
+    /// 설정 줄에서 **화면으로 넘어와** 열렸다 — 내비게이션 · 닫기는 바깥 것을 쓴다.
+    var embedded = false
 
     @State private var purchases = PurchaseManager.shared
     @Environment(\.dismiss) private var dismiss
@@ -33,76 +36,89 @@ struct PaywallView: View {
     /// 칸마다 고른 길. 처음엔 연 구독.
     @State private var plusTerm: LeeoPlanTerm = .yearly
     @State private var proTerm: LeeoPlanTerm = .yearly
+    /// 고른 칸. 처음에는 들어온 기능의 칸, 없으면 Pro. 이미 가진 칸은 고를 수 없다.
+    @State private var chosenTier: ProTier?
     /// 요금제를 불러오는 중인가. 못 불러온 채 끝났으면 도는 표시 대신 '다시 불러오기'를 세운다.
     @State private var loadingProducts = true
-    /// App Store 의 '코드 사용' 시트. 받은 할인 코드(오퍼 코드)를 여기서 넣는다.
+    /// App Store 의 '코드 사용' 시트. 받은 할인 코드 · 선물 코드(오퍼 코드)를 여기서 넣는다.
     @State private var redeemingCode = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    header
-                    freeCard
-                    plansStatus
-                    tierCard(.plus)
-                    tierCard(.pro)
-                    // 세 칸 아래 한 줄. 이 앱의 Pro 평생을 가진 사람에게는 패스를 올리기 값으로 판다.
-                    LeeoForeverPassLine(pass: purchases.foreverPass,
-                                        ownsLifetimePro: purchases.ownsLifetime(.pro))
-                    // 두 앱은 서로 다른 앱이지만, 한쪽에서 산 칸이 다른 쪽도 연다 (→ ProMark.swift).
-                    // 두 번 사는 줄 알고 망설이는 사람이 가장 오래 쓸 사람이다. 값 앞에서 말해 둔다.
-                    Label("산 칸은 맥 '무지개 공방'에서도 그대로 열립니다.", systemImage: "laptopcomputer")
-                        .scaledFont(size: 13)
-                        .foregroundStyle(.secondary)
-                    // 요금제를 못 불러온 것은 `plansStatus` 가 직접 말한다(다시 불러오기 단추와 함께).
-                    // 같은 말을 여기 주황 경고로 또 띄우면 '결제가 고장 났다'로 읽힌다. 1.1.8 심사 2.1(b).
-                    if let message = purchases.failureMessage, !purchases.products.isEmpty {
-                        Label(message, systemImage: "exclamationmark.triangle")
-                            .font(.callout)
-                            .foregroundStyle(.orange)
-                    }
-                    legal
-                }
-                .padding(20)
-            }
-            .navigationTitle("요금제")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("나중에") { dismiss() }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("복원") {
-                        Task {
-                            await purchases.restore()
-                            if purchases.tier > .free { dismiss() }
+        Group {
+            if embedded {
+                page
+            } else {
+                NavigationStack {
+                    page.toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("나중에") { dismiss() }
                         }
                     }
-                    .disabled(purchases.isWorking)
                 }
-            }
-            // 코드를 넣고 돌아오면 영수증을 다시 읽는다. 열렸으면 이 화면은 할 일이 끝났다.
-            .offerCodeRedemption(isPresented: $redeemingCode) { _ in
-                Task {
-                    await purchases.refresh()
-                    if purchases.tier > .free {
-                        RainbowFunnel.reach(.purchased)
-                        dismiss()
-                    }
-                }
-            }
-            // ⚠️ `.onAppear`가 아니라 `.task`다. NavigationStack 안의 onAppear는 재진입·레이아웃
-            //    변화로 여러 번 불려서, 페이월 조회수(=전환율의 분모)를 부풀린다.
-            .task {
-                // 본 횟수는 기기 안에 따로 센다. 허브로 가는 분석은 동의한 사람만이라
-                // 그 숫자만으로는 전환율의 분모가 되지 못한다 (→ UsageDiary).
-                UsageDiary.markPaywallSeen()
-                LeeoAnalyticsCenter.track(.paywallShown(reason: highlight?.rawValue ?? "settings"))
-                RainbowFunnel.reach(.paywallShown)
-                await loadPlans()
             }
         }
+        // 코드를 넣고 돌아오면 영수증을 다시 읽는다. 열렸으면 이 화면은 할 일이 끝났다.
+        .offerCodeRedemption(isPresented: $redeemingCode) { _ in
+            Task {
+                await purchases.refresh()
+                if purchases.tier > .free {
+                    RainbowFunnel.reach(.purchased)
+                    dismiss()
+                }
+            }
+        }
+        // ⚠️ `.onAppear`가 아니라 `.task`다. NavigationStack 안의 onAppear는 재진입·레이아웃
+        //    변화로 여러 번 불려서, 페이월 조회수(=전환율의 분모)를 부풀린다.
+        .task {
+            // 본 횟수는 기기 안에 따로 센다. 허브로 가는 분석은 동의한 사람만이라
+            // 그 숫자만으로는 전환율의 분모가 되지 못한다 (→ UsageDiary).
+            UsageDiary.markPaywallSeen()
+            LeeoAnalyticsCenter.track(.paywallShown(reason: highlight?.rawValue ?? "settings"))
+            RainbowFunnel.reach(.paywallShown)
+            await loadPlans()
+        }
+    }
+
+    /// 한 틀(LeeoKit `LeeoPurchaseScaffold`): 무엇이 무료인지 → 칸 카드(고르기) → 떠 있는 단추 하나.
+    /// 약관 · 복원 · 코드 사용은 스크롤한 아래에.
+    private var page: some View {
+        LeeoPurchaseScaffold {
+            header.padding(.horizontal, LeeoPurchaseScaffoldMetrics.margin)
+        } options: {
+            VStack(alignment: .leading, spacing: 14) {
+                freeCard
+                plansStatus
+                tierCard(.plus)
+                tierCard(.pro)
+            }
+        } button: {
+            if let tier = selectedTier { buyButton(tier) }
+        } details: {
+            VStack(alignment: .leading, spacing: 18) {
+                // 세 칸 아래 한 줄. 이 앱의 Pro 평생을 가진 사람에게는 패스를 올리기 값으로 판다.
+                LeeoForeverPassLine(pass: purchases.foreverPass,
+                                    ownsLifetimePro: purchases.ownsLifetime(.pro))
+                // 두 앱은 서로 다른 앱이지만, 한쪽에서 산 칸이 다른 쪽도 연다 (→ ProMark.swift).
+                // 두 번 사는 줄 알고 망설이는 사람이 가장 오래 쓸 사람이다. 값 앞에서 말해 둔다.
+                Label("산 칸은 맥 '무지개 공방'에서도 그대로 열립니다.", systemImage: "laptopcomputer")
+                    .scaledFont(size: 13)
+                    .foregroundStyle(.secondary)
+                // 다 가진 사람이 더 내고 싶을 때 갈 곳(응원). 팁 상품이 와 있을 때만 선다.
+                if purchases.tier == .pro, let tipJar = purchases.store.tipJar {
+                    LeeoTipJarLink<ScheduleDensityAppSpec>(tipJar: tipJar)
+                }
+                // 요금제를 못 불러온 것은 `plansStatus` 가 직접 말한다(다시 불러오기 단추와 함께).
+                // 같은 말을 여기 주황 경고로 또 띄우면 '결제가 고장 났다'로 읽힌다. 1.1.8 심사 2.1(b).
+                if let message = purchases.failureMessage, !purchases.products.isEmpty {
+                    Label(message, systemImage: "exclamationmark.triangle")
+                        .font(.callout)
+                        .foregroundStyle(.orange)
+                }
+                legal
+            }
+        }
+        .navigationTitle("요금제")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: 머리
@@ -116,12 +132,13 @@ struct PaywallView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: 무료 칸 (먼저 말한다. 버튼은 없다)
+    // MARK: 무료 칸 (먼저 말한다. 고를 것은 없다)
 
     private var freeCard: some View {
-        card(highlighted: false) {
+        card(selected: false) {
             cardTitle(ProTier.free.title, current: purchases.isKnown && purchases.tier == .free)
             row("rainbow", "무지개", "일정이 겹칠수록 진해지는 격자. 개수 제한 없습니다.")
             row("checklist", "할 일과 단계 쪼개기", "두 질문으로 조각과 덩어리를 가르는 것까지 전부.")
@@ -133,10 +150,30 @@ struct PaywallView: View {
 
     // MARK: 유료 칸
 
-    /// 칸 하나. 열리는 것 → 연 구독 / 평생 고르기 → 고른 길의 구매 단추.
+    /// 살 수 있는 칸. 이미 가진 칸(과 그 아래)은 빠진다.
+    private var purchasableTiers: [ProTier] { [.plus, .pro].filter { purchases.tier < $0 } }
+
+    /// 지금 고른 칸. 고른 것이 없으면 들어온 기능의 칸, 그것도 살 수 없으면 가장 높은 칸.
+    private var selectedTier: ProTier? {
+        if let chosenTier, purchasableTiers.contains(chosenTier) { return chosenTier }
+        if let focus = highlight?.tier, purchasableTiers.contains(focus) { return focus }
+        return purchasableTiers.last
+    }
+
+    /// 칸 하나. 누르면 고르기만 한다(사는 것은 떠 있는 단추). 고른 칸에 연 구독 / 평생 고르기가 선다.
     private func tierCard(_ tier: ProTier) -> some View {
-        card(highlighted: highlight?.tier == tier && purchases.tier < tier) {
-            cardTitle(tier.title, current: purchases.tier == tier)
+        let selected = tier == selectedTier
+        let purchasable = purchasableTiers.contains(tier)
+        return card(selected: selected) {
+            HStack(spacing: 10) {
+                if purchasable {
+                    Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(selected ? Color.accentColor : Color.secondary)
+                        .accessibilityHidden(true)
+                }
+                cardTitle(tier.title, current: purchases.tier == tier)
+            }
             if tier == .pro {
                 row("square.stack.3d.up", "Plus 전부", "회수 장부 전체 기간과 일정 통계까지 함께 열립니다.")
             }
@@ -148,12 +185,18 @@ struct PaywallView: View {
                 row("laptopcomputer", "맥 '무지개 공방' Pro", "맥 앱도 Pro로 함께 열립니다.")
             }
             // 이미 이 칸 이상이면 살 것이 없다. 구독을 평생으로 바꾸는 길은 설정에 있다.
-            if purchases.tier < tier {
+            if selected {
                 LeeoTermPicker(term: term(for: tier), yearly: yearly(tier), lifetime: lifetime(tier))
                     .padding(.top, 4)
-                buyButton(tier)
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            guard purchasable else { return }
+            withAnimation(.snappy(duration: 0.25)) { chosenTier = tier }
+        }
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+        .accessibilityAction(named: Text(tier.title)) { if purchasable { chosenTier = tier } }
     }
 
     /// 그 칸에서 새로 열리는 것. 지금 누른 자리가 맨 위.
@@ -180,6 +223,7 @@ struct PaywallView: View {
 
     private var upgradesToPro: Bool { purchases.ownsLifetime(.plus) }
 
+    /// 떠 있는 단추 하나. 고른 칸 · 고른 길의 상품을 산다.
     private func buyButton(_ tier: ProTier) -> some View {
         let chosen = term(for: tier).wrappedValue
         let product = chosen == .yearly ? yearly(tier) : lifetime(tier)
@@ -188,7 +232,7 @@ struct PaywallView: View {
         case .lifetime where tier == .pro && upgradesToPro: String(localized: "Pro 평생으로 올리기")
         case .lifetime: String(localized: "평생으로 사기")
         }
-        return Button {
+        return LeeoPrimaryButton(title: title, isWorking: purchases.isWorking) {
             guard let product else { return }
             Task {
                 await purchases.purchase(product, using: purchaseAction)
@@ -198,20 +242,9 @@ struct PaywallView: View {
                     dismiss()
                 }
             }
-        } label: {
-            Group {
-                if purchases.isWorking {
-                    ProgressView().tint(.white)
-                } else {
-                    Text(title)
-                        .scaledFont(size: 17, weight: .semibold, design: .rounded)
-                }
-            }
-            .frame(maxWidth: .infinity, minHeight: 28)
         }
-        .buttonStyle(.borderedProminent)
-        .controlSize(.large)
-        .disabled(purchases.isWorking || product == nil)
+        .disabled(product == nil)
+        .accessibilityValue(product?.displayPrice ?? "")
     }
 
     // MARK: 요금제를 못 불러왔을 때
@@ -280,11 +313,21 @@ struct PaywallView: View {
                 Button("개인정보 처리방침") { openURL(ScheduleDensityAppSpec.legal.privacyURL) }
             }
             .font(.caption)
-            // 할인 코드를 받은 사람이 넣을 자리. 없으면 코드를 받고도 쓸 데를 못 찾는다.
-            Button {
-                redeemingCode = true
-            } label: {
-                Label("코드 사용", systemImage: "ticket")
+            HStack(spacing: 16) {
+                // 할인 코드 · 선물 코드를 받은 사람이 넣을 자리. 없으면 코드를 받고도 쓸 데를 못 찾는다.
+                Button {
+                    redeemingCode = true
+                } label: {
+                    Label("코드 사용", systemImage: "ticket")
+                }
+                Button {
+                    Task {
+                        await purchases.restore()
+                        if purchases.tier > .free { dismiss() }
+                    }
+                } label: {
+                    Label("구매 복원", systemImage: "arrow.clockwise")
+                }
             }
             .font(.caption)
             .disabled(purchases.isWorking)
@@ -293,14 +336,14 @@ struct PaywallView: View {
 
     // MARK: 부속
 
-    private func card<Content: View>(highlighted: Bool, @ViewBuilder content: () -> Content) -> some View {
+    private func card<Content: View>(selected: Bool, @ViewBuilder content: () -> Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
         return VStack(alignment: .leading, spacing: 10, content: content)
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background {
                 shape.fill(Color(.secondarySystemBackground))
-                shape.strokeBorder(highlighted ? Color.accentColor : Color.clear, lineWidth: 1.5)
+                shape.strokeBorder(selected ? Color.accentColor : Color.clear, lineWidth: 2)
             }
     }
 

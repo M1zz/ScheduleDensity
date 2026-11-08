@@ -72,16 +72,34 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
                 proOnly: Set(ProFeature.sold.map(\.rawValue))),
             // 위젯과 함께 읽는 그 통. 권한 한 줄이 실제로 여기 적힌다.
             cacheSuiteName: ProEntitlement.appGroupID,
-            // Pro 선물하기. 보내는 사람은 소모성 선물 상품을 사고, 받는 사람은 Pro 평생을 산 것과 같아진다.
-            // 선물 기록은 피드백과 같은 허브 컨테이너의 공개 DB 에 둔다. entitlements 에 이미 있다.
-            // ⚠️ 선물 상품은 productIDs · entitlementIDs 에 넣지 않는다. 넣으면 선물을 산 사람이 Pro 가 된다.
-            gift: LeeoGiftConfig(
-                productID: ProEntitlement.giftProductID,
-                grantsProductID: ProEntitlement.proLifetimeID,
-                containerIdentifier: "iCloud.com.Ysoup.FeedbackHub"
-            ),
+            // 선물하기 (Pro · Plus). 보내는 사람이 소모성 선물 상품을 사면, 허브 공개 DB 의 오퍼 코드 묶음에서
+            // 한 장을 가져와 App Store 사용 링크로 건넨다. 받는 사람은 링크를 누르고 "사용" 한 번 —
+            // 그 칸 평생을 여는 것은 **App Store 다**(지침 3.1.1).
+            // ⚠️ 앱이 만든 코드로 권한을 여는 길은 만들지 않는다(클립키보드가 3.1.1 로 거절됐다).
+            // ⚠️ 선물 상품은 productIDs · entitlementIDs 에 넣지 않는다. 넣으면 선물을 산 사람이 그 칸이 된다.
+            // ⚠️ 묶음은 FeedbackHub ▸ 인앱 구입 ▸ 선물 코드 묶음에서 채운다. 비어 있으면 산 사람이 "준비 중" 에서 기다린다.
+            gift: giftConfig,
+            moreGifts: moreGiftConfigs,
             // 개발자 응원 팁. Pro 를 다 가진 사람이 고마울 때 조금 더 낸다(→ TodoTipMoments).
             tipJar: LeeoTipJarConfig(productIDs: ProEntitlement.tipProductIDs)))
+
+    /// Pro 선물. 받는 사람에게 Pro 평생(`proLifetimeID`)이 오퍼 코드로 열린다. 묶음 열쇠는 번들 ID(예전 묶음 그대로).
+    static let giftConfig = LeeoGiftConfig(
+        productID: ProEntitlement.giftProductID,
+        grantsProductID: ProEntitlement.proLifetimeID,
+        containerIdentifier: "iCloud.com.Ysoup.FeedbackHub",
+        sellsGifts: true
+    )
+
+    /// Plus 선물. 받는 사람에게 Plus 평생(`plusLifetimeID`)이 열린다. 묶음은 Pro 와 따로다(`poolKey`).
+    static let moreGiftConfigs = [LeeoGiftConfig(
+        productID: ProEntitlement.plusGiftProductID,
+        grantsProductID: ProEntitlement.plusLifetimeID,
+        containerIdentifier: "iCloud.com.Ysoup.FeedbackHub",
+        sellsGifts: true,
+        tierName: "Plus",
+        poolKey: ProEntitlement.plusGiftPoolKey
+    )]
 
     /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
     enum Gate {
