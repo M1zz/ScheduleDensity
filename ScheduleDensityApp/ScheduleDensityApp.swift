@@ -557,6 +557,8 @@ struct ScheduleDensityApp: App {
             }
             .task { await presentWhatsNewIfNeeded() }
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
+            // 개발자가 보낸 의견에 답장하면, 앱이 앞으로 올 때 답장을 시트로 보여 준다 (LeeoKit).
+            .leeoFeedbackReplyNotice(ScheduleDensityAppSpec.self)
             // 화면의 다른 데를 톡 치면 키보드가 내려간다 (→ KeyboardDismiss.swift).
             .task { KeyboardDismissOnTap.install() }
             // 할 일 ↔ 무지개를 잇는 다리에 양쪽 스토어를 넘긴다 (→ TodoEventBridge.swift).
