@@ -1,5 +1,151 @@
 # 릴리즈 노트
 
+## 1.1.19
+
+### 앱스토어 (한국어)
+
+```
+아이콘이 유리처럼 반짝이는 모습으로 새로워졌어요
+```
+
+### 앱스토어 (English)
+
+```
+A fresh new glassy app icon
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+A fresh new glassy app icon
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+全新的玻璃質感 App 圖示
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+全新的玻璃质感 App 图标
+```
+
+### 앱스토어 (일본어)
+
+```
+アイコンがガラスのような新デザインに
+```
+
+### 앱스토어 (독일어)
+
+```
+Ein neues App-Symbol im Glas-Look
+```
+
+### 앱스토어 (스페인어)
+
+```
+Un nuevo icono con aspecto de cristal
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Une nouvelle icône à l’effet verre
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Una nuova icona con effetto vetro
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Um novo ícone com visual de vidro
+```
+
+### 앱스토어 (러시아어)
+
+```
+Новая иконка в стиле стекла
+```
+
+### 앱스토어 (체코어)
+
+```
+Nová ikona aplikace se skleněným vzhledem
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Et nyt appikon med glaslook
+```
+
+### 앱스토어 (그리스어)
+
+```
+Νέο εικονίδιο με όψη γυαλιού
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Uusi lasimainen sovelluskuvake
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Ikon aplikasi baru bergaya kaca
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Et nytt appikon med glasspreg
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Een nieuw app-icoon met glaslook
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Nowa ikona aplikacji w stylu szkła
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+En ny appikon med glaskänsla
+```
+
+### 앱스토어 (태국어)
+
+```
+ไอคอนแอปใหม่ ดูใสเหมือนกระจก
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Cam görünümlü yeni uygulama simgesi
+```
+
+### 앱스토어 (베트남어)
+
+```
+Biểu tượng ứng dụng mới trong như kính
+```
+
 ## 1.1.18
 
 ### 앱스토어 (한국어)
