@@ -81,6 +81,7 @@
 		8358FAE4CD0D1F0DDC96B542 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C88214AD2EEFE9C1DBD3BDF2 /* Localizable.xcstrings */; };
 		86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD9FD647E4187EE33B949E /* KeyboardDismiss.swift */; };
 		87F5BBFA2EFADD1D3BB509F7 /* TodoShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3012C3D5D03A3601C321C1 /* TodoShareInbox.swift */; };
+		88ECA4C0CCD0A67728AFB059 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = E7C1EEAFEB12C98925176BBE /* AppIcon.icon */; };
 		89120574BD350F6F1D87BDCC /* DensityIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F098D64402B806BD63E76A2 /* DensityIntents.swift */; };
 		8B83E1F95AD6A98D3F1CCF5C /* DayTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C47F24DFAAB24463CEF320A /* DayTimelineView.swift */; };
 		8C481777010B7DB840761A77 /* DensityChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487173E8267E76CC3E7ECAB7 /* DensityChartView.swift */; };
@@ -342,6 +343,7 @@
 		E38C8AF31ACA72741BF8046B /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		E6576DBC2D1236A8BAF02E5B /* AppLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLog.swift; sourceTree = "<group>"; };
 		E6D619C882389B3029929E6F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E7C1EEAFEB12C98925176BBE /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
 		E7E6652B185E212F1EFADEB6 /* EventManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventManagementView.swift; sourceTree = "<group>"; };
 		EA829919C711830D349E106C /* EventKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitManager.swift; sourceTree = "<group>"; };
 		EDE2BE20CC2D5A5D12D36A4D /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
@@ -510,6 +512,7 @@
 		35DBDFBD378031DF075E6A8B /* ScheduleDensityApp */ = {
 			isa = PBXGroup;
 			children = (
+				E7C1EEAFEB12C98925176BBE /* AppIcon.icon */,
 				EDE2BE20CC2D5A5D12D36A4D /* AppShortcuts.xcstrings */,
 				3513E47DA1D5F509870816E5 /* Assets.xcassets */,
 				CD1FA07D33E72BA4A2A63C80 /* Info.plist */,
@@ -851,6 +854,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88ECA4C0CCD0A67728AFB059 /* AppIcon.icon in Resources */,
 				C7EE0ABFE9FF68662F159866 /* AppShortcuts.xcstrings in Resources */,
 				434663F0C6380C5A9CEB4C05 /* Assets.xcassets in Resources */,
 				CB523D8E557C1B3985468738 /* InfoPlist.xcstrings in Resources */,
