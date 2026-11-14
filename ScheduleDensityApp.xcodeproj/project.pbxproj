@@ -50,6 +50,7 @@
 		43F8A0C5BD2530B8C30C96C3 /* StartTimerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132A2ABF0A9E705D0EFF8B71 /* StartTimerControl.swift */; };
 		4665B848AF9EBDA7DC0B2158 /* ReviewShot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E79C288422C30CDA559C7F /* ReviewShot.swift */; };
 		4D0F8D24AAD717BC816DF83F /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
+		5026DBD76AADE916345F26A6 /* IPadScreenshotDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D35CD8FA6F3C39E761D4F6 /* IPadScreenshotDemo.swift */; };
 		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		5451D23F4DDE9A70420350A8 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A2F8F7F90B5C18D0D0905E /* Models.swift */; };
 		547A221FF041BCA043444F1A /* VaultMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4674AA473A6F359F710CB6 /* VaultMonitor.swift */; };
@@ -236,6 +237,7 @@
 		30AB1FA10C16E232C616DA89 /* DayTimelineLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTimelineLayout.swift; sourceTree = "<group>"; };
 		3485B020981ACBBB7679B4BF /* TaskTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTimer.swift; sourceTree = "<group>"; };
 		3513E47DA1D5F509870816E5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		37D35CD8FA6F3C39E761D4F6 /* IPadScreenshotDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPadScreenshotDemo.swift; sourceTree = "<group>"; };
 		3A2A03CCD4552470BED4636C /* WidgetLockedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetLockedView.swift; sourceTree = "<group>"; };
 		3AD81D8C77A69F2BCC62A5CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3C7B6EB50D0B4B7A9324429A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -517,6 +519,7 @@
 				3513E47DA1D5F509870816E5 /* Assets.xcassets */,
 				CD1FA07D33E72BA4A2A63C80 /* Info.plist */,
 				0EA73C01E663B2E7E1A5958A /* InfoPlist.xcstrings */,
+				37D35CD8FA6F3C39E761D4F6 /* IPadScreenshotDemo.swift */,
 				3C7B6EB50D0B4B7A9324429A /* Localizable.xcstrings */,
 				D7C7C2ED5FFB141C2CBB5079 /* PrivacyInfo.xcprivacy */,
 				F2DFFB40BB030A552DC9AC4C /* Products.storekit */,
@@ -954,6 +957,7 @@
 				FB3E75B8ECD21EB26B8DE1A6 /* FirstRunStart.swift in Sources */,
 				9A9CD734F20FDC66EB7F8CBB /* FoldPanes.swift in Sources */,
 				6F12EBAD65BCDF33209904BC /* FragmentMark.swift in Sources */,
+				5026DBD76AADE916345F26A6 /* IPadScreenshotDemo.swift in Sources */,
 				86E37C9CBFC1BA89B2800156 /* KeyboardDismiss.swift in Sources */,
 				60C4121A7DCB81DF4293BBEB /* MacCompanionView.swift in Sources */,
 				328FC97C1960AA48840EF5FA /* MeaningPage.swift in Sources */,
@@ -1082,7 +1086,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1099,7 +1103,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityAppUITests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScheduleDensityApp;
 			};
 			name = Debug;
@@ -1132,7 +1136,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1215,7 +1219,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityAppTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ScheduleDensityApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScheduleDensityApp";
 			};
 			name = Release;
@@ -1307,7 +1311,7 @@
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1324,7 +1328,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityAppTests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ScheduleDensityApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScheduleDensityApp";
 			};
 			name = Debug;
@@ -1342,7 +1346,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.ScheduleDensityAppUITests;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScheduleDensityApp;
 			};
 			name = Release;
@@ -1365,7 +1369,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1387,7 +1391,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1409,7 +1413,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1478,7 +1482,7 @@
 			repositoryURL = "https://github.com/M1zz/LeeoKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.40.0;
+				minimumVersion = 3.44.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

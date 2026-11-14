@@ -420,7 +420,8 @@ struct ScheduleDensityApp: App {
     private var rootContent: some View {
         ZStack {
             if stage == .full {
-                mainTabs
+                // 넓은 아이패드도 펼친 아이폰 듀오처럼 탭마다 두 쪽 (→ Views/FoldPanes.swift)
+                WidePadPanes { mainTabs }
             } else {
                 // 처음 온 사람: 탭 막대 없이 할 일 화면 하나 (→ FirstRunStart.swift).
                 TodoView()
@@ -556,6 +557,12 @@ struct ScheduleDensityApp: App {
                 }
             }
             .task { await presentWhatsNewIfNeeded() }
+            #if DEBUG
+            .task {
+                IPadScreenshotDemo.seed(events: sharedModelContainer.mainContext, todos: todoContainer.mainContext)
+                if IPadScreenshotDemo.startsOnRainbow { selectedTab = .rainbow }
+            }
+            #endif
             .leeoSatisfactionCheck(ScheduleDensityAppSpec.self)
             // 개발자가 보낸 의견에 답장하면, 앱이 앞으로 올 때 답장을 시트로 보여 준다 (LeeoKit).
             .leeoFeedbackReplyNotice(ScheduleDensityAppSpec.self)
@@ -615,7 +622,7 @@ struct ScheduleDensityApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .openDayTabRequested)) { note in
                 if let date = note.object as? Date { dayTabDate = date }
                 // 펼쳐져 있으면 하루는 무지개의 오른쪽 판에 이미 서 있다. 탭을 넘기지 않는다.
-                if !FoldState.current.isUnfolded { selectedTab = .day }
+                if !FoldState.current.isUnfolded, !WidePadState.isWide { selectedTab = .day }
             }
             // 열림/잠김의 근거는 App Store 영수증 **하나뿐이다.** App Group에 적어 둔 한 줄은
             // 위젯이 읽으라고 둔 거울이라, 켤 때마다 여기서 다시 확인해 덮어쓴다.
@@ -691,6 +698,9 @@ struct ScheduleDensityApp: App {
     @MainActor
     private func presentWhatsNewIfNeeded() async {
         guard !LaunchSafety.isSafeMode else { return }
+        #if DEBUG
+        if IPadScreenshotDemo.isOn { return }   // 스크린샷에 안내 창이 덮이지 않게
+        #endif
         let defaults = UserDefaults.standard
         let decision = WhatsNewGate.decide(
             launchCount: LeeoEngagement.shared.launchCount,

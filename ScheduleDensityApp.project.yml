@@ -23,7 +23,7 @@ options:
 packages:
   LeeoKit:
     url: https://github.com/M1zz/LeeoKit.git
-    majorVersion: 3.40.0
+    majorVersion: 3.44.1
 settings:
   base:
 # ⚠️ MARKETING_VERSION 과 CURRENT_PROJECT_VERSION 은 **여기 두지 않는다.**
@@ -105,7 +105,7 @@ targets:
         #    파랑이므로, 색을 새로 굽는 대신 가리키는 곳 없는 설정을 지운다.
         SWIFT_EMIT_LOC_STRINGS: YES
         SUPPORTS_MACCATALYST: NO
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
@@ -142,7 +142,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: TodoWidget/TodoWidget.entitlements
         CODE_SIGN_STYLE: Automatic
         SKIP_INSTALL: YES
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_EMIT_LOC_STRINGS: YES
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
@@ -174,7 +174,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: TodoShare/TodoShare.entitlements
         CODE_SIGN_STYLE: Automatic
         SKIP_INSTALL: YES
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_EMIT_LOC_STRINGS: YES
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
@@ -196,7 +196,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ScheduleDensityApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ScheduleDensityApp"
         BUNDLE_LOADER: "$(TEST_HOST)"
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic
 
   # UI 시험 — 실제로 띄워 할 일 적기 → 무지개 → 설정을 돌고, 화면마다 접근성 자동 점검을 한다.
@@ -212,5 +212,5 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityAppUITests
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: ScheduleDensityApp
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
         CODE_SIGN_STYLE: Automatic

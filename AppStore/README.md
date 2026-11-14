@@ -18,7 +18,8 @@ AppStore/
 
 **6.5" 슬롯은 1290 × 2796을 안 받는다.** "스크린샷 크기는 1242 × 2688px … 이어야 합니다"가
 뜨면 `1284x2778/`이나 `1242x2688/`을 올리면 된다. 6.9" 슬롯에는 `1290x2796/`.
-이 앱은 `TARGETED_DEVICE_FAMILY: "1"` (iPhone 전용)이라 iPad 세트는 없다.
+iPad 13" 세트(2064 × 2752)는 목업이 아니라 실제 앱을 시뮬레이터로 찍는다 — `zsh scripts/capture_ipad.sh <iPad UDID>` →
+`docs/screenshots/marketing/<언어>/ipad-01-todo.png` · `ipad-02-rainbow.png` (예시 데이터: `IPadScreenshotDemo.swift`).
 
 | | 파일 | 무엇을 보여주나 | 한국어 헤드라인 | 번체 중국어(zh-Hant) 헤드라인 |
 |---|---|---|---|---|

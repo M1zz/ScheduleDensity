@@ -6,144 +6,192 @@
 
 ```
 아이콘이 유리처럼 반짝이는 모습으로 새로워졌어요
+이제 iPad에서도 쓸 수 있어요
+넓은 화면에서 무지개 옆에 하루가 함께 떠요
 ```
 
 ### 앱스토어 (English)
 
 ```
 A fresh new glassy app icon
+Now available on iPad
+Your day sits right beside the rainbow
 ```
 
 ### 앱스토어 (영국 영어 en-GB)
 
 ```
 A fresh new glassy app icon
+Now available on iPad
+Your day sits right beside the rainbow
 ```
 
 ### 앱스토어 (중국어 번체)
 
 ```
 全新的玻璃質感 App 圖示
+現在也能在 iPad 上使用
+大螢幕上，彩虹旁邊就是當天行程
 ```
 
 ### 앱스토어 (중국어 간체)
 
 ```
 全新的玻璃质感 App 图标
+现在也能在 iPad 上使用
+大屏幕上，彩虹旁边就是当天日程
 ```
 
 ### 앱스토어 (일본어)
 
 ```
 アイコンがガラスのような新デザインに
+iPadでも使えるようになりました
+大きな画面では虹の隣にその日の予定
 ```
 
 ### 앱스토어 (독일어)
 
 ```
 Ein neues App-Symbol im Glas-Look
+Jetzt auch auf dem iPad
+Dein Tag direkt neben dem Regenbogen
 ```
 
 ### 앱스토어 (스페인어)
 
 ```
 Un nuevo icono con aspecto de cristal
+Ahora también en iPad
+Tu día justo al lado del arcoíris
 ```
 
 ### 앱스토어 (프랑스어)
 
 ```
 Une nouvelle icône à l’effet verre
+Désormais disponible sur iPad
+Votre journée à côté de l’arc-en-ciel
 ```
 
 ### 앱스토어 (이탈리아어)
 
 ```
 Una nuova icona con effetto vetro
+Ora disponibile anche su iPad
+La tua giornata accanto all’arcobaleno
 ```
 
 ### 앱스토어 (포르투갈어(브라질))
 
 ```
 Um novo ícone com visual de vidro
+Agora também no iPad
+Seu dia bem ao lado do arco-íris
 ```
 
 ### 앱스토어 (러시아어)
 
 ```
 Новая иконка в стиле стекла
+Теперь и на iPad
+Ваш день рядом с радугой
 ```
 
 ### 앱스토어 (체코어)
 
 ```
 Nová ikona aplikace se skleněným vzhledem
+Nově také na iPadu
+Váš den hned vedle duhy
 ```
 
 ### 앱스토어 (덴마크어)
 
 ```
 Et nyt appikon med glaslook
+Nu også på iPad
+Din dag lige ved siden af regnbuen
 ```
 
 ### 앱스토어 (그리스어)
 
 ```
 Νέο εικονίδιο με όψη γυαλιού
+Τώρα και στο iPad
+Η μέρα σας δίπλα στο ουράνιο τόξο
 ```
 
 ### 앱스토어 (핀란드어)
 
 ```
 Uusi lasimainen sovelluskuvake
+Nyt myös iPadilla
+Päiväsi heti sateenkaaren vieressä
 ```
 
 ### 앱스토어 (인도네시아어)
 
 ```
 Ikon aplikasi baru bergaya kaca
+Kini tersedia di iPad
+Harimu tampil di samping pelangi
 ```
 
 ### 앱스토어 (노르웨이어(보크말))
 
 ```
 Et nytt appikon med glasspreg
+Nå også på iPad
+Dagen din rett ved siden av regnbuen
 ```
 
 ### 앱스토어 (네덜란드어)
 
 ```
 Een nieuw app-icoon met glaslook
+Nu ook op de iPad
+Je dag direct naast de regenboog
 ```
 
 ### 앱스토어 (폴란드어)
 
 ```
 Nowa ikona aplikacji w stylu szkła
+Teraz także na iPadzie
+Twój dzień tuż obok tęczy
 ```
 
 ### 앱스토어 (스웨덴어)
 
 ```
 En ny appikon med glaskänsla
+Nu även på iPad
+Din dag direkt bredvid regnbågen
 ```
 
 ### 앱스토어 (태국어)
 
 ```
 ไอคอนแอปใหม่ ดูใสเหมือนกระจก
+ใช้บน iPad ได้แล้ว
+ตารางทั้งวันอยู่ข้างรุ้งบนจอใหญ่
 ```
 
 ### 앱스토어 (튀르키예어)
 
 ```
 Cam görünümlü yeni uygulama simgesi
+Artık iPad'de de kullanılabilir
+Gününüz gökkuşağının hemen yanında
 ```
 
 ### 앱스토어 (베트남어)
 
 ```
 Biểu tượng ứng dụng mới trong như kính
+Giờ đã dùng được trên iPad
+Lịch trong ngày nằm ngay cạnh cầu vồng
 ```
 
 ## 1.1.18

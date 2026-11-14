@@ -143,3 +143,29 @@ private struct FoldDayTabRedirect: ViewModifier {
         }
     }
 }
+
+// MARK: - 넓은 아이패드
+
+/// 넓은 아이패드도 가로로 편 아이폰 듀오와 같은 짝으로 세운다: 무지개 격자 | 고른 날의 하루, 할 일 | 고른 일의 단계.
+/// 아이패드는 접히지 않아 Fold 가 한 쪽(single)으로 재므로, regular 폭이면 여기서 펼친 자세로 바꿔 흘린다.
+/// Slide Over · 좁은 분할(compact)은 아이폰처럼 한 쪽.
+struct WidePadPanes<Content: View>: View {
+    @Environment(\.foldLayout) private var fold
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        content()
+            .environment(\.foldLayout, layout)
+            .onChange(of: layout.isUnfolded && !fold.isUnfolded, initial: true) { _, wide in WidePadState.isWide = wide }
+    }
+
+    private var layout: FoldLayout {
+        guard UIDevice.current.userInterfaceIdiom == .pad, sizeClass == .regular,
+              fold.windowSize != .zero else { return fold }
+        return FoldLayout(posture: .innerLandscape, windowSize: fold.windowSize)
+    }
+}
+
+/// 넓은 아이패드라서 두 쪽으로 서 있는가 — 뷰 밖(딥링크 처리)에서 `FoldState.current` 와 함께 묻는다.
+@MainActor enum WidePadState { static var isWide = false }
