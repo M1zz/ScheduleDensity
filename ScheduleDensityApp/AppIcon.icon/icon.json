@@ -3,8 +3,8 @@
     {
       "value": {
         "linear-gradient": [
-          "display-p3:0.17255,0.10196,0.24706,1.00000",
-          "display-p3:0.08235,0.04706,0.12549,1.00000"
+          "display-p3:1.00000,1.00000,1.00000,1.00000",
+          "display-p3:0.93333,0.92157,0.96078,1.00000"
         ],
         "orientation": {
           "start": {
@@ -22,8 +22,8 @@
       "appearance": "dark",
       "value": {
         "linear-gradient": [
-          "display-p3:0.07843,0.04706,0.11373,1.00000",
-          "display-p3:0.02745,0.01569,0.04314,1.00000"
+          "display-p3:0.10980,0.07059,0.16078,1.00000",
+          "display-p3:0.03137,0.01961,0.05098,1.00000"
         ],
         "orientation": {
           "start": {
@@ -51,12 +51,12 @@
       "lighting": "individual",
       "specular": true,
       "shadow": {
-        "kind": "neutral",
+        "kind": "layer-color",
         "opacity": 0.5
       },
       "translucency": {
-        "enabled": false,
-        "value": 0
+        "enabled": true,
+        "value": 0.35
       }
     },
     {
@@ -71,12 +71,12 @@
       "lighting": "individual",
       "specular": true,
       "shadow": {
-        "kind": "neutral",
+        "kind": "layer-color",
         "opacity": 0.5
       },
       "translucency": {
-        "enabled": false,
-        "value": 0
+        "enabled": true,
+        "value": 0.35
       }
     },
     {
@@ -91,12 +91,12 @@
       "lighting": "individual",
       "specular": true,
       "shadow": {
-        "kind": "neutral",
+        "kind": "layer-color",
         "opacity": 0.5
       },
       "translucency": {
-        "enabled": false,
-        "value": 0
+        "enabled": true,
+        "value": 0.35
       }
     },
     {
@@ -111,12 +111,12 @@
       "lighting": "individual",
       "specular": true,
       "shadow": {
-        "kind": "neutral",
+        "kind": "layer-color",
         "opacity": 0.5
       },
       "translucency": {
-        "enabled": false,
-        "value": 0
+        "enabled": true,
+        "value": 0.35
       }
     }
   ],

@@ -53,8 +53,8 @@ def gradient(top, bottom):
     return g
 
 for name, rendition, top, bottom in [
-    ("AppIcon", "Default", (45, 26, 64), (22, 12, 33)),      # icon.json 기본 바탕
-    ("AppIcon-Dark", "Dark", (21, 12, 30), (8, 4, 12)),      # icon.json 다크 바탕
+    ("AppIcon", "Default", (255, 255, 255), (238, 235, 245)),  # icon.json 라이트 바탕 — 밝게
+    ("AppIcon-Dark", "Dark", (28, 18, 41), (8, 5, 13)),          # icon.json 다크 바탕 — 짙은 보라
     ("AppIcon-Tinted", "ClearDark", (0, 0, 0), (0, 0, 0)),
 ]:
     bg = gradient(top, bottom)
