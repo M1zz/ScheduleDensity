@@ -3,6 +3,15 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 아이폰 · 맥 한 레코드로 합치기 점검 (2026-11-17, 맥 레포 `unify/rainbow-record` 기준)
+맞는 것: 번들 ID(확장 포함) · 팀 · iCloud 컨테이너 · 인앱 상품 ID 전부 같음, 옛 맥앱 구매 표 읽기, 스토어 이름·부제 같음, 피드백 `appIdentifier`는 일부러 옛 값
+- [ ] 맥 레포: `unify/rainbow-record`를 `main`에 합칠지, 옛 앱(`sunset/old-mac`)과 새 앱을 어느 브랜치로 낼지 정하기 — 새 맥 앱은 반드시 unify 브랜치에서 배포
+- [ ] 이름 하나로: 스토어 "욕망의 무지개 / Rainbow of Desire" · 맥 기기 표시 "무지개 공방" · 심사 답장 "Rainbow Craft" — 최소한 2.1 답장(`docs/APP_REVIEW_NOTES.md`)은 스토어 이름으로
+- [ ] 옛 맥앱 → 새 맥앱 데이터: 보관함이 새로 생겨 iCloud 끈 사람은 빈 화면. 옛 앱 종료 안내에 '백업 금고로 내보내고 새 앱에서 되살리기' 안내 넣기
+- [ ] 사람: App Store Connect ▸ 가격 및 사용 가능 여부 ▸ Apple Silicon Mac 에 아이폰 앱 노출 끄기 확인 (빌드 설정만으로는 스토어 노출이 안 바뀜)
+- [ ] 알고만 둠: 아이폰 앱을 맥에 깔아 쓰던 사람은 같은 번들 ID 보관함에 아이폰 형식 저장 파일이 남아 있어 맥 앱이 열다 실패할 수 있음
+- 참고: 맥엔 `gift.plus` 상품 없음 (맥에서 안 팔면 괜찮음)
+
 ## ▶ 아이폰 앱이 맥에서 뜨지 않게 (2026-11-17, 시뮬레이터 빌드 성공 · 커밋 안 함)
 - [x] `SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO` (+ visionOS 도 NO) — 맥에는 맥 앱(무지개 공방)이 따로 있다. Xcode 실행 대상에서 My Mac 이 사라진다
 - [x] 맥 앱(../무지개공방) 번들 ID를 이쪽과 같은 `com.example.ScheduleDensityApp`으로 맞춤 (그쪽 todo.md 참고)
