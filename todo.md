@@ -3,6 +3,11 @@
 iOS 앱(ScheduleDensity)과 macOS 앱(WeekBlocks)을 하나의 Xcode 프로젝트에서
 두 개의 타깃으로 관리하는 "같은 패밀리" 구조.
 
+## ▶ 아이폰 앱이 맥에서 뜨지 않게 (2026-11-17, 시뮬레이터 빌드 성공 · 커밋 안 함)
+- [x] `SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO` (+ visionOS 도 NO) — 맥에는 맥 앱(무지개 공방)이 따로 있다. Xcode 실행 대상에서 My Mac 이 사라진다
+- [x] 맥 앱(../무지개공방) 번들 ID를 이쪽과 같은 `com.example.ScheduleDensityApp`으로 맞춤 (그쪽 todo.md 참고)
+
+
 ## ▶ 처음 온 사람: 움직이는 튜토리얼 + 할 일 하나로 시작 (2026-11-03, 빌드 · 단위/UI 시험 성공 · 실기기 확인 안 함 · 커밋 안 함)
 - [x] `Views/FirstRunStart.swift` — 튜토리얼 세 장(타자 치듯 적힘 · 동그라미 눌러 끝냄 · 잠긴 기능이 풀림), 동작 줄이기면 멈춘 그림
 - [x] 첫 실행 판정 `FirstRunGate`(앱 init 한 번): 실행 1회 · 온보딩/새 소식 흔적 없음 · 스토어 빔 → tutorial. 쓰던 사람은 full

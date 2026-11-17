@@ -105,6 +105,10 @@ targets:
         #    파랑이므로, 색을 새로 굽는 대신 가리키는 곳 없는 설정을 지운다.
         SWIFT_EMIT_LOC_STRINGS: YES
         SUPPORTS_MACCATALYST: NO
+        # 맥에는 맥 앱(무지개 공방, 같은 번들 ID)이 따로 있다. 아이폰 앱이 맥에서
+        # 'Designed for iPhone · iPad'로 뜨지 않게 막는다 (Xcode 실행 대상에서도 사라진다).
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
         TARGETED_DEVICE_FAMILY: "1,2"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
