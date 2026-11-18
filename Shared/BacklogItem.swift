@@ -13,7 +13,7 @@ final class BacklogItem {
     var categoryID: String? = nil
     /// 연결된 Project.uuid (없으면 nil = 프로젝트 없음). 분류와는 다른 축이다 (→ Project).
     /// 단계(하위 줄)에는 안 적는다 — 최상위 할 일의 것을 따른다.
-    /// ⚠️ 아이폰 BacklogItem 에도 같은 칸이 있다. 한쪽만 고치지 말 것.
+    /// ⚠️ 아이폰 · 맥이 이 정의 하나를 쓴다 (Shared/).
     var projectID: String? = nil
     /// 이 할 일이 속한 주 (월요일 00:00). 지난 주에 못 한 항목 구분에 사용.
     var weekStartDate: Date = Date.currentWeekStart
@@ -23,25 +23,23 @@ final class BacklogItem {
 
     // MARK: - 뎁스(단계)
     //
-    // 할 일 하나를 100%로 놓고 그 안을 '일이 되어야 하는 순서대로' 쪼갠 단계들.
+    // 할 일 하나를 '일이 되어야 하는 순서대로' 쪼갠 단계들.
     // 단계도 같은 BacklogItem이고, 부모의 dragToken을 parentToken으로 들고 있다.
-    // 순서는 sortIndex, 비중은 부모의 예상 시간을 나눠 가진 비율이다 → TodoTree.swift
-    // 시간은 위에서 아래로 내려간다: 상위 할 일의 durationHours가 100%이고,
-    // 단계들은 그 시간을 나눠 갖는다(기본 N분의 1). 합은 언제나 부모의 시간이다.
+    // 순서는 sortIndex. 시간은 아래에서 위로 쌓인다 — 단계마다 착수 조건을 고르면
+    // 그 속성이 시간을 데려오고, 상위 할 일의 시간은 단계들의 합이다 → TodoTree.swift
     // CloudKit 라이트웨이트 마이그레이션을 위해 옵셔널 + 기본값 nil.
 
-    /// 상위 할 일의 dragToken. nil이면 최상위 할 일(= 그 자체가 100%).
+    /// 상위 할 일의 dragToken. nil이면 최상위 할 일.
     var parentToken: String? = nil
 
     /// '착수 조건'(바로/펼치고/몰입해서…)으로 단계를 나누던 시절의 필드.
-    ///    이미 배포된 사용자·iOS 앱과 공유하는 CloudKit 스키마에 들어 있어 지우지 못한다.
+    ///    이미 배포된 사용자 · 두 앱이 함께 쓰는 CloudKit 스키마에 들어 있어 지우지 못한다.
     ///    (지우면 라이트웨이트 마이그레이션이 깨진다.)
     ///
     ///    ⚠️ 직접 읽거나 쓰지 말 것. 지금은 **두 질문에 사용자가 직접 답한 것**을 담는
     ///    자리로 다시 쓰고 있고, 접두어(`pick:`)로 옛 값과 구분한다.
     ///    → BacklogItem+Fragment.swift 의 `fragmentPick`으로만 드나든다.
     var labelRaw: String? = nil
-
 
     // MARK: - 함께 쓰는 줄인가 (→ TodoSharing.swift)
     //

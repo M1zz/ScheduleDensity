@@ -1193,8 +1193,7 @@ struct TodoDetailView: View {
 
         let step = TodoTree.makeStep(under: parent,
                                      title: title,
-                                     sortIndex: tree.nextSortIndex(under: parent))
-        TodoSharing.stamp(step)
+                                     sortIndex: tree.nextSortIndex(under: parent))   // 표는 makeStep 이 새긴다
         context.insert(step)
 
         // 새로 만든 단계까지 넣어 트리를 다시 세운다 (@Query가 갱신되기 전이라도 계산이 맞도록).
