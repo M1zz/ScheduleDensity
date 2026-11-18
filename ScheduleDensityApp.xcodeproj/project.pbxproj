@@ -268,6 +268,7 @@
 		FB3E75B8ECD21EB26B8DE1A6 /* FirstRunStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB80B328A1EC1177ED851C5E /* FirstRunStart.swift */; };
 		FC626E007102556F940CE401 /* AppLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0C62DF411290916F011B02 /* AppLog.swift */; };
 		FDD795001175EF2B314A3484 /* TimerActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD55D4646CC08F9037882688 /* TimerActivity.swift */; };
+		FE863F70242622A7D2645EC1 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6772C20003A4580E41616F0F /* AppIcon.icon */; };
 		FEC04360BC23FA65C85A607D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FD190E36511B72612020479E /* Localizable.xcstrings */; };
 		FFD364CF5E6FACAC734F8D2A /* MacEntitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4EC0DFD0BC272357249D7C /* MacEntitlement.swift */; };
 		FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F27359D56BF2678D1330BE /* AddEventView.swift */; };
@@ -454,6 +455,7 @@
 		63283233385421AD018AB5E7 /* DensityCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DensityCalculator.swift; sourceTree = "<group>"; };
 		65EEF2BD380B1CC42E9D9982 /* CalendarMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMirrorView.swift; sourceTree = "<group>"; };
 		66F83109177C87ECC54FC849 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		6772C20003A4580E41616F0F /* AppIcon.icon */ = {isa = PBXFileReference; path = AppIcon.icon; sourceTree = "<group>"; };
 		686CE7F8764FC41681425C64 /* ActualTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActualTime.swift; sourceTree = "<group>"; };
 		6B68A7C9BC1F03C133EFD277 /* TodoSplitOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoSplitOnboarding.swift; sourceTree = "<group>"; };
 		6BC3A6E73464097A7DEA1703 /* ScheduleShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleShareView.swift; sourceTree = "<group>"; };
@@ -966,6 +968,7 @@
 				686CE7F8764FC41681425C64 /* ActualTime.swift */,
 				DF4F966FE512BED5947C9B89 /* Affordance.swift */,
 				425D6CC2500025C3B24DA40D /* AllDaySpans.swift */,
+				6772C20003A4580E41616F0F /* AppIcon.icon */,
 				3E743CF4EF0B965E613776E5 /* AppLanguage.swift */,
 				138170822518ACEB7E68F65C /* AppShortcuts.xcstrings */,
 				0229074CBD5A5AF57CDB26E0 /* Assets.xcassets */,
@@ -1239,6 +1242,7 @@
 				82E33A5411892083277893DD /* Frameworks */,
 				D656BDE89D8FCF082764AB81 /* Embed Foundation Extensions */,
 				1BC75CA67F7FE81A140112B7 /* 한국어 원문 표 넣기 */,
+				151D048E57E2D6EE79288199 /* 독에 뜨는 이름 맞추기 (NFD) */,
 			);
 			buildRules = (
 			);
@@ -1396,6 +1400,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE863F70242622A7D2645EC1 /* AppIcon.icon in Resources */,
 				A3490361AB91B3887BD13B2C /* AppShortcuts.xcstrings in Resources */,
 				A257B4283F83299ABEBC1EF5 /* Assets.xcassets in Resources */,
 				343B9250F2ED453581DAB227 /* InfoPlist.xcstrings in Resources */,
@@ -1472,6 +1477,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"$SRCROOT/macOS/scripts/source-language-strings.py\" \"$SRCROOT/macOS/TodoShare/Localizable.xcstrings\" \"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/ko.lproj/Localizable.strings\"";
+		};
+		151D048E57E2D6EE79288199 /* 독에 뜨는 이름 맞추기 (NFD) */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "독에 뜨는 이름 맞추기 (NFD)";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$SRCROOT/macOS/scripts/decompose-display-name.py\" \"$TARGET_BUILD_DIR/$INFOPLIST_PATH\"";
 		};
 		1BC75CA67F7FE81A140112B7 /* 한국어 원문 표 넣기 */ = {
 			isa = PBXShellScriptBuildPhase;
