@@ -1,8 +1,8 @@
 import Foundation
 import SwiftData
 
-// 색상 헬퍼(displayColor / paletteColor / routineColorOptions)는 SwiftUI에 의존하므로
-// Theme.swift(macOS 전용)로 분리했다. 이 파일은 순수 데이터 모델만 담아 iOS 타깃에도 공유 가능하다.
+// 아이폰 · 맥이 이 파일 하나를 쓴다 (Shared/). 순수 데이터 모델만 둔다 —
+// 색상 헬퍼(displayColor / paletteColor / routineColorOptions)는 SwiftUI 라 각 앱의 Theme.swift 에 있다.
 
 @Model
 final class Routine {
@@ -22,7 +22,7 @@ final class Routine {
     var sessionsPerDay: Int = 0
     /// 쿼터 루틴의 **회차별 기본 시작 시각** — "7,12.5,19" 꼴(시, 소수). nil 이면 하루 활동 구간에
     /// 고르게 나눈 계산값을 쓴다(맥 `Routine.defaultSessionStart`). 요일마다 옮긴 것(QuotaPlacement)이 이보다 먼저다.
-    /// ⚠️ CloudKit 스키마가 늘어나는 필드다 — 맥·아이폰 양쪽에 같이 있어야 한다 (→ README).
+    /// ⚠️ CloudKit 스키마가 늘어나는 필드다 — 두 앱이 이 정의 하나를 쓴다.
     var sessionStartsRaw: String? = nil
 
     var sortIndex: Int = 0
