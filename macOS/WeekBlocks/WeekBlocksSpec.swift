@@ -1,0 +1,178 @@
+//
+//  WeekBlocksSpec.swift
+//  WeekBlocks (무지개 공방)
+//
+//  LeeoKit 계약(LeeoAppSpec) 준수 — 이 앱의 공통 기능 설정값 단일 소스.
+//  피드백 시스템 구현은 전부 LeeoKit에 있고, 앱은 이 설정만 제공한다.
+//
+
+import Foundation
+import LeeoKit
+
+enum WeekBlocksSpec: LeeoAppSpec {
+    /// 사람에게 보여 주는 이름 — 영어 환경에서는 "Rainbow Craft"이 된다.
+    static var appName: String { String(localized: "무지개 공방", comment: "앱 이름") }
+    static let developerEmail = "leeo@kakao.com"
+
+    /// 함께 쓰는 앱 목록(`LeeoFamilyCatalog`)에서 이 앱의 자리. 설정 ▸ 함께 쓰면 좋은 앱에서
+    /// 자기 자신을 빼고, 짝인 아이폰 앱 '욕망의 무지개'를 맨 앞에 세운다.
+    static let familyID: String? = "rainbow-mac"
+    static let familyFeatured = ["rainbow-ios"]
+
+    /// WeekBlocks.entitlements에 iCloud.com.Ysoup.FeedbackHub 컨테이너가 있어야 한다.
+    /// 공용 피드백 허브(FeedbackHub)로 수집 — appIdentifier로 앱을 구분한다.
+    /// (앱 데이터는 iCloud.com.devkoan.ScheduleDensity 컨테이너에서 계속 동기화된다.)
+    ///
+    /// ⚠️ **appIdentifier 는 번들 ID 가 아니라 허브의 이름표다. 바꾸지 않는다.**
+    ///    번들 ID 는 아이폰 '욕망의 무지개'와 같은 `com.example.ScheduleDensityApp` 으로 옮겼지만
+    ///    (한 레코드 · 유니버설 구매), 맥의 피드백 · 사용 통계 · 원격 스위치(`flags_…`)는 이 이름표로 계속 갈린다.
+    static let feedback = LeeoFeedbackConfig(
+        containerIdentifier: "iCloud.com.Ysoup.FeedbackHub",
+        appIdentifier: "com.devkoan.ScheduleDensityApp"
+    )
+
+    /// 백업 금고가 함께 떠 두는 공유 저장소 (위젯 · 공유 메뉴와 나누는 것).
+    static let appGroups = ["QGAQ3AY3R3.group.com.devkoan.ScheduleDensity"]
+
+    /// LeeoKit 3부터는 기본값이 없다 — 모든 앱이 한 번은 선언해야 하는 의무 링크.
+    ///
+    /// ⚠️ 주소도 번역한다. 영어로 쓰는 사람에게 한국어 방침을 열어 주면 읽을 수가 없다.
+    ///    영어 자리는 docs/privacy-en.html · docs/support-en.html 이다.
+    ///    스토어(App Store Connect)에 넣는 주소도 같은 것을 쓴다 (→ docs/STORE_NOTES_*.txt).
+    static var legal: LeeoLegalConfig {
+        LeeoLegalConfig(
+            privacyURL: URL(string: String(localized: "https://m1zz.github.io/WeekBlocks/privacy.html",
+                                           comment: "개인정보 처리방침 주소"))!,
+            supportURL: URL(string: String(localized: "https://m1zz.github.io/WeekBlocks/",
+                                           comment: "지원 페이지 주소"))!,
+            marketingURL: URL(string: String(localized: "https://m1zz.github.io/WeekBlocks/",
+                                             comment: "지원 페이지 주소"))!
+        )
+    }
+
+    /// **파는 것은 Plus · Pro 두 칸이다** (2026-10 개편). 칸마다 연 구독과 평생을 나란히 둔다.
+    ///
+    /// 선은 이렇게 긋는다: **이번 주를 사는 데 필요한 것은 무료, 지난 주들이 쌓여야 보이는 것은 Plus,
+    /// 남에게 내보내는 것과 아이폰까지 함께 여는 것은 Pro.**
+    ///  · 무료: 주간·일간 계획, 루틴, 할 일, 이번 주 회고(글로 복사 포함), 타이머, 캘린더 가져오기, 아이폰과 오가기
+    ///  · Plus: 회고 추세 8주, 요일별·시간대별·계획 대비 실제 카드, 다른 주 계획 가져오기
+    ///  · Pro: Plus 전부 + 내 일정 공유 링크 + 아이폰 '욕망의 무지개' Pro
+    ///
+    /// ⚠️ **상품은 아이폰 '욕망의 무지개'와 같은 것이다** (한 레코드 · 유니버설 구매). 어느 기기에서 사든
+    ///    양쪽 영수증에 선다. 번들 ID 가 달랐던 옛 맥앱에서 산 사람은 iCloud 에 남은 표로 잇는다 (→ ProMark.swift).
+    /// ⚠️ 판매를 멈춘 월 구독(`proMonthlyID`)도 권한 목록에는 남긴다. 구독자는 끝날 때까지 Pro 다.
+    /// ⚠️ **여기 선언했다고 팔기 시작하는 게 아니다.** 실제로 파는지는 `MacEntitlement.sellsPro`가 정한다.
+    static let monetization = LeeoMonetization.freemiumSubscription(
+        LeeoSubscriptionConfig(
+            productIDs: saleProductIDs,
+            // 자체 약관이 없으므로 애플 표준 사용권 계약(EULA)을 건다.
+            // App Store Connect의 '사용권 계약'을 표준으로 두는 것과 짝이다.
+            termsURL: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!,
+            // LeeoStore 의 hasPro 는 '무엇이든 유료 칸을 가졌는가'다. 어느 칸인지는 `tier(owned:)` 가 가른다.
+            entitlementIDs: plusEntitlementIDs.union(proEntitlementIDs),
+            gate: LeeoGatePolicy(
+                // 무료로도 **써 보고 알 만큼**은 연다: 지난 2주 추세는 그냥 보인다.
+                freeLimits: [Gate.trendWeeks: ReflectionTrends.freeWeekCount],
+                proOnly: [Gate.trends, Gate.weekCopy, Gate.share]),
+            // Pro 선물하기. 보내는 사람은 소모성 선물 상품을 사고, 받는 사람은 Pro 평생을 산 것과 같아진다.
+            // 선물 기록은 피드백과 같은 허브 컨테이너의 공개 DB 에 둔다. WeekBlocks.entitlements 에 이미 있다.
+            // ⚠️ 선물 상품은 productIDs · entitlementIDs 에 넣지 않는다. 넣으면 선물을 산 사람이 Pro 가 된다.
+            gift: LeeoGiftConfig(
+                productID: giftProductID,
+                grantsProductID: proLifetimeID,
+                containerIdentifier: "iCloud.com.Ysoup.FeedbackHub"
+            ),
+            // 개발자 응원하기(팁). 기능을 열지 않는 소모성 상품 셋 — 이미 Pro 인 사람이 조금 더 내고 싶을 때.
+            // ⚠️ 팁 상품도 productIDs · entitlementIDs 에 넣지 않는다. 넣으면 팁을 낸 사람이 Pro 가 된다.
+            tipJar: LeeoTipJarConfig(productIDs: tipProductIDs)
+        )
+    )
+
+    // MARK: - 상품 ID
+
+    /// App Store Connect의 상품 ID. **아이폰 앱의 `ProEntitlement` 와 같은 값이다.**
+    /// ⚠️ 콘솔에 만든 것·`WeekBlocks.storekit`에 적은 것과 **글자 하나까지 같아야 한다.**
+    /// Plus 연 · Pro 연(· 판매를 멈춘 Pro 월)은 같은 구독 그룹에 있어야 서로 갈아탈 수 있다.
+    static let plusYearlyID = "com.example.ScheduleDensityApp.plus.annual"
+    static let plusLifetimeID = "com.example.ScheduleDensityApp.plus"
+    static let proYearlyID = "com.example.ScheduleDensityApp.pro.annual"
+    static let proLifetimeID = "com.example.ScheduleDensityApp.pro"
+    /// Plus 평생을 산 사람이 Pro 평생으로 올리는 값.
+    static let proUpgradeID = "com.example.ScheduleDensityApp.pro.upgrade"
+    /// 구독 졸업: 구독 중인 사람에게만 보이는 Pro 평생.
+    static let proGraduateID = "com.example.ScheduleDensityApp.pro.graduate"
+    /// 판매 중지(2026-10). 구독자는 끝날 때까지 Pro 다.
+    static let proMonthlyID = "com.example.ScheduleDensityApp.pro.monthly"
+
+    /// Pro 선물 (소모성). 산 사람이 아니라 **코드를 받은 사람**에게 Pro 평생(`proLifetimeID`)을 연다(`LeeoGiftStore`).
+    /// ⚠️ `saleProductIDs` · 권한 목록에 넣지 않는다 — 넣으면 선물을 산 사람이 Pro 가 되고, 결제가 코드 없이 끝난다.
+    /// App Store Connect 에 소모성 상품으로 만들어야 뜬다. 없으면 설정의 선물 줄이 숨는다.
+    static let giftProductID = "com.example.ScheduleDensityApp.gift.pro"
+
+    /// 팁 (소모성, 작은 것부터). 아무것도 열지 않는다 — 고마움을 보태는 값이다(`LeeoTipJar`).
+    /// App Store Connect 에 소모성 상품으로 만들어야 뜬다. 없으면 설정의 응원 줄과 부탁 카드가 숨는다.
+    static let tipProductIDs = ["com.example.ScheduleDensityApp.tip.small",
+                                "com.example.ScheduleDensityApp.tip.medium",
+                                "com.example.ScheduleDensityApp.tip.large"]
+
+    /// 불러올 상품. 페이월의 칸 차례(Plus 연 → Plus 평생 → Pro 연 → Pro 평생)에 올리기 · 졸업이 붙는다.
+    static let saleProductIDs = [plusYearlyID, plusLifetimeID, proYearlyID, proLifetimeID,
+                                 proUpgradeID, proGraduateID]
+
+    /// Plus 를 여는 상품.
+    static let plusEntitlementIDs: Set<String> = [plusYearlyID, plusLifetimeID]
+    /// 이 중 하나라도 있으면 Pro 다. 판매를 멈춘 것도 빼지 않는다.
+    static let proEntitlementIDs: Set<String> = [proYearlyID, proLifetimeID, proMonthlyID,
+                                                 proUpgradeID, proGraduateID]
+    /// 자동 갱신 구독(졸업 제안의 대상).
+    static let subscriptionIDs: Set<String> = [plusYearlyID, proYearlyID, proMonthlyID]
+    /// 끝이 없는 Pro. 이걸 가진 사람에게는 졸업을 권하지 않고, 패스는 올리기 값으로 판다.
+    static let proLifetimeIDs: Set<String> = [proLifetimeID, proUpgradeID, proGraduateID]
+
+    /// **가진 상품이 어느 칸을 여는가.** 연 구독은 같은 칸의 평생과 같다.
+    static func tier(owned: Set<String>) -> MacTier {
+        if !owned.isDisjoint(with: proEntitlementIDs) { return .pro }
+        if !owned.isDisjoint(with: plusEntitlementIDs) { return .plus }
+        return .free
+    }
+
+    /// 게이트 열쇠말. 문자열을 여기저기 흩어 적으면 오타 하나로 조용히 안 잠긴다.
+    enum Gate {
+        /// 지난 주들의 회고 추세.
+        static let trends = "reflectionTrends"
+        /// 다른 주의 계획을 이번 주에 깔기.
+        static let weekCopy = "weekCopy"
+        /// 추세를 몇 주까지 거슬러 보는가 (무료는 2주).
+        static let trendWeeks = "trendWeeks"
+        /// 내 일정을 남에게 보기 전용 링크로 공유하기 (Pro). 회고 복사는 2026-10 부터 무료라 열쇠가 없다.
+        static let share = "share"
+    }
+
+    /// **익명 사용 통계를 피드백 허브로 보낸다** (→ Telemetry.swift).
+    ///
+    /// 이 줄이 있어야 LeeoKit 안에서 저절로 나는 이벤트(페이월 노출·구매 시도·성공·실패·
+    /// 복원·피드백 제출)가 어딘가에 쌓인다. 선언하지 않으면 기본이 no-op이라
+    /// "페이월은 봤는데 아무도 안 샀다"와 "페이월을 아무도 못 봤다"를 구분할 수 없다.
+    ///
+    /// ⚠️ 사람이 끄면 여기부터 막힌다 — `WeekBlocksAnalytics`가 스위치를 본다.
+    static let analytics: any LeeoAnalytics = WeekBlocksAnalytics()
+
+    /// 완성도 체크리스트 신고. 적어 두지 않으면 전부 '아직 안 봤음'으로 집계된다.
+    /// (피드백·리뷰 요청·결제 안정성·정책 링크처럼 LeeoKit이 대는 항목은 여기 안 적는다.)
+    static let capabilities = LeeoCapabilities(
+        implemented: [.cloudSync, .backupExport, .structuredStorage, .schemaMigration,
+                      .analytics, .feedbackChannel,
+                      .privacyManifest, .minimalPermissions,
+                      .localization, .darkMode, .onboarding, .microInteractions,
+                      .emptyStates, .conversionFunnel,
+                      .accessibility, .killSwitch,
+                      .performanceMonitoring, .structuredLogging,
+                      .automatedTests, .staticAnalysis, .continuousIntegration],
+        notApplicable: [
+            .accountDeletion: "계정이 없다 — 로그인도 회원가입도 하지 않는다",
+            .biometricLock: "잠글 비밀이 없다. 할 일과 주간 계획뿐이다",
+            .widgets: "맥 위젯은 아직. 아이폰 쪽(욕망의 무지개)이 먼저다",
+            .abTesting: "한 사람이 만드는 앱에 두 갈래를 굴릴 손이 없다",
+        ]
+    )
+}

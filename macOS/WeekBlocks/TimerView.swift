@@ -1,0 +1,720 @@
+//
+//  TimerView.swift
+//  무지개 공방
+//
+//  "운동 1시간"이라고 적어 둔 계획에, 지금 얼마 남았는가.
+//
+//  기본은 **일정 기준**이다. 아무것도 누르지 않아도, 수면이 23:00–07:00이고 지금이 23:29면
+//  타이머는 이미 7:31:00을 세고 있다 (→ ScheduleClock.swift).
+//  계획보다 늦게 시작했거나 계획에 없는 일을 할 때만 '지금부터' 따로 센다 (→ TaskTimer.swift).
+//
+
+import SwiftUI
+import SwiftData
+
+// MARK: - 타이머 창
+
+struct TimerWindowView: View {
+    @Query private var allBlocksRaw: [PlanBlock]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    /// **거르는 자리는 여기 하나뿐이다** — 화면마다 조건을 따로 쓰면 어딘가는 새어 보인다.
+    private var allBlocks: [PlanBlock] { allBlocksRaw.filter(TodoSharing.isVisible) }
+    @Query(sort: [SortDescriptor(\Routine.sortIndex)]) private var routinesRaw: [Routine]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    /// **거르는 자리는 여기 하나뿐이다** — 화면마다 조건을 따로 쓰면 어딘가는 새어 보인다.
+    private var routines: [Routine] { routinesRaw.filter(TodoSharing.isVisible) }
+    @Query private var allOccurrences: [RoutineOccurrence]
+    @Query private var allQuotaPlacements: [QuotaPlacement]
+
+    @State private var timer = TaskTimer.shared
+    /// 겹친 일정 중 고른 것 (→ ScheduleFocus). 바뀌면 얼굴을 다시 그린다.
+    @AppStorage(ScheduleFocus.storageKey) private var focus = ""
+
+    var body: some View {
+        Group {
+            if timer.isActive {
+                // 직접 센 것이 우선이다 — 사람이 손으로 누른 것이 일정보다 지금을 잘 안다.
+                RunningTimerFace()
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            } else {
+                // 1초마다 다시 그린다. 세는 주체가 따로 없고, 계산은 '지금'에서 바로 나온다.
+                TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                    ScheduleTimerFace(slots: slots, now: ctx.date, focus: focus)
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            }
+        }
+        // 세기 시작하고 멈추는 그 한 걸음. 창이 통째로 다른 물건으로 바뀌어 보이면 안 된다.
+        .animation(Motion.screen, value: timer.isActive)
+        .frame(minWidth: 380, minHeight: 480)
+        .background(Color(nsColor: .windowBackgroundColor))
+    }
+
+    private var slots: [ScheduleSlot] {
+        ScheduleClock.slots(routines: routines, blocks: allBlocks,
+                            occurrences: allOccurrences, placements: allQuotaPlacements)
+    }
+}
+
+// MARK: - 일정 기준 얼굴
+
+/// 지금 하고 있는 일정과 거기 남은 시간. 시작 버튼이 없다 — 시작은 이미 일정에 적혀 있다.
+struct ScheduleTimerFace: View {
+    let slots: [ScheduleSlot]
+    let now: Date
+    var focus: String = ""
+
+    @State private var timer = TaskTimer.shared
+
+    private var current: ScheduleSlot? { ScheduleClock.current(slots, at: now, focus: focus) }
+    /// 지금 세는 것 말고 함께 진행 중인 것들. 회사 안의 회의처럼.
+    private var others: [ScheduleSlot] {
+        ScheduleClock.overlapping(slots, at: now).filter { $0.id != current?.id || $0.start != current?.start }
+    }
+    private var upcoming: ScheduleSlot? { ScheduleClock.next(slots, at: now) }
+
+    var body: some View {
+        VStack(spacing: 14) {
+            if let slot = current {
+                runningSlot(slot)
+                    .transition(.opacity)
+            } else {
+                idle
+                    .transition(.opacity)
+            }
+
+            Divider().padding(.horizontal, -4)
+            todayList
+        }
+        // 한 일정이 끝나고 다음이 시작되는 그 분. 제목이 툭 갈리면 다른 창처럼 읽힌다.
+        .animation(Motion.screen, value: current?.id)
+        .padding(20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    // MARK: 지금 하고 있는 것
+
+    private func runningSlot(_ slot: ScheduleSlot) -> some View {
+        let tint = slot.colorName.map(paletteColor) ?? .accentColor
+        return VStack(spacing: 12) {
+            VStack(spacing: 4) {
+                Label(slot.title, systemImage: slot.iconName)
+                    .font(.system(size: 19, weight: .semibold))
+                    .lineLimit(1)
+                Text("\(clock(slot.start))–\(clock(slot.end)) · \(formatDuration(slot.hours))")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+            }
+
+            ZStack {
+                Circle().stroke(tint.opacity(0.14), lineWidth: 13)
+                Circle()
+                    // 남은 몫을 그린다 — 9시간 중 6시간 반이 남았으면 고리의 72%가 차 있다.
+                    .trim(from: 0, to: 1 - slot.progress(at: now))
+                    .stroke(tint, style: StrokeStyle(lineWidth: 13, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+
+                VStack(spacing: 2) {
+                    Text(formatCountdown(slot.remaining(at: now)))
+                        .font(.system(size: 42, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(tint)
+                        .contentTransition(.numericText())
+                    Text("남음")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 190, height: 190)
+
+            Text("\(clock(slot.end))에 끝납니다")
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+
+            if !others.isEmpty { switcher }
+        }
+    }
+
+    /// 함께 진행 중인 다른 일정으로 바꾸는 줄. 회사 한가운데 회의가 시작되면 회의를 센다.
+    private var switcher: some View {
+        VStack(spacing: 6) {
+            Text("함께 진행 중")
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+            ForEach(others) { other in
+                Button {
+                    withAnimation(Motion.screen) { ScheduleFocus.choose(other) }
+                } label: {
+                    Label("\(other.title) · \(clock(other.start))–\(clock(other.end))",
+                          systemImage: "arrow.left.arrow.right")
+                        .font(.system(size: 13))
+                        .lineLimit(1)
+                }
+                .buttonStyle(.bordered)
+                .help("이 일정으로 타이머 바꾸기")
+            }
+        }
+        .padding(.top, 2)
+    }
+
+    // MARK: 지금은 비어 있을 때
+
+    private var idle: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "cup.and.saucer")
+                .font(.system(size: 30))
+                .foregroundStyle(.tertiary)
+            Text("지금은 올려 둔 일정이 없습니다")
+                .font(.system(size: 16, weight: .semibold))
+
+            if let next = upcoming {
+                VStack(spacing: 3) {
+                    Text("다음 · \(next.title)")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(next.colorName.map(paletteColor) ?? .accentColor)
+                    Text("\(clock(next.start)) 시작 · \(formatCountdown(next.start.timeIntervalSince(now))) 뒤")
+                        .font(.system(size: 13))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.top, 2)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+    }
+
+    // MARK: 오늘 남은 것들
+
+    private var todayList: some View {
+        let cal = Calendar.current
+        let rest = slots
+            .filter { cal.isDate($0.start, inSameDayAs: now) || $0.end > now }
+            .filter { $0.end > now && $0.start < now.addingTimeInterval(24 * 3600) }
+            .sorted { $0.start < $1.start }
+
+        return VStack(alignment: .leading, spacing: 6) {
+            Text("여기서부터 남은 하루")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            if rest.isEmpty {
+                Text("남은 일정이 없습니다.")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.tertiary)
+                    .padding(.vertical, 6)
+            } else {
+                ScrollView {
+                    VStack(spacing: 5) {
+                        ForEach(rest) { slot in
+                            SlotRow(slot: slot, now: now,
+                                    isCounted: slot.id == current?.id && slot.start == current?.start)
+                                .transition(.row)
+                        }
+                    }
+                    // 지나간 일정은 목록에서 내려간다. 한 줄이 조용히 사라지면
+                    // 아래 것들이 이유 없이 뛰어오른 것으로 보인다.
+                    .animation(Motion.row, value: rest.map(\.id))
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func clock(_ date: Date) -> String { formatHour(hourOfDay(date)) }
+}
+
+/// 남은 하루의 한 줄. 지금 하고 있는 것은 테두리로 도드라진다.
+private struct SlotRow: View {
+    let slot: ScheduleSlot
+    let now: Date
+    /// 타이머가 지금 세고 있는 줄인가. 겹친 일정은 둘 다 '지금'이지만 세는 것은 하나다.
+    var isCounted = false
+
+    @State private var timer = TaskTimer.shared
+
+    private var isNow: Bool { slot.contains(now) }
+    private var tint: Color { slot.colorName.map(paletteColor) ?? .accentColor }
+
+    var body: some View {
+        HStack(spacing: 9) {
+            Image(systemName: slot.iconName)
+                .font(.system(size: 13))
+                .foregroundStyle(tint)
+                .frame(width: 16)
+
+            Text(slot.title)
+                .font(.system(size: 13, weight: isNow ? .semibold : .regular))
+                .lineLimit(1)
+
+            Spacer(minLength: 6)
+
+            Text(isNow
+                 ? String(localized: "\(formatCountdown(slot.remaining(at: now))) 남음")
+                 : formatHour(hourOfDay(slot.start)))
+                .font(.system(size: 12, weight: isNow ? .semibold : .regular))
+                .monospacedDigit()
+                .foregroundStyle(isNow ? tint : .secondary)
+        }
+        .padding(.horizontal, 9)
+        .padding(.vertical, 6)
+        .background(RoundedRectangle.soft(Corner.chip).fill(tint.opacity(isNow ? 0.12 : 0.05)))
+        // 지금 하는 줄에만 테두리. 나머지까지 두르면 '지금'이 묻힌다.
+        .overlay(RoundedRectangle.soft(Corner.chip)
+            .strokeBorder(tint.opacity(isNow ? 0.5 : 0), lineWidth: 1))
+        .contextMenu {
+            if isNow && !isCounted {
+                Button { ScheduleFocus.choose(slot) } label: {
+                    Label("이 일정으로 타이머 바꾸기", systemImage: "arrow.left.arrow.right")
+                }
+            }
+            TimerMenuItems(token: slot.id, title: slot.title, hours: slot.hours,
+                           iconName: slot.iconName, colorName: slot.colorName,
+                           scheduledStart: slot.start)
+        }
+    }
+}
+
+// MARK: - 직접 센 타이머의 얼굴
+
+/// 일정 기준을 벗어나 '지금부터' 세는 중. 늦게 시작했거나 계획에 없는 일을 할 때.
+struct RunningTimerFace: View {
+    @Environment(\.modelContext) private var context
+    @State private var timer = TaskTimer.shared
+
+    @Query private var allBlocksRaw: [PlanBlock]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    private var allBlocks: [PlanBlock] { allBlocksRaw.filter(TodoSharing.isVisible) }
+
+    /// 지금 세고 있는 계획 블록. 루틴을 세는 중이면 nil — 루틴에는 '다음 첫 동작'이 없다.
+    ///
+    /// ⚠️ 계산 프로퍼티로 두면 **초당 네 번** 블록 전체를 훑는다. 이 뷰는 타이머의 `now`(0.5초)를
+    ///    보고 다시 그려지고, 본문 안에서 이 값을 두 번 읽기 때문이다. 찾는 답은 토큰이 바뀌기
+    ///    전까지 같으므로, 바뀔 때만 한 번 찾아 들고 있는다.
+    @State private var timedBlock: PlanBlock?
+
+    private func findTimedBlock() {
+        guard let token = timer.target?.token else {
+            timedBlock = nil
+            return
+        }
+        timedBlock = PlanBlock.matching(dragToken: token, in: allBlocks)
+    }
+
+    /// 멈추기 전에 한 줄을 받는 중. 담긴 블록이 그 대상이다.
+    @State private var closing: PlanBlock?
+    @State private var draft = ""
+
+    private var tint: Color {
+        if timer.isOvertime { return .red }
+        return timer.target?.colorName.map(paletteColor) ?? .accentColor
+    }
+
+    var body: some View {
+        VStack(spacing: 18) {
+            header
+
+            // 끊겼다가 돌아왔을 때 — 지난번에 남긴 한 줄이 먼저 선다.
+            if let note = timedBlock?.nextAction, !note.isEmpty {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "arrow.turn.down.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(tint)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("여기서부터")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        Text(note)
+                            .font(.system(size: 13, weight: .medium))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 9)
+                .background(tint.opacity(0.1), in: .soft(Corner.card))
+                .padding(.horizontal, 16)
+                .transition(.pop)
+            }
+
+            ZStack {
+                // 다 쓴 만큼 고리가 채워진다. 초과해도 두 바퀴 돌지 않는다.
+                Circle().stroke(tint.opacity(0.14), lineWidth: 14)
+                Circle()
+                    // 남은 몫을 그린다 — 일정 기준 얼굴과 같은 읽기. 초과하면 비어 있다.
+                    .trim(from: 0, to: 1 - timer.progress)
+                    .stroke(tint, style: StrokeStyle(lineWidth: 14, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.linear(duration: 0.5), value: timer.progress)
+
+                VStack(spacing: 2) {
+                    Text(formatCountdown(timer.remaining))
+                        .font(.system(size: 46, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(tint)
+                        .contentTransition(.numericText())
+                    Text(timer.isOvertime ? "초과" : "남음")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 210, height: 210)
+            .padding(.vertical, 4)
+
+            footnote
+                .animation(Motion.row, value: timer.isRunning)
+                .animation(Motion.row, value: timer.isOvertime)
+            controls
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(Motion.squish, value: timedBlock?.nextAction)
+        .task(id: timer.target?.token) { findTimedBlock() }
+        .onChange(of: allBlocksRaw.count) { _, _ in findTimedBlock() }
+        .sheet(item: $closing) { block in
+            nextActionSheet(block)
+        }
+    }
+
+    private var header: some View {
+        VStack(spacing: 6) {
+            Label(timer.target?.title ?? "", systemImage: timer.target?.iconName ?? "timer")
+                .font(.system(size: 19, weight: .semibold))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+
+            if let planned = timer.target?.plannedSeconds {
+                Text(formatDuration(planned / 3600))
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    /// 멈춰 있으면 그렇다고 말한다. 흐르고 있으면 이대로 끝나는 시각을 말한다.
+    /// 초과 중일 때 "몇 시에 끝난다"는 거짓말이므로 대신 얼마나 넘겼는지를 적는다.
+    @ViewBuilder
+    private var footnote: some View {
+        if !timer.isRunning {
+            Label("멈춰 있습니다", systemImage: "pause.circle")
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+        } else if timer.isOvertime {
+            Text(String(localized: "계획보다 \(formatDuration(-timer.remaining / 3600)) 넘겼습니다"))
+                .font(.system(size: 13))
+                .foregroundStyle(.red)
+        } else {
+            Text(String(localized: "이대로면 \(formatHour(hourOfDay(timer.projectedEnd)))에 끝납니다"))
+                .font(.system(size: 13))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    /// 멈추기 전에 한 줄을 받는 작은 창. **건너뛸 수 있어야 한다** — 물어보는 것이 벽이 되면
+    /// 사람은 타이머를 안 쓰게 된다. 적든 안 적든 멈추는 것은 똑같이 된다.
+    private func nextActionSheet(_ block: PlanBlock) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("다음 첫 동작")
+                    .font(.title3.weight(.semibold))
+                Text("돌아왔을 때 무엇부터 하면 되나요? 한 줄이면 충분합니다.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+
+            TextField("", text: $draft, prompt: Text("예: 3번 예제부터 다시 돌려보기"), axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(2...4)
+                .onSubmit { finishClosing(block, save: true) }
+
+            HStack {
+                Button("건너뛰고 멈추기") { finishClosing(block, save: false) }
+                    .keyboardShortcut(.cancelAction)
+                Spacer()
+                Button("적고 멈추기") { finishClosing(block, save: true) }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+            }
+        }
+        .padding(20)
+        .frame(width: 380)
+    }
+
+    private func finishClosing(_ block: PlanBlock, save: Bool) {
+        if save {
+            let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
+            block.nextAction = text.isEmpty ? nil : text
+            try? context.save()
+        }
+        closing = nil
+        draft = ""
+        Haptic.tick()
+        timer.stop()
+    }
+
+    private var controls: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                Button {
+                    timer.toggle()
+                } label: {
+                    Label(timer.isRunning ? "일시정지" : "이어서",
+                          systemImage: timer.isRunning ? "pause.fill" : "play.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .controlSize(.large)
+
+                Button {
+                    // 계획 블록을 세다 멈추는 순간이 **가장 잘 아는 때**다. 여기서 한 줄을 받는다.
+                    if let block = timedBlock {
+                        draft = block.nextAction ?? ""
+                        closing = block
+                    } else {
+                        timer.stop()
+                    }
+                } label: {
+                    // 재던 타이머는 멈추는 것이 곧 기록이다 (→ ActualTime).
+                    if timer.target?.measuring == true {
+                        Label("멈추고 남기기", systemImage: "stopwatch")
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Label("일정 기준으로", systemImage: "arrow.uturn.backward")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .controlSize(.large)
+                .help(timer.target?.measuring == true
+                      ? String(localized: "멈추고, 지금까지 걸린 시간을 이 일에 남깁니다")
+                      : String(localized: "직접 세는 것을 그만두고, 일정에 적힌 시각을 다시 따릅니다"))
+            }
+
+            HStack(spacing: 10) {
+                Button("+5분") { timer.extend(minutes: 5) }
+                Button("+10분") { timer.extend(minutes: 10) }
+                Button("처음부터") { timer.restart() }
+            }
+            .controlSize(.small)
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - 어디서든 보이는 남은 시간
+
+/// 한 주를 보는 자리 맨 위에 서서, 지금 하는 일과 남은 시간을 한 줄로 말한다.
+/// 타이머 창을 열어 두지 않아도 "무엇을 하는 중이고 얼마 남았는지"가 늘 보이도록.
+struct TimerPill: View {
+    /// 일정 기준으로 지금 하고 있는 것. 직접 센 타이머가 있으면 그쪽이 이긴다.
+    let slot: ScheduleSlot?
+    /// 지금 함께 진행 중인 일정들 (→ ScheduleClock.overlapping). 둘 이상이면 바꾸기 메뉴가 선다.
+    var overlapping: [ScheduleSlot] = []
+    let onOpen: () -> Void
+
+    @State private var timer = TaskTimer.shared
+
+    var body: some View {
+        HStack(spacing: 4) {
+            face
+            if timer.target == nil, let slot, overlapping.count > 1 {
+                Menu {
+                    Section("타이머로 셀 일정") {
+                        ForEach(overlapping) { other in
+                            let counted = other.id == slot.id && other.start == slot.start
+                            Button { ScheduleFocus.choose(other) } label: {
+                                if counted {
+                                    Label(other.title, systemImage: "checkmark")
+                                } else {
+                                    Text(other.title)
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Image(systemName: "arrow.left.arrow.right")
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
+                .fixedSize()
+                .help("겹친 일정 중 타이머로 셀 것 고르기")
+                .accessibilityLabel("타이머로 셀 일정")
+            }
+        }
+    }
+
+    @ViewBuilder private var face: some View {
+        if let target = timer.target {
+            pill(icon: timer.isRunning ? target.iconName : "pause.fill",
+                 title: target.title,
+                 tint: timer.isOvertime ? .red : (target.colorName.map(paletteColor) ?? .accentColor)) {
+                Text(formatCountdown(timer.remaining))
+            }
+        } else if let slot {
+            // 1초마다 숫자만 다시 그린다. 주간 화면 전체를 다시 그리지 않게 여기서 가둔다.
+            TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                // 바깥은 분마다만 새 조각을 준다. 그 사이에 끝난 조각은 여기서 바로 내린다 —
+                // 끝난 일정이 다음 분까지 알약에 남아 있으면 안 된다.
+                if slot.contains(ctx.date) {
+                    pill(icon: slot.iconName,
+                         title: slot.title,
+                         tint: slot.colorName.map(paletteColor) ?? .accentColor) {
+                        Text(formatCountdown(slot.remaining(at: ctx.date)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func pill<Value: View>(icon: String, title: String, tint: Color,
+                                   @ViewBuilder value: () -> Value) -> some View {
+        Button(action: onOpen) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .semibold))
+                Text(title)
+                    .font(.system(size: 13, weight: .medium))
+                    .lineLimit(1)
+                value()
+                    .font(.system(size: 13, weight: .semibold))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+            }
+            .foregroundStyle(tint)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 4)
+            .background(tint.opacity(0.14), in: Capsule())
+        }
+        .buttonStyle(.squish)
+        .help("타이머 창 열기 (⇧⌘R)")
+    }
+}
+
+// MARK: - 계획 위에서 바로 세기
+
+/// 칩·구간을 오른쪽 눌렀을 때 나오는 한 줄. 어디서 시작하든 같은 말이 되도록 여기 하나만 둔다.
+/// 일정에 적힌 시각은 이미 저절로 세고 있으므로, 이건 "지금부터" 따로 세고 싶을 때의 길이다.
+struct TimerMenuItems: View {
+    let token: String
+    let title: String
+    let hours: Double
+    var iconName: String = "timer"
+    var colorName: String? = nil
+    /// 이 일정이 적힌 시작 시각. 지금이 그 안이면 이미 흐른 만큼 지난 채로 센다.
+    var scheduledStart: Date? = nil
+
+    @Environment(\.openWindow) private var openWindow
+
+    private var isInProgress: Bool {
+        guard let scheduledStart else { return false }
+        let now = Date()
+        return now >= scheduledStart && now < scheduledStart.addingTimeInterval(hours * 3600)
+    }
+
+    private var isOverToday: Bool {
+        guard let scheduledStart else { return false }
+        let now = Date()
+        return Calendar.current.isDate(scheduledStart, inSameDayAs: now)
+            && scheduledStart.addingTimeInterval(hours * 3600) <= now
+    }
+
+    @State private var timer = TaskTimer.shared
+    /// 걸린 시간을 재는 사람인가 (→ ActualTime). 그러면 일정과 상관없이 언제든 켜서 끝까지 센다.
+    @AppStorage(ActualTime.enabledKey) private var measures = false
+
+    var body: some View {
+        if timer.isTiming(token) {
+            Button { timer.toggle() } label: {
+                Label(timer.isRunning ? "타이머 일시정지" : "타이머 이어서",
+                      systemImage: timer.isRunning ? "pause.fill" : "play.fill")
+            }
+            Button { timer.stop() } label: {
+                if timer.target?.measuring == true {
+                    Label("멈추고 걸린 시간 남기기", systemImage: "stopwatch")
+                } else {
+                    Label("일정 기준으로 되돌리기", systemImage: "arrow.uturn.backward")
+                }
+            }
+        } else if measures, token.hasPrefix("block:") {
+            Button {
+                timer.start(token: token, title: title, plannedSeconds: hours * 3600,
+                            scheduledStart: scheduledStart,
+                            iconName: iconName, colorName: colorName)
+            } label: {
+                Label("지금부터 재기", systemImage: "stopwatch")
+            }
+        } else if isOverToday {
+            // 오늘 이미 끝난 일정 — 켜 봐야 타임라인이 곧바로 거둔다 (→ TaskTimer.reconcile).
+            EmptyView()
+        } else if isInProgress {
+            // 지금 진행 중 — 타임라인이 이미 세고 있다. 따로 켜지 않고 그걸 보여 준다.
+            Button { openWindow(id: WeekBlocksWindow.timer) } label: {
+                Label("타이머 보기", systemImage: "timer")
+            }
+        } else {
+            let bind = TaskTimer.binding(scheduledStart: scheduledStart, planned: hours * 3600)
+            Button {
+                timer.start(token: token, title: title, plannedSeconds: hours * 3600,
+                            scheduledStart: scheduledStart,
+                            iconName: iconName, colorName: colorName)
+            } label: {
+                if let bind {
+                    Label("타이머 켜기 · \(formatHour(hourOfDay(bind.end)))에 끝",
+                          systemImage: "timer")
+                } else {
+                    Label("지금부터 \(formatDuration(hours)) 세기", systemImage: "timer")
+                }
+            }
+        }
+    }
+}
+
+/// 칩 안에서 "이건 지금 세고 있다"를 남은 시간으로 말한다.
+/// 계획을 보는 자리에서 눈을 떼지 않아도 얼마 남았는지 읽히도록.
+struct TimerBadge: View {
+    let token: String
+    var tint: Color = .accentColor
+    /// 일정 기준으로 지금 하고 있는 조각. 직접 센 타이머가 없을 때 이 값이 선다.
+    var slot: ScheduleSlot? = nil
+
+    @State private var timer = TaskTimer.shared
+
+    var body: some View {
+        if timer.isTiming(token) {
+            badge(icon: timer.isRunning ? "timer" : "pause.fill",
+                  tint: timer.isOvertime ? .red : tint) {
+                Text(formatCountdown(timer.remaining))
+            }
+        } else if !timer.isActive, let slot, slot.id == token {
+            TimelineView(.periodic(from: .now, by: 1)) { ctx in
+                // 끝난 조각은 스스로 사라진다 — 바깥이 다시 그려주기를 기다리지 않는다.
+                if slot.contains(ctx.date) {
+                    badge(icon: "timer", tint: tint) {
+                        Text(formatCountdown(slot.remaining(at: ctx.date)))
+                    }
+                }
+            }
+        }
+    }
+
+    private func badge<Value: View>(icon: String, tint: Color,
+                                    @ViewBuilder value: () -> Value) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: icon)
+            value()
+                .monospacedDigit()
+                .contentTransition(.numericText())
+        }
+        .font(.system(size: 11, weight: .bold))
+        .foregroundStyle(tint)
+        // 요일 칸은 좁다. 줄바꿈을 허락하면 숫자가 세로로 무너진다.
+        .lineLimit(1)
+        .fixedSize()
+    }
+}
+
+/// 그 시각을 0–24 소수 시간으로. (14:30 → 14.5)
+func hourOfDay(_ date: Date) -> Double {
+    let c = Calendar.current.dateComponents([.hour, .minute], from: date)
+    return Double(c.hour ?? 0) + Double(c.minute ?? 0) / 60
+}

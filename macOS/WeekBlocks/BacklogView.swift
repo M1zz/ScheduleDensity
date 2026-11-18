@@ -1,0 +1,2828 @@
+import SwiftUI
+import SwiftData
+import TipKit
+
+struct BacklogSection: View {
+    @Environment(\.modelContext) private var context
+
+    let allItems: [BacklogItem]
+    let weekStart: Date
+    /// 보고 있는 주의 계획 블록. 요일에 올려 둔 할 일에 표시를 붙이는 데만 쓴다.
+    var weekBlocks: [PlanBlock] = []
+    /// 고정 루틴이 확보돼 있을 때만 할 일을 작성할 수 있다.
+    var canPlan: Bool = true
+    /// 일간 시간표에서 알약을 끌어 이 위에 올려 둔 중인가 (→ DayDragZones). 받는 테두리를 세운다.
+    var externallyTargeted: Bool = false
+    /// 분류 버튼 줄(전체·업무·개인…)을 보여줄 것인가.
+    /// 주간 화면에서는 끈다 — 거기서 할 일은 **요일 칸으로 끌어다 놓을 카드**일 뿐이라
+    /// 거르는 도구가 앞에 서면 계획을 짜는 손을 방해한다. 거르는 일은 할 일 창에서 한다.
+    var showsCategoryFilter: Bool = true
+    /// 처음 쓰는 사람의 할 일 판 — '새 할 일'만 남기고 프로젝트 · 전체 보기 · 정리 메뉴는 감춘다 (→ FeatureLevel).
+    var isSimple: Bool = false
+    /// 위쪽 '다음 한 걸음' 줄이 빈 칸을 열어 달라고 할 때 (→ BacklogAddRequest).
+    @State private var addRequest = BacklogAddRequest.shared
+    /// Spotlight · Siri 가 열어 달라는 할 일 (→ TodoIntents.swift).
+    @State private var openRequest = TodoOpenRequest.shared
+    /// 머리글 아래 목록을 판 안에서 스크롤한다. 일간처럼 판의 키가 바깥(타임라인)에서 정해질 때 켠다 —
+    /// 할 일이 늘어도 판이 길어지지 않고, 옆 타임라인 아래가 하얗게 비지 않는다.
+    var scrollsContent: Bool = false
+
+    @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
+    private var categories: [BacklogCategory]
+
+    @AppStorage("didSeedBacklogCategories") private var didSeedCategories = false
+
+    /// 할 일에 정한 기한 (→ RainbowEvent.todoToken · TodoPeriod). 아이폰에서 정한 것도 같다. 카드에 '~10월 20일'로 붙는다.
+    @Query private var rainbowEvents: [RainbowEvent]
+    private var deadlineByToken: [String: Date] {
+        var map: [String: Date] = [:]
+        for e in rainbowEvents where !e.isRemoved && !e.isInfinite {
+            guard let token = e.todoToken else { continue }
+            map[token] = min(map[token] ?? .distantFuture, e.endDate)
+        }
+        return map
+    }
+
+    /// '요일에 올린 일'을 펼쳐 두었는가. **기본은 펼침** — 아이폰 할 일 목록은 요일에 올린 줄도
+    /// 한 줄기로 다 보여 준다. 맥만 접어 두면 같은 할 일이 한쪽에서만 안 보인다(합집합).
+    /// 접으면 그 뜻을 기억한다.
+    @AppStorage("backlog.showsPlaced") private var showsPlaced = true
+
+    /// 요일에서 끌어 내린 블록을 받는 중인가. 받는 자리가 어딘지 보여야 손이 안 헤맨다.
+    @State private var isReturnTargeted = false
+
+    @State private var filterCategoryID: String? = nil   // nil = 전체
+
+    @Query(sort: [SortDescriptor(\Project.sortIndex), SortDescriptor(\Project.createdAt)])
+    private var projects: [Project]
+    /// 이 프로젝트만 보기. nil = 전부.
+    @State private var filterProjectID: String? = nil
+    /// 새 프로젝트 창. 어느 할 일에서 열었으면 만든 뒤 그 할 일에 붙인다.
+    @State private var newProjectRequest: NewProjectRequest?
+    @State private var showingProjectManager = false
+    /// 프로젝트 창을 이 프로젝트를 골라 둔 채로 연다 (머리글·칩에서 왔을 때).
+    @State private var managerProjectID: String?
+    /// 접어 둔 프로젝트 묶음들 (uuid, "none" = 프로젝트 없음). 창을 닫았다 열어도 남는다.
+    @AppStorage("backlog.collapsedProjects") private var collapsedRaw = ""
+    private var collapsed: Set<String> { Set(collapsedRaw.split(separator: ",").map(String.init)) }
+    private func toggleCollapsed(_ key: String) {
+        var set = collapsed
+        if set.contains(key) { set.remove(key) } else { set.insert(key) }
+        withAnimation(Motion.disclose) { collapsedRaw = set.sorted().joined(separator: ",") }
+    }
+    /// 끌고 온 카드가 지금 올라가 있는 카드 — 놓으면 그 안의 하위 할 일이 된다.
+    @State private var dropIntoToken: String?
+    /// 끌고 온 카드가 지금 올라가 있는 프로젝트 묶음·칩 ("none" = 프로젝트 없음).
+    @State private var dropOnProject: String?
+    @State private var showingComposer = false
+    @State private var showingAllBacklog = false
+
+    // MARK: 적는 자리
+    //
+    // 적으려고 모달을 열고, 적고, 닫고, 다시 카드에서 찾는 왕복이 가장 큰 부담이었다.
+    // 이제 **목록 맨 앞에 빈 칸이 하나 생긴다** — 거기 적으면 그게 곧 할 일이다.
+    /// 빈 칸이 열려 있는가.
+    @State private var isAdding = false
+    @State private var newTitle = ""
+    /// 적는 중인 할 일의 기간 (시작 ~ 마감). 담을 때 이어진 장기 플랜으로 선다 (→ TodoPeriod).
+    @State private var draftPeriod: ClosedRange<Date>?
+    @State private var showingDraftPeriod = false
+    @FocusState private var addFocused: Bool
+    /// 단계(뎁스)를 들여다보는 시트.
+    @State private var stepsSheetItem: BacklogItem?
+
+    private let cal = Calendar(identifier: .iso8601)
+
+    /// 할 일의 단계(뎁스) 계산기. iOS와 같은 로직(TodoTree.swift)을 쓴다.
+    private var tree: TodoTree { TodoTree(allItems) }
+
+    /// 아직 안 한 할 일 **전부**. 주를 옮겨도 목록에서 사라지지 않는다.
+    /// (해야 할 일이 보이는 주에 따라 나타났다 사라지면 빠뜨리게 된다)
+    /// iOS Todo에서 완료 처리한 항목만 제외.
+    /// 단계는 자기 카드를 갖지 않으므로 최상위 할 일만 세운다.
+    private var weekItems: [BacklogItem] {
+        let tree = self.tree
+        return tree.roots.filter { !$0.isCompleted }.sorted { a, b in
+            // 성질이 첫 번째 키다 — iOS 목록의 띠 순서를 카드 순서로 옮긴 것.
+            //   바로 하면 되는 일 → 그냥 하면 되는 것 → 시간을 잡은 일
+            let (la, lb) = (tree.lane(of: a), tree.lane(of: b))
+            if la != lb { return la < lb }
+            // 주차로는 가르지 않는다. 요일에 올리기 전의 할 일에는 시간이 없고,
+            // 시간이 없는 것을 주 단위로 나누면 "지난 주 것"이라는 딱지만 늘어난다.
+            // (아이폰도 같은 규칙 — 밀린 줄은 이번 주로 끌어오고 목록은 하나다.)
+            if a.sortIndex != b.sortIndex { return a.sortIndex < b.sortIndex }
+            return a.createdAt < b.createdAt
+        }
+    }
+
+    /// 표시 순서 묶음: 보고 있는 주 → 지난 주(이월) → 앞으로.
+    /// 이월을 두 번째에 두는 이유는 이미 밀린 일이라 눈에서 사라지면 안 되기 때문이다.
+    /// 이 주에 요일로 올려 둔 것들: 할 일 제목 → 올린 요일들.
+    ///
+    /// 블록 목록을 **한 번만** 훑어 만든다. 예전에는 카드마다 blocks 전체를 다시 훑어서
+    /// (항목 수 × 블록 수)만큼 문자열을 비교했고, 그 일이 한 번 그릴 때마다 여러 번 돌았다.
+    private var placement: [String: [DayOfWeek]] {
+        var map: [String: [DayOfWeek]] = [:]
+        for block in weekBlocks {
+            // 단계를 올린 블록은 "할 일 · 단계" 꼴이다. 앞머리를 잘라 부모 이름으로 모은다.
+            let root = block.title.components(separatedBy: " · ").first ?? block.title
+            map[root, default: []].append(block.day)
+        }
+        return map
+    }
+
+    /// 아직 요일을 안 정한 것과 이미 올린 것. **한 번의 분할**로 둘 다 얻는다.
+    private var split: (open: [BacklogItem], placed: [BacklogItem]) {
+        let placement = self.placement
+        var open: [BacklogItem] = []
+        var placed: [BacklogItem] = []
+        for item in weekItems {
+            if placement[item.title] == nil { open.append(item) } else { placed.append(item) }
+        }
+        return (open, placed)
+    }
+
+    /// 목록에 세울 것 — **요일에 올린 일은 빠진다.**
+    ///
+    /// 언제 할지 정한 일이 목록에 그대로 남아 있으면, 아직 안 정한 일과 섞여
+    /// "무엇을 정해야 하는가"가 흐려진다. 올린 순간 이 목록에서는 내린다.
+    ///
+    /// ⚠️ **내리는 것이지 지우는 것이 아니다.** 항목은 그대로 남는다 —
+    ///    지우면 그 삭제가 CloudKit을 타고 아이폰까지 건너가 할 일이 통째로 사라진다
+    ///    (→ ContentView.convertBacklogItem의 경고). 블록을 지우면 다시 목록에 선다.
+    ///    끝냈는지는 아래 '요일에 올린 일'에서 확인하고 체크한다.
+    private var filteredItems: [BacklogItem] {
+        var items = split.open
+        if let f = filterCategoryID { items = items.filter { $0.categoryID == f } }
+        if let p = filterProjectID { items = items.filter { $0.projectID == p } }
+        return items
+    }
+
+    /// 고를 수 있는 프로젝트 — 끝낸 것은 칩·메뉴에서 빠진다.
+    private var openProjects: [Project] { projects.filter { !$0.isCompleted } }
+
+    /// **프로젝트별로 묶은 목록.** 프로젝트가 붙은 할 일이 하나도 없으면 nil — 예전처럼
+    /// 한 판에 늘어놓는다. 머리글만 하나 덩그러니 서면 없던 칸이 생긴 것처럼 보인다.
+    ///
+    /// 순서는 프로젝트 순서, '프로젝트 없음'은 맨 뒤. 한 프로젝트만 거르고 있으면 묶지 않는다
+    /// (머리글이 거른 칩과 같은 말을 한 번 더 할 뿐이다).
+    /// 끝낸 프로젝트라도 아직 안 끝낸 할 일이 남아 있으면 그 묶음은 선다 — 할 일이 숨으면 안 된다.
+    private func projectGroups(_ items: [BacklogItem]) -> [ProjectGroup]? {
+        guard filterProjectID == nil else { return nil }
+        let known = Dictionary(projects.map { ($0.uuid, $0) }, uniquingKeysWith: { a, _ in a })
+        var byProject: [String: [BacklogItem]] = [:]
+        var loose: [BacklogItem] = []
+        for item in items {
+            if let id = item.projectID, known[id] != nil {
+                byProject[id, default: []].append(item)
+            } else {
+                loose.append(item)
+            }
+        }
+        guard !byProject.isEmpty else { return nil }
+        var groups = projects.compactMap { p in
+            byProject[p.uuid].map { ProjectGroup(id: p.uuid, project: p, items: $0) }
+        }
+        if !loose.isEmpty { groups.append(ProjectGroup(id: "none", project: nil, items: loose)) }
+        return groups
+    }
+
+    /// 요일에 올려 둔, 아직 안 끝낸 일. 목록에서는 내렸지만 **끝냈는지는 여기서 확인한다.**
+    private var placedItems: [BacklogItem] { split.placed }
+
+    /// 보고 있는 주에서 **이미 지나간 요일들**.
+    /// 지난 주를 보고 있으면 전부, 앞으로의 주면 하나도 없다.
+    private var pastDays: Set<DayOfWeek> {
+        // 요일마다 그 **날짜**를 짚어 오늘과 견준다. 일요일 시작이면 맨 앞 일요일이 월요일보다
+        // 먼저 지나가므로, 요일 번호로 견주면 틀린다 (→ DayOfWeek.storedWeek).
+        // 오늘은 아직 안 지났다 — 어제까지만 지난 것으로 본다.
+        let today = cal.startOfDay(for: Date())
+        let sundayFirst = WeekStartSetting.sundayFirst
+        return Set(DayOfWeek.allCases.filter { day in
+            let stored = DayOfWeek.storedWeek(of: day, shownWeek: weekStart, sundayFirst: sundayFirst)
+            guard let date = cal.date(byAdding: .day, value: day.rawValue, to: stored) else { return false }
+            return date < today
+        })
+    }
+
+    /// 올려 둔 요일이 지났는데 아직 안 끝낸 일. **루틴은 여기 없다** —
+    /// 이 목록은 할 일(BacklogItem)만 담고, 루틴은 애초에 끝내고 말고 할 것이 아니다.
+    private func overdueItems(in placement: [String: [DayOfWeek]]) -> [BacklogItem] {
+        let past = pastDays
+        guard !past.isEmpty else { return [] }
+        return placedItems.filter { item in
+            // 여러 요일에 올렸으면 **마지막 날**까지 지나야 넘긴 것이다.
+            guard let last = placement[item.title]?.max(by: { $0.rawValue < $1.rawValue })
+            else { return false }
+            return past.contains(last)
+        }
+    }
+
+    /// 항목별 색상: 카테고리가 있으면 카테고리 색(같은 카테고리=같은 색),
+    /// 없으면 카테고리가 안 쓰는 팔레트에서 겹치지 않게 고유 색을 배정.
+    private var itemColorMap: [String: Color] {
+        let usedCategoryColors = Set(categories.map(\.colorName))
+        let freePool = Rainbow.spectrum.filter { !usedCategoryColors.contains($0.name) }
+        let palette = (freePool.isEmpty ? Rainbow.spectrum : freePool).map { Color(hex: $0.hex) ?? .accentColor }
+
+        var map: [String: Color] = [:]
+        var i = 0
+        for item in weekItems {
+            if let cid = item.categoryID, let cat = categories.first(where: { $0.uuid == cid }) {
+                map[item.dragToken] = cat.displayColor
+            } else if !palette.isEmpty {
+                map[item.dragToken] = palette[i % palette.count]
+                i += 1
+            } else {
+                map[item.dragToken] = .secondary
+            }
+        }
+        return map
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("할 일")
+                    .font(.headline)
+
+                // 적는 버튼은 제목 바로 옆이다. 아래에 따로 한 줄을 차지하고 있었는데,
+                // 그 줄에서 실제로 쓰는 건 이 버튼뿐이라 줄값을 못 했다.
+                //
+                // **어떤 경우에도 사라지지 않는다.** 고정 루틴이 없어 아직 계획할 수 없을 때
+                // 버튼까지 없애 봤더니 화면에 남은 '추가'가 루틴 쪽뿐이라 할 일을 어디서
+                // 적는지 길이 끊겼다. 못 누르는 것과 없는 것은 다르다 —
+                // 흐릿하게 남겨 두고, 왜 못 누르는지는 아래 안내가 말한다.
+                Button(action: beginAdding) {
+                    Label("새 할 일", systemImage: "plus")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+                .disabled(!canPlan)
+                .fixedSize()
+                .help(canPlan ? "목록 맨 위에 빈 칸을 만든다 (⌘N)"
+                              : "고정 루틴을 하나 세우면 할 일을 적을 수 있습니다")
+                .keyboardShortcut("n", modifiers: .command)
+
+                // '전체 보기'는 제목 바로 옆에 붙인다 — 지금 목록이 **전부가 아니라는 것**을
+                // 제목과 한 호흡에 말해야, 이월된 할 일을 못 보고 지나치지 않는다.
+                //
+                // 테두리 없는 글씨로 두었더니 제목 옆에 붙은 설명처럼 읽혀서
+                // 누를 수 있는 줄 몰랐다. 테두리를 두르고 아이콘을 붙여 버튼으로 세운다.
+                // 이월 개수는 괄호가 아니라 알약 하나로 — 숫자가 글에 섞이지 않게.
+                // 프로젝트 창은 `…` 안에 숨어 있어서 있는 줄 몰랐다. 전체 보기 옆에 세운다.
+                if !isSimple {
+                Button {
+                    openProject(nil)
+                } label: {
+                    Label("프로젝트", systemImage: "folder")
+                        .font(.body)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help(String(localized: "프로젝트들을 한눈에 보고, 고르면 그 안에 할 일을 적는다"))
+
+                Button {
+                    showingAllBacklog = true
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: "tray.full")
+                            .font(.system(size: 11))
+                        Text("전체 보기")
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .help("끝낸 것까지 포함한 전체 할 일")
+                }
+
+                if !weekItems.isEmpty {
+                    Text("\(filteredItems.count)개 · \(formatDuration(filteredItems.reduce(0) { $0 + $1.durationHours }))")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                if !isSimple {
+                // 시간·분류를 표처럼 한꺼번에 고치는 옛 화면. 적는 통로가 아니라
+                // 이따금 쓰는 정리 도구라 메뉴 안으로 넣는다.
+                Menu {
+                    Button("프로젝트…") { managerProjectID = nil; showingProjectManager = true }
+                    Button("여러 개 한꺼번에 고치기") { showingComposer = true }
+                        .disabled(!canPlan)
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("더 보기")
+                .menuStyle(.borderlessButton)
+                .fixedSize()
+                }
+            }
+            .onChange(of: addRequest.tick) { _, _ in
+                if canPlan { beginAdding() }
+            }
+            // Spotlight · Siri 에서 고른 할 일 — 판이 여럿 떠 있어도 먼저 받은 하나만 연다.
+            .onChange(of: openRequest.dragToken, initial: true) { _, _ in
+                guard let token = openRequest.dragToken else { return }
+                openRequest.dragToken = nil
+                stepsSheetItem = allItems.first { $0.dragToken == token }
+            }
+
+            scrollingIfNeeded {
+            // 분류 버튼 줄은 거를 자리가 있을 때만 선다 (할 일 창).
+            // 주간 화면에서는 아예 나타나지 않아 한 줄을 통째로 아낀다.
+            if canPlan, showsCategoryFilter {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        FilterChip(label: String(localized: "전체"), color: .secondary,
+                                   selected: filterCategoryID == nil) {
+                            withAnimation(Motion.card) { filterCategoryID = nil }
+                        }
+                        ForEach(categories) { c in
+                            FilterChip(label: c.name, color: c.displayColor,
+                                       selected: filterCategoryID == c.uuid) {
+                                withAnimation(Motion.card) {
+                                    filterCategoryID = (filterCategoryID == c.uuid) ? nil : c.uuid
+                                }
+                            }
+                            .transition(.card)
+                        }
+                    }
+                    .padding(.vertical, 1)
+                }
+                .transition(.disclose)
+
+                projectChips
+                    .transition(.disclose)
+            }
+
+            if !canPlan {
+                lockedNotice
+                    .transition(.disclose)
+            } else if filteredItems.isEmpty && !isAdding {
+                emptyState
+                    .transition(.opacity)
+            } else {
+                // 카드마다 다시 만들지 않는다. 트리·색·배치는 한 번 만들어 나눠 쓴다
+                // (예전에는 카드 수만큼 TodoTree와 색 지도를 새로 지었다).
+                let tree = self.tree
+                let colors = itemColorMap
+                let placement = self.placement
+                if let groups = projectGroups(filteredItems) {
+                    // **프로젝트별로.** 머리글 아래 그 프로젝트의 카드들.
+                    VStack(alignment: .leading, spacing: 16) {
+                        if isAdding { cardGrid { newTodoCard } }
+                        ForEach(groups) { group in
+                            let key = group.project?.uuid ?? "none"
+                            VStack(alignment: .leading, spacing: 8) {
+                                projectHeader(group)
+                                // 접어 두면 머리글만 — 프로젝트가 많아도 한 화면에 훑어진다.
+                                if !collapsed.contains(key) {
+                                    cardGrid {
+                                        ForEach(group.items) { item in
+                                            card(item, tree: tree, colors: colors, placement: placement)
+                                        }
+                                    }
+                                    .transition(.disclose)
+                                }
+                            }
+                            // 묶음 빈 곳·머리글에 놓으면 그 프로젝트로 (카드 위면 그 카드가 먼저 받는다).
+                            .background {
+                                if dropOnProject == key {
+                                    RoundedRectangle.soft(Corner.panel)
+                                        .fill((group.project?.displayColor ?? .secondary).opacity(0.10))
+                                        .overlay(RoundedRectangle.soft(Corner.panel)
+                                            .strokeBorder((group.project?.displayColor ?? .secondary).opacity(0.6),
+                                                          lineWidth: 1.5))
+                                        .padding(-6)
+                                        .transition(.opacity)
+                                }
+                            }
+                            .animation(Motion.target, value: dropOnProject == key)
+                            .dropDestination(for: String.self) { tokens, _ in
+                                dropOnProject = nil
+                                return drop(tokens.first, toProject: group.project?.uuid)
+                            } isTargeted: { on in
+                                if on { dropOnProject = key } else if dropOnProject == key { dropOnProject = nil }
+                            }
+                            .transition(.card)
+                        }
+                    }
+                    .animation(Motion.card, value: groups.map(\.id))
+                    .animation(Motion.card, value: filteredItems.map(\.dragToken))
+                } else {
+                    cardGrid {
+                        // 새 할 일은 목록 **맨 앞 빈 칸**으로 열린다.
+                        // 적을 자리가 목록 안에 이미 생겨 있으니 따로 '추가' 절차가 없다 —
+                        // 그 칸에 적으면 그게 곧 할 일이 된다.
+                        if isAdding { newTodoCard }
+                        ForEach(filteredItems) { item in
+                            card(item, tree: tree, colors: colors, placement: placement)
+                        }
+                    }
+                    // 카드가 스스로 늘고 주는 자리다(@Query·다른 기기의 동기화까지).
+                    // 무엇이 서 있는가가 바뀔 때만 결이 붙는다.
+                    .animation(Motion.card, value: filteredItems.map(\.dragToken))
+                }
+            }
+
+            // 요일에 올린 일은 위 목록에서 내렸다. 그렇다고 사라진 것은 아니므로
+            // **끝냈는지 확인하고 체크하는 자리**를 여기 남긴다. 기본은 접힘.
+            if canPlan, !placedItems.isEmpty {
+                placedSection
+                    .transition(.disclose)
+            }
+            }
+        }
+        // **요일에서 끌어 내리면 다시 '아직 안 정한 일'이 된다.**
+        //
+        // 올리는 길(목록 → 요일 칸)만 있고 내리는 길이 없어서, 날짜를 무르려면 블록을
+        // 찾아 지우고 할 일이 도로 서기를 기다려야 했다. 끌어 올렸으면 끌어 내릴 수도
+        // 있어야 한다 — 같은 손짓의 반대 방향이다.
+        .background {
+            if isReturnTargeted || externallyTargeted {
+                RoundedRectangle.soft(Corner.panel)
+                    .fill(Color.accentColor.opacity(0.08))
+                    .overlay(RoundedRectangle.soft(Corner.panel)
+                        .stroke(Color.accentColor.opacity(0.6), lineWidth: 1.5))
+                    .padding(-8)
+            }
+        }
+        .dropDestination(for: String.self) { dropped, _ in
+            isReturnTargeted = false
+            guard let token = dropped.first else { return false }
+            return returnToBacklog(token: token)
+        } isTargeted: { hovering in
+            // 할 일 카드끼리 끌 때는 켜지지 않게 — 여기서 받는 것은 **블록**뿐이다.
+            isReturnTargeted = hovering
+        }
+        .animation(Motion.target, value: isReturnTargeted)
+        .animation(Motion.squish, value: externallyTargeted)
+        .task { await reconcileCategories() }
+        .task { await reconcileStepStates() }
+        .sheet(isPresented: $showingComposer) {
+            BacklogComposerView(weekStart: weekStart)
+                .frame(minWidth: 540, minHeight: 560)
+        }
+        .sheet(isPresented: $showingAllBacklog) {
+            AllBacklogView(currentWeek: weekStart)
+                .frame(minWidth: 560, minHeight: 600)
+        }
+        .sheet(item: $stepsSheetItem) { item in
+            TodoStepsView(root: item)
+        }
+        .sheet(item: $newProjectRequest) { request in
+            NewProjectSheet(existingCount: projects.count, usedColors: Set(projects.map(\.colorName))) { project in
+                // 할 일에서 열었으면 만든 프로젝트를 그 할 일에 바로 붙인다.
+                request.item?.projectID = project.uuid
+                try? context.save()
+            }
+        }
+        .sheet(isPresented: $showingProjectManager) {
+            ProjectManagerView(initialProjectID: managerProjectID, canPlan: canPlan)
+        }
+        // 끝냈거나 지운 프로젝트를 거르고 있었으면 거르기를 푼다 — 칩도 없는데 목록만 비면 헤맨다.
+        .onChange(of: openProjects.map(\.uuid)) { _, ids in
+            if let f = filterProjectID, !ids.contains(f) { filterProjectID = nil }
+        }
+    }
+
+    /// 머리글 아래 몫 — `scrollsContent`면 판 안에서 스크롤한다.
+    /// 끌어 놓을 때 켜지는 테두리(카드 · 묶음 바깥 -6)가 스크롤 가장자리에 잘리지 않게 안쪽에 여백을 두고 바깥에서 되돌린다.
+    @ViewBuilder
+    private func scrollingIfNeeded<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        if scrollsContent {
+            ScrollView(.vertical) {
+                VStack(alignment: .leading, spacing: 10) { content() }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(-8)
+            .frame(maxHeight: .infinity, alignment: .top)
+        } else {
+            VStack(alignment: .leading, spacing: 10) { content() }
+        }
+    }
+
+    /// 카드 한 장. 한 판으로 늘어놓을 때와 프로젝트별로 묶을 때 같은 것을 세운다.
+    private func card(_ item: BacklogItem, tree: TodoTree, colors: [String: Color],
+                      placement: [String: [DayOfWeek]]) -> some View {
+        BacklogBlock(
+            item: item,
+            categories: categories,
+            tint: colors[item.dragToken] ?? .secondary,
+            lane: tree.lane(of: item),
+            isFragment: isFragmentCard(item, tree: tree),
+            planNote: notes(for: item, in: placement, deadlines: deadlineByToken),
+            steps: stepsInfo(for: item, tree: tree),
+            onAdvance: { advance(item) },
+            onRewind: { rewind(item) },
+            onEditSteps: { stepsSheetItem = item },
+            // 카드를 누르면 그 할 일을 들여다보는 자리가 열린다 (→ TodoStepsView).
+            onOpen: { stepsSheetItem = item },
+            onComplete: { complete(item) },
+            // 단계까지 통째로 지운다.
+            onDelete: {
+                withAnimation(Motion.card) {
+                    for node in tree.subtree(of: item) { context.delete(node) }
+                    try? context.save()
+                }
+            },
+            onSetCategory: { id in
+                withAnimation(Motion.card) {
+                    item.categoryID = id
+                    try? context.save()
+                }
+            },
+            projects: openProjects,
+            onSetProject: { id in
+                withAnimation(Motion.card) {
+                    item.projectID = id
+                    try? context.save()
+                }
+            },
+            onNewProject: { newProjectRequest = NewProjectRequest(item: item) },
+            onToggleNow: { toggleNow(item) }
+        )
+        // **다른 카드를 이 위에 놓으면 이 할 일 안으로 들어간다** (하위 할 일).
+        .overlay {
+            if dropIntoToken == item.dragToken {
+                ZStack(alignment: .bottom) {
+                    RoundedRectangle.soft(Corner.panel)
+                        .strokeBorder(Color.accentColor, lineWidth: 2)
+                    Label("안으로 넣기", systemImage: "arrow.turn.down.right")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color.accentColor, in: Capsule())
+                        .padding(.bottom, 6)
+                }
+                .allowsHitTesting(false)
+                .transition(.opacity)
+            }
+        }
+        .animation(Motion.target, value: dropIntoToken == item.dragToken)
+        .dropDestination(for: String.self) { tokens, _ in
+            dropIntoToken = nil
+            return drop(tokens.first, into: item)
+        } isTargeted: { on in
+            if on { dropIntoToken = item.dragToken }
+            else if dropIntoToken == item.dragToken { dropIntoToken = nil }
+        }
+        .transition(.card)
+    }
+
+    // MARK: 끌어서 옮기기 (할 일 → 프로젝트, 할 일 → 다른 할 일 안)
+
+    /// 받은 것이 요일에서 끌어 내린 **블록**이면 예전처럼 할 일로 되돌린다 — 카드·묶음 위에
+    /// 놓았다고 그 길이 막히면 안 된다(바깥 받는 자리보다 안쪽이 먼저 받는다).
+    private func movingItem(_ token: String?) -> (item: BacklogItem?, handledBlock: Bool) {
+        guard let token else { return (nil, false) }
+        if token.hasPrefix("block:") { return (nil, returnToBacklog(token: token)) }
+        return (allItems.first { $0.dragToken == token }, false)
+    }
+
+    /// 카드를 다른 카드 위에 놓았다 — **그 할 일 안의 하위 할 일**이 된다.
+    ///
+    /// 할 일 상세에서 단계를 적는 것과 같은 규칙이다(→ TodoTree.makeStep): 분류·주는 부모를 따르고,
+    /// 프로젝트는 적지 않는다(최상위 할 일의 것을 따른다). 제 단계들은 그대로 딸려 온다.
+    /// 위쪽 시간은 단계들의 합이라 저절로 다시 셈해진다.
+    private func drop(_ token: String?, into parent: BacklogItem) -> Bool {
+        let (moving, handled) = movingItem(token)
+        if handled { return true }
+        guard let moving, moving.dragToken != parent.dragToken else { return false }
+        let tree = self.tree
+        // 제 아래로는 못 넣는다 — 고리가 생긴다.
+        guard !tree.subtree(of: moving).contains(where: { $0.dragToken == parent.dragToken }) else { return false }
+        let index = tree.nextSortIndex(under: parent)
+        Haptic.snap()
+        withAnimation(Motion.card) {
+            moving.parentToken = parent.dragToken
+            moving.sortIndex = index
+            moving.projectID = nil
+            moving.categoryID = parent.categoryID
+            moving.weekStartDate = parent.weekStartDate
+            TodoTree(allItems).rollUp(from: moving)
+            try? context.save()
+        }
+        return true
+    }
+
+    /// 카드를 프로젝트 묶음·칩 위에 놓았다 — 그 프로젝트로 옮긴다. nil = 프로젝트 없음.
+    private func drop(_ token: String?, toProject projectID: String?) -> Bool {
+        let (moving, handled) = movingItem(token)
+        if handled { return true }
+        guard let moving, moving.parentToken == nil, moving.projectID != projectID else { return false }
+        Haptic.snap()
+        withAnimation(Motion.card) {
+            moving.projectID = projectID
+            try? context.save()
+        }
+        return true
+    }
+
+    private func cardGrid<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        LazyVGrid(
+            columns: [GridItem(.adaptive(minimum: 150, maximum: 240), spacing: 8)],
+            alignment: .leading,
+            spacing: 8,
+            content: content
+        )
+    }
+
+    /// 프로젝트 머리글 — 색·이름·몇 개·얼마나.
+    private func projectHeader(_ group: ProjectGroup) -> some View {
+        let hours = group.items.reduce(0) { $0 + $1.durationHours }
+        let key = group.project?.uuid ?? "none"
+        let isCollapsed = collapsed.contains(key)
+        return HStack(spacing: 8) {
+            // 접기·펴기. 머리글의 나머지를 누르면 프로젝트가 열리므로 이 화살표만 따로 받는다.
+            Button { toggleCollapsed(key) } label: {
+                Image(systemName: "chevron.right")
+                    .font(.body.weight(.semibold))
+                    .rotationEffect(.degrees(isCollapsed ? 0 : 90))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 18, height: 18)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(isCollapsed ? String(localized: "펼치기") : String(localized: "접기"))
+            .accessibilityLabel(isCollapsed ? Text("펼치기") : Text("접기"))
+            Circle()
+                .fill(group.project?.displayColor ?? Color.secondary.opacity(0.4))
+                .frame(width: 9, height: 9)
+            Text(group.project?.name ?? String(localized: "프로젝트 없음"))
+                .font(.body.weight(.semibold))
+                .foregroundStyle(group.project == nil ? .secondary : .primary)
+                .lineLimit(1)
+            Text("\(group.items.count)개 · \(formatDuration(hours))")
+                .font(.body)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .contentShape(Rectangle())
+        // 머리글을 누르면 그 프로젝트가 열린다 — 거기서 할 일을 이어 적는다.
+        .onTapGesture { if let project = group.project { openProject(project.uuid) } }
+        .pointingCursor(enabled: group.project != nil)
+        .help(group.project == nil ? "" : String(localized: "눌러서 이 프로젝트 열기 — 할 일 적기"))
+        .contextMenu {
+            if let project = group.project {
+                Button("이 프로젝트 열기…") { openProject(project.uuid) }
+                Button("이 프로젝트만 보기") {
+                    withAnimation(Motion.card) { filterProjectID = project.uuid }
+                }
+            } else {
+                Button("프로젝트…") { openProject(nil) }
+            }
+        }
+    }
+
+    private func openProject(_ id: String?) {
+        managerProjectID = id
+        showingProjectManager = true
+    }
+
+    /// 프로젝트 칩 줄 — 거르기, 그리고 새로 만드는 자리.
+    private var projectChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                Image(systemName: "folder")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .help(String(localized: "프로젝트"))
+                if !openProjects.isEmpty {
+                    FilterChip(label: String(localized: "모든 프로젝트"), color: .secondary,
+                               selected: filterProjectID == nil) {
+                        withAnimation(Motion.card) { filterProjectID = nil }
+                    }
+                }
+                ForEach(openProjects) { p in
+                    FilterChip(label: p.name, color: p.displayColor,
+                               selected: filterProjectID == p.uuid || dropOnProject == "chip:" + p.uuid) {
+                        withAnimation(Motion.card) {
+                            filterProjectID = (filterProjectID == p.uuid) ? nil : p.uuid
+                        }
+                    }
+                    // 카드를 칩 위에 놓아도 그 프로젝트로 — 할 일이 아직 없어 묶음이 안 선 프로젝트도 받는다.
+                    .dropDestination(for: String.self) { tokens, _ in
+                        dropOnProject = nil
+                        return drop(tokens.first, toProject: p.uuid)
+                    } isTargeted: { on in
+                        if on { dropOnProject = "chip:" + p.uuid }
+                        else if dropOnProject == "chip:" + p.uuid { dropOnProject = nil }
+                    }
+                    .contextMenu {
+                        Button("이 프로젝트 열기…") { openProject(p.uuid) }
+                    }
+                    .transition(.card)
+                }
+                Button {
+                    newProjectRequest = NewProjectRequest(item: nil)
+                } label: {
+                    Label("새 프로젝트", systemImage: "plus")
+                        .font(.body)
+                }
+                .buttonStyle(.borderless)
+                .help(String(localized: "할 일을 묶을 프로젝트를 만든다"))
+            }
+            .padding(.vertical, 1)
+        }
+    }
+
+    /// 이 카드가 지금 세우고 있는 것이 조각인가 — 앱 판정까지 포함해서 본다.
+    /// 표시해 둔 것(lane == .now)과 같은 연두로 칠한다. 둘 다 "그냥 집으면 된다"는 뜻이다.
+    private func isFragmentCard(_ item: BacklogItem, tree: TodoTree) -> Bool {
+        guard let step = tree.markedStep(of: item) ?? tree.currentStep(of: item) ?? Optional(item)
+        else { return false }
+        return TodoSplitAdvisor.advice(title: step.title,
+                                       durationHours: step.durationHours,
+                                       pick: step.fragmentPick).isFragment
+    }
+
+    /// 카드에 그릴 단계 요약. 단계가 없으면 nil.
+    private func stepsInfo(for item: BacklogItem, tree: TodoTree) -> BacklogBlock.StepsInfo? {
+        guard tree.hasChildren(item) else { return nil }
+        // 표시해 둔 단계가 있으면 그것을 세운다. 차례를 기다리지 않는 것이
+        // '바로 하면 되는 일'로 표시해 둔 뜻이다 (iOS 목록·위젯과 같은 규칙).
+        let marked = tree.markedStep(of: item)
+        return BacklogBlock.StepsInfo(
+            currentTitle: (marked ?? tree.currentStep(of: item))?.title,
+            isMarked: marked != nil,
+            progress: tree.progress(of: item),
+            count: tree.leafCount(of: item),
+            number: tree.currentStepNumber(of: item),
+            totalHours: tree.totalHours(of: item),
+            canRewind: tree.lastDoneStep(of: item) != nil,
+            remaining: tree.leaves(of: item).filter { !$0.isCompleted }.count
+        )
+    }
+
+    /// 지금 할 단계를 끝내고 다음 단계로 넘긴다.
+    private func advance(_ item: BacklogItem) {
+        let tree = self.tree
+        withAnimation(Motion.card) {
+            // 표시해 둔 단계를 세워 뒀으면 끝나는 것도 그 단계여야 한다.
+            if let marked = tree.markedStep(of: item), tree.hasChildren(item) {
+                tree.setCompleted(marked, true)
+            } else {
+                tree.advance(item)
+            }
+            try? context.save()
+        }
+    }
+
+    /// '바로 하면 되는 일' 표시를 켜고 끈다. 표시는 **그 줄 자체**에 붙는다 —
+    /// 쪼갠 일이면 지금 세워져 있는 단계에. (iOS와 같은 규칙)
+    private func toggleNow(_ item: BacklogItem) {
+        let tree = self.tree
+        let target = tree.markedStep(of: item)
+            ?? (tree.hasChildren(item) ? tree.currentStep(of: item) : item)
+        guard let target else { return }
+        let on = !target.isMarkedNow
+        withAnimation(Motion.card) {
+            target.setFragmentAnswer(on ? true : nil, for: .start)
+            target.setFragmentAnswer(on ? true : nil, for: .closing)
+            try? context.save()
+        }
+    }
+
+    /// 마지막으로 끝낸 단계를 되돌린다.
+    private func rewind(_ item: BacklogItem) {
+        withAnimation(Motion.card) {
+            tree.rewind(item)
+            try? context.save()
+        }
+    }
+
+    /// 이 할 일을 이 주의 어느 요일에 올려 뒀는지. 안 올렸으면 nil.
+    ///
+    /// 요일에 올려도 할 일은 백로그에 남는다(→ ContentView의 `convertBacklogItem`).
+    /// 그래서 카드만 보면 올렸는지 아닌지를 알 수 없다 — 이 표시가 그 자리를 메운다.
+    /// 블록과 항목을 잇는 식별자가 스키마에 없어 **제목으로 맞춘다**(iOS도 같은 방식).
+    /// 단계를 올린 블록은 "할 일 · 단계" 꼴이라 접두어까지 함께 본다.
+    /// 요일 표시와 기한을 한 줄로. 둘 다 없으면 nil.
+    private func notes(for item: BacklogItem, in placement: [String: [DayOfWeek]],
+                       deadlines: [String: Date]) -> String? {
+        let deadline = deadlines[item.dragToken].map {
+            String(localized: "~\($0.formatted(.dateTime.month().day()))")
+        }
+        let parts = [planNote(for: item, in: placement), deadline].compactMap { $0 }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    }
+
+    private func planNote(for item: BacklogItem, in placement: [String: [DayOfWeek]]) -> String? {
+        guard let days = placement[item.title],
+              let first = days.min(by: { $0.rawValue < $1.rawValue }) else { return nil }
+        let others = Set(days).count - 1
+        return others > 0 ? "\(first.shortLabel) +\(others)" : first.longLabel
+    }
+
+    /// 보고 있는 주가 아닌 항목에만 붙는 주차 표시 ("2주 전" 같은 상대 표기).
+    /// 전부 보여주면서도 어느 주에 계획한 일인지는 잃지 않게 한다.
+    /// 목록 맨 앞의 빈 칸. **적으면 그게 곧 할 일이 된다.**
+    ///
+    /// 예전에는 목록 위에 입력 줄이 따로 열리고 Enter로 '추가'해야 했다.
+    /// 적는 것과 목록이 다른 물건처럼 보여서, 한 줄 적을 때마다 절차를 밟는 느낌이었다.
+    /// 지금은 목록 안에 빈 칸이 하나 생길 뿐이다 — 카드 모양도 크기도 옆의 할 일과 같다.
+    ///
+    /// 받는 것은 이름 하나뿐이다. 분류는 위에서 고른 버튼을 따라가고,
+    /// 시간·단계는 나중에 카드에서 고친다. 적는 순간에 정할 것을 늘리면 적기를 그만두게 된다.
+    private var newTodoCard: some View {
+        HStack(alignment: .top, spacing: 9) {
+            // 옆 카드의 진행 동그라미와 같은 자리에 빈 점선 고리 — 아직 적는 중이다.
+            Circle()
+                .strokeBorder(draftTint.opacity(0.6), style: StrokeStyle(lineWidth: 2, dash: [3, 3]))
+                .frame(width: 30, height: 30)
+
+            TextField("할 일", text: $newTitle)
+                .textFieldStyle(.plain)
+                .font(.system(size: 14, weight: .medium))
+                .focused($addFocused)
+                // Enter를 쳐도 되지만 안 쳐도 된다 — 다른 곳을 누르면 그대로 담긴다.
+                .onSubmit { commitDraft(keepOpen: true) }
+                .onExitCommand { endAdding() }
+                .padding(.top, 6)
+
+            // 기간 — 시작부터 마감까지 무지개에 옅은 줄이 이어지고, 카드에 '~마감'이 붙는다.
+            Button {
+                showingDraftPeriod = true
+            } label: {
+                if let period = draftPeriod {
+                    Text("~\(period.upperBound.formatted(.dateTime.month().day()))")
+                        .font(.body)
+                        .foregroundStyle(draftTint)
+                } else {
+                    Image(systemName: "calendar").font(.body)
+                }
+            }
+            .buttonStyle(.squish)
+            .foregroundStyle(.secondary)
+            .help("기간 정하기")
+            .popover(isPresented: $showingDraftPeriod, arrowEdge: .bottom) {
+                TodoPeriodPicker(period: $draftPeriod) { showingDraftPeriod = false }
+            }
+
+            Button(action: endAdding) {
+                Image(systemName: "xmark").font(.system(size: 11))
+            }
+            .buttonStyle(.squish)
+            .foregroundStyle(.secondary)
+            .help("닫기 (Esc)")
+            .accessibilityLabel("닫기")
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
+        .frame(maxWidth: .infinity, minHeight: BacklogBlock.cardHeight, maxHeight: BacklogBlock.cardHeight,
+               alignment: .topLeading)
+        .background(draftTint.opacity(0.10), in: .soft(Corner.panel))
+        .overlay(
+            RoundedRectangle.soft(Corner.panel)
+                .strokeBorder(draftTint.opacity(0.55),
+                              style: StrokeStyle(lineWidth: 1, dash: [4, 3]))
+        )
+        // 다른 데를 누르면 적던 것이 그대로 담긴다. 빈 칸이면 조용히 사라진다.
+        .onChange(of: addFocused) { _, focused in
+            // 기간을 고르러 간 사이에는 담지 않는다 — 고르고 돌아와 이어 적는다.
+            if !focused && !showingDraftPeriod { commitDraft(keepOpen: false) }
+        }
+        .onChange(of: showingDraftPeriod) { _, showing in
+            if !showing { addFocused = true }
+        }
+        .transition(.card)
+    }
+
+    /// **요일에 올린 것을 도로 목록으로 내린다.**
+    ///
+    /// 올릴 때 할 일을 지우지 않고 목록에서 '내리기만' 했으므로(→ `split`), 내리는 일은
+    /// **블록을 지우는 것**으로 끝난다. 지우면 그 할 일이 저절로 다시 목록에 선다.
+    ///
+    /// ⚠️ 할 일 없이 바로 세운 블록(블록 편집기·캘린더 가져오기)도 여기 떨어질 수 있다.
+    ///    그때는 지우기만 하면 통째로 사라지므로, 같은 이름의 할 일을 만들어 두고 지운다.
+    ///    "목록으로 옮긴다"고 했는데 없어지면 그건 옮긴 게 아니라 버린 것이다.
+    ///
+    /// - Returns: 받았는가. 블록이 아닌 것(할 일 카드·루틴)은 받지 않는다.
+    @discardableResult
+    private func returnToBacklog(token: String) -> Bool {
+        guard token.hasPrefix("block:"),
+              let block = PlanBlock.matching(dragToken: token, in: weekBlocks) else { return false }
+        Self.returnToBacklog(block, allItems: allItems, weekStart: weekStart, context: context)
+        return true
+    }
+
+    /// 블록을 할 일 목록으로 되돌린다 — 목록에 그 할 일이 없으면 새로 세우고 블록은 지운다.
+    /// 요일 칸에서 끌어 내릴 때와 일간 시간표에서 끌어 올 때가 같은 규칙을 쓴다.
+    static func returnToBacklog(_ block: PlanBlock, allItems: [BacklogItem], weekStart: Date,
+                                context: ModelContext) {
+        // 단계를 올린 블록은 "할 일 · 단계" 꼴이다. 앞머리가 할 일의 이름이다.
+        let root = block.title.components(separatedBy: " · ").first ?? block.title
+        if !allItems.contains(where: { $0.title == root }) {
+            let item = BacklogItem(title: block.title,
+                                   durationHours: block.durationHours,
+                                   sortIndex: (allItems.map(\.sortIndex).min() ?? 0) - 1,
+                                   weekStartDate: weekStart)
+            TodoSharing.stamp(item)
+            context.insert(item)
+        }
+        Haptic.snap()
+        withAnimation(Motion.squish) {
+            context.delete(block)
+            try? context.save()
+        }
+    }
+
+    /// 빈 칸을 연다. 분류는 지금 보고 있는 필터를 그대로 따른다 —
+    /// '업무'만 보고 있었다면 지금 적는 것도 업무다.
+    private func beginAdding() {
+        withAnimation(Motion.card) { isAdding = true }
+        addFocused = true
+    }
+
+    private func endAdding() {
+        newTitle = ""
+        draftPeriod = nil
+        addFocused = false
+        withAnimation(Motion.card) { isAdding = false }
+    }
+
+    /// 적은 것을 할 일로 담는다.
+    /// - Parameter keepOpen: 담고 나서 빈 칸을 하나 더 열어 둘지. Enter로 이어 적을 때만 true.
+    private func commitDraft(keepOpen: Bool) {
+        let title = newTitle.trimmingCharacters(in: .whitespaces)
+        guard !title.isEmpty else {
+            if !keepOpen { endAdding() }
+            return
+        }
+
+        // 새로 적은 것이 맨 앞에 서도록 지금 가장 작은 순서보다 하나 앞에 둔다.
+        let minIndex = allItems.map(\.sortIndex).min() ?? 0
+        let item = BacklogItem(title: title,
+                               durationHours: TodoTree.defaultStepHours,
+                               sortIndex: minIndex - 1,
+                               categoryID: filterCategoryID,
+                               weekStartDate: weekStart)
+        // 한 프로젝트를 거르는 중에 적은 것은 그 프로젝트의 할 일이다.
+        item.projectID = filterProjectID
+        TodoSharing.stamp(item)
+        withAnimation(Motion.card) {
+            context.insert(item)
+            if let period = draftPeriod {
+                TodoPeriod.draw(for: item, period: period, context: context)
+            }
+            try? context.save()
+        }
+        Telemetry.record(.todoAdded)
+        AddTodoIntent.donate(title)
+        newTitle = ""
+        draftPeriod = nil
+        if keepOpen {
+            addFocused = true          // 손이 키보드를 떠나지 않게 둔다
+        } else {
+            withAnimation(Motion.card) { isAdding = false }
+        }
+    }
+
+    /// 빈 칸의 색. 어느 분류로 적는 중인지 테두리 색이 말한다.
+    private var draftTint: Color {
+        categories.first { $0.uuid == filterCategoryID }?.displayColor
+            ?? BacklogBlock.nowGreen
+    }
+
+    /// 요일에 올려 둔, 아직 안 끝낸 일. 접었다 펼치는 한 줄.
+    ///
+    /// 목록에서 내린 대신 여기서 끝냈는지를 확인한다. 체크하면 완료로 표시되고
+    /// (아이폰 목록에서도 함께 내려간다) 이 줄에서도 사라진다.
+    private var placedSection: some View {
+        let placement = self.placement
+        let overdue = overdueItems(in: placement)
+        let overdueTokens = Set(overdue.map(\.dragToken))
+        return VStack(alignment: .leading, spacing: 6) {
+            Button {
+                withAnimation(Motion.disclose) { showsPlaced.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: showsPlaced ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                    Image(systemName: "calendar")
+                        .font(.system(size: 11))
+                    Text("요일에 올린 일 \(placedItems.count)")
+                        .font(.system(size: 13, weight: .medium))
+
+                    // 접어 둔 채로도 밀린 것이 있다는 사실은 보여야 한다.
+                    // 그래서 개수를 뱃지로 세운다 — 루틴은 세지 않는다(끝내고 말고 할 것이 아니다).
+                    if !overdue.isEmpty {
+                        Text("\(overdue.count)")
+                            .font(.system(size: 11, weight: .semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(Color.red, in: Capsule())
+                            .help("올린 날이 지났는데 아직 안 끝낸 일 \(overdue.count)개")
+                    }
+
+                    Text(overdue.isEmpty ? "— 끝냈으면 체크하세요" : "— 지난 날짜가 있습니다")
+                        .font(.caption)
+                        .foregroundStyle(overdue.isEmpty ? Color.secondary : Color.red)
+                }
+                .foregroundStyle(.secondary)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.squish)
+
+            if showsPlaced {
+                let colors = itemColorMap
+                VStack(spacing: 4) {
+                    ForEach(placedItems) { item in
+                        HStack(spacing: 8) {
+                            Button {
+                                complete(item)
+                            } label: {
+                                Image(systemName: "circle")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.squish)
+                            .help("끝냈다고 표시한다")
+                            .accessibilityLabel("끝내기")
+
+                            Text(item.title)
+                                .font(.system(size: 13))
+                                .lineLimit(1)
+
+                            Spacer(minLength: 8)
+
+                            if let note = planNote(for: item, in: placement) {
+                                let isOverdue = overdueTokens.contains(item.dragToken)
+                                Text(note)
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundStyle(isOverdue ? Color.red
+                                                              : (colors[item.dragToken] ?? .secondary))
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(Color.primary.opacity(0.04), in: .soft(Corner.chip))
+                        .transition(.row)
+                    }
+                }
+                .animation(Motion.row, value: placedItems.map(\.dragToken))
+                .transition(.disclose)
+            }
+        }
+        .padding(.top, 2)
+    }
+
+    /// 끝냈다고 표시한다. 단계로 쪼갠 일이면 남은 단계까지 함께 닫는 것은
+    /// TodoTree가 아는 규칙이라 그쪽에 맡긴다 (여기서 다시 쓰면 규칙이 둘이 된다).
+    private func complete(_ item: BacklogItem) {
+        Haptic.tick()
+        withAnimation(Motion.squish) {
+            tree.setCompleted(item, true)
+            try? context.save()
+        }
+    }
+
+    private var emptyState: some View {
+        HStack(spacing: 8) {
+            Text(weekItems.isEmpty
+                 ? "할 일이 아직 없습니다."
+                 : (placedItems.isEmpty ? "이 분류엔 할 일이 없습니다."
+                                        : "언제 할지 다 정했습니다."))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            if weekItems.isEmpty && !isAdding {
+                Button("새 할 일") { beginAdding() }
+
+                    .buttonStyle(.borderless)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 2)
+    }
+
+    private var lockedNotice: some View {
+        HStack(spacing: 8) {
+            Text("고정 루틴을 먼저 추가하면 할 일을 계획할 수 있습니다.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 10)
+        .background(Color(nsColor: .controlBackgroundColor), in: .soft(Corner.card))
+    }
+
+    /// **'모든 단계 완료'인데 목록에 남아 있는 할 일을 맞춘다.**
+    ///
+    /// `TodoTree.rollUp` 이 시작점 자신을 안 세던 동안, 남은 단계를 지운 할 일은 자식이 전부
+    /// 끝났는데도 부모가 미완료로 남았다. 규칙은 고쳤지만 이미 어긋난 것은 다시 손대기 전에는
+    /// 안 돌아온다 — 정작 그런 할 일은 더 손댈 것이 없어서 손이 안 간다. 그래서 목록이 설 때
+    /// 한 번 훑는다. 고칠 게 없으면 아무것도 쓰지 않는다.
+    private func reconcileStepStates() async {
+        // 옆의 카테고리 맞추기와 같은 이유로 기다린다 — CloudKit 이 단계를 다 내려받기 전에
+        // 세면 **아직 안 온 단계**가 없는 것으로 보여, 끝난 단계만 있는 할 일을 완료로
+        // 찍어 버린다. (뒤늦게 와도 다음 rollUp 에서 도로 풀리지만, 그 사이 목록에서 사라진다.)
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        guard tree.reconcile() else { return }
+        try? context.save()
+    }
+
+    private func reconcileCategories() async {
+        // CloudKit 동기화가 아직 기존 카테고리를 내려받기 전이면 categories가
+        // 비어 보여서 기본값이 중복 시딩된다. 초기 임포트가 정착할 시간을 잠깐 준다.
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+
+        // (A) 같은 이름의 중복 카테고리를 하나로 합친다.
+        //     (과거 동기화 경쟁으로 생긴 "업무 업무 / 개인 개인" 정리)
+        TodoStore.shared.dedupeCategoriesByName()
+
+        // (B) 정말로 카테고리가 하나도 없을 때만, 그리고 한 번만 기본값을 넣는다.
+        seedDefaultCategoriesIfNeeded()
+
+    }
+
+    private func seedDefaultCategoriesIfNeeded() {
+        guard !didSeedCategories, categories.isEmpty else { return }
+        didSeedCategories = true
+        let defaults: [(String, String, String)] = [
+            (String(localized: "업무", comment: "기본 분류"), "blue", "briefcase"),
+            (String(localized: "개인", comment: "기본 분류"), "green", "person"),
+            (String(localized: "건강", comment: "기본 분류"), "orange", "heart"),
+            (String(localized: "학습", comment: "기본 분류"), "purple", "book"),
+        ]
+        var existingNames = Set(categories.map { $0.name.trimmingCharacters(in: .whitespaces) })
+        for (i, d) in defaults.enumerated() where !existingNames.contains(d.0) {
+            context.insert(BacklogCategory(name: d.0, colorName: d.1, iconName: d.2, sortIndex: i))
+            existingNames.insert(d.0)
+        }
+        try? context.save()
+    }
+
+    /// 이름이 같은 카테고리를 가장 먼저 만들어진 하나로 합치고,
+    /// 나머지를 쓰던 항목은 살아남은 카테고리로 재연결한 뒤 중복을 삭제한다.
+}
+
+/// '할 일'을 담는 **따로 선 창**.
+///
+/// 예전에는 주간 화면 맨 아래에 얹힌 한 조각이었다. 그런데 할 일을 적는 일과
+/// 한 주를 짜는 일은 손이 오가는 방향이 다르다 — 적을 때는 목록만 보면 되고,
+/// 배치할 때는 목록과 요일 칸을 **동시에** 봐야 한다. 한 창에 세로로 쌓아 두면
+/// 둘 중 하나는 늘 스크롤 밖에 있다. 창을 따로 세우면 나란히 놓고 끌어다 놓을 수 있다.
+///
+/// 주는 언제나 '이번 주'다. 지난 주를 들추는 일은 '전체 보기'가 맡는다.
+struct TodoWindowView: View {
+    @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
+    private var allItems: [BacklogItem]
+
+    private let weekStart: Date = .currentWeekStart
+
+    @Query private var allBlocksRaw: [PlanBlock]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    /// **거르는 자리는 여기 하나뿐이다** — 화면마다 조건을 따로 쓰면 어딘가는 새어 보인다.
+    private var allBlocks: [PlanBlock] { allBlocksRaw.filter(TodoSharing.isVisible) }
+    @Query(sort: [SortDescriptor(\Routine.sortIndex)]) private var routinesRaw: [Routine]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    /// **거르는 자리는 여기 하나뿐이다** — 화면마다 조건을 따로 쓰면 어딘가는 새어 보인다.
+    private var routines: [Routine] { routinesRaw.filter(TodoSharing.isVisible) }
+
+    /// 이번 주의 계획 블록 — 카드에 '어느 요일에 올렸는지'를 붙이는 데 쓴다.
+    private var weekBlocks: [PlanBlock] {
+        let cal = Calendar(identifier: .iso8601)
+        return allBlocks.filter { cal.isDate($0.weekStartDate, inSameDayAs: weekStart) }
+    }
+
+    /// 고정 루틴이 하나라도 있어야 할 일을 계획할 수 있다 (주간 화면과 같은 규칙).
+    /// 처음 쓰는 사람은 루틴 없이도 할 일부터 적는다 (→ FeatureStage.isGuided).
+    private var canPlan: Bool { routines.contains { $0.kind == .fixed } || FeatureStage.shared.isGuided }
+
+    var body: some View {
+        ScrollView {
+            BacklogSection(allItems: allItems, weekStart: weekStart,
+                           weekBlocks: weekBlocks, canPlan: canPlan)
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(minWidth: 460, minHeight: 420)
+    }
+}
+
+struct FilterChip: View {
+    let label: String
+    let color: Color
+    let selected: Bool
+    let onTap: () -> Void
+
+    @State private var hovering = false
+
+    // 안 고른 것도 **눌리는 것처럼** 보여야 한다. 예전에는 배경이 아예 없어서
+    // 고르기 전에는 그냥 적어 둔 글씨로 읽혔다 — 누를 수 있는 줄 모르고 지나쳤다.
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 5) {
+                Circle()
+                    .fill(color)
+                    .frame(width: 7, height: 7)
+                Text(label)
+                    .font(.system(size: 13, weight: selected ? .semibold : .medium))
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 11)
+            .padding(.vertical, 5)
+            .background(
+                selected ? color.opacity(0.20)
+                         : Color.primary.opacity(hovering ? 0.10 : 0.06),
+                in: Capsule()
+            )
+            .overlay(
+                Capsule().stroke(selected ? color.opacity(0.65) : Color.primary.opacity(0.12),
+                                 lineWidth: selected ? 1.2 : 1)
+            )
+            .foregroundStyle(selected ? color : .primary)
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.squish)
+        .onHover { hovering = $0 }
+        .animation(Motion.hover, value: hovering)
+        .animation(Motion.card, value: selected)
+    }
+}
+
+/// 드래그해서 요일에 떨어뜨리기 좋은 백로그 블록(카드).
+struct BacklogBlock: View {
+    /// 할 일 안의 단계(뎁스) 요약. 단계가 없는 할 일이면 nil.
+    struct StepsInfo {
+        /// 지금 해야 할 단계. 전부 끝났으면 nil.
+        /// 사용자가 '바로 하면 되는 일'로 표시해 둔 단계가 있으면 차례를 건너뛰고 그것이 온다.
+        let currentTitle: String?
+        /// 위 단계가 표시해 둔 것인가 (차례를 건너뛰고 세운 단계).
+        var isMarked: Bool = false
+        let progress: Double
+        let count: Int
+        /// 몇 번째 단계인지 (1부터). 전부 끝났으면 nil.
+        let number: Int?
+        let totalHours: Double
+        let canRewind: Bool
+        /// 아직 안 끝낸 단계 수. 1이면 다음 누름이 마지막이다.
+        var remaining: Int = 0
+    }
+
+    let item: BacklogItem
+    let categories: [BacklogCategory]
+    let tint: Color
+    /// 이 카드가 어느 자리에 서는가. 순서가 여기서 나온다 (iOS 목록의 띠와 같은 규칙).
+    var lane: TodoTree.Lane = .planned
+    /// 지금 세우고 있는 것이 조각인가. 표시해 둔 것과 같은 연두로 칠한다.
+    var isFragment: Bool = false
+    /// 이 주에 이미 요일로 올려 둔 경우의 표시 ("화요일"). 안 올렸으면 nil.
+    var planNote: String? = nil
+    var steps: StepsInfo? = nil
+    /// 지금 할 단계를 끝내고 다음으로 넘기기.
+    var onAdvance: () -> Void = { }
+    /// 마지막으로 끝낸 단계 되돌리기.
+    var onRewind: () -> Void = { }
+    /// 단계 시트 열기.
+    var onEditSteps: () -> Void = { }
+    /// 카드를 눌렀다 — 상세(할 일을 들여다보는 시트)를 연다.
+    var onOpen: () -> Void = { }
+    /// 안 쪼갠 일을 끝냈다.
+    var onComplete: () -> Void = { }
+    let onDelete: () -> Void
+    let onSetCategory: (String?) -> Void
+    /// 고를 수 있는 프로젝트 (끝낸 것은 빠진 목록).
+    var projects: [Project] = []
+    /// 프로젝트를 붙이거나 뗀다 (nil = 프로젝트 없음).
+    var onSetProject: (String?) -> Void = { _ in }
+    /// 새 프로젝트를 만들어 이 할 일에 붙인다.
+    var onNewProject: () -> Void = { }
+    /// '바로 하면 되는 일' 표시를 켜고 끈다.
+    var onToggleNow: () -> Void = { }
+
+    @State private var hovering = false
+    /// 색으로만 갈래를 가르지 않게 — 손쉬운 사용 ▸ 색상 없이 구별 (→ laneBadge).
+    @Environment(\.accessibilityDifferentiateWithoutColor) private var differentiateWithoutColor
+    /// 손쉬운 사용 ▸ 대비 증가. 옅은 바탕만으로는 카드 가장자리가 안 보여서 테두리를 늘 세운다.
+    @Environment(\.colorSchemeContrast) private var contrast
+    /// 방금 끝냄을 눌렀다. 고리가 꽉 차고 체크가 서는 것을 **보여 준 뒤에** 카드를 내린다 —
+    /// 누르자마자 사라지면 무엇을 눌렀는지 눈이 따라가지 못한다.
+    @State private var finishing = false
+
+    /// 앞 동그라미를 눌렀다. 쪼갠 일은 지금 단계를 끝내고, 안 쪼갠 일은 통째로 끝낸다.
+    /// 마지막 한 번(카드가 목록에서 내려가는 누름)은 꽉 찬 체크를 잠깐 보여 준 뒤에 내린다.
+    private func checkProgress() {
+        if let steps {
+            guard steps.currentTitle != nil else { return }
+            guard steps.remaining <= 1 else {
+                onAdvance()
+                return
+            }
+        }
+        withAnimation(Motion.squish) { finishing = true }
+        let title = item.title
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
+            if steps != nil { onAdvance() } else { onComplete() }
+            // 카드가 목록에서 내려간다 — VoiceOver 를 쓰는 사람에게는 사라진 것이 안 보인다.
+            AccessibilityNotification.Announcement(String(localized: "‘\(title)’ 끝냄")).post()
+        }
+    }
+
+    /// 지우기. 모서리 단추는 가리킬 때만 서서, VoiceOver·음성 제어로도 같은 길을 둔다.
+    private func deleteAnnouncing() {
+        let title = item.title
+        onDelete()
+        AccessibilityNotification.Announcement(String(localized: "‘\(title)’ 삭제함")).post()
+    }
+
+    /// 갈래를 색 말고 **모양**으로도 — 색상 없이 구별을 켠 사람에게만 선다.
+    /// 바로(번개)는 앞 동그라미가 이미 말하니, 색으로만 갈리던 '그냥 하면 되는 것'과 '시간을 잡은 일'을 적는다.
+    @ViewBuilder
+    private var laneBadge: some View {
+        if differentiateWithoutColor, !(lane == .now || isFragment) {
+            Image(systemName: lane == .errand ? "circle.dashed" : "clock")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .help(lane == .errand ? Text("그냥 하면 되는 일") : Text("시간을 잡은 일"))
+                .accessibilityHidden(true)
+        }
+    }
+
+    /// VoiceOver 가 카드 하나를 읽을 때의 갈래 이름.
+    private var laneName: String {
+        if lane == .now || isFragment { return String(localized: "바로 하면 되는 일") }
+        return lane == .errand ? String(localized: "그냥 하면 되는 일") : String(localized: "시간을 잡은 일")
+    }
+
+    /// 테두리를 늘 세우는가 — 가리킬 때, 또는 대비 증가·색상 없이 구별을 켰을 때.
+    private var showsBorder: Bool {
+        hovering || contrast == .increased || differentiateWithoutColor
+    }
+
+    private var borderColor: Color {
+        if contrast == .increased { return Color.primary.opacity(0.45) }
+        return laneBorder.opacity(showsBorder ? 1 : 0)
+    }
+
+    private var borderWidth: CGFloat { contrast == .increased ? 1.5 : 1 }
+
+    /// 카드 동그라미에 설 분류 아이콘. 분류가 없으면 nil — 첫 글자가 선다.
+    private var categoryIcon: String? {
+        guard let id = item.categoryID else { return nil }
+        return categories.first { $0.uuid == id }?.iconName
+    }
+
+    /// 할 일 카드 한 장의 키. 두 줄 제목 + 지금 단계 한 줄 + 시간 줄이 들어간다.
+    static let cardHeight: CGFloat = 96
+
+    /// '바로 하면 되는 일'의 색. iOS와 같은 연두다.
+    static let nowGreen = Color(hue: 0.26, saturation: 0.72, brightness: 0.66)
+
+    /// 카드 배경. 성질이 곧 색이다.
+    ///   바로 하면 되는 일 → 연두, 그냥 하면 되는 것 → 회색, 나머지 → 카테고리 색.
+    private var laneBackground: Color {
+        if isFragment { return Self.nowGreen.opacity(0.18) }
+        switch lane {
+        case .now:     return Self.nowGreen.opacity(0.18)
+        case .errand:  return Color.secondary.opacity(0.09)
+        case .planned: return tint.opacity(0.10)
+        }
+    }
+
+    private var laneBorder: Color {
+        if isFragment { return Self.nowGreen.opacity(0.45) }
+        switch lane {
+        case .now:     return Self.nowGreen.opacity(0.45)
+        case .errand:  return Color.secondary.opacity(0.25)
+        case .planned: return tint.opacity(0.30)
+        }
+    }
+
+    var body: some View {
+        card
+        // **VoiceOver 로도 카드 하나에서 다 한다.** 끝내기·지우기는 가리켜야 서는 단추라
+        // 화면을 못 보는 사람에게는 길이 없었다. 오른쪽 클릭 메뉴와 같은 일을 동작으로 둔다.
+            .accessibilityElement(children: .combine)
+            .accessibilityValue(Text(verbatim: laneName))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { onOpen() }
+            .accessibilityAction(named: steps == nil ? Text("끝내기") : Text("지금 단계 끝내기")) { checkProgress() }
+            .accessibilityAction(named: steps == nil ? Text("단계로 쪼개기…") : Text("단계 보기·편집…"), onEditSteps)
+            .accessibilityAction(named: lane == .now ? Text("'바로' 표시 거두기") : Text("바로 하면 되는 일로 표시"),
+                                 onToggleNow)
+            .accessibilityAction(named: Text("삭제"), deleteAnnouncing)
+    }
+
+    private var card: some View {
+        HStack(alignment: .top, spacing: 9) {
+            // **누르면 진행이 차는 동그라미.** 고리가 곧 진행도다 — 단계로 쪼갠 일은 누를 때마다
+            // 지금 단계를 끝내고, 안 쪼갠 일은 한 번에 끝난다. 안에는 분류 아이콘('바로 하면
+            // 되는 일'은 번개)이 서 있다가 가리키면 누르면 무엇이 되는지로 바뀐다.
+            ProgressCheck(progress: finishing ? 1 : (steps?.progress ?? 0),
+                          color: (lane == .now || isFragment) ? Self.nowGreen : tint,
+                          symbol: (lane == .now || isFragment) ? "bolt.fill" : categoryIcon,
+                          title: item.title,
+                          stepped: steps != nil,
+                          action: checkProgress)
+                .disabled(finishing)
+                .help(steps.map { $0.currentTitle.map { String(localized: "‘\($0)’ 끝내기") } ?? String(localized: "모든 단계를 마쳤습니다") }
+                      ?? String(localized: "끝냈다고 표시한다"))
+
+            VStack(alignment: .leading, spacing: 3) {
+                // 제목은 늘 두 줄 자리를 잡는다 — 한 줄짜리와 두 줄짜리 카드의 키가 같아야 한다.
+                Text(item.title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .lineLimit(2, reservesSpace: true)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                if let steps {
+                    // 단계가 있는 할 일은 '지금 할 단계'가 곧 지금 해야 하는 일이다.
+                    Button(action: onAdvance) {
+                        HStack(spacing: 4) {
+                            // 표시해 둔 단계는 원 안의 번개로 — 색만으로는 흑백에서 사라진다.
+                            Image(systemName: steps.currentTitle == nil
+                                  ? "checkmark.circle.fill"
+                                  : ((steps.isMarked || isFragment) ? "bolt.circle" : "arrowtriangle.right.circle.fill"))
+                                .font(.system(size: 13))
+                                .foregroundStyle(steps.currentTitle == nil
+                                                 ? Color.green
+                                                 : ((steps.isMarked || isFragment) ? Self.nowGreen : Color.orange))
+                            Text(steps.currentTitle ?? String(localized: "모든 단계 완료"))
+                                .font(.system(size: 13, weight: .medium))
+                                .lineLimit(1)
+                        }
+                    }
+                    .buttonStyle(.squish)
+                    .help(steps.currentTitle == nil ? "모든 단계를 마쳤습니다" : "이 단계를 끝내고 다음으로 넘기기")
+                    // 진행 막대는 뗐다 — 앞 동그라미의 고리가 같은 것을 말한다.
+                }
+
+                // 남는 키는 제목과 아래 줄 사이에 둔다. 아래 줄(시간·요일)은 늘 카드 바닥에 붙는다.
+                Spacer(minLength: 0)
+
+                // 카드 아래 줄은 '얼마짜리인가'와 곁다리 표시만. 시간은 칩 하나로 말한다 —
+                // 단계가 있으면 이 카드를 끌어다 놓을 때 잡히는 건 전체 시간이라 그걸 쓴다.
+                //
+                // 분류 이름은 여기 적지 않는다. 카드 색이 이미 분류를 말하고 있고,
+                // 한 줄에 글씨가 넷씩 붙으면 정작 읽어야 할 시간·요일이 묻힌다.
+                // 무슨 분류인지 확인하고 바꾸는 자리는 카드 오른쪽 클릭 메뉴다.
+                HStack(spacing: 6) {
+                    laneBadge
+                    Text(formatDuration(steps?.totalHours ?? item.durationHours))
+                        .font(.system(size: 13, weight: .medium))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+
+                    // 요일에 올려 둔 할 일. 카드가 백로그에 그대로 남으므로,
+                    // "이건 이미 언제 할지 정했다"를 이 칩 하나로 말한다.
+                    if let planNote {
+                        HStack(spacing: 3) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 11))
+                            Text(planNote)
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(tint)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(tint.opacity(0.16), in: Capsule())
+                        .lineLimit(1)
+                    }
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+        .padding(.leading, 8)
+        .padding(.trailing, 10)
+        .padding(.vertical, 9)
+        // **카드 키는 모두 같다.** 제목 길이·단계 유무로 들쭉날쭉하면 격자가 아니라 쌓아 둔 쪽지로 읽힌다.
+        .frame(maxWidth: .infinity, minHeight: Self.cardHeight, maxHeight: Self.cardHeight, alignment: .topLeading)
+        .background(laneBackground, in: .soft(Corner.panel))
+        // 갈래(지금·잔일·계획)는 바탕색과 왼쪽 동그라미가 이미 말한다. 테두리는 가리킬 때만 선다.
+        // 대비 증가·색상 없이 구별을 켰으면 늘 세운다 — 옅은 바탕만으로는 카드 가장자리가 안 보인다.
+        .overlay(RoundedRectangle.soft(Corner.panel).strokeBorder(borderColor, lineWidth: borderWidth))
+        // 가리키면 **들어 올린 카드**처럼 그림자가 깔린다 — 집어서 끌 수 있다는 넛지.
+        .background {
+            RoundedRectangle.soft(Corner.panel)
+                .fill(Color.surface)
+                .shadow(color: .black.opacity(hovering ? 0.08 : 0), radius: hovering ? 3 : 0, y: hovering ? 1.5 : 0)
+        }
+        // 지우기는 모서리에 **얹는다.** 줄 안에 세웠더니 가리키는 순간 제목 폭이 줄어
+        // 글자가 '…'로 잘렸다가 손을 떼면 돌아왔다. 얹으면 글씨는 제자리에 그대로다.
+        .overlay(alignment: .topTrailing) {
+            if hovering {
+                Button(action: deleteAnnouncing) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 18, height: 18)
+                        .background(Color.surface, in: Circle())
+                        .shadow(color: .black.opacity(0.15), radius: 2, y: 1)
+                }
+                .buttonStyle(.squish)
+                .offset(x: 6, y: -6)
+                .transition(.pop)
+                .help("삭제")
+                .accessibilityLabel("삭제")
+                .accessibilityInputLabels([Text("삭제"), Text("지우기")])
+            }
+        }
+        .contentShape(.soft(Corner.panel))
+        // **손에 들려 가는 모습은 작은 알약 하나다** (→ DragPreviewCard). 카드를 통째로 찍어
+        // 들고 다니면 무엇을 들었는지보다 덩어리가 먼저 보인다.
+        //
+        // ⚠️ 한때 `onDrag`로 바꿔 '집어 올리는 순간'을 잡아 원래 카드를 흐리게 했다가 되돌렸다.
+        //    끌기가 시작되는 자리는 잡히지만, **놓을 때 끌던 그림이 목록 쪽으로 도로 내려갔다가**
+        //    새 알약이 시간표에 서는 것처럼 보였다. 놓는 순간이 깨끗한 쪽이 낫다.
+        //
+        // 끌기를 안쪽에, 누르기를 바깥에 둔다 — 순서가 뒤집히면 누르는 동안 끌기가 시작되지 못한다.
+        .draggable(item.dragToken) {
+            DragPreviewCard(title: item.title,
+                            hours: steps?.totalHours ?? item.durationHours,
+                            color: (lane == .now || isFragment) ? Self.nowGreen : tint,
+                            symbol: (lane == .now || isFragment) ? "bolt.fill" : categoryIcon)
+        }
+        .onTapGesture(perform: onOpen)
+        .onHover { hovering = $0 }
+        .grabCursor()
+        .hoverLift(hovering)
+        .animation(Motion.squish, value: hovering)
+        // 성질이 바뀌면 색이 바뀐다('바로 하면 되는 일'로 표시하는 순간처럼).
+        // 툭 갈아 끼우면 무엇이 바뀐 건지 눈이 못 좇는다.
+        .animation(Motion.card, value: laneBackground)
+        .contextMenu {
+            Button(steps == nil ? "단계로 쪼개기…" : "단계 보기·편집…", action: onEditSteps)
+            Button(lane == .now ? "'바로' 표시 거두기" : "바로 하면 되는 일로 표시",
+                   action: onToggleNow)
+            if let steps {
+                if steps.currentTitle != nil {
+                    Button("지금 단계 끝내기", action: onAdvance)
+                }
+                if steps.canRewind {
+                    Button("이전 단계로 되돌리기", action: onRewind)
+                }
+            }
+            Divider()
+            Menu("카테고리 지정") {
+                Button {
+                    onSetCategory(nil)
+                } label: {
+                    Label("미분류", systemImage: item.categoryID == nil ? "checkmark" : "circle")
+                }
+                Divider()
+                ForEach(categories) { c in
+                    Button {
+                        onSetCategory(c.uuid)
+                    } label: {
+                        Label(c.name, systemImage: item.categoryID == c.uuid ? "checkmark" : "")
+                    }
+                }
+            }
+            // 분류와 따로 고른다 — '업무'이면서 '테크맵'일 수 있다 (→ Project).
+            Menu("프로젝트") {
+                Button {
+                    onSetProject(nil)
+                } label: {
+                    Label("프로젝트 없음", systemImage: item.projectID == nil ? "checkmark" : "circle")
+                }
+                if !projects.isEmpty { Divider() }
+                ForEach(projects) { p in
+                    Button {
+                        onSetProject(p.uuid)
+                    } label: {
+                        Label(p.name, systemImage: item.projectID == p.uuid ? "checkmark" : "")
+                    }
+                }
+                Divider()
+                Button("새 프로젝트…", action: onNewProject)
+            }
+            Divider()
+            Button("삭제", role: .destructive, action: deleteAnnouncing)
+        }
+    }
+}
+
+// MARK: - 할 일 작성 (TODO 리스트 방식)
+//
+// 새 항목은 보고 있는 주에 들어가지만, 목록은 백로그와 같이 **전부** 보여준다.
+// 백로그에 보이는데 여기서 편집할 수 없으면 손댈 방법이 없어진다.
+
+struct BacklogComposerView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    let weekStart: Date
+
+    @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
+    private var allItems: [BacklogItem]
+    @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
+    private var categories: [BacklogCategory]
+
+    @State private var newTitle = ""
+    @State private var defaultCategoryID: String? = nil
+    /// 적으면서 고르는 라벨 = 예상 시간. 고르기 전에는 추가할 수 없다.
+    @State private var showingCategoryManager = false
+    @FocusState private var focused: Bool
+
+    private let cal = Calendar(identifier: .iso8601)
+
+    /// 아직 안 한 할 일 전부 (백로그와 같은 범위). 보고 있는 주가 위로 온다.
+    /// 단계는 부모 안에서만 보이므로 최상위만 세운다.
+    private var weekItems: [BacklogItem] {
+        TodoTree(allItems).roots.filter { !$0.isCompleted }.sorted { a, b in
+            let (ba, bb) = (bucket(a), bucket(b))
+            if ba != bb { return ba < bb }
+            if !cal.isDate(a.weekStartDate, inSameDayAs: b.weekStartDate) {
+                return a.weekStartDate < b.weekStartDate
+            }
+            if a.sortIndex != b.sortIndex { return a.sortIndex < b.sortIndex }
+            return a.createdAt < b.createdAt
+        }
+    }
+
+    private func bucket(_ item: BacklogItem) -> Int {
+        if cal.isDate(item.weekStartDate, inSameDayAs: weekStart) { return 0 }
+        return item.weekStartDate < weekStart ? 1 : 2
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("할 일").font(.title3.weight(.medium))
+                    Text("입력하고 Enter ↵ 로 계속 추가")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("카테고리") { showingCategoryManager = true }
+                    .buttonStyle(.borderless)
+            }
+            .padding(20)
+
+            Divider()
+
+            // TODO 방식 입력 줄 — 제목 입력 후 Enter 로 즉시 추가, 포커스 유지
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 10) {
+                    categoryDefaultMenu
+                    TextField("할 일 입력 후 Enter", text: $newTitle)
+                        .textFieldStyle(.plain)
+                        .font(.title3)
+                        .focused($focused)
+                        .onSubmit(addAndContinue)
+                    Button("추가", action: addAndContinue)
+                        .buttonStyle(.borderless)
+                        .disabled(!canAdd)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+
+            Divider()
+
+            if weekItems.isEmpty {
+                Spacer()
+                Text("아직 할 일이 없습니다. 위에 입력해 추가하세요.")
+                    .foregroundStyle(.secondary)
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 6) {
+                        ForEach(weekItems) { item in
+                            ComposerItemRow(item: item, categories: categories) {
+                                withAnimation(Motion.row) {
+                                    context.delete(item); try? context.save()
+                                }
+                            }
+                            .transition(.row)
+                        }
+                    }
+                    .padding(20)
+                    .animation(Motion.row, value: weekItems.map(\.dragToken))
+                }
+            }
+
+            Divider()
+
+            HStack(spacing: 10) {
+                Text("\(weekItems.count)개 · 합계 \(formatDuration(weekItems.reduce(0) { $0 + $1.durationHours }))")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+                Button("완료") { dismiss() }
+                    .buttonStyle(.borderedProminent)
+            }
+            .padding(20)
+        }
+        .onAppear { focused = true }
+        .sheet(isPresented: $showingCategoryManager) {
+            CategoryManagerView().frame(minWidth: 440, minHeight: 460)
+        }
+    }
+
+    private var categoryDefaultMenu: some View {
+        let current = categories.first { $0.uuid == defaultCategoryID }
+        return Menu {
+            Button { defaultCategoryID = nil } label: {
+                Label("미분류", systemImage: defaultCategoryID == nil ? "checkmark" : "circle")
+            }
+            Divider()
+            ForEach(categories) { c in
+                Button { defaultCategoryID = c.uuid } label: {
+                    Label(c.name, systemImage: defaultCategoryID == c.uuid ? "checkmark" : "")
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Circle().fill(current?.displayColor ?? Color.secondary.opacity(0.4)).frame(width: 9, height: 9)
+                Text(current?.name ?? String(localized: "미분류")).font(.callout)
+                Image(systemName: "chevron.down").font(.system(size: 10)).foregroundStyle(.secondary)
+            }
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help("새 항목의 기본 카테고리")
+    }
+
+    /// 이름만 있으면 추가된다. 시간은 나중에 줄에서 고친다.
+    private var canAdd: Bool {
+        !newTitle.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private func addAndContinue() {
+        let t = newTitle.trimmingCharacters(in: .whitespaces)
+        guard !t.isEmpty else { return }
+        let maxIndex = allItems.map(\.sortIndex).max() ?? -1
+        let item = BacklogItem(title: t, durationHours: TodoTree.defaultStepHours,
+                               sortIndex: maxIndex + 1,
+                               categoryID: defaultCategoryID, weekStartDate: weekStart)
+        TodoSharing.stamp(item)
+        withAnimation(Motion.row) {
+            context.insert(item)
+            try? context.save()
+        }
+        Telemetry.record(.todoAdded)
+        newTitle = ""
+        focused = true
+    }
+}
+
+struct ComposerItemRow: View {
+    @Bindable var item: BacklogItem
+    let categories: [BacklogCategory]
+    @Environment(\.modelContext) private var context
+    @Query private var allItems: [BacklogItem]
+    let onDelete: () -> Void
+
+
+    private var category: BacklogCategory? { categories.first { $0.uuid == item.categoryID } }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            categoryMenu
+
+            TextField("할 일", text: $item.title)
+                .textFieldStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+
+            DurationPicker(hours: hoursBinding, style: .plain)
+                .disabled(TodoTree(allItems).hasChildren(item))
+
+            Button("삭제", role: .destructive, action: onDelete)
+                .buttonStyle(.borderless)
+                .font(.caption)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(Color(nsColor: .controlBackgroundColor), in: .soft(Corner.chip))
+        .onChange(of: item.title) { _, _ in try? context.save() }
+    }
+
+    /// 이 할 일에 걸리는 시간. 단계가 있으면 그 합이라 여기서는 손대지 않는다.
+    private var hoursBinding: Binding<Double> {
+        Binding(get: { item.durationHours },
+                set: { value in
+                    guard !TodoTree(allItems).hasChildren(item) else { return }
+                    item.durationHours = max(0, value)
+                    try? context.save()
+                })
+    }
+
+    private func assign(_ category: BacklogCategory) {
+        item.categoryID = category.uuid
+        try? context.save()
+    }
+
+    private var categoryMenu: some View {
+        Menu {
+            Button { item.categoryID = nil; try? context.save() } label: {
+                Label("미분류", systemImage: item.categoryID == nil ? "checkmark" : "circle")
+            }
+            Divider()
+            ForEach(categories) { c in
+                Button { assign(c) } label: {
+                    Label(c.name, systemImage: item.categoryID == c.uuid ? "checkmark" : "")
+                }
+            }
+        } label: {
+            Circle()
+                .fill(category?.displayColor ?? Color.secondary.opacity(0.4))
+                .frame(width: 11, height: 11)
+                .overlay(Circle().stroke(Color.secondary.opacity(0.3), lineWidth: 0.5))
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help(category?.name ?? String(localized: "미분류"))
+    }
+}
+
+// MARK: - 전체 백로그 (지난 주 포함)
+
+struct AllBacklogView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    let currentWeek: Date
+
+    @Query(sort: [SortDescriptor(\BacklogItem.weekStartDate, order: .reverse), SortDescriptor(\BacklogItem.sortIndex)])
+    private var allItems: [BacklogItem]
+    @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
+    private var categories: [BacklogCategory]
+
+    private let cal = Calendar(identifier: .iso8601)
+
+    private var tree: TodoTree { TodoTree(allItems) }
+
+    /// 최상위 할 일만 (단계는 부모 안에서 본다). 정렬은 @Query 순서를 그대로 쓴다.
+    private var rootItems: [BacklogItem] {
+        let roots = Set(tree.roots.map(\.dragToken))
+        return allItems.filter { roots.contains($0.dragToken) }
+    }
+
+    /// 항목이 존재하는 주들 (최신 주 우선).
+    private var weeks: [Date] {
+        var seen = Set<Date>(); var result: [Date] = []
+        for it in rootItems where !seen.contains(it.weekStartDate) {
+            seen.insert(it.weekStartDate); result.append(it.weekStartDate)
+        }
+        return result
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("전체 할 일").font(.title2.weight(.semibold))
+                    Text("끝낸 것까지, 주별로 모아 봅니다")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("완료") { dismiss() }.buttonStyle(.borderedProminent)
+            }
+            .padding(20)
+
+            Divider()
+
+            if rootItems.isEmpty {
+                Spacer()
+                Text("할 일이 비어 있습니다.").foregroundStyle(.secondary)
+                Spacer()
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 16) {
+                        ForEach(weeks, id: \.self) { week in
+                            let items = rootItems.filter { cal.isDate($0.weekStartDate, inSameDayAs: week) }
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text(weekLabel(week))
+                                        .font(.headline)
+                                        .foregroundStyle(isCurrent(week) ? Color.red : .primary)
+                                    Text("\(items.count)개").font(.caption).foregroundStyle(.secondary)
+                                    Spacer()
+                                    Text("합계 \(formatDuration(items.reduce(0) { $0 + tree.totalHours(of: $1) }))")
+                                        .font(.caption).foregroundStyle(.secondary).monospacedDigit()
+                                }
+                                ForEach(items) { item in
+                                    AllBacklogRow(
+                                        item: item,
+                                        categories: categories,
+                                        onDelete: {
+                                            withAnimation(Motion.row) {
+                                                for node in tree.subtree(of: item) { context.delete(node) }
+                                                try? context.save()
+                                            }
+                                        }
+                                    )
+                                    .transition(.row)
+                                }
+                            }
+                        }
+                    }
+                    .padding(20)
+                    .animation(Motion.row, value: rootItems.map(\.dragToken))
+                }
+            }
+        }
+    }
+
+    private func isCurrent(_ w: Date) -> Bool { cal.isDate(w, inSameDayAs: currentWeek) }
+
+    private func weekLabel(_ week: Date) -> String {
+        let days = cal.dateComponents([.day], from: currentWeek, to: week).day ?? 0
+        let offset = Int((Double(days) / 7).rounded())
+        let f = DateFormatter(); f.setLocalizedDateFormatFromTemplate("MMMd")
+        let end = cal.date(byAdding: .day, value: 6, to: week) ?? week
+        let range = "\(f.string(from: week))–\(f.string(from: end))"
+        let rel: String
+        switch offset {
+        case 0: rel = String(localized: "이번 주")
+        case -1: rel = String(localized: "지난 주")
+        case 1: rel = String(localized: "다음 주")
+        case let n where n < 0: rel = String(localized: "\(-n)주 전")
+        default: rel = String(localized: "\(offset)주 후")
+        }
+        return "\(rel) · \(range)"
+    }
+}
+
+struct AllBacklogRow: View {
+    let item: BacklogItem
+    let categories: [BacklogCategory]
+    let onDelete: () -> Void
+
+    @State private var hovering = false
+    private var category: BacklogCategory? { categories.first { $0.uuid == item.categoryID } }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if let c = category {
+                Circle().fill(c.displayColor).frame(width: 7, height: 7)
+            }
+            Text(item.title)
+                .font(.system(size: 15))
+                .strikethrough(item.isCompleted)
+                .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text(String(format: "%.1fh", item.durationHours))
+                .font(.system(size: 13)).foregroundStyle(.secondary).monospacedDigit()
+
+            Button(role: .destructive, action: onDelete) {
+                Image(systemName: "xmark").font(.system(size: 12))
+            }
+            .buttonStyle(.squish)
+            .foregroundStyle(.secondary)
+            .opacity(hovering ? 1 : 0)
+            .accessibilityLabel("이 할 일 삭제")
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(Color(nsColor: .controlBackgroundColor), in: .soft(Corner.chip))
+        .onHover { hovering = $0 }
+        .animation(Motion.hover, value: hovering)
+        // 지우기 단추는 가리킬 때만 선다 — VoiceOver·음성 제어에는 줄의 동작으로 둔다.
+        .accessibilityElement(children: .combine)
+        .accessibilityAction(named: Text("삭제"), onDelete)
+    }
+}
+
+// MARK: - 프로젝트
+
+/// 프로젝트 하나와 그 안의 (아직 안 정한) 할 일들. 목록을 묶어 그릴 때 쓴다.
+struct ProjectGroup: Identifiable {
+    let id: String
+    let project: Project?
+    let items: [BacklogItem]
+}
+
+/// 새 프로젝트 창을 연 까닭. 할 일에서 열었으면 만든 뒤 그 할 일에 붙인다.
+struct NewProjectRequest: Identifiable {
+    let id = UUID()
+    let item: BacklogItem?
+}
+
+/// **새 프로젝트 — 이름 하나면 된다.** 색은 아직 안 쓴 것을 골라 둔다.
+struct NewProjectSheet: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    let existingCount: Int
+    let usedColors: Set<String>
+    let onCreated: (Project) -> Void
+
+    @State private var name = ""
+    @State private var colorName = "blue"
+    @FocusState private var focused: Bool
+
+    private var trimmed: String { name.trimmingCharacters(in: .whitespaces) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                ColorPickerMenu(colorName: $colorName)
+                TextField("프로젝트 이름", text: $name)
+                    .textFieldStyle(.plain)
+                    .font(.title2.weight(.semibold))
+                    .focused($focused)
+                    .onSubmit(create)
+            }
+            .padding(24)
+
+            Divider()
+
+            HStack {
+                Spacer()
+                Button("취소") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+                Button("만들기", action: create)
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(trimmed.isEmpty)
+            }
+            .padding(20)
+        }
+        .frame(width: 420)
+        .onAppear {
+            // 이미 쓰는 색과 겹치지 않게 — 머리글의 점 색으로 프로젝트를 가른다.
+            colorName = routineColorOptions.map(\.name).first { !usedColors.contains($0) } ?? "blue"
+        }
+        .task {
+            try? await Task.sleep(for: .milliseconds(80))
+            focused = true
+        }
+    }
+
+    private func create() {
+        guard !trimmed.isEmpty else { return }
+        let project = Project(name: trimmed, colorName: colorName, sortIndex: existingCount)
+        withAnimation(Motion.card) {
+            context.insert(project)
+            try? context.save()
+        }
+        onCreated(project)
+        dismiss()
+    }
+}
+
+/// **프로젝트 — 고르면 그 안의 할 일을 바로 적는다.**
+///
+/// 한때 이 창은 프로젝트의 이름·색·끝냄만 고치는 표였다. 정작 사람이 이 창을 연 까닭은
+/// "이 프로젝트에서 내가 할 일을 적어 두려고"였는데, 적으려면 창을 닫고 할 일 창에서 칩을
+/// 고르고 '새 할 일'을 누르거나, 카드마다 우클릭해 프로젝트를 붙여야 했다.
+/// 이제 왼쪽에서 프로젝트를 고르면 오른쪽 맨 위에 적는 칸이 열려 있다 — 적고 ⏎, 또 적고 ⏎.
+/// 이름·색·끝냄·삭제는 오른쪽 머리의 `⋯`로 물러났다(자주 하는 일이 아니다).
+struct ProjectManagerView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    /// 이 프로젝트를 골라 둔 채로 연다 (머리글·칩에서 왔을 때). nil 이면 첫 프로젝트.
+    var initialProjectID: String? = nil
+    /// 고정 루틴이 있어야 할 일을 적을 수 있다 (할 일 목록과 같은 규칙).
+    var canPlan: Bool = true
+
+    @Query(sort: [SortDescriptor(\Project.sortIndex), SortDescriptor(\Project.createdAt)])
+    private var projects: [Project]
+    @Query(sort: [SortDescriptor(\BacklogItem.sortIndex), SortDescriptor(\BacklogItem.createdAt)])
+    private var allItemsRaw: [BacklogItem]
+    /// 잠긴 기기에서 만든 남의 것은 안 그린다 (→ TodoSharing.swift).
+    private var allItems: [BacklogItem] { allItemsRaw.filter(TodoSharing.isVisible) }
+
+    @State private var selectedID: String?
+    @State private var draft = ""
+    @FocusState private var draftFocused: Bool
+    @State private var newProjectName = ""
+    @State private var addingProject = false
+    @FocusState private var newProjectFocused: Bool
+    @State private var showsDone = false
+    @State private var stepsItem: BacklogItem?
+
+    private var tree: TodoTree { TodoTree(allItems) }
+    private var openProjects: [Project] { projects.filter { !$0.isCompleted } }
+    private var doneProjects: [Project] { projects.filter(\.isCompleted) }
+    private var selected: Project? { projects.first { $0.uuid == selectedID } }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("프로젝트")
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                Button("완료") { dismiss() }
+                    .keyboardShortcut(.cancelAction)
+            }
+            .padding()
+
+            Divider()
+
+            if projects.isEmpty && !addingProject {
+                firstProject
+            } else {
+                HStack(spacing: 0) {
+                    sidebar
+                        .frame(width: 220)
+                    Divider()
+                    Group {
+                        if selectedID == Self.overviewID { overview }
+                        else if let project = selected { detail(project) }
+                        else { noSelection }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+        }
+        .frame(minWidth: 720, minHeight: 480)
+        .onAppear {
+            // 어느 프로젝트에서 왔으면 그것을, 아니면 **한눈에 보기**부터 — 창을 연 까닭이
+            // 한 프로젝트가 아니라 "프로젝트들이 어떻게 되어 가나"일 때가 많다.
+            selectedID = initialProjectID ?? Self.overviewID
+        }
+        .onChange(of: selectedID) { _, id in
+            draft = ""
+            showsDone = false
+            if id != Self.overviewID { focusDraft() }
+        }
+        .sheet(item: $stepsItem) { item in
+            TodoStepsView(root: item)
+        }
+    }
+
+    // MARK: 왼쪽 — 프로젝트 목록
+
+    /// 왼쪽 목록 맨 위 '한눈에 보기'의 자리표. 프로젝트 uuid 와 겹치지 않는 이름.
+    static let overviewID = "__overview__"
+
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            List(selection: $selectedID) {
+                Label("한눈에 보기", systemImage: "square.grid.2x2")
+                    .font(.body)
+                    .tag(Self.overviewID)
+                ForEach(openProjects) { p in
+                    projectRow(p).tag(p.uuid)
+                }
+                if !doneProjects.isEmpty {
+                    Section("끝낸 프로젝트") {
+                        ForEach(doneProjects) { p in
+                            projectRow(p).tag(p.uuid)
+                        }
+                    }
+                }
+            }
+            .listStyle(.sidebar)
+
+            Divider()
+
+            // 새 프로젝트는 목록 맨 아래에서 바로 적는다 — 창을 하나 더 띄우지 않는다.
+            if addingProject {
+                TextField("프로젝트 이름", text: $newProjectName)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.body)
+                    .focused($newProjectFocused)
+                    .onSubmit(createProject)
+                    .onExitCommand { addingProject = false; newProjectName = "" }
+                    .padding(10)
+            } else {
+                Button {
+                    addingProject = true
+                    newProjectFocused = true
+                } label: {
+                    Label("새 프로젝트", systemImage: "plus")
+                        .font(.body)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .padding(10)
+            }
+        }
+    }
+
+    /// 왼쪽 목록 한 줄 — 이름과 남은 수, 그 아래 얼마나 왔는지 가는 막대.
+    private func projectRow(_ p: Project) -> some View {
+        let st = status(of: p)
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(p.displayColor)
+                    .frame(width: 9, height: 9)
+                Text(p.name.isEmpty ? String(localized: "이름 없음") : p.name)
+                    .font(.body)
+                    .foregroundStyle(p.isCompleted ? .secondary : .primary)
+                    .lineLimit(1)
+                Spacer()
+                if st.open > 0 {
+                    Text("\(st.open)")
+                        .font(.body)
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                }
+            }
+            if st.total > 0 {
+                ProgressBar(value: st.progress, color: p.displayColor)
+                    .frame(height: 3)
+                    .padding(.leading, 17)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    struct Status {
+        var open: Int
+        var done: Int
+        var hours: Double
+        var next: String?
+        var total: Int { open + done }
+        var progress: Double { total == 0 ? 0 : Double(done) / Double(total) }
+    }
+
+    /// 프로젝트 하나가 어떻게 되어 가나 — 남은 것·끝낸 것·남은 시간·다음 할 일.
+    private func status(of p: Project) -> Status {
+        let open = openRoots(of: p)
+        return Status(open: open.count,
+                      done: doneRoots(of: p).count,
+                      hours: open.reduce(0) { $0 + hoursOf($1) },
+                      next: open.first.map { tree.currentStep(of: $0)?.title ?? $0.title })
+    }
+
+    // MARK: 한눈에 보기
+
+    /// **프로젝트들이 어떻게 되어 가나.** 카드 한 장에 한 프로젝트 — 얼마나 왔는지, 무엇이 남았는지,
+    /// 다음에 할 것. 누르면 그 프로젝트로 들어가 할 일을 적는다.
+    private var overview: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("한눈에 보기")
+                    .font(.title2.weight(.semibold))
+                if openProjects.isEmpty {
+                    Text("진행 중인 프로젝트가 없습니다. 왼쪽 아래에서 새로 만드세요.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                } else {
+                    overviewGrid(openProjects)
+                }
+                if !doneProjects.isEmpty {
+                    Text("끝낸 프로젝트")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 6)
+                    overviewGrid(doneProjects)
+                        .opacity(0.6)
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func overviewGrid(_ list: [Project]) -> some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 12)], alignment: .leading, spacing: 12) {
+            ForEach(list) { p in
+                ProjectOverviewCard(project: p, status: status(of: p)) {
+                    selectedID = p.uuid
+                }
+            }
+        }
+    }
+
+    // MARK: 오른쪽 — 고른 프로젝트의 할 일
+
+    private func detail(_ project: Project) -> some View {
+        let open = openRoots(of: project)
+        let done = doneRoots(of: project)
+        let hours = open.reduce(0) { $0 + hoursOf($1) }
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 10) {
+                ColorPickerMenu(colorName: Binding(
+                    get: { project.colorName },
+                    set: { project.colorName = $0; try? context.save() }))
+                TextField("프로젝트 이름", text: Binding(
+                    get: { project.name },
+                    set: { project.name = $0; try? context.save() }))
+                    .textFieldStyle(.plain)
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                projectMenu(project)
+            }
+            Text(open.isEmpty ? String(localized: "남은 할 일 없음")
+                              : String(localized: "\(open.count)개 · \(formatDuration(hours))"))
+                .font(.body)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .padding(.top, 2)
+
+            // 적는 칸 — 고르자마자 손이 여기 있다. ⏎ 로 담고 칸은 비운 채 남는다.
+            HStack(spacing: 8) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(project.displayColor)
+                TextField(canPlan ? "할 일 적고 ⏎" : "고정 루틴을 하나 세우면 할 일을 적을 수 있습니다",
+                          text: $draft)
+                    .textFieldStyle(.plain)
+                    .font(.body)
+                    .focused($draftFocused)
+                    .onSubmit { addTodo(to: project) }
+                    .disabled(!canPlan)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(project.displayColor.opacity(0.08), in: .soft(Corner.chip))
+            .overlay(RoundedRectangle.soft(Corner.chip)
+                .strokeBorder(project.displayColor.opacity(draftFocused ? 0.6 : 0.25), lineWidth: 1))
+            .padding(.top, 14)
+            .padding(.bottom, 8)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 2) {
+                    ForEach(open) { item in
+                        todoRow(item, color: project.displayColor)
+                            .transition(.row)
+                    }
+                    if !done.isEmpty {
+                        DisclosureGroup(isExpanded: $showsDone) {
+                            ForEach(done) { item in
+                                todoRow(item, color: project.displayColor)
+                                    .transition(.row)
+                            }
+                        } label: {
+                            Text("끝낸 것 \(done.count)개")
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.top, 10)
+                    }
+                }
+                .animation(Motion.row, value: open.map(\.dragToken))
+                .animation(Motion.row, value: done.map(\.dragToken))
+            }
+        }
+        .padding(20)
+    }
+
+    private func todoRow(_ item: BacklogItem, color: Color) -> some View {
+        ProjectTodoRow(
+            item: item,
+            color: color,
+            hours: hoursOf(item),
+            hasSteps: tree.hasChildren(item),
+            onToggle: { toggle(item) },
+            onOpenSteps: { stepsItem = item },
+            onSetHours: { h in item.durationHours = h; try? context.save() },
+            onRemoveFromProject: {
+                withAnimation(Motion.row) { item.projectID = nil; try? context.save() }
+            },
+            onDelete: {
+                withAnimation(Motion.row) {
+                    for node in tree.subtree(of: item) { context.delete(node) }
+                    try? context.save()
+                }
+            },
+            onRename: { try? context.save() })
+    }
+
+    private func projectMenu(_ project: Project) -> some View {
+        Menu {
+            Button(project.isCompleted ? "다시 열기" : "이 프로젝트 끝내기") {
+                withAnimation(Motion.row) {
+                    project.isCompleted.toggle()
+                    project.completedAt = project.isCompleted ? Date() : nil
+                    try? context.save()
+                }
+            }
+            Divider()
+            // 할 일은 지우지 않는다 — 지우면 아이폰까지 건너가 통째로 사라진다. 프로젝트 없음으로 돌아간다.
+            Button("프로젝트 삭제 (할 일은 남김)", role: .destructive) { delete(project) }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.title3)
+        }
+        .accessibilityLabel("더 보기")
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+    }
+
+    private var noSelection: some View {
+        Text("왼쪽에서 프로젝트를 고르세요.")
+            .font(.body)
+            .foregroundStyle(.secondary)
+    }
+
+    /// 프로젝트가 하나도 없을 때 — 표 대신 첫 이름 하나만 묻는다.
+    private var firstProject: some View {
+        VStack(spacing: 14) {
+            Spacer()
+            Image(systemName: "folder.badge.plus")
+                .font(.system(size: 40))
+                .foregroundStyle(.secondary)
+            Text("할 일을 묶을 첫 프로젝트")
+                .font(.title3.weight(.semibold))
+            TextField("프로젝트 이름 — 예: 테크맵", text: $newProjectName)
+                .textFieldStyle(.roundedBorder)
+                .font(.body)
+                .frame(maxWidth: 320)
+                .focused($newProjectFocused)
+                .onSubmit(createProject)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .onAppear { newProjectFocused = true }
+    }
+
+    // MARK: 셈
+
+    private func openRoots(of p: Project) -> [BacklogItem] {
+        tree.roots.filter { $0.projectID == p.uuid && !$0.isCompleted }
+    }
+
+    private func doneRoots(of p: Project) -> [BacklogItem] {
+        tree.roots.filter { $0.projectID == p.uuid && $0.isCompleted }
+            .sorted { ($0.completedAt ?? .distantPast) > ($1.completedAt ?? .distantPast) }
+    }
+
+    /// 단계로 쪼갠 일은 단계들의 합, 아니면 제 시간.
+    private func hoursOf(_ item: BacklogItem) -> Double {
+        tree.hasChildren(item) ? tree.totalHours(of: item) : item.durationHours
+    }
+
+    // MARK: 손짓
+
+    private func focusDraft() {
+        Task {
+            try? await Task.sleep(for: .milliseconds(60))
+            draftFocused = true
+        }
+    }
+
+    /// 할 일 목록에서 적는 것과 같은 규칙으로 담는다 (→ BacklogSection.commitDraft).
+    private func addTodo(to project: Project) {
+        let title = draft.trimmingCharacters(in: .whitespaces)
+        guard canPlan, !title.isEmpty else { return }
+        let minIndex = allItems.map(\.sortIndex).min() ?? 0
+        let item = BacklogItem(title: title,
+                               durationHours: TodoTree.defaultStepHours,
+                               sortIndex: minIndex - 1,
+                               weekStartDate: Date.currentWeekStart)
+        item.projectID = project.uuid
+        TodoSharing.stamp(item)
+        withAnimation(Motion.row) {
+            context.insert(item)
+            try? context.save()
+        }
+        Telemetry.record(.todoAdded)
+        draft = ""
+        draftFocused = true
+    }
+
+    private func toggle(_ item: BacklogItem) {
+        Haptic.tick()
+        withAnimation(Motion.row) {
+            tree.setCompleted(item, !item.isCompleted)
+            try? context.save()
+        }
+    }
+
+    private func createProject() {
+        let name = newProjectName.trimmingCharacters(in: .whitespaces)
+        guard !name.isEmpty else { addingProject = false; return }
+        let used = Set(projects.map(\.colorName))
+        let color = routineColorOptions.map(\.name).first { !used.contains($0) } ?? "blue"
+        let project = Project(name: name, colorName: color,
+                              sortIndex: (projects.map(\.sortIndex).max() ?? -1) + 1)
+        withAnimation(Motion.row) {
+            context.insert(project)
+            try? context.save()
+        }
+        newProjectName = ""
+        addingProject = false
+        // 만들자마자 그 프로젝트로 — 다음에 할 일은 그 안에 할 일을 적는 것이다.
+        selectedID = project.uuid
+    }
+
+    /// 프로젝트를 지운다. **할 일은 지우지 않는다** — 프로젝트 없음으로 돌아간다.
+    private func delete(_ p: Project) {
+        withAnimation(Motion.row) {
+            for item in allItemsRaw where item.projectID == p.uuid { item.projectID = nil }
+            if selectedID == p.uuid {
+                selectedID = Self.overviewID
+            }
+            context.delete(p)
+            try? context.save()
+        }
+    }
+}
+
+/// 가는 진행 막대. 시스템 ProgressView 는 두께·색을 못 맞춘다.
+struct ProgressBar: View {
+    let value: Double
+    let color: Color
+    var body: some View {
+        GeometryReader { g in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.primary.opacity(0.08))
+                Capsule().fill(color)
+                    .frame(width: max(0, min(1, value)) * g.size.width)
+            }
+        }
+        .animation(Motion.number, value: value)
+    }
+}
+
+/// 한눈에 보기의 카드 한 장 — 누르면 그 프로젝트로.
+struct ProjectOverviewCard: View {
+    let project: Project
+    let status: ProjectManagerView.Status
+    let onOpen: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: onOpen) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Circle().fill(project.displayColor).frame(width: 10, height: 10)
+                    Text(project.name.isEmpty ? String(localized: "이름 없음") : project.name)
+                        .font(.body.weight(.semibold))
+                        .lineLimit(1)
+                    Spacer()
+                    Text("\(Int((status.progress * 100).rounded()))%")
+                        .font(.body.weight(.semibold))
+                        .monospacedDigit()
+                        .foregroundStyle(project.displayColor)
+                }
+                ProgressBar(value: status.progress, color: project.displayColor)
+                    .frame(height: 5)
+                Text(status.open == 0
+                     ? String(localized: "남은 할 일 없음")
+                     : String(localized: "남은 \(status.open)개 · \(formatDuration(status.hours))"))
+                    .font(.body)
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                if let next = status.next {
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.right.circle")
+                        Text(next).lineLimit(1)
+                    }
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                }
+            }
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(project.displayColor.opacity(hovering ? 0.12 : 0.07), in: .soft(Corner.panel))
+            .overlay(RoundedRectangle.soft(Corner.panel)
+                .strokeBorder(project.displayColor.opacity(hovering ? 0.45 : 0.2), lineWidth: 1))
+            .contentShape(.soft(Corner.panel))
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .animation(Motion.hover, value: hovering)
+        .pointingCursor()
+        .help(String(localized: "눌러서 이 프로젝트 열기"))
+    }
+}
+
+/// 프로젝트 안의 할 일 한 줄 — 동그라미(끝내기) · 제목(바로 고치기) · 시간.
+struct ProjectTodoRow: View {
+    @Bindable var item: BacklogItem
+    let color: Color
+    let hours: Double
+    let hasSteps: Bool
+    let onToggle: () -> Void
+    let onOpenSteps: () -> Void
+    let onSetHours: (Double) -> Void
+    let onRemoveFromProject: () -> Void
+    let onDelete: () -> Void
+    let onRename: () -> Void
+
+    @State private var hovering = false
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Button(action: onToggle) {
+                Image(systemName: item.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(item.isCompleted ? color : .secondary)
+            }
+            .buttonStyle(.plain)
+            .help(item.isCompleted ? String(localized: "안 끝낸 것으로 되돌리기") : String(localized: "끝냈다"))
+            .accessibilityLabel(item.isCompleted ? Text("안 끝낸 것으로 되돌리기") : Text("끝냈다"))
+
+            TextField("", text: $item.title)
+                .textFieldStyle(.plain)
+                .font(.body)
+                .strikethrough(item.isCompleted, color: .secondary)
+                .foregroundStyle(item.isCompleted ? .secondary : .primary)
+                .onSubmit(onRename)
+                .onChange(of: item.title) { _, _ in onRename() }
+
+            if hasSteps {
+                // 단계로 쪼갠 일은 시간이 단계들의 합이다 — 여기서 못 고치고 단계에서 고친다.
+                Button(action: onOpenSteps) {
+                    Label(formatDuration(hours), systemImage: "list.number")
+                        .font(.body)
+                        .monospacedDigit()
+                }
+                .buttonStyle(.borderless)
+                .foregroundStyle(.secondary)
+                .help(String(localized: "단계 보기·편집"))
+            } else {
+                DurationPicker(hours: Binding(get: { hours }, set: onSetHours),
+                               tint: color, style: .plain)
+            }
+
+            Button(role: .destructive, action: onDelete) {
+                Image(systemName: "trash")
+                    .font(.body)
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
+            .opacity(hovering ? 1 : 0)
+            .help(String(localized: "이 할 일 삭제"))
+            .accessibilityLabel("이 할 일 삭제")
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(Color.primary.opacity(hovering ? 0.05 : 0), in: .soft(Corner.chip))
+        .onHover { hovering = $0 }
+        .animation(Motion.hover, value: hovering)
+        // 가리켜야 서는 지우기 단추 대신 — VoiceOver·음성 제어의 동작으로.
+        .accessibilityElement(children: .contain)
+        .accessibilityAction(named: Text("삭제"), onDelete)
+        .contextMenu {
+            Button(hasSteps ? "단계 보기·편집…" : "단계로 쪼개기…", action: onOpenSteps)
+            Button("프로젝트에서 빼기", action: onRemoveFromProject)
+            Divider()
+            Button("삭제", role: .destructive, action: onDelete)
+        }
+    }
+}
+
+// MARK: - Category Manager
+
+struct CategoryManagerView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    @Query(sort: [SortDescriptor(\BacklogCategory.sortIndex), SortDescriptor(\BacklogCategory.createdAt)])
+    private var categories: [BacklogCategory]
+    @Query private var allItems: [BacklogItem]
+
+    @State private var newName = ""
+    @State private var newColor = "blue"
+    @State private var newIcon = "tag"
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("카테고리 관리")
+                    .font(.title2.weight(.semibold))
+                Spacer()
+                Button("완료") { dismiss() }
+                    .keyboardShortcut(.defaultAction)
+            }
+            .padding()
+
+            Divider()
+
+            if categories.isEmpty {
+                Spacer()
+                Text("아직 카테고리가 없습니다. 아래에서 추가하세요.")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(categories) { c in
+                            CategoryEditRow(
+                                category: c,
+                                onDelete: { deleteCategory(c) }
+                            )
+                            .transition(.row)
+                        }
+                    }
+                    .padding()
+                    .animation(Motion.row, value: categories.map(\.uuid))
+                }
+            }
+
+            Divider()
+
+            // 새 카테고리 추가
+            HStack(spacing: 8) {
+                ColorPickerMenu(colorName: $newColor)
+                IconPickerMenu(iconName: $newIcon, colorName: $newColor)
+                TextField("새 카테고리 이름", text: $newName)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit(addCategory)
+                Button("추가", action: addCategory)
+                    .disabled(newName.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            .padding()
+        }
+    }
+
+    private func addCategory() {
+        let t = newName.trimmingCharacters(in: .whitespaces)
+        guard !t.isEmpty else { return }
+        let maxIndex = categories.map(\.sortIndex).max() ?? -1
+        withAnimation(Motion.row) {
+            context.insert(BacklogCategory(name: t, colorName: newColor, iconName: newIcon, sortIndex: maxIndex + 1))
+            try? context.save()
+        }
+        newName = ""
+        newColor = "blue"
+        newIcon = "tag"
+    }
+
+    private func deleteCategory(_ c: BacklogCategory) {
+        // 이 카테고리를 쓰던 항목은 미분류로 되돌림
+        withAnimation(Motion.row) {
+            for item in allItems where item.categoryID == c.uuid {
+                item.categoryID = nil
+            }
+            context.delete(c)
+            try? context.save()
+        }
+    }
+}
+
+struct CategoryEditRow: View {
+    @Bindable var category: BacklogCategory
+    @Environment(\.modelContext) private var context
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ColorPickerMenu(colorName: $category.colorName)
+                .onChange(of: category.colorName) { _, _ in try? context.save() }
+            IconPickerMenu(iconName: $category.iconName, colorName: $category.colorName)
+                .onChange(of: category.iconName) { _, _ in try? context.save() }
+
+            TextField("이름", text: $category.name)
+                .textFieldStyle(.roundedBorder)
+                .onChange(of: category.name) { _, _ in try? context.save() }
+
+            Button("삭제", role: .destructive, action: onDelete)
+                .buttonStyle(.borderless)
+                .font(.caption)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color(nsColor: .controlBackgroundColor), in: .soft(Corner.chip))
+    }
+}
+
+struct ColorPickerMenu: View {
+    @Binding var colorName: String
+
+    var body: some View {
+        Menu {
+            ForEach(routineColorOptions, id: \.name) { opt in
+                Button {
+                    colorName = opt.name
+                } label: {
+                    Label(paletteDisplayName(opt.name), systemImage: colorName == opt.name ? "checkmark.circle.fill" : "circle.fill")
+                }
+            }
+        } label: {
+            Circle()
+                .fill(paletteColor(colorName))
+                .frame(width: 16, height: 16)
+                .overlay(Circle().stroke(Color.secondary.opacity(0.3), lineWidth: 0.5))
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help("색상 선택")
+        .accessibilityLabel("색상")
+        .accessibilityValue(paletteDisplayName(colorName))
+    }
+}
+
+struct IconPickerMenu: View {
+    @Binding var iconName: String
+    @Binding var colorName: String
+
+    var body: some View {
+        Menu {
+            ForEach(categoryIconOptions, id: \.self) { icon in
+                Button {
+                    iconName = icon
+                } label: {
+                    Label(icon, systemImage: icon)
+                }
+            }
+        } label: {
+            Image(systemName: iconName)
+                .font(.system(size: 15))
+                .foregroundStyle(paletteColor(colorName))
+                .frame(width: 20, height: 16)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
+        .help("아이콘 선택")
+        .accessibilityLabel("아이콘 선택")
+    }
+}

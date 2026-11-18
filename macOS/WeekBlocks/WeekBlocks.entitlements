@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<!-- 캘린더 읽기 (→ CalendarImport.swift). 샌드박스 앱은 이 항목이 없으면
+	     Info.plist에 설명을 적어 두어도 EventKit이 빈 목록만 돌려준다. -->
+	<key>com.apple.security.personal-information.calendars</key>
+	<true/>
+	<!-- **아이폰이 적은 것을 곧바로 받아 오는 길.**
+
+	     CloudKit 미러링은 상대가 뭔가 올리면 조용한 푸시로 알려 준다. 그 푸시를
+	     받으려면 앱에 푸시 권한이 있어야 하는데, 이 맥 타깃에는 그게 없어서
+	     **알림이 아예 안 왔다.** 그러면 코어데이터는 켤 때와 이따금 도는 예약 작업에서만
+	     내려받는다 — 실제로 아이폰에서 적은 할 일이 8분 21초 뒤에야 도착했다
+	     (17:36:56 작성 → 17:45:17 도착). 반대 방향은 3초였다. 아이폰 쪽에는
+	     aps-environment 가 붙어 있었기 때문이다.
+
+	     ⚠️ 맥은 키 이름이 다르다 — iOS는 `aps-environment`, 맥은 이 이름이다.
+	     ⚠️ 이 줄을 넣으면 서명 프로필에 Push Notifications 권한이 필요하다.
+	        자동 서명이면 Xcode가 App ID 에 알아서 켜 준다. 안 켜지면 빌드가
+	        "provisioning profile doesn't support..." 로 막히니, 개발자 사이트에서
+	        com.example.ScheduleDensityApp 의 Push Notifications 를 켠다.
+	     ⚠️ 값은 development 로 둔다. 배포 빌드는 아카이브할 때 Xcode가 production 으로
+	        바꿔 서명한다 (iOS 쪽 파일과 같은 규칙). -->
+	<key>com.apple.developer.aps-environment</key>
+	<string>development</string>
+	<!-- CloudKit 환경.
+	     ⚠️ **Development 다.** 예전에는 Production으로 못박아 두었는데, 그게 이번
+	        동기화 사고의 뿌리였다. Production에는 CloudKit이 레코드 타입·필드를
+	        **자동으로 만들지 않는다.** 모델에 필드를 하나 더하면 콘솔에서 배포하기
+	        전까지 서버가 그 필드를 모르고, 모르는 필드를 만나면 미러링 델리게이트
+	        초기화 자체가 실패해서 받기도 보내기도 통째로 멈춘다 — 에러도 안 보인다.
+	        (실제로 isManualWeight 하나가 맥과 아이폰의 동기화 전부를 죽이고 있었다.)
+
+	        Development에서는 자동으로 만들어지므로 모델을 고쳐도 바로 오간다.
+	        디버그 빌드가 실제 사용자 데이터를 만지지 않는 이점도 함께 온다.
+
+	     🚢 출시 전에 반드시: 콘솔에서 Development → Production 스키마를 배포한다.
+	        App Store 빌드는 이 값과 무관하게 언제나 Production을 쓴다. 배포를
+	        빠뜨리면 출시된 앱에서 똑같은 사고가 난다. -->
+	<key>com.apple.developer.icloud-container-environment</key>
+	<string>Development</string>
+	<key>com.apple.developer.icloud-services</key>
+	<array>
+		<string>CloudKit</string>
+		<!-- 백업 JSON을 iCloud Drive에도 둔다 (→ DataVault.swift). CloudKit 미러링과 다른 길이라
+		     미러가 지운 것도 여기는 남는다. -->
+		<string>CloudDocuments</string>
+	</array>
+	<key>com.apple.developer.icloud-container-identifiers</key>
+	<array>
+		<string>iCloud.com.devkoan.ScheduleDensity</string>
+		<string>iCloud.com.Ysoup.FeedbackHub</string>
+	</array>
+	<key>com.apple.developer.ubiquity-container-identifiers</key>
+	<array>
+		<string>iCloud.com.devkoan.ScheduleDensity</string>
+	</array>
+	<!-- 공유 익스텐션(TodoShare)이 받아둔 할 일을 건네받는 통로.
+	     ⚠️ TodoShare/TodoShare.entitlements의 값과 반드시 같아야 한다.
+	     ⚠️ 이 entitlement가 붙으면 SwiftData의 기본 저장 위치가 앱 샌드박스 →
+	        App Group 컨테이너로 바뀐다. WeekBlocksApp.swift의 ModelConfiguration에
+	        groupContainer: .none 을 못박아 두었으니 함께 유지할 것 —
+	        빠지면 기존 사용자의 store를 못 찾아 데이터가 사라진 것처럼 보인다. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>QGAQ3AY3R3.group.com.devkoan.ScheduleDensity</string>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,1609 @@
+# 릴리즈 노트
+
+## 1.1.15
+
+### 앱스토어 (한국어)
+
+요금제를 무료와 Plus, Pro로 정리했습니다
+Plus와 Pro는 연 구독과 평생 중에 고릅니다
+구독 중이라면 평생으로 바꿀 수 있습니다
+모든 앱을 여는 언제나 평생 패스가 생겼습니다
+이번 주 회고 복사는 이제 무료입니다
+
+### App Store (English)
+
+Plans are now Free, Plus and Pro
+Pick yearly or lifetime for Plus and Pro
+Subscribers can switch to lifetime
+New Forever Pass unlocks all our apps
+Copying this week’s review is now free
+
+### App Store (en-GB)
+
+Plans are now Free, Plus and Pro
+Pick yearly or lifetime for Plus and Pro
+Subscribers can switch to lifetime
+New Forever Pass unlocks all our apps
+Copying this week’s review is now free
+
+### App Store (繁體中文, zh-Hant)
+
+方案整理為免費、Plus 與 Pro
+Plus 與 Pro 可選年訂閱或永久
+訂閱中也能改為永久版
+新增可解鎖所有 App 的永久通行證
+複製本週回顧改為免費
+
+### App Store (简体中文, zh-Hans)
+
+方案整理为免费、Plus 和 Pro
+Plus 和 Pro 可选年订阅或永久
+订阅中也能改为永久版
+新增可解锁所有 App 的永久通行证
+复制本周复盘改为免费
+
+### App Store (日本語, ja)
+
+プランを無料とPlus、Proに整理しました
+PlusとProは年額か買い切りを選べます
+サブスク中でも買い切りに切り替えられます
+全アプリが使えるずっとパスが登場しました
+今週の振り返りのコピーが無料になりました
+
+### App Store (Deutsch, de)
+
+Die Tarife heißen jetzt Gratis, Plus, Pro
+Plus und Pro jährlich oder lebenslang
+Abos lassen sich in Lebenslang umwandeln
+Neuer Für-immer-Pass für alle unsere Apps
+Wochenrückblick kopieren ist jetzt gratis
+
+### App Store (Español, es)
+
+Ahora hay planes Gratis, Plus y Pro
+Elige Plus o Pro anual o de por vida
+Si te suscribes, puedes pasar a de por vida
+Nuevo Pase para siempre para todas las apps
+Copiar la revisión semanal ya es gratis
+
+### App Store (Français, fr)
+
+Les offres deviennent Gratuit, Plus et Pro
+Plus et Pro en annuel ou à vie
+Les abonnés peuvent passer à l’achat à vie
+Nouveau Pass à vie pour toutes nos apps
+Copier le bilan de la semaine est gratuit
+
+### App Store (Italiano, it)
+
+I piani ora sono Gratis, Plus e Pro
+Plus e Pro annuali o a vita
+Gli abbonati possono passare a vita
+Nuovo Pass per sempre per tutte le app
+Copiare la revisione della settimana è gratis
+
+### App Store (Português (Brasil), pt-BR)
+
+Os planos agora são Grátis, Plus e Pro
+Plus e Pro anuais ou vitalícios
+Assinantes podem mudar para o vitalício
+Novo Passe para sempre para todos os apps
+Copiar a revisão da semana agora é grátis
+
+### App Store (Русский, ru)
+
+Тарифы теперь Бесплатный, Plus и Pro
+Plus и Pro на год или навсегда
+Подписку можно сменить на покупку навсегда
+Новый Вечный пропуск для всех наших приложений
+Копировать итоги недели теперь бесплатно
+
+### App Store (Čeština, cs)
+
+Tarify jsou nyní Zdarma, Plus a Pro
+Plus a Pro ročně nebo doživotně
+Předplatné lze převést na doživotní verzi
+Nový Pas navždy pro všechny naše aplikace
+Kopírování ohlédnutí za týden je zdarma
+
+### App Store (Dansk, da)
+
+Planerne hedder nu Gratis, Plus og Pro
+Plus og Pro årligt eller på livstid
+Abonnenter kan skifte til livstid
+Nyt Evighedspas til alle vores apps
+Kopiering af ugens gennemgang er gratis
+
+### App Store (Ελληνικά, el)
+
+Τα προγράμματα είναι πλέον Δωρεάν, Plus και Pro
+Plus και Pro ετήσια ή εφ’ όρου ζωής
+Οι συνδρομητές περνούν σε εφ’ όρου ζωής
+Νέο Πάσο για πάντα για όλες τις εφαρμογές μας
+Η αντιγραφή της ανασκόπησης εβδομάδας είναι δωρεάν
+
+### App Store (Suomi, fi)
+
+Vaihtoehdot ovat nyt Ilmainen, Plus ja Pro
+Plus ja Pro vuosittain tai elinikäisenä
+Tilaajat voivat vaihtaa elinikäiseen
+Uusi Ikuinen passi kaikkiin sovelluksiimme
+Viikon katsauksen kopiointi on nyt ilmaista
+
+### App Store (Bahasa Indonesia, id)
+
+Paket kini Gratis, Plus, dan Pro
+Plus dan Pro tahunan atau seumur hidup
+Pelanggan bisa beralih ke seumur hidup
+Pass Selamanya baru untuk semua app kami
+Menyalin tinjauan minggu ini kini gratis
+
+### App Store (Norsk bokmål, nb)
+
+Planene heter nå Gratis, Plus og Pro
+Plus og Pro årlig eller for livstid
+Abonnenter kan bytte til livstid
+Nytt Evighetspass for alle appene våre
+Kopiering av ukens gjennomgang er gratis
+
+### App Store (Nederlands, nl)
+
+Kies nu uit Gratis, Plus en Pro
+Plus en Pro per jaar of levenslang
+Abonnees kunnen overstappen op levenslang
+Nieuwe Altijd-pas voor al onze apps
+Terugblik van de week kopiëren is gratis
+
+### App Store (Polski, pl)
+
+Plany to teraz Darmowy, Plus i Pro
+Plus i Pro rocznie lub dożywotnio
+Subskrybenci mogą przejść na dożywotni
+Nowa Przepustka na zawsze do wszystkich aplikacji
+Kopiowanie podsumowania tygodnia jest darmowe
+
+### App Store (Svenska, sv)
+
+Planerna heter nu Gratis, Plus och Pro
+Plus och Pro per år eller livstid
+Prenumeranter kan byta till livstid
+Nytt Evighetspass för alla våra appar
+Att kopiera veckans genomgång är gratis
+
+### App Store (ไทย, th)
+
+แพ็กเกจใหม่มีฟรี Plus และ Pro
+เลือก Plus และ Pro แบบรายปีหรือตลอดชีพ
+ผู้สมัครสมาชิกเปลี่ยนเป็นตลอดชีพได้
+พาสตลอดกาลใหม่ใช้ได้ทุกแอปของเรา
+คัดลอกการทบทวนสัปดาห์นี้ได้ฟรีแล้ว
+
+### App Store (Türkçe, tr)
+
+Planlar artık Ücretsiz, Plus ve Pro
+Plus ve Pro yıllık ya da ömür boyu
+Aboneler ömür boyuya geçebilir
+Tüm uygulamalarımız için yeni Sonsuz Geçiş
+Haftalık değerlendirmeyi kopyalamak artık ücretsiz
+
+### App Store (Tiếng Việt, vi)
+
+Các gói nay gồm Miễn phí, Plus và Pro
+Plus và Pro theo năm hoặc trọn đời
+Người đăng ký có thể chuyển sang trọn đời
+Vé trọn đời mới mở mọi ứng dụng của chúng tôi
+Chép phần nhìn lại tuần này nay miễn phí
+
+## 1.1.14
+
+### 앱스토어 (한국어)
+
+영국 영어로도 쓸 수 있습니다
+일간 화면에 그날의 장기 플랜이 보입니다
+무지개 칸에 마우스를 올리면 일정이 보입니다
+루틴을 지워도 일정이 제자리에 남습니다
+
+### App Store (English)
+
+Now available in British English
+Day view now shows long-term plans
+Hover over the Rainbow to see events
+Events stay put after deleting routines
+
+### App Store (en-GB)
+
+Now available in British English
+Day view now shows long-term plans
+Hover over the Rainbow to see events
+Events stay put after deleting routines
+
+### App Store (繁體中文, zh-Hant)
+
+現在支援英式英文
+「日」檢視會顯示當天的長期計畫
+滑鼠移到彩虹格上即可看到行程
+刪除作息後行程仍會留在原位
+
+### App Store (简体中文, zh-Hans)
+
+现已支持英式英语
+“日”视图会显示当天的长期计划
+鼠标移到彩虹格子上即可查看日程
+删除作息后日程仍会留在原位
+
+### App Store (日本語, ja)
+
+イギリス英語に対応しました
+「日」表示にその日の長期プランが出ます
+虹のマスにポインタを合わせると予定が見えます
+ルーティンを削除しても予定は元の位置のままです
+
+### App Store (Deutsch, de)
+
+Jetzt auch auf britischem Englisch
+Tagesansicht zeigt langfristige Pläne
+Termine im Regenbogen beim Überfahren
+Termine bleiben trotz gelöschter Routine
+
+### App Store (Español, es)
+
+Ahora también en inglés británico
+Vista Día con tus planes a largo plazo
+Ve eventos con el cursor en el arcoíris
+Borrar una rutina ya no mueve eventos
+
+### App Store (Français, fr)
+
+Disponible en anglais britannique
+Vue Jour avec vos plans à long terme
+L’arc-en-ciel affiche l’agenda au survol
+Les événements restent sans leur routine
+
+### App Store (Italiano, it)
+
+Ora disponibile in inglese britannico
+Vista Giorno con i piani a lungo termine
+Eventi visibili passando sull’arcobaleno
+Senza routine gli eventi restano lì
+
+### App Store (Português (Brasil), pt-BR)
+
+Agora também em inglês britânico
+Vista Dia com seus planos de longo prazo
+Cursor sobre o arco-íris mostra eventos
+Apagar uma rotina não move mais eventos
+
+### App Store (Русский, ru)
+
+Теперь есть британский английский
+Вид «День» показывает долгосрочные планы
+Наведите на радугу и увидите события
+События остаются на месте без рутины
+
+### App Store (Čeština, cs)
+
+Nově také v britské angličtině
+Zobrazení Den ukáže dlouhodobé plány
+Najeďte na duhu a uvidíte události
+Smazání rutiny už nepřesouvá události
+
+### App Store (Dansk, da)
+
+Nu også på britisk engelsk
+Dagsvisningen viser langsigtede planer
+Peg på regnbuen for at se aftaler
+Sletning af rutiner flytter ikke aftaler
+
+### App Store (Ελληνικά, el)
+
+Τώρα και στα βρετανικά αγγλικά
+Η Ημέρα δείχνει τα μακροπρόθεσμα πλάνα
+Συμβάντα με τον δείκτη στο ουράνιο τόξο
+Τα συμβάντα μένουν στη θέση τους
+
+### App Store (Suomi, fi)
+
+Nyt myös brittienglanniksi
+Päivä-näkymä näyttää pitkät suunnitelmat
+Näe tapahtumat osoittamalla sateenkaarta
+Rutiinin poisto ei siirrä tapahtumia
+
+### App Store (Bahasa Indonesia, id)
+
+Kini ada bahasa Inggris Britania
+Rencana jangka panjang tampil di Hari
+Lihat acara dengan kursor di pelangi
+Hapus rutinitas tak lagi menggeser acara
+
+### App Store (Norsk bokmål, nb)
+
+Nå også på britisk engelsk
+Dagsvisningen viser langsiktige planer
+Pek på regnbuen for å se avtaler
+Sletting av rutiner flytter ikke avtaler
+
+### App Store (Nederlands, nl)
+
+Nu ook in Brits Engels
+Dagweergave toont langetermijnplannen
+Beweeg over de regenboog voor afspraken
+Afspraken blijven staan zonder routine
+
+### App Store (Polski, pl)
+
+Teraz także brytyjski angielski
+Dzień pokazuje plany długoterminowe
+Najedź na tęczę, by zobaczyć wydarzenia
+Usunięcie rutyny nie przesuwa wydarzeń
+
+### App Store (Svenska, sv)
+
+Nu även på brittisk engelska
+Dagvyn visar långsiktiga planer
+Peka på regnbågen för att se händelser
+Händelser ligger kvar utan rutin
+
+### App Store (ไทย, th)
+
+รองรับภาษาอังกฤษแบบบริติชแล้ว
+มุมมองวันแสดงแผนระยะยาวของวันนั้น
+ชี้เมาส์ที่สายรุ้งเพื่อดูกิจกรรม
+ลบกิจวัตรแล้วกิจกรรมยังอยู่ที่เดิม
+
+### App Store (Türkçe, tr)
+
+Artık İngiliz İngilizcesiyle de
+Gün görünümünde uzun vadeli planlar
+İmleçle gökkuşağında etkinlikleri görün
+Rutin silinse de etkinlikler yerinde
+
+### App Store (Tiếng Việt, vi)
+
+Nay có tiếng Anh kiểu Anh
+Chế độ Ngày hiện kế hoạch dài hạn
+Di chuột lên cầu vồng để xem sự kiện
+Xoá thói quen không còn làm lệch sự kiện
+
+## 1.1.13
+
+### 앱스토어 (한국어)
+
+업데이트 뒤 새로 생긴 것을 처음에 알려 줍니다
+대비 증가와 색상 없이 구별에 맞춰 화면이 바뀝니다
+프로모션 코드를 앱 안에서 바로 쓸 수 있습니다
+계획 대비 실제를 무료로도 볼 수 있습니다
+앞으로 만들 기능을 보고 의견을 보낼 수 있습니다
+
+### App Store (English)
+
+See what’s new right after each update
+Adapts to Increase Contrast settings
+Redeem promo codes right in the app
+Plan vs. Actual is now free to view
+See upcoming features and send ideas
+
+### App Store (繁體中文, zh-Hant)
+
+更新後第一次打開會告訴你新功能
+畫面會配合增加對比與不以顏色區分
+可以直接在 App 內兌換優惠代碼
+免費也能看計畫與實際
+可以查看即將推出的功能並提供意見
+
+### App Store (简体中文, zh-Hans)
+
+更新后首次打开会告诉你新功能
+界面会配合增强对比度与区分不依赖颜色
+可以直接在 App 内兑换优惠代码
+免费也能看计划与实际
+可以查看即将推出的功能并提出建议
+
+### App Store (日本語, ja)
+
+アップデート後の新機能を最初にお知らせ
+コントラストやカラー以外の区別に対応
+プロモーションコードをアプリ内で使えます
+計画と実際を無料でも見られます
+これから作る機能を見て要望を送れます
+
+### App Store (Deutsch, de)
+
+Neuigkeiten direkt nach jedem Update
+Passt sich an „Kontrast erhöhen“ an
+Aktionscodes direkt in der App einlösen
+Plan und Wirklichkeit jetzt auch gratis
+Geplante Funktionen ansehen und mitreden
+
+### App Store (Español, es)
+
+Novedades justo después de cada versión
+Se adapta a Aumentar contraste
+Canjea códigos promocionales en la app
+Plan frente a real, ahora también gratis
+Mira lo que viene y envía tus ideas
+
+### App Store (Français, fr)
+
+Les nouveautés dès chaque mise à jour
+S’adapte à Augmenter le contraste
+Utilisez vos codes promo dans l’app
+Prévu et réel, désormais gratuit
+Voyez ce qui arrive, proposez vos idées
+
+### App Store (Italiano, it)
+
+Le novità subito dopo ogni aggiornamento
+Si adatta ad Aumenta contrasto
+Riscatta i codici promozionali nell’app
+Previsto e reale, ora anche gratis
+Scopri le funzioni in arrivo e proponi
+
+### App Store (Português (Brasil), pt-BR)
+
+Novidades logo após cada atualização
+Se adapta ao Aumentar contraste
+Resgate códigos promocionais no app
+Planejado x real agora também grátis
+Veja o que vem por aí e mande ideias
+
+### App Store (Русский, ru)
+
+Новое видно сразу после обновления
+Учитывает «Увеличить контраст»
+Промокоды вводятся прямо в приложении
+План и факт теперь и бесплатно
+Смотрите, что будет, и предлагайте идеи
+
+### App Store (Čeština, cs)
+
+Novinky hned po každé aktualizaci
+Přizpůsobí se Zvýšení kontrastu
+Propagační kódy uplatníte v aplikaci
+Plán a skutečnost nyní i zdarma
+Prohlédněte si plány a pošlete nápad
+
+### App Store (Dansk, da)
+
+Nyheder lige efter hver opdatering
+Tilpasser sig Øg kontrast
+Indløs kampagnekoder direkte i appen
+Plan og virkelighed nu også gratis
+Se, hvad der kommer, og send idéer
+
+### App Store (Ελληνικά, el)
+
+Τα νέα αμέσως μετά από κάθε ενημέρωση
+Προσαρμόζεται στην Αύξηση αντίθεσης
+Εξαργυρώστε κωδικούς μέσα στην εφαρμογή
+Πλάνο και πραγματικότητα και δωρεάν
+Δείτε τι έρχεται και στείλτε ιδέες
+
+### App Store (Suomi, fi)
+
+Uutuudet heti päivityksen jälkeen
+Mukautuu Lisää kontrastia -asetukseen
+Lunasta tarjouskoodit suoraan apissa
+Suunniteltu ja toteutunut nyt ilmaiseksi
+Katso tulevat ominaisuudet ja ehdota
+
+### App Store (Bahasa Indonesia, id)
+
+Lihat yang baru setelah tiap pembaruan
+Menyesuaikan Tingkatkan kontras
+Tukarkan kode promo langsung di aplikasi
+Rencana vs. kenyataan kini juga gratis
+Lihat fitur mendatang dan kirim ide
+
+### App Store (Norsk bokmål, nb)
+
+Nyheter rett etter hver oppdatering
+Tilpasser seg Øk kontrast
+Løs inn kampanjekoder rett i appen
+Plan og virkelighet nå også gratis
+Se hva som kommer, og send inn idéer
+
+### App Store (Nederlands, nl)
+
+Nieuw direct na elke update
+Past zich aan op Verhoog contrast
+Wissel promotiecodes in de app in
+Plan en werkelijkheid nu ook gratis
+Bekijk wat eraan komt en deel ideeën
+
+### App Store (Polski, pl)
+
+Nowości zaraz po każdej aktualizacji
+Dopasowuje się do Zwiększ kontrast
+Kody promocyjne zrealizujesz w aplikacji
+Plan a rzeczywistość także za darmo
+Zobacz, co nadchodzi, i zgłoś pomysł
+
+### App Store (Svenska, sv)
+
+Nyheter direkt efter varje uppdatering
+Anpassar sig efter Öka kontrasten
+Lös in kampanjkoder direkt i appen
+Plan och verklighet nu även gratis
+Se vad som kommer och skicka idéer
+
+### App Store (ไทย, th)
+
+บอกสิ่งใหม่ทันทีหลังอัปเดต
+ปรับตามการเพิ่มความต่างสี
+แลกรหัสโปรโมชันในแอปได้เลย
+ดูแผนเทียบกับจริงได้ฟรีแล้ว
+ดูฟีเจอร์ที่กำลังจะมาและส่งไอเดียได้
+
+### App Store (Türkçe, tr)
+
+Her güncellemeden sonra yenilikler
+Karşıtlığı artır ayarına uyum sağlar
+Promosyon kodlarını uygulamada kullanın
+Plan ve gerçek artık ücretsiz
+Gelecek özellikleri görün, fikir verin
+
+### App Store (Tiếng Việt, vi)
+
+Báo điều mới ngay sau mỗi bản cập nhật
+Tự điều chỉnh theo Tăng độ tương phản
+Đổi mã khuyến mãi ngay trong ứng dụng
+Kế hoạch và thực tế nay miễn phí
+Xem tính năng sắp có và gửi ý tưởng
+
+## 1.1.12
+
+### 앱스토어 (한국어)
+
+날짜별로 일정이 얼마나 겹치는지 무지개로 봅니다
+타이머로 실제 걸린 시간을 잴 수 있습니다
+계획과 실제를 견주어 보는 Pro가 나왔습니다
+한 번 사면 아이폰 앱도 함께 Pro로 열립니다
+
+### App Store (English)
+
+See how busy each day is as a rainbow
+Time how long tasks really take
+Pro compares your plan with reality
+One purchase unlocks Pro on iPhone too
+
+### App Store (繁體中文, zh-Hant)
+
+用彩虹看每天的行程有多密
+用計時器測量實際花了多久
+Pro 讓你比較計畫與實際
+購買一次，iPhone 也一起解鎖 Pro
+
+### App Store (简体中文, zh-Hans)
+
+用彩虹看每天的日程有多密
+用计时器测量实际用了多久
+Pro 让你对比计划与实际
+购买一次，iPhone 也一起解锁 Pro
+
+### App Store (日本語, ja)
+
+日ごとの予定の混み具合を虹で見られます
+タイマーで実際にかかった時間を計れます
+Proで計画と実際を比べられます
+一度の購入でiPhoneでもProが使えます
+
+### App Store (Deutsch, de)
+
+Ein Regenbogen zeigt, wie voll Tage sind
+Miss, wie lange Aufgaben wirklich dauern
+Pro vergleicht Plan und Wirklichkeit
+Ein Kauf schaltet auch das iPhone frei
+
+### App Store (Español, es)
+
+Un arcoíris muestra lo lleno de cada día
+Mide cuánto tardan de verdad tus tareas
+Pro compara tu plan con la realidad
+Una compra activa Pro también en iPhone
+
+### App Store (Français, fr)
+
+Un arc-en-ciel montre vos jours chargés
+Mesurez le vrai temps de vos tâches
+Pro compare le prévu et le réel
+Un achat débloque aussi Pro sur iPhone
+
+### App Store (Italiano, it)
+
+Un arcobaleno mostra i giorni più pieni
+Misura quanto durano davvero le attività
+Pro confronta piano e realtà
+Un acquisto sblocca Pro anche su iPhone
+
+### App Store (Português (Brasil), pt-BR)
+
+Um arco-íris mostra os dias mais cheios
+Meça quanto as tarefas levam de verdade
+O Pro compara o plano com a realidade
+Uma compra libera o Pro também no iPhone
+
+### App Store (Русский, ru)
+
+Радуга показывает, насколько занят день
+Замеряйте, сколько уходит на задачи
+Pro сравнивает план и факт
+Одна покупка откроет Pro и на iPhone
+
+### App Store (Čeština, cs)
+
+Duha ukáže, jak nabitý je každý den
+Změřte, jak dlouho úkoly opravdu trvají
+Pro porovná plán se skutečností
+Jeden nákup odemkne Pro i na iPhonu
+
+### App Store (Dansk, da)
+
+En regnbue viser, hvor travle dagene er
+Mål, hvor lang tid opgaver reelt tager
+Pro sammenligner plan og virkelighed
+Ét køb låser også Pro op på iPhone
+
+### App Store (Ελληνικά, el)
+
+Ουράνιο τόξο για τις γεμάτες μέρες
+Μέτρησε τον πραγματικό χρόνο εργασιών
+Το Pro συγκρίνει πλάνο και πράξη
+Μία αγορά ανοίγει το Pro και στο iPhone
+
+### App Store (Suomi, fi)
+
+Sateenkaari näyttää päivien kiireen
+Mittaa tehtävien todellinen kesto
+Pro vertaa suunnitelmaa toteutuneeseen
+Yksi osto avaa Pron myös iPhonessa
+
+### App Store (Bahasa Indonesia, id)
+
+Pelangi menunjukkan hari yang padat
+Ukur berapa lama tugas sebenarnya
+Pro membandingkan rencana dan kenyataan
+Sekali beli, Pro juga terbuka di iPhone
+
+### App Store (Norsk bokmål, nb)
+
+En regnbue viser hvor travle dagene er
+Mål hvor lang tid oppgaver faktisk tar
+Pro sammenligner plan og virkelighet
+Ett kjøp låser opp Pro på iPhone også
+
+### App Store (Nederlands, nl)
+
+Een regenboog toont hoe vol elke dag is
+Meet hoe lang taken echt duren
+Pro vergelijkt plan en werkelijkheid
+Eén aankoop geeft ook Pro op je iPhone
+
+### App Store (Polski, pl)
+
+Tęcza pokazuje, jak napięty jest dzień
+Zmierz, ile naprawdę trwają zadania
+Pro porównuje plan z rzeczywistością
+Jeden zakup odblokuje Pro też na iPhonie
+
+### App Store (Svenska, sv)
+
+En regnbåge visar hur fulla dagarna är
+Mät hur lång tid uppgifter faktiskt tar
+Pro jämför plan och verklighet
+Ett köp låser upp Pro även på iPhone
+
+### App Store (ไทย, th)
+
+ดูความแน่นของแต่ละวันเป็นสายรุ้ง
+จับเวลาว่างานใช้เวลาจริงเท่าไร
+Pro เทียบแผนกับสิ่งที่เกิดขึ้นจริง
+ซื้อครั้งเดียว iPhone ก็ได้ Pro ด้วย
+
+### App Store (Türkçe, tr)
+
+Gökkuşağı yoğun günleri gösterir
+İşlerin gerçekte ne kadar sürdüğünü ölç
+Pro planı gerçekle karşılaştırır
+Tek satın alma iPhone’da da Pro’yu açar
+
+### App Store (Tiếng Việt, vi)
+
+Xem mỗi ngày bận đến đâu bằng cầu vồng
+Đo thời gian thực sự làm mỗi việc
+Pro so sánh kế hoạch với thực tế
+Mua một lần, iPhone cũng mở khóa Pro
+
+## 1.1.11
+
+### 앱스토어 (한국어)
+
+기록을 자동으로 백업하고 사라지면 되살려 줍니다
+아이폰의 무지개 일정과 기한을 맥에서도 고칩니다
+맥과 아이폰에 같은 할 일과 캘린더 일정이 보입니다
+여러 기기에서 써도 지운 것이 돌아오지 않습니다
+업데이트하지 않은 기기가 있으면 미리 알려 줍니다
+
+### App Store (English)
+
+Automatic backups bring back lost items
+Rainbow Schedules and due dates on Mac
+See the same to-dos and events as iPhone
+Deleted items stay gone on all devices
+Warns you about devices not yet updated
+
+### App Store (繁體中文, zh-Hant)
+
+自動備份紀錄，遺失時可以救回
+在 Mac 上也能編輯 iPhone 的彩虹行程與期限
+Mac 和 iPhone 顯示相同的待辦事項與行事曆
+多台裝置一起用，刪除的項目也不會再出現
+有裝置尚未更新時會事先提醒你
+
+### App Store (简体中文, zh-Hans)
+
+自动备份记录，丢失时可以恢复
+在 Mac 上也能编辑 iPhone 的彩虹日程和期限
+Mac 和 iPhone 显示相同的待办事项和日历
+多台设备一起用，删掉的内容也不会再出现
+有设备尚未更新时会提前提醒你
+
+### App Store (日本語, ja)
+
+記録を自動でバックアップし、消えても戻せます
+iPhoneの虹の予定と期限をMacでも編集できます
+MacとiPhoneで同じやることと予定を表示します
+複数の端末で使っても、消したものは戻りません
+アップデートしていない端末を事前にお知らせします
+
+### App Store (Deutsch, de)
+
+Sicherung holt verlorene Einträge zurück
+Regenbogen-Pläne und Fristen auch am Mac
+Dieselben Aufgaben und Termine überall
+Gelöschtes bleibt auf allen Geräten weg
+Warnt vor Geräten ohne neueste Version
+
+### App Store (Español, es)
+
+Copias automáticas para recuperar datos
+Planes arcoíris y plazos también en Mac
+Mismas tareas y eventos en Mac e iPhone
+Lo borrado no reaparece en otros equipos
+Avisa de dispositivos sin actualizar
+
+### App Store (Français, fr)
+
+Vos données sauvegardées et récupérables
+Plans arc-en-ciel et échéances sur Mac
+Mêmes tâches et agenda sur Mac et iPhone
+Ce qui est supprimé ne revient plus
+Alerte si un appareil n’est pas à jour
+
+### App Store (Italiano, it)
+
+Backup automatico per recuperare i dati
+Piani arcobaleno e scadenze anche su Mac
+Stesse attività e calendario ovunque
+Ciò che elimini non ricompare più
+Avviso sui dispositivi non aggiornati
+
+### App Store (Português (Brasil), pt-BR)
+
+Backup automático para recuperar dados
+Planos arco-íris e prazos também no Mac
+Mesmas tarefas e eventos no Mac e iPhone
+O que você apaga não volta mais
+Aviso sobre aparelhos não atualizados
+
+### App Store (Русский, ru)
+
+Автокопии помогут вернуть пропавшее
+Радужные планы и сроки теперь и на Mac
+Одни и те же задачи и события везде
+Удалённое больше не возвращается
+Предупредим о необновлённых устройствах
+
+### App Store (Čeština, cs)
+
+Automatické zálohy vrátí ztracená data
+Duhové plány a termíny i na Macu
+Stejné úkoly a události na Macu i iPhonu
+Smazané položky se už nevracejí
+Upozorní na zařízení bez aktualizace
+
+### App Store (Dansk, da)
+
+Automatisk backup henter tabte data
+Regnbueplaner og frister også på Mac
+Samme opgaver og aftaler på alle enheder
+Det, du sletter, kommer ikke igen
+Besked om enheder, der ikke er opdateret
+
+### App Store (Ελληνικά, el)
+
+Αυτόματα αντίγραφα, τίποτα δεν χάνεται
+Προγράμματα ουράνιου τόξου και στο Mac
+Ίδιες εργασίες και ημερολόγιο παντού
+Ό,τι διαγράφεις δεν επιστρέφει πια
+Ειδοποίηση για συσκευές χωρίς ενημέρωση
+
+### App Store (Suomi, fi)
+
+Varmuuskopiot palauttavat kadonneen
+Sateenkaarisuunnitelmat myös Macissa
+Samat tehtävät ja tapahtumat kaikkialla
+Poistettu ei enää palaa takaisin
+Varoitus päivittämättömistä laitteista
+
+### App Store (Bahasa Indonesia, id)
+
+Cadangan otomatis memulihkan data hilang
+Jadwal pelangi dan tenggat kini di Mac
+Tugas dan acara sama di Mac dan iPhone
+Yang dihapus tidak muncul lagi
+Pemberitahuan perangkat belum diperbarui
+
+### App Store (Norsk bokmål, nb)
+
+Sikkerhetskopi henter tilbake tapte data
+Regnbueplaner og frister også på Mac
+Samme oppgaver og avtaler overalt
+Det du sletter, kommer ikke tilbake
+Varsel om enheter som ikke er oppdatert
+
+### App Store (Nederlands, nl)
+
+Back-ups halen verloren items terug
+Regenboogplanningen en deadlines op Mac
+Dezelfde taken en afspraken overal
+Wat je verwijdert, komt niet meer terug
+Melding over apparaten zonder update
+
+### App Store (Polski, pl)
+
+Kopie zapasowe przywrócą utracone dane
+Plany tęczowe i terminy także na Macu
+Te same zadania i wydarzenia wszędzie
+Usunięte rzeczy już nie wracają
+Ostrzeżenie o nieaktualnych urządzeniach
+
+### App Store (Svenska, sv)
+
+Säkerhetskopior tar tillbaka förlorat
+Regnbågsplaner och deadlines även på Mac
+Samma uppgifter och händelser överallt
+Det du raderar kommer inte tillbaka
+Varnar för enheter som inte uppdaterats
+
+### App Store (ไทย, th)
+
+สำรองข้อมูลอัตโนมัติ กู้คืนได้เมื่อหาย
+ดูและแก้ตารางสายรุ้งกับกำหนดส่งบน Mac ได้
+Mac และ iPhone แสดงงานและปฏิทินเหมือนกัน
+ใช้หลายเครื่อง สิ่งที่ลบก็ไม่กลับมาอีก
+แจ้งเตือนเมื่อมีเครื่องที่ยังไม่อัปเดต
+
+### App Store (Türkçe, tr)
+
+Otomatik yedekle kaybolanı geri getirin
+Gökkuşağı planları artık Mac’te de
+Her cihazda aynı görevler ve etkinlikler
+Silinenler artık geri gelmiyor
+Güncellenmemiş cihazlar için uyarı
+
+### App Store (Tiếng Việt, vi)
+
+Tự động sao lưu, khôi phục khi bị mất
+Lịch cầu vồng và hạn chót có trên Mac
+Cùng việc cần làm và lịch trên mọi máy
+Mục đã xóa không còn tự quay lại
+Báo trước thiết bị chưa cập nhật
+
+## 1.1.10
+
+### 앱스토어 (한국어)
+
+일본어 독일어 프랑스어 등 19개 언어가 새로 들어왔습니다
+설정에서 새 언어를 바로 고를 수 있습니다
+위젯과 공유 메뉴도 고른 언어로 보입니다
+작은 문제를 고치고 더 안정적으로 다듬었습니다
+
+### App Store (English)
+
+Now available in 19 more languages
+Pick your language right in Settings
+The widget and Share menu follow it too
+Small fixes and better stability
+
+### App Store (繁體中文, zh-Hant)
+
+新增日文、德文、法文等 19 種語言
+可在設定中直接選擇新語言
+小工具與分享選單也會跟著換語言
+修正小問題，運作更穩定
+
+### App Store (简体中文, zh-Hans)
+
+新增日语、德语、法语等 19 种语言
+可在设置中直接选择新语言
+小组件和共享菜单也会跟着切换语言
+修复小问题，运行更稳定
+
+### App Store (日本語, ja)
+
+日本語など19の言語に新しく対応しました
+設定からすぐに言語を選べます
+ウィジェットと共有メニューも選んだ言語に
+細かな問題を直し、安定性を高めました
+
+### App Store (Deutsch, de)
+
+Neu in 19 Sprachen, darunter Deutsch
+Sprache bequem in Einstellungen wählen
+Widget und Teilen folgen der Sprache
+Kleine Korrekturen, mehr Stabilität
+
+### App Store (Español, es)
+
+Ahora en español y 18 idiomas más
+Elige tu idioma directamente en Ajustes
+El widget y el menú Compartir lo siguen
+Pequeñas correcciones y más estabilidad
+
+### App Store (Français, fr)
+
+19 nouvelles langues, dont le français
+Changez de langue dans les Réglages
+Le widget et le menu Partager suivent
+Petites corrections et stabilité accrue
+
+### App Store (Italiano, it)
+
+Ora in italiano e in altre 18 lingue
+Scegli la lingua subito in Impostazioni
+Anche widget e menu Condividi la seguono
+Piccole correzioni e più stabilità
+
+### App Store (Português (Brasil), pt-BR)
+
+Agora em português e em mais 18 idiomas
+Escolha o idioma direto nos Ajustes
+O widget e o menu Compartilhar seguem
+Pequenas correções e mais estabilidade
+
+### App Store (Русский, ru)
+
+Добавлены русский и ещё 18 языков
+Язык теперь можно выбрать в Настройках
+Виджет и меню Поделиться тоже на нём
+Мелкие исправления и больше стабильности
+
+### App Store (Čeština, cs)
+
+Nově v češtině a dalších 18 jazycích
+Jazyk si vyberete přímo v Nastavení
+Widget i nabídka Sdílet ho převezmou
+Drobné opravy a vyšší stabilita
+
+### App Store (Dansk, da)
+
+Nu på dansk og 18 andre nye sprog
+Vælg dit sprog direkte i Indstillinger
+Widgetten og Del-menuen følger med
+Små rettelser og bedre stabilitet
+
+### App Store (Ελληνικά, el)
+
+Ελληνικά και άλλες 18 νέες γλώσσες
+Διάλεξε γλώσσα από τις Ρυθμίσεις
+Widget και Κοινή χρήση στη γλώσσα σου
+Μικρές διορθώσεις, πιο σταθερή εφαρμογή
+
+### App Store (Suomi, fi)
+
+Uutena suomi ja 18 muuta kieltä
+Valitse kieli suoraan asetuksista
+Widget ja jakovalikko seuraavat valintaa
+Pieniä korjauksia ja parempi vakaus
+
+### App Store (Bahasa Indonesia, id)
+
+Hadir 19 bahasa baru termasuk Indonesia
+Pilih bahasa langsung di Pengaturan
+Widget dan menu Bagikan ikut bahasa itu
+Perbaikan kecil dan lebih stabil
+
+### App Store (Norsk bokmål, nb)
+
+Nå på norsk og 18 andre nye språk
+Velg språk direkte i Innstillinger
+Widgeten og Del-menyen følger med
+Små rettelser og bedre stabilitet
+
+### App Store (Nederlands, nl)
+
+Nieuw: Nederlands en 18 andere talen
+Kies je taal direct in Instellingen
+Ook de widget en het deelmenu volgen
+Kleine verbeteringen en meer stabiliteit
+
+### App Store (Polski, pl)
+
+Polski i 18 innych języków już dostępne
+Język wybierzesz od razu w Ustawieniach
+Widżet i menu udostępniania też go użyją
+Drobne poprawki i większa stabilność
+
+### App Store (Svenska, sv)
+
+Nu på svenska och 18 andra nya språk
+Välj språk direkt i Inställningar
+Widgeten och Dela-menyn följer valet
+Små buggfixar och bättre stabilitet
+
+### App Store (ไทย, th)
+
+เพิ่มภาษาใหม่ 19 ภาษา รวมถึงภาษาไทย
+เลือกภาษาได้ทันทีในการตั้งค่า
+วิดเจ็ตและเมนูแชร์ก็ใช้ภาษาที่เลือกด้วย
+แก้ไขปัญหาเล็กน้อยและทำงานเสถียรขึ้น
+
+### App Store (Türkçe, tr)
+
+Türkçe dahil 19 yeni dil eklendi
+Ayarlar bölümünden dil seçebilirsiniz
+Widget ve Paylaş menüsü de bu dili izler
+Küçük düzeltmeler, daha kararlı çalışma
+
+### App Store (Tiếng Việt, vi)
+
+Nay có tiếng Việt và 18 ngôn ngữ khác
+Chọn ngôn ngữ ngay trong Cài đặt
+Tiện ích và menu Chia sẻ cũng đổi theo
+Sửa lỗi nhỏ và chạy ổn định hơn
+
+### 개발 메모 (노출 안 함)
+
+열아홉 개 언어(ja, de, es, fr, it, pt-BR, ru, cs, da, el, fi, id, nb, nl, pl, sv, th, tr, vi)를 더했다. 앱·위젯·공유 확장의 문자열 카탈로그, 스토어 문구, 스크린샷, 지원·개인정보 페이지까지 언어마다 갖췄다. 설정의 언어 고르개는 23개라 목록 대신 메뉴로 접었다.
+
+## 1.1.9
+
+### 앱스토어 (한국어)
+
+이제 번체와 간체 중국어로도 쓸 수 있습니다
+시각이 되면 계획이 진행 중으로 바뀌고 지나면 끝냈는지 묻습니다
+지나간 일정을 한 번에 완료로 찍을 수 있습니다
+종일 일정과 여러 날 일정을 막대로 깔끔하게 보여 줍니다
+지금 하는 일의 남은 시간을 위젯으로 봅니다
+
+### App Store (English)
+
+Now available in Traditional and Simplified Chinese
+Plans turn in progress on time and ask if you finished
+Mark everything that has passed as done in one go
+All-day and multi-day events show as tidy bars
+A new widget shows time left on what you're doing
+
+### App Store (繁體中文, zh-Hant)
+
+現在支援繁體中文與簡體中文
+計畫到點就轉為進行中，時間過了會問你做完沒
+已過去的行程可以一次標記完成
+全天與跨日行程以長條清楚呈現
+新增小工具，隨時看見目前行程的剩餘時間
+
+### App Store (简体中文, zh-Hans)
+
+现已支持简体中文和繁体中文
+计划到点就变为进行中，时间过了会问你做完没有
+已过去的日程可以一次标记完成
+全天和跨天日程以长条清晰呈现
+新增小组件，随时看到当前日程的剩余时间
+
+### 무지개 공방 (macOS)
+
+**중국어로도 씁니다.**
+
+번체(대만·홍콩)와 간체(중국) 중국어를 따로 옮겼습니다. 맥이 중국어면 저절로 중국어로 뜨고, 설정 맨 위와 앱 이름 메뉴의 'Language · 언어 · 語言'에서 繁體中文이나 简体中文을 고를 수도 있습니다.
+
+**계획이 시각을 따라갑니다.**
+
+시작 시각이 되면 계획이 '진행 중'으로 바뀌고, 끝 시각이 지나면 '시간 지남'이 되어 다 했는지 묻습니다. 아직 하는 중이라고 답하면 그날은 계속 진행 중으로 두고 몇 분 넘겼는지 보여 줍니다. 지나갔는데 안 찍은 일정은 맨 위 '끝냈나요?'에서 한 번에 완료로 찍을 수 있습니다.
+
+**타이머와 위젯.**
+
+타이머는 이제 시간표를 따라 셉니다. 회사 안의 회의처럼 일정이 겹치면 어느 쪽을 셀지 고를 수 있고, 고리는 남은 몫을 그립니다. 남은 시간을 시:분:초, 분:초, 글 가운데 어떻게 적을지 설정에서 고릅니다. 맥 위젯 '지금 타이머'를 더하면 앱을 열지 않아도 남은 시간이 보입니다.
+
+**종일 일정.**
+
+캘린더의 종일 일정은 배경으로 깔려 하루 시간을 깎지 않고, 출장처럼 여러 날 이어지는 일정은 주간 위에 막대 하나로 섭니다. 자정에서 자정까지 잡힌 일정도 종일로 봅니다. 휴가·출장·공휴일인 날 회사 같은 긴 루틴이 서 있으면 그날은 뺄지 묻습니다.
+
+**일간 시간표와 회고.**
+
+계획 블록이 그날 무지개 칸의 색을 입습니다. 겹친 일정은 회사 막대 위에 얹거나 옆 열로 세우는데, 몇 열로 펼칠지 설정에서 고르고 우클릭으로 하나씩 옮길 수도 있습니다. 시간표·오늘의 계획·할 일 판은 누르면 크게 펴집니다. 주간 회고는 요일마다 카드로 나뉘어 먼저 찍을 할 일부터 보여 줍니다.
+
+**고친 것**
+
+- 다른 날 새벽의 캘린더 일정 하나 때문에 모든 날의 수면 접기가 풀리던 것을 고쳤습니다.
+- 점심과 다른 일정이 같은 자리에 포개져 글자가 겹치던 것을 고쳤습니다.
+- 앱을 다시 켜면 이미 끝난 일정을 타이머가 계속 세던 것을 고쳤습니다.
+
+## 1.1.8
+
+### 앱스토어 (한국어)
+
+그날 할 일이 몇 개인지 무지개로 한눈에 봅니다
+캘린더 일정을 알아서 가져옵니다
+계획을 캘린더에 적어 아이폰에서도 볼 수 있습니다
+같은 일정이 캘린더와 계획에 겹치면 하나로 합칩니다
+종일 일정이 하루 시간을 깎지 않습니다
+
+### App Store (English)
+
+A rainbow shows how many to-dos fill each day
+Calendar events now come in on their own
+Write plans to Calendar to see them on iPhone
+Merge a plan with its matching calendar event
+All-day events no longer eat into your day
+
+## 1.1.7
+
+### 앱스토어 (한국어)
+
+맥의 언어가 한국어나 영어가 아니면 이제 영어로 보입니다
+설정과 앱 메뉴에서 English와 한국어 중 원하는 언어를 고를 수 있습니다
+한 주를 일요일부터 시작하도록 바꿀 수 있습니다
+점심처럼 다른 일정과 겹친 시간을 어느 쪽 몫으로 셀지 고를 수 있습니다
+루틴을 오늘만 삭제해도 그대로 남아 있던 문제를 고쳤습니다
+주간 요약이 겹친 시간을 두 번 세던 문제를 고쳤습니다
+
+### App Store (English)
+
+If your Mac isn't set to Korean or English, the app now appears in English
+Choose English or Korean in Settings or from the app menu
+Start your week on Sunday if you prefer
+Choose how overlapping time is counted, such as lunch during work
+Fixed deleting a routine for today only having no effect
+The weekly summary no longer counts overlapping time twice
+
+### 무지개 공방 (macOS)
+
+**영어가 기본입니다.**
+
+맥의 언어가 독일어처럼 앱에 없는 말이면 한국어가 떴습니다. 이제 영어로 보입니다. 한국어 맥에서는 그대로 한국어입니다.
+
+**앱 안에서 언어를 고릅니다.**
+
+설정 맨 위와 앱 이름 메뉴에 'Language · 언어'가 있습니다. 고르면 앱이 다시 열리며 바뀝니다. 시스템 설정의 앱별 언어와 같은 값이라 어느 쪽에서 바꿔도 맞습니다.
+
+**한 주를 일요일부터 볼 수 있습니다.**
+
+설정의 '주 시작'에서 고릅니다. 보이는 차례만 바뀌고 적어 둔 계획과 루틴은 그대로이며, 아이폰 앱과도 그대로 맞습니다.
+
+**겹친 시간 세기.**
+
+회사 안에 점심이 있으면 그 한 시간을 회사로 셀지 점심으로 셀지 설정에서 고릅니다. 그림으로 두 기준을 비교해 볼 수 있고, 시간표에 처음 겹침이 생기면 배너가 한 번 묻습니다. 하루 남은 시간은 어느 쪽이든 같습니다.
+
+**고친 것**
+
+- 맥과 아이폰을 함께 쓰면 '이 루틴 삭제 (오늘만)'을 눌러도 루틴이 남아 있던 문제를 고쳤습니다.
+- 주간 요약의 '고정 루틴'과 '남은 자유 시간'이 회사 안의 점심처럼 겹친 시간을 두 번 세던 것을 고쳤습니다. 이제 일간의 남은 시간과 같은 셈입니다.
+
+## 1.1.6
+
+### 앱스토어 (한국어)
+
+할 일을 프로젝트로 묶어 끝이 있는 일로 봅니다
+시간은 누르면 뜨는 알약에서 바로 고릅니다
+끌어 옮기는 동안 놓일 시각이 보입니다
+회사 같은 긴 일정 안에 회의를 겹쳐 그립니다
+오늘은 파란 원으로 표시합니다
+
+### App Store (English)
+
+Group to-dos into projects that actually end
+Pick a duration from one tap of a pill
+See the exact time while you drag a plan
+Draw meetings inside long blocks like work
+Today now shows as a blue circle
+
+### 무지개 공방 (macOS)
+
+**할 일을 프로젝트로 묶습니다.**
+
+- 분류(업무·개인)와는 다른 축입니다. 할 일 하나가 '업무'이면서 '이사 준비'일 수 있습니다.
+- 할 일 목록이 프로젝트별로 묶이고, 묶음은 접어 둘 수 있습니다. 접은 것은 기억합니다.
+- 프로젝트를 열면 먼저 한눈에 보기가 섭니다. 얼마나 왔는지, 무엇이 남았는지, 다음에 할 일이 무엇인지.
+- 프로젝트 창에서 적고 ⏎를 누르면 그 프로젝트에 바로 담기고, 이어서 적을 수 있습니다.
+- 할 일 카드를 프로젝트 묶음에 놓으면 그 프로젝트로 들어가고, 다른 카드 위에 놓으면 그 안의 하위 할 일이 됩니다.
+- 프로젝트를 지워도 그 안의 할 일은 지우지 않습니다.
+
+**할 일 상세가 가벼워졌습니다.**
+
+- 할 일 아래로 단계가 가지처럼 뻗고, 지금 할 차례인 단계에 '지금'이 붙습니다.
+- 끝낸 단계는 한 줄로 접혀, 지금 할 단계가 늘 맨 위에 섭니다.
+- 쪼개기 도우미는 부를 때만 펼쳐집니다. 조언 문구는 이 창에서 뺐습니다.
+
+**시간은 한 번 눌러 고릅니다.**
+
+시간을 적던 다섯 자리(일정 편집, 할 일 머리, 단계 줄, 프로젝트 창, 여러 개 고치기)가 하나로 모였습니다. 누르면 15분부터 4시간까지 단추가 뜨고, −·+나 ←·→로 15분씩 조절합니다.
+
+**시간표가 더 또렷합니다.**
+
+- 끌어 옮기는 내내 15분 눈금에 붙고, 놓일 시각이 자 위에 뜹니다. 일간과 주간이 같은 규칙을 씁니다.
+- 회사처럼 긴 일정은 왼쪽 절반만 차지합니다. 오른쪽 절반을 끌면 그 안에 회의를 겹쳐 그릴 수 있고, 겹친 일정은 남은 시간을 줄이지 않습니다.
+- 고정 루틴도 끼니처럼 우클릭해 '이 루틴 삭제 (오늘만)'으로 그날만 지웁니다. 블록으로 보기에서도 됩니다. 지운 것은 시간표에서 사라지고, '숨긴 것' 칩에서 되살립니다.
+- 계획 알약에 제목 첫 글자 대신 아이콘이 섭니다. 아이콘을 누르면 다른 것으로 바뀝니다.
+- 끼니 시각을 루틴에서 한 번 정하면 모든 날이 따라옵니다. 알약을 우클릭해 '이 시각을 매일 기본으로'를 고를 수도 있습니다.
+
+**오늘은 파란 원입니다.**
+
+달력에서 빨간 날짜는 공휴일로 읽힙니다. 그래서 오늘을 빨갛게 칠하면 쉬는 날처럼 보였습니다. 주간·일간 어디서든 오늘은 이제 파란색입니다. 지금 시각을 가리키는 선은 그대로 빨강입니다.
+
+**영어 이름이 Rainbow Craft로 바뀌었습니다.**
+
+시스템 언어가 영어면 앱 이름이 Rainbow Craft로 보입니다. 공방이 손으로 무언가를 만드는 곳이라, workshop보다 craft가 가깝습니다.
+
+**고친 것**
+
+- 예전 버전부터 쓰시던 분은 스포트라이트에서 '무지개 공방'으로 앱이 찾아지지 않았습니다. 이제 앱 이름으로 찾아집니다.
+- '지금 시작' 배너가 닫히거나 저절로 내려갈 때 움직임 없이 툭 사라지던 것을 고쳤습니다.
+
+## 1.1.5
+
+### 앱스토어 (한국어)
+
+빈 시간을 쓸면 그 자리에 일정이 생깁니다
+양끝을 끌어 시작과 끝 시각을 맞춥니다
+수면이나 식사 같은 루틴은 체크하지 않습니다
+돌아보지 않은 날을 표시로 알려 드립니다
+일정을 만들 때 묻는 것이 줄었습니다
+
+### App Store (English)
+
+Sweep an empty slot to create a plan there
+Drag either end to set the start and finish
+Routines like sleep and meals skip the check
+Days you have not reviewed are marked
+Creating a plan asks for less
+
+### 무지개 공방 (macOS)
+
+**빈 시간을 쓸어 그 자리에 시간을 잡습니다.**
+
+- 하루의 빈 시간을 위아래로 쓸면 그은 만큼이 밝아지고, 손을 떼면 그 범위가 그 자리에 남습니다. 위·아래 끝을 끌어 시작과 끝을 다듬고, 가운데를 끌어 통째로 옮깁니다.
+- 잡은 시간 옆에 판이 서서, 그 시간에 넣을 할 일을 고르거나 새 일정을 세웁니다.
+- 빈 시간을 그냥 누르면 시작 시각과 길이를 정해 채울 수 있습니다. 하나 넣으면 그 뒤의 빈 시간에서 판이 다시 열려, 남은 시간이 줄어드는 것을 보며 이어서 채웁니다.
+- 이미 지나간 빈 시간도 채울 수 있습니다. 오전에 한 일을 점심에 적어 두는 일이 실제로 있습니다.
+
+**일정을 만들 때 묻는 것이 줄었습니다.**
+
+- 성공 기준·산출물·다음 첫 동작은 '자세히 정하기'로 접혔습니다. 비워 두어도 저장되고, 그런 일정은 옅은 색으로 서서 나중에 다듬으면 됩니다.
+- 시각을 정해 둔 일정은 편집창에서도 그 시각이 그대로 보이고, 저장해도 지워지지 않습니다.
+
+**루틴은 했는지 묻지 않습니다.**
+
+- 수면·식사처럼 늘 하는 일은 달성하는 것이 아니라 지켜지는 것입니다. 이제 체크 줄에서 빠지고, 달성률의 분모에도 들어가지 않습니다.
+- 대신 돌아보지 않은 날은 놓치지 않게 합니다. 요일 줄에 표시가 서고, 그날 계획 판 위에 아직 안 찍은 것이 몇 개인지 적히고, 주간 회고를 열면 그것들이 맨 위에 모입니다.
+
+**고친 것**
+
+- 모든 단계를 끝낸 할 일이 목록에 그대로 남아 있던 문제를 고쳤습니다. 이미 그렇게 된 할 일은 앱을 켜면 저절로 정리됩니다.
+- 회고 추세에서 수면·끼니 같은 루틴을 빼고 셉니다. 계획한 개수와 요일별·시간대별 달성률이 내가 짠 계획만 놓고 나옵니다.
+- 주간 회고를 글로 내보낼 때 루틴은 '안 한 일'로 적히지 않습니다.
+- 캘린더에서 가져온 일정에 무언가를 적어 두었으면, 캘린더에서 그 일정이 사라져도 지울 후보로 올리지 않습니다.
+
+## 1.1.4
+
+### 앱스토어 (한국어)
+
+하루를 크게 펼쳐 보는 일간 화면이 생겼습니다.
+오늘의 계획을 하나씩 체크하며 돌아봅니다.
+빈 시간이 한 줄로 이어져 한눈에 보입니다.
+할 일을 끌어다 놓으면 빈자리에 딱 붙습니다.
+저녁에 내일을 정하고 아침엔 첫 걸음만 봅니다.
+
+### App Store (English)
+
+A new Day view spreads out a single day.
+Check off today’s plan as you go.
+Free time now reads as one flowing line.
+Drag a to-do and it snaps into the gap.
+Set tomorrow tonight, see one step at dawn.
+
+### 무지개 공방 (macOS)
+
+**하루를 크게 펴 보고, 그날을 돌아봅니다.**
+
+한 주를 짜는 것은 주간에서, 하루를 들여다보는 것은 일간에서 합니다. 날짜 줄 맨 앞의 일간·주간 단추나 ⌘1·⌘2로 오갑니다.
+
+- 일정마다 색 알약이 서고, 알약과 알약 사이의 빈 시간은 앞 색에서 다음 색으로 번지는 선으로 이어집니다. 하루가 한 줄로 읽힙니다.
+- 30분이 넘게 비면 그 자리에 "빈 시간 1시간 30분"이 적힙니다. 두 시간이 넘는 큰 빈자리는 점선으로 또렷합니다. 오늘이면 이미 지나간 빈 시간은 흐려집니다.
+- 빈 시간을 누르면 그 길이에 들어가는 할 일을 골라 넣거나, 그 시각에 새 블록을 세울 수 있습니다.
+- 옆에는 그날의 계획이 섭니다. 블록마다 달성·부분·건너뜀을 찍고 한 줄을 남기면, 주간 회고의 그 요일 아래에도 그대로 모입니다.
+
+**끌어다 놓으면 빈자리에 붙습니다.**
+
+- 할 일을 끌고 오면 들어갈 수 있는 빈 시간이 밝아지고, 손 아래에는 "여기 놓으면 14:00"이 따라다닙니다.
+- 한 시간 빈자리에 30분짜리를 놓으면 그 사이에 들어가고, 뒤 일정을 넘지 않습니다. 앞뒤 일정에 가까이 가면 자석처럼 붙습니다.
+- 일간의 알약을 오른쪽 계획 판에 놓으면 시각만, 할 일 목록에 놓으면 날짜까지 무릅니다.
+
+**저녁에 내일을 정하고, 아침엔 첫 걸음만 봅니다.**
+
+- 저녁이면 내일이 비어 있는지 알려 주고, 바로 내일을 계획할 수 있습니다.
+- 아침에는 오늘의 첫 걸음 하나만 크게 섭니다. 눌러서 바로 타이머를 시작합니다.
+- 하루에 한 번 닫으면 그날은 다시 뜨지 않습니다.
+
+**멈출 때 다음 첫 동작을 한 줄 남깁니다.**
+
+일을 멈추면 "돌아왔을 때 무엇부터 하면 되나요?"를 한 줄 받습니다. 다시 그 일을 시작하면 그 줄이 먼저 섭니다. 적기 싫으면 건너뛰어도 됩니다.
+
+**되돌리기.**
+
+끌어 옮기고, 지우고, 체크한 것을 툴바의 되돌리기나 ⌘Z로 한 걸음씩 되돌립니다.
+
+**손에 닿는 결.**
+
+- 누르면 눌리고, 놓으면 제자리에서 한 번 출렁입니다. 15분 격자에 붙을 때와 체크할 때는 트랙패드에 딸깍이 옵니다.
+- 할 일 카드는 키가 모두 같아졌고, 앞의 동그라미를 누르면 진행이 한 칸씩 찹니다. 카드를 누르면 그 할 일을 들여다봅니다.
+- 요일 줄의 점은 그날 계획한 블록입니다. 끝낸 것은 채워집니다.
+
+**고친 것.**
+
+- 캘린더 연결 단추가 먼저 설명을 보여 주고 나서 시스템 창을 띄웁니다. 거절한 뒤에는 시스템 설정으로 바로 안내합니다.
+- 지금 시각 표시가 두 줄로 꺾이던 것을 고쳤습니다.
+- 끼니가 빈 시간으로 세어지던 것과, 짧은 일정이 다음 일정과 겹친 것으로 보여 두 줄로 갈라지던 것을 고쳤습니다.
+
+## 1.1.3
+
+### 앱스토어 (한국어)
+
+아이폰에서 적은 할 일이 바로 도착합니다.
+할 일을 더하고 지울 때 화면이 부드럽게 움직입니다.
+익명 사용 통계는 설정에서 끌 수 있습니다.
+
+### App Store (English)
+
+To-dos from your iPhone now arrive right away.
+Adding and removing things feels smoother.
+Anonymous usage stats can be turned off in Settings.
+
+### 무지개 공방 (macOS)
+
+**아이폰에서 적은 것이 곧바로 도착합니다.**
+
+같은 iCloud를 쓰는데도 아이폰에서 적은 할 일이 맥에 늦게 왔습니다. 실제로 재 보니 17시 36분에 적은 것이 맥에는 17시 45분에야 떴습니다 — 8분 21초입니다. 반대 방향은 3초였습니다.
+
+맥이 "새 것이 있다"는 조용한 알림을 받을 길이 없어서, 켤 때와 이따금 도는 예약 작업에서만 내려받고 있었습니다. 그 길을 열었습니다. 이제 아이폰에서 적으면 맥을 켜 둔 채로도 바로 나타납니다.
+
+**바뀌는 것은 다 움직입니다.**
+
+할 일이 더해지고 지워질 때, 화면이 넘어갈 때, 단계를 펼칠 때 — 갑자기 나타나고 사라지던 자리에 결을 붙였습니다. 무엇이 새로 생겼고 무엇이 없어졌는지 눈으로 따라갈 수 있습니다.
+
+- 목록에 더해진 줄은 위에서 내려오고, 지운 줄은 그 자리에서 접힙니다.
+- 주간 그리드와 하루 타임라인을 오갈 때 화면이 미끄러집니다.
+- 시스템 설정에서 **동작 줄이기**를 켜 두신 분께는 움직이지 않습니다.
+
+**익명 사용 통계를 보내고, 끌 수 있게 했습니다.**
+
+어느 화면이 실제로 쓰이는지 모르면 무엇을 고칠지도 알 수 없어서, 이번 버전부터 익명 사용 통계를 보냅니다. 무엇을 보내는지 설정에서 먼저 밝히고, 그 자리에서 끌 수 있습니다.
+
+- **사람을 식별하지 않습니다.** 설치할 때 만든 무작위 번호 하나만 붙고, 애플 계정도 기기 번호도 이름도 따라가지 않습니다. 지우고 다시 깔면 남남이 됩니다.
+- **적으신 내용은 한 글자도 보내지 않습니다.** 할 일이 몇 개인지 같은 개수만 셉니다.
+- **설정 → 개인정보에서 끕니다.** 끄면 그때부터 아무것도 나가지 않습니다.
+- 개인정보 처리방침에도 같은 내용을 한국어와 영어로 적어 두었습니다.
+
+**정리한 것.**
+
+- 구매와 복원 처리를 공용 부품으로 옮겼습니다. 동작은 같습니다.
+
+## 1.1.2
+
+### 앱스토어 (한국어)
+
+시스템 언어가 영어면 앱도 영어로 열립니다.
+아이폰과 할 일이 오가지 않던 문제를 고쳤습니다.
+맥 캘린더의 일정을 주간 계획으로 가져옵니다.
+지금 하는 일에 얼마나 남았는지 늘 보입니다.
+적는 것은 계속 무료이고 Pro는 아이폰으로 건너가는 것만 엽니다.
+이번 버전부터 이 맥에서 적은 것은 아이폰에 가지 않습니다.
+
+### App Store (English)
+
+Set your Mac to English and the app opens in English.
+Fixed to-dos not syncing with your iPhone.
+Import your Mac Calendar events into the week.
+Always see the time left on what you are doing.
+Writing stays free, and Pro only opens sending to your iPhone.
+To-dos you write here no longer reach your iPhone.
+
+### 무지개 공방 (macOS)
+
+**영어를 지원합니다.**
+
+시스템 언어가 영어면 앱이 통째로 영어로 열립니다. 메뉴와 단추뿐 아니라 쪼개기 조언·구체성 검사처럼 앱이 말을 거는 자리까지 전부 옮겼습니다. 앱 이름도 영어에서는 **Rainbow Workshop**으로 보이고, 사파리 공유 메뉴에는 **Add to To-dos**로 섭니다.
+
+- **판정도 영어로 돕니다** — 조각인지 덩어리인지를 가르는 낱말 사전에 영어를 나란히 넣었습니다. `write`, `design`, `review` 같은 말로 적어도 한국어로 적었을 때와 같은 조언이 나옵니다. 성공 기준의 모호한 표현 검사도 마찬가지입니다.
+- **적어 두신 것은 그대로입니다** — 루틴 이름도 할 일도 손대지 않습니다. 언어를 바꿔도 이름이 번역되지는 않습니다.
+- 날짜 표기와 요일 이름은 시스템 언어를 따릅니다.
+
+**아이폰과 할 일이 오가지 않던 것을 고쳤습니다.**
+
+같은 iCloud를 쓰는데도 여기서 적은 할 일이 아이폰에 안 내려가고, 아이폰에서 적은 것도 올라오지 않았습니다. 계획과 루틴만 오가고 할 일은 한 톨도 건너가지 않는 상태였는데, 화면에는 그냥 "없음"으로 보여서 고장인 줄도 모르고 지나갔습니다. 양쪽을 함께 고쳤습니다.
+
+**맥 캘린더의 일정을 주간 계획으로 가져옵니다.**
+
+회의나 약속처럼 시각이 이미 정해진 일을 손으로 또 적을 필요가 없습니다. 설정에서 읽어 올 캘린더를 고르고, 툴바의 **더 보기 → 캘린더에서 가져오기**를 누르면 보고 있는 주의 일정이 계획 블록으로 들어옵니다.
+
+- **읽기만 합니다.** 이 앱은 여러분의 캘린더에 한 글자도 쓰지 않습니다.
+- **고르는 단위는 캘린더입니다** — 업무 캘린더만 가져오는 식으로 한 번 정해두면 다시 손댈 일이 없습니다. 아무것도 고르지 않으면 아무것도 가져오지 않습니다.
+- **다시 눌러도 안전합니다.** 이미 가져온 일정은 시각·길이·제목만 맞추고, 여러분이 적어 둔 성공 기준·산출물·회고는 건드리지 않습니다.
+- **지울 때는 먼저 묻습니다.** 캘린더에서 일정이 없어졌더라도, 무엇을 지울 참인지 이름으로 보여주고 확인을 받은 뒤에 지웁니다.
+
+**지금 하는 일에 얼마나 남았는지 늘 보입니다.**
+
+계획에 적힌 시각을 기준으로 지금 진행 중인 일과 남은 시간이 칩 위에 뜹니다. 블록이나 루틴을 우클릭해 타이머를 직접 시작할 수도 있고, ⇧⌘R로 따로 창을 열 수도 있습니다.
+
+**끌어 옮기는 길이 넓어졌습니다.**
+
+- **다른 요일로** — 올려 둔 계획을 다른 요일 칸으로 끌어 옮깁니다.
+- **같은 날 안에서 순서 바꾸기** — 칩과 칩 사이에 끼워 넣으면 그 자리에 맞는 시각이 정해집니다. 틈보다 큰 것을 넣으면 그래도 옮기되, 겹쳤다고 붉게 알리고 시간축으로 가는 길을 함께 줍니다.
+- **할 일 목록으로 되돌리기** — 요일에 올린 일을 할 일 목록으로 끌어 내리면 다시 '아직 안 정한 일'이 됩니다. 날짜를 무르려고 블록을 찾아 지울 필요가 없습니다.
+
+**처음 오는 분께 한 주 짜는 법을 먼저 보여줍니다.**
+
+빈 화면에 놓고 알아서 하라고 하지 않습니다. 고정 루틴을 세우는 것부터 순서대로 안내합니다.
+
+**고정 루틴을 세울 때 미리 말해 줍니다.**
+
+- **만들기 전에 겹치는 곳을 짚어 줍니다** — 세우려는 시간이 이미 있는 루틴과 부딪히면 만들기 전에 알려줍니다.
+- **흐린 버튼이 왜 안 눌리는지 말해 줍니다** — 눌러도 아무 일이 없어 답답하던 것을 고쳤습니다.
+
+**루틴 시간을 '회당'으로 넣을 수 있습니다.**
+
+"밥은 하루 세 번, 한 번에 한 시간"으로 생각하지 "주 21시간"으로 생각하지 않습니다. 이제 횟수와 회당 시간을 넣으면 주 합계가 알아서 정해집니다. 물론 주 합계로 넣어도 됩니다 — 두 칸은 같은 값의 두 얼굴입니다.
+
+**요일 칸을 낮췄습니다.**
+
+칩에서 시간대를 빼고 **길이**를 적습니다. 칸이 이미 시각 순으로 서 있어서 시간대는 자기 위아래를 되풀이할 뿐이었고, 길이는 그 자리 말고는 어디에도 안 적혀 있었습니다. 글자와 여백도 함께 줄여 한 화면에 더 많이 들어갑니다.
+
+**주간 회고를 할 일 목록처럼 씁니다.**
+
+오른쪽에 달성·부분·건너뜀 단추 셋이 같은 크기로 서 있어서, '끝냄' 하나를 누르러 와도 매번 셋 중에 골라야 했습니다. 이제 **왼쪽 동그라미**를 누르면 끝납니다. 그 동그라미가 지금 상태를 그대로 보여주고, 끝낸 줄은 제목에 줄이 그어집니다. 부분·건너뜀은 가리키거나 우클릭할 때 나옵니다.
+
+**정리한 것.**
+
+- 전파 계약을 걷어냈습니다.
+
+### 🌈 Pro가 생겼습니다
+
+**적는 것은 계속 무료입니다.** 주간 계획도, 루틴도, 이 맥에서 할 일을 적는 것도, 아이폰에서 온 할 일을 보는 것도 값을 받지 않습니다.
+
+값을 받는 것은 하나입니다 — **여기서 적은 것이 아이폰으로 건너가는 것**. 한 번 사면 끝이고 구독이 아니며, 같은 Apple 계정의 다른 맥에서도 열립니다.
+
+> ⚠️ **이미 쓰고 계셨다면 읽어 주세요.** 그동안은 함께 쓰기가 모두에게 열려 있었습니다. 이번 버전부터는 이 맥에서 적은 것이 아이폰에서 보이지 않습니다. **적어 두신 것은 하나도 사라지지 않습니다** — 이 맥에서는 그대로 있고, 아이폰에서 적은 것도 계속 내려옵니다. 값을 치르시면 예전에 적어 두신 것까지 함께 다시 보입니다.
+
+지금 무엇을 쓰고 계신지는 **설정 → 함께 쓰기**에서 볼 수 있습니다. 기기를 바꾸셨다면 같은 자리의 '구매 복원'으로 되찾습니다.
+
+---
+
+## 1.0.9
+
+### 무지개 공방 (macOS)
+
+단계를 쪼갤 때 고르던 ‘착수 조건’을 없애고, 시간을 직접 적게 했습니다.
+
+바로 / 펼치고 / 몰입해서 중 하나를 고르면 예상 시간이 따라오던 방식이었습니다. 고를 것을 하나로 줄이려던 설계였는데, "바로 15분"이 무슨 뜻인지가 끝까지 통하지 않았습니다.
+
+- **착수 조건을 없앴습니다** — 백로그 줄과 단계 화면의 조건 칩·메뉴가 사라졌습니다. 할 일은 이제 **이름만으로** 추가됩니다. 예전에는 조건을 고르기 전까지 추가 버튼이 잠겨 있었습니다.
+- **단계마다 시간을 직접 적습니다** — 단계 줄 오른쪽에서 바로 고칠 수 있습니다. 할 일 전체 시간은 예전처럼 단계들의 합입니다.
+- **단계마다 전체에서 차지하는 몫(%)이 나옵니다** — 어디를 더 쪼개야 하는지가 바로 보입니다. 분모는 실제로 하는 단계들의 합입니다.
+- **‘지금 단계’라고 적힙니다** — ▶ 기호만으로는 이게 지금 할 것이라는 뜻이 안 읽혔습니다.
+- 쪼개기 조언은 그대로 있습니다. 다만 판단 기준이 조건에서 **시간과 제목**으로 돌아갔습니다.
+
+예전에 골라 둔 조건 값은 그대로 두었고, 적어 둔 시간은 하나도 바뀌지 않습니다.
+
+### 함께 (iOS ‘욕망의 무지개’ 1.0.9)
+
+두 앱이 같은 iCloud 데이터를 쓰므로 같은 정리를 했습니다. iOS 쪽에는 이번에 이런 것들이 함께 들어갔습니다.
+
+- 할 일에 기간(시작~끝)을 정하면 무지개에 한 줄이 그어집니다.
+- 무지개에 걸려 있는데 할 일에는 없던 일들이 할 일 목록 맨 위에 섭니다.
+- 무지개에서 날짜를 누르면 **0시부터 24시까지** 그날이 그려집니다. 여기 적어 둔 수면·출근 같은 고정 루틴이 그대로 뼈대가 되고, **이 앱과 같은 배치 규칙**을 써서 두 화면의 하루가 같은 모양입니다.
+- 홈 화면·잠금 화면 무지개 위젯이 생겼습니다.
+
+## 1.0.7
+
+### 욕망의 무지개 (iOS)
+
+할 일을 쪼갤 때 비중 대신 지금 시작할 수 있는지를 고르도록 바꿨습니다.
+
+- 단계마다 착수 조건 하나만 고르면 됩니다. 바로, 펼치고, 몰입해서, 정하고, 기다림 다섯 가지이고 예상 시간은 고른 값을 따라옵니다.
+- 지금 할 단계에 언제 하면 되는지가 함께 나옵니다. 펼치고는 자료를 펼칠 짬이 났을 때, 몰입해서는 방해 없는 시간이 잡혔을 때입니다.
+- 단계 비중을 백분율로 나누던 방식을 없앴습니다. 슬라이더와 자물쇠, N분의 1 버튼이 사라지고 할 일 전체 시간은 단계들의 합으로 계산됩니다.
+- 쪼개기 도우미가 제안하는 네 단계에 알맞은 착수 조건이 붙습니다. 무엇을 할지 정하기에 엉뚱한 값이 붙던 문제를 고쳤습니다.
+- 목록 화면을 정리했습니다. 위쪽 라벨 필터와 지난 주에 못 한 일 구분을 없애고 한 줄기 목록으로 보여줍니다. 단계로 쪼갠 할 일은 지금 할 단계 이름으로 나타납니다.
+- 목록과 상세 화면의 작은 글씨를 모두 없애고 글자와 칩 크기를 키웠습니다.
+- 좁은 자리에서 칩 글자가 세로로 접히던 문제를 고쳤습니다.
+- 다른 앱에서 공유하면 욕망의 무지개가 목록에 나타납니다. 공유 시트 위에 작은 창이 뜨고, 이름과 착수 조건을 정해 추가하면 앱을 열었을 때 할 일 탭에 들어와 있습니다. 텍스트와 링크를 받습니다.
+
+### 무지개 공방 (macOS)
+
+iOS와 같은 착수 조건 체계로 맞췄습니다.
+
+- 단계마다 바로, 펼치고, 몰입해서, 정하고, 기다림 중 하나를 고릅니다. 비중 조절과 자물쇠는 없앴습니다.
+- 지금 할 단계에 언제 하면 되는지가 함께 나옵니다.
+- 백로그 카드에서 겹쳐 나오던 시간 표시를 정리하고 작은 글씨를 키웠습니다.
+- 사파리 등에서 공유하면 무지개 공방이 목록에 나타납니다.
+
+기존에 적어둔 할 일은 그대로 유지됩니다. 예전 라벨은 새 착수 조건으로 자동으로 옮겨 읽고, 배정해둔 시간은 바뀌지 않습니다.
+
+## 1.0.5
+
+### 🌈 욕망의 무지개 (iOS)
+
+내 일정을 원하는 사람에게 공유하고, 공유받은 일정을 볼 수 있게 되었습니다.
+
+- **(신규) ‘공유’ 탭 — 일정 공유** — 내 일정을 초대 링크로 보내면, 받은 사람이 **읽기 전용**으로 볼 수 있습니다. 상대는 내 일정을 고칠 수 없고, 일정을 바꾼 뒤 ‘업데이트’를 누르면 최신 내용이 반영됩니다. Apple 가족 공유와는 무관하며, 보여주고 싶은 사람에게만 링크를 보내면 됩니다.
+- **(신규) 공유받은 일정 보기** — 다른 사람이 보낸 초대 링크를 누르면 ‘공유’ 탭에 그 사람의 일정이 사람별로 정리되어 나타납니다. 여러 명에게서 동시에 받을 수 있습니다.
+- iCloud 저장소를 하나로 정리해 동기화 안정성을 높였습니다. 이전 백업은 자동으로 새 저장소로 옮겨집니다.
+- 설정에 **‘피드백 보내기’와 ‘리뷰 남기기’**가 생겼습니다. 앱에서 바로 의견을 보낼 수 있습니다.
+
+### 🌈 무지개 공방 (macOS)
+
+Mac에서 짠 주간 계획을 다른 사람에게 보여줄 수 있습니다.
+
+- **(신규) 일정 공유** — 설정의 ‘일정 공유’에서 ‘내 일정 공유 시작’을 누르면, 계획이 있는 모든 주의 일정을 초대 링크로 공유합니다. 링크를 받은 사람은 **보기 전용**으로 주를 넘겨가며 볼 수 있습니다. 루틴이나 계획 블록을 고치면 공유 중인 일정이 자동으로 갱신되고, ‘지금 일정으로 업데이트’로 즉시 반영할 수도 있습니다. ‘공유 중지’를 누르면 링크가 더 이상 열리지 않습니다.
+- **(신규) 공유받은 일정** — 초대 링크를 수락하면 메인 화면 아래에 ‘공유받은 일정’ 섹션이 생기고, 사람별 카드로 주간 타임라인이 표시됩니다. 좌우 화살표로 주를 넘기고, ‘새로고침’으로 최신 내용을 받아오고, ‘나가기’로 그만 볼 수 있습니다. 여러 사람에게서 동시에 받을 수 있으며, 받은 일정이 없으면 섹션은 나타나지 않습니다.
+- **(변경) ‘가족 할 일’ 섹션이 ‘일정 공유’로 대체되었습니다.** 가족과 함께 쓰는 할 일 목록은 iOS ‘욕망의 무지개’의 할 일 탭에서 계속 사용할 수 있고, Mac의 주간 백로그는 그대로입니다.
+- 백로그 카테고리가 ‘업무 업무’, ‘개인 개인’처럼 **중복으로 늘어나던 문제를 수정**했습니다. iCloud 동기화가 끝나기 전에 기본 카테고리가 다시 만들어지던 원인을 고쳤고, 이미 생긴 중복은 하나로 자동 합쳐집니다(할 일은 그대로 유지됩니다).
+- 설정에 **‘피드백 & 리뷰’**가 생겼습니다. 피드백 보내기와 리뷰 남기기를 앱에서 바로 할 수 있습니다.
+
+> 공유 안내: 초대 링크를 받은 사람은 내 일정을 **읽기만** 할 수 있습니다. 일정 공유·조회에는 **iCloud 로그인**이 필요하며, Apple 가족 공유에 묶여 있지 않아도 됩니다. 링크를 받은 사람은 누구나 내 일정을 볼 수 있으니 **보여주고 싶은 사람에게만** 보내주세요.
+
+## 1.0.4
+
+### 🌈 욕망의 무지개 (iOS)
+
+할 일과 가족 공유가 추가되고, 무지개 화면이 한층 편해졌습니다.
+
+- **(신규) ‘할 일’ 탭** — 간단한 투두 리스트가 생겼습니다. 여기서 추가한 할 일은 Mac ‘무지개 공방’의 주간 백로그와 iCloud로 자동 동기화됩니다. 체크로 완료 처리하고, 지난 주에 못 한 일은 밀어서 이번 주로 가져올 수 있습니다.
+- **(신규) 가족 공유** — 할 일 탭의 ‘가족’에서 초대 링크를 보내면, 가족 구성원과 하나의 할 일 목록을 함께 읽고 쓸 수 있습니다. 같은 Apple 가족 공유에 묶여 있지 않아도 됩니다.
+- 무지개 칸을 **탭하면 일정 내용을 먼저 보여주고**, 수정은 길게 눌러(또는 보기 화면의 수정 버튼으로) 진입하도록 바뀌었습니다.
+- 앱을 열면 **오늘이 화면 가운데**에 오도록 했고, 백그라운드 동기화가 진행돼도 보고 있던 위치가 유지됩니다.
+- 시간 분석 화면의 막대그래프를 더 컴팩트하게 줄였습니다. 비율은 그대로 읽힙니다.
+- 리스트를 스크롤하거나 빈 곳을 탭하면 키보드가 내려갑니다.
+- 같은 색을 고른 일정 두 개가 무지개에서 서로 꼬여 보이던 문제를 수정했습니다.
+- iCloud 동기화 중 화면 갱신을 크게 줄여 배터리와 반응성을 개선했습니다.
+- 설정에 ‘개발자에게 문의’(이메일·인스타그램)가 생겼습니다.
+
+### 🌈 무지개 공방 (macOS)
+
+- **(신규) 가족 할 일 섹션** — iOS와 같은 가족 공유 목록을 메인 화면에서 바로 보고, 추가·완료 처리할 수 있습니다. 초대 링크 보내기·공유 중지도 여기서 합니다.
+- iOS 할 일 탭에서 완료 처리한 항목은 주간 백로그에서 자동으로 정리되고, ‘전체 백로그’에는 완료 표시로 남습니다.
+- 설정에 ‘개발자에게 문의’가 생겼습니다.
+
+> 가족 공유 안내: 초대 링크를 받은 사람은 누구나 목록에 참여할 수 있으니 **가족에게만** 보내주세요. 할 일 동기화(내 기기 간)는 1.0.3과 동일하게 같은 iCloud 계정이 필요합니다.
+
+## 1.0.3
+
+### 🌈 무지개 공방 (macOS)
+
+이번 업데이트로 주간 계획을 더 또렷하게 보고, 더 편하게 조정할 수 있습니다.
+
+- 요일별 타임라인을 3시간 간격으로 더 촘촘하게 표시해 시간대별 흐름을 한눈에 파악할 수 있습니다.
+- 짧은 일정 블록도 마우스를 올리면 어떤 계획인지 이름을 바로 확인할 수 있습니다.
+- 고정 일정 위에 겹치는 유연 쿼터(식사 등)가 더 뚜렷하게 구분됩니다.
+- 계획 블록을 다른 요일로 끌어다 옮길 수 있습니다.
+- ‘이번 주 계획’이 ‘요일별 하루’ 타임라인과 같은 시간 순서로 정렬됩니다. 수면처럼 자정을 넘기는 일정은 새벽·밤 조각으로 나뉘어 표시됩니다.
+- 성공 기준과 산출물을 적는 동안 구체성 피드백이 실시간으로 제공되어, 별도의 ‘구체성 체크’ 버튼을 없앴습니다.
+
+### 🌈 욕망의 무지개 (iOS)
+
+Mac에서 짠 계획을 iPhone에서도 함께 볼 수 있습니다.
+
+- **(신규)** Mac ‘무지개 공방’에서 작성한 주간 계획을 같은 iCloud 계정으로 불러와, 일정 밀도 화면에 함께 표시합니다. 설정에서 ‘무지개 공방 계획 표시’로 켜고 끌 수 있습니다. (읽기 전용)
+- 고정 루틴이 오늘 이전 날짜에도 표시되도록 개선했습니다.
+- iCloud 동기화 및 데이터 안정성을 개선했습니다.
+
+> 연동 안내: iOS에서 Mac 계획을 보려면 두 기기가 **같은 iCloud 계정**이어야 하며, Mac ‘무지개 공방’을 한 번 이상 실행해 데이터가 iCloud에 동기화되어 있어야 합니다.

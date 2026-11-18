@@ -1,0 +1,795 @@
+import SwiftUI
+import LeeoKit
+
+/// 설정 화면 — iOS '욕망의 무지개'의 Form + Section 패턴을 macOS로 미러링.
+struct SettingsView: View {
+    /// 할 일 조언(TipKit) 다시 보기를 눌렀는지.
+    @State private var tipsResetDone = false
+    @Environment(\.dismiss) private var dismiss
+
+    /// 일정 공유 시작·업데이트 시점의 최신 스냅숏을 만들어주는 클로저.
+    var scheduleSnapshots: () -> [SharedScheduleSnapshot] = { [] }
+
+    /// '처음 안내 다시 보기' — 부르는 쪽이 설정을 닫고 온보딩을 연다.
+    var onReplayOnboarding: () -> Void = { }
+    @State private var featureStage = FeatureStage.shared
+
+    @AppStorage("hideSleepInTimeline") private var hideSleepInTimeline = false
+    @AppStorage(ColumnMode.storageKey) private var columnMode: ColumnMode = .auto
+    /// 타이머 숫자를 어떻게 적는가 (→ CountdownFormat).
+    @AppStorage(CountdownFormat.storageKey) private var countdownFormat: CountdownFormat = .hms
+    /// 계획 블록의 타이머가 실제로 걸린 시간을 남기는가 (→ ActualTime).
+    @AppStorage(ActualTime.enabledKey) private var measuresActual = false
+    /// 설정 위의 아이폰 앱 권유를 닫았는가 (→ IPhoneNudge).
+    @AppStorage(IPhoneNudge.dismissedKey) private var iphoneNudgeDismissed = false
+    /// 한 주를 무슨 요일부터 보이는가 (→ WeekStartSetting).
+    @AppStorage(WeekStartSetting.key) private var weekStartsOnSunday = false
+    /// 겹친 시간을 누구 몫으로 세는가 (→ OverlapRule.swift). 여기서 고르면 배너는 더 묻지 않는다.
+    @AppStorage(OverlapRule.storageKey) private var overlapRule: OverlapRule = .keepOuter
+    @AppStorage(OverlapRule.decidedKey) private var overlapRuleDecided = false
+
+    /// '지금 맞춰보기'를 눌렀는가 (한 번 누르면 더 누를 일이 없다).
+    @State private var matchDone = false
+    /// '다시 받아오기'가 예약됐는가. 실제 지우기는 다음 실행 때 일어난다.
+    @State private var refetchArmed = false
+    @State private var showingRefetchAlert = false
+
+    /// 캘린더에서 읽어 올 것을 고르는 자리 (→ CalendarImport.swift).
+    @State private var calendars = CalendarBridge.shared
+    @Environment(\.openURL) private var openURL
+
+    #if DEBUG
+    @State private var primerBusy = false
+    @State private var primerNote: String?
+    #endif
+
+    /// 산 것을 되찾는 자리 (→ PaywallView.swift).
+    @State private var purchases = PurchaseManager.shared
+
+    /// **익명 사용 통계를 보낼 것인가** (→ Telemetry.swift).
+    ///
+    /// ⚠️ 저장하는 값이 '끄기'라 화면의 스위치와 방향이 반대다. 기본값이 '보냄'이어야
+    ///    하는데 `UserDefaults`의 Bool 기본값은 false이기 때문이다 — '보내기'로 저장하면
+    ///    설정을 한 번도 안 연 사람이 전부 '끔'이 된다.
+    @AppStorage(Telemetry.optOutKey) private var usageOptOut = false
+
+    /// 개발자 모드 — LeeoSupportSection에서 버전을 일곱 번 누르면 켜진다.
+    /// 통계 화면은 남의 기록을 읽는 자리라 이 스위치 뒤에 둔다.
+    @AppStorage("dev.masterMode") private var devMode = false
+    @State private var showingPaywall = false
+    /// 구독을 평생으로 바꾸는 시트 (→ LeeoGraduationOfferView).
+    @State private var showingGraduation = false
+    /// 프로모션 코드 넣는 시트 (→ OfferCode.swift).
+    @State private var showingOfferCode = false
+
+    /// 스토어를 세는 일은 화면을 그릴 때마다 할 일이 아니다 — 열 때 한 번, 누른 뒤 한 번.
+    @State private var todoCount = 0
+    @State private var categoryCount = 0
+
+    private func refreshCounts() {
+        todoCount = TodoStore.shared.allItems().count
+        categoryCount = TodoStore.shared.categories().count
+    }
+
+    private var appVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("설정")
+                    .font(.title3.weight(.medium))
+                Spacer()
+            }
+            .padding(20)
+
+            Divider()
+
+            NavigationStack {
+            Form {
+                // 맨 위에 둔다 — 화면 글자를 못 읽는 사람이 가장 먼저 찾는 자리다 (→ AppLanguage.swift).
+                // 글자는 번역하지 않고 두 말로 적는다. 어느 쪽 사람이든 여기가 언어 자리인 줄 안다.
+                // 언어가 23개라 한 줄씩 늘어놓으면 설정 첫 화면이 언어로 다 찬다 — 고르개 하나로 접는다.
+                // 이름은 저마다 그 언어로 적혀 있어 못 읽는 화면에서도 자기 말을 찾는다.
+                Section {
+                    Picker(selection: Binding(
+                        get: { AppLanguage.chosen },
+                        set: { $0.applyAndRelaunch() }
+                    )) {
+                        ForEach(AppLanguage.allCases) { lang in
+                            Text(verbatim: lang.name).tag(lang)
+                        }
+                    } label: {
+                        Label { Text(verbatim: "Language · 언어 · 語言") } icon: { Image(systemName: "globe") }
+                    }
+                    .pickerStyle(.menu)
+                } footer: {
+                    Text(verbatim: "The app restarts to switch. · 고르면 앱이 다시 열립니다.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+
+                // 아이폰 앱 권유 — 닫거나 소개를 한 번 읽으면 더 안 선다 (→ IPhoneCompanionView.swift).
+                if !iphoneNudgeDismissed {
+                    Section {
+                        IPhoneNudgeRow {
+                            withAnimation { iphoneNudgeDismissed = true }
+                        }
+                    }
+                }
+
+                Section {
+                    Picker("주 시작", selection: $weekStartsOnSunday) {
+                        Text("월요일").tag(false)
+                        Text("일요일").tag(true)
+                    }
+                    Text("한 주를 보여 주는 차례만 바뀝니다. 적어 둔 계획과 루틴은 그대로이고, 아이폰 앱과도 그대로 맞습니다.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("주간 계획")
+                }
+
+                Section {
+                    Toggle("타임라인에서 수면 시간 숨기기", isOn: $hideSleepInTimeline)
+                    Picker("겹친 일정 열 배치", selection: $columnMode) {
+                        ForEach(ColumnMode.allCases) { m in
+                            Text(m.label).tag(m)
+                        }
+                    }
+                } header: {
+                    Text("요일별 하루")
+                } footer: {
+                    Text("하루 양끝의 수면 시간을 잘라내 남은 시간을 더 넓게 봅니다. 이름에 '수면·잠·취침'이 들어간 고정 루틴을 수면으로 봅니다. 잘라낼 자리에 다른 일정이 걸쳐 있으면 그 일정이 보이도록 범위를 도로 넓힙니다.\n\n열 배치 — 자동: 회사 안에 혼자 선 일정은 회사 막대 위로. 가능한 좁게: 겹치지 않는 한 모두 막대 위로. 가능한 넓게: 겹친 일정마다 제 열. 일정을 우클릭해 열을 하나씩 고를 수도 있습니다.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section {
+                    Picker("남은 시간 표시", selection: $countdownFormat) {
+                        ForEach(CountdownFormat.allCases) { f in
+                            Text(f.label).tag(f)
+                        }
+                    }
+                    Toggle("걸린 시간 재기", isOn: $measuresActual)
+                } header: {
+                    Text("타이머")
+                } footer: {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("타이머 창 · 맨 위 알약 · 계획 칩에 남은 시간을 적는 방식입니다. 위젯은 시스템이 세므로 시:분:초로 보입니다.")
+                        Text("걸린 시간 재기를 켜면 계획에서 켠 타이머가 일정을 따르지 않고 멈출 때까지 세고, 실제로 걸린 시간을 남깁니다. 회고 추세에서 계획과 견주어 봅니다.")
+                    }
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                }
+
+                Section {
+                    // 고르기 전에 무엇이 달라지는지 먼저 보인다 — 말로만 적은 기준은 읽고도 어느 쪽인지 모른다.
+                    ForEach(OverlapRule.allCases) { rule in
+                        Button {
+                            overlapRule = rule
+                            overlapRuleDecided = true
+                        } label: {
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: overlapRule == rule ? "largecircle.fill.circle" : "circle")
+                                    .font(.body)
+                                    .foregroundStyle(overlapRule == rule ? Color.accentColor : .secondary)
+                                VStack(alignment: .leading, spacing: 6) {
+                                    Text(rule.title)
+                                        .font(.body.weight(.semibold))
+                                    Text(rule.summary)
+                                        .font(.body)
+                                        .foregroundStyle(.secondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    OverlapRuleExampleView(example: .sample, rule: rule)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    Text("겹친 시간 세기")
+                } footer: {
+                    Text("예: 회사 09:00–18:00 안에 점심 12:00–13:00. 하루에 남은 시간은 어느 기준이든 14시간으로 같고, 회사를 몇 시간으로 적을지만 달라집니다. 회사 안에 올린 회의처럼 '루틴 안' 일정은 루틴에서 하는 일이라 빼지 않습니다.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+                // 고른 기준이 바뀌는 순간을 트랙패드로도 — 다른 고르기(체크·표시)와 같은 손맛이다 (→ Haptic.tick).
+                .sensoryFeedback(.levelChange, trigger: overlapRule)
+
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ruleRow("활동", "3자 이상")
+                        ruleRow("성공 기준", "10자 이상 · 모호한 표현 금지")
+                        ruleRow("산출물", "5자 이상")
+                    }
+                    .padding(.vertical, 2)
+                } header: {
+                    Text("구체성 검사")
+                } footer: {
+                    Text("💡 세 가지를 다 통과한 블록만 또렷한 색으로 섭니다. 비워 두어도 저장되고, 그때는 시간표에서 주황색 '구체성 미검증'으로 남습니다.")
+                }
+
+                Section {
+                    HStack {
+                        Image(systemName: "icloud")
+                            .foregroundStyle(Color(hex: Rainbow.blue) ?? .blue)
+                        Text("iCloud 동기화")
+                        Spacer()
+                        Text("켜짐")
+                            .foregroundStyle(.secondary)
+                    }
+                    Text("같은 iCloud 계정의 기기끼리 자동으로 동기화됩니다. (공유 컨테이너: ScheduleDensity)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    // 자동 동기화가 조용히 멈추는 일이 있다. 그때 손으로 당길 길을 둔다.
+                    HStack {
+                        Text("지금 할 일")
+                        Spacer()
+                        Text("\(todoCount)개 · 분류 \(categoryCount)개")
+                            .foregroundStyle(.secondary)
+                            .monospacedDigit()
+                    }
+
+                    Button {
+                        TodoStore.shared.reconcileWithArchive()
+                        refreshCounts()
+                        matchDone = true
+                    } label: {
+                        Label(matchDone ? "맞춰봤습니다" : "지금 맞춰보기", systemImage: "arrow.triangle.2.circlepath")
+                    }
+                    .disabled(matchDone)
+
+                    Text("떠 둔 벌과 iCloud가 준 벌 중 **더 최근에 손댄 쪽**을 세웁니다. 겹친 할 일도 함께 정리합니다.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    Button(role: .destructive) {
+                        showingRefetchAlert = true
+                    } label: {
+                        Label("iCloud에서 다시 받아오기", systemImage: "icloud.and.arrow.down")
+                    }
+                    .disabled(refetchArmed)
+
+                    Text(refetchArmed
+                         ? "앱을 다시 켜면 iCloud에서 처음부터 받아옵니다."
+                         : "이 기기의 사본을 버리고 iCloud에 있는 것을 처음부터 다시 받습니다. 루틴·계획도 함께 다시 받습니다. 버리기 전에 지금 할 일을 파일로 떠 두므로, iCloud에 없는 할 일은 뒤이어 되살아납니다.")
+                        .font(.caption)
+                        .foregroundStyle(refetchArmed ? Color.orange : .secondary)
+                } header: {
+                    Text("iCloud")
+                }
+
+                // 적은 것을 잃지 않게 — 백업이 어디 몇 벌 있는지, 고른 벌에서 되살리기 (→ DataVault.swift).
+                VaultSettingsSection()
+
+                ScheduleShareSettingsSection(snapshotsProvider: scheduleSnapshots)
+
+                schemaPrimerSection
+
+                calendarSection
+
+                purchaseSection
+
+                // Pro 선물하기 · 선물 코드 넣기 — 요금 칸 바로 아래 (→ GiftRows).
+                if let gift = purchases.store.gift {
+                    GiftRows(gift: gift, isPro: isPro)
+                }
+
+                // 개발자 응원하기(팁) — 선물 바로 아래. 상품이 와야 선다 (→ TipRow).
+                if let tipJar = purchases.store.tipJar {
+                    TipRow(tipJar: tipJar)
+                }
+
+                Section {
+                    HStack {
+                        Text("버전")
+                        Spacer()
+                        Text(appVersion)
+                            .foregroundStyle(.secondary)
+                    }
+                    // 함께 쓰면 좋은 내 다른 앱들 — 짝인 아이폰 앱이 맨 앞에 선다 (→ WeekBlocksSpec.familyID).
+                    LeeoFamilySettingsRow<WeekBlocksSpec>()
+                    // 권유를 닫아도 소개로 가는 길은 여기 늘 남는다.
+                    NavigationLink {
+                        IPhoneCompanionView()
+                    } label: {
+                        Label("아이폰 앱 ‘욕망의 무지개’", systemImage: "iphone")
+                    }
+                } header: {
+                    Text("정보")
+                }
+
+                Section {
+                    Button {
+                        onReplayOnboarding()
+                    } label: {
+                        Label("처음 안내 다시 보기", systemImage: "sparkles")
+                    }
+
+                    Text("할 일을 적고 요일 칸에 놓는 법을 움직이는 그림으로 다시 봅니다.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    // 처음 쓰는 사람은 기능이 하나씩 열린다 (→ FeatureStage). 기다리기 싫은 사람의 길.
+                    if featureStage.level < .all {
+                        Button {
+                            featureStage.unlockAll()
+                        } label: {
+                            Label("모든 기능 바로 열기", systemImage: "lock.open")
+                        }
+                        Text("블록을 놓을수록 기능이 하나씩 열립니다. 기다리지 않고 지금 모두 엽니다.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Button {
+                        TodoTips.resetAll()
+                        tipsResetDone = true
+                    } label: {
+                        Label(tipsResetDone ? "다시 보기로 바꿨습니다" : "할 일 조언 다시 보기",
+                              systemImage: tipsResetDone ? "checkmark.circle.fill" : "lightbulb")
+                    }
+                    .disabled(tipsResetDone)
+
+                    Text("할 일 화면에서 닫았던 조언(라벨·비중·쪼개기 팁)을 처음부터 다시 봅니다.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    NavigationLink {
+                        WhatsNewView(onClose: { }, showsCloseButton: false)
+                    } label: {
+                        Label("새로 생긴 것 다시 보기", systemImage: "newspaper")
+                    }
+                } header: {
+                    Text("조언")
+                }
+
+                DeveloperContactSection()
+
+                Section {
+                    LeeoSupportSection<WeekBlocksSpec>()
+                    NavigationLink(LeeoRoadmapText.entry) { RoadmapScreen() }
+                } header: {
+                    Text("피드백 & 리뷰")
+                }
+
+                usageSection
+            }
+            .formStyle(.grouped)
+            }
+
+            Divider()
+
+            HStack {
+                Spacer()
+                Button("완료") { dismiss() }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+            }
+            .padding(20)
+        }
+        .frame(minWidth: 460, minHeight: 540)
+        .task {
+            refreshCounts()
+            calendars.reloadCalendarsIfAllowed()
+            // 상품을 여기서 한 번 더 불러온다. 켤 때 한 번 읽지만 그때 못 받았으면
+            // 설정을 열어도 단추가 안 선다 — 설정은 사람이 '사러 오는' 자리다.
+            await purchases.refresh()
+        }
+        .sheet(isPresented: $showingPaywall) { PaywallView(reason: "settings") }
+        .sheet(isPresented: $showingGraduation) {
+            LeeoGraduationOfferView(graduate: purchases.graduateProduct) {
+                await purchases.refresh()
+            }
+            .frame(minWidth: 420, minHeight: 420)
+        }
+        .offerCodeSheet(isPresented: $showingOfferCode)
+        .alert("iCloud에서 다시 받아올까요?", isPresented: $showingRefetchAlert) {
+            Button("취소", role: .cancel) { }
+            Button("다시 받아오기", role: .destructive) {
+                TodoStore.shared.requestRefetchFromCloud()
+                refetchArmed = true
+            }
+        } message: {
+            Text("이 기기의 사본(루틴·계획·할 일)을 버리고 iCloud에 있는 것을 처음부터 받습니다.\n버리기 전에 지금 할 일을 파일로 떠 두므로, iCloud에 없는 할 일은 다음 실행에서 되살아납니다.\n\n앱을 다시 켜야 실제로 받아옵니다.")
+        }
+    }
+
+    /// **출시 전 한 번 누르는 단추** (→ CloudSchemaPrimer.swift). 디버그에만 있다.
+    ///
+    /// CloudKit은 값이 실제로 쓰인 필드만 만든다. 옵셔널에 한 번도 값을 안 넣으면 스키마에
+    /// 칸이 안 생기고, 그러면 출시 뒤 그 값을 처음 넣는 사람의 동기화가 통째로 멈춘다.
+    @ViewBuilder
+    private var schemaPrimerSection: some View {
+        #if DEBUG
+        Section {
+            Button {
+                Task {
+                    primerBusy = true
+                    let report = await CloudSchemaPrimer.prime(TodoStore.shared.context)
+                    primerNote = report.note
+                    primerBusy = false
+                    refreshCounts()
+                }
+            } label: {
+                Label(primerBusy ? "표본을 올리는 중… (약 25초)" : "CloudKit 스키마 채우기",
+                      systemImage: "arrow.up.doc")
+            }
+            .disabled(primerBusy)
+
+            Text(primerNote ?? "모든 옵셔널 필드에 값을 채운 표본을 한 벌 올렸다 지웁니다. 레코드는 지워도 스키마는 남습니다. **출시 전에 한 번 누르고, 콘솔에서 Development → Production 배포하세요.**")
+                .font(.caption)
+                .foregroundStyle(primerNote == nil ? .secondary : .primary)
+        } header: {
+            Text("개발자 · CloudKit 스키마")
+        }
+        #endif
+    }
+
+    /// **어느 캘린더를 읽어 올지 고르는 자리.**
+    ///
+    /// 고르는 단위가 캘린더인 이유는 한 번 정해두면 손이 안 가기 때문이다. 일정 하나하나를
+    /// 고르게 하면 매주 같은 목록을 다시 훑어야 한다.
+    ///
+    /// ⚠️ 아무것도 안 고르면 **아무것도 안 가져온다.** 전부 가져오는 쪽을 기본으로 두면
+    ///    개인 일정이 주간 계획에 통째로 쏟아진다.
+    @ViewBuilder
+    private var calendarSection: some View {
+        Section {
+            if calendars.hasAccess {
+                if calendars.importableCalendars.isEmpty {
+                    Text("맥에 캘린더가 없습니다.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(calendars.importableCalendars, id: \.calendarIdentifier) { cal in
+                        Toggle(isOn: Binding(
+                            get: { calendars.isSelected(cal) },
+                            set: { _ in calendars.toggle(cal) }
+                        )) {
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(Color(nsColor: cal.color ?? .secondaryLabelColor))
+                                    .frame(width: 9, height: 9)
+                                Text(cal.title)
+                                if let source = cal.source?.title, !source.isEmpty {
+                                    Text(source)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Toggle("캘린더가 바뀌면 자동으로 가져오기", isOn: $calendars.autoImport)
+
+                // ⚠️ 삼항으로 한 Text에 넣지 않는다 — 문자열이 String으로 읽혀 번역도 굵은 글씨도 빠진다.
+                Group {
+                    if calendars.autoImport {
+                        Text("고른 캘린더의 일정을 보고 있는 주의 계획 블록으로 가져옵니다. 캘린더에서 고치면 곧바로 따라오고, 앱에서 지운 일정은 다시 들이지 않습니다. **고른 캘린더는 읽기만 합니다.**")
+                    } else {
+                        Text("고른 캘린더의 일정을 이번 주 계획 블록으로 가져옵니다. 툴바의 '더 보기 → 캘린더에서 가져오기'를 누르면 실행됩니다. **고른 캘린더는 읽기만 합니다.**")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+                Divider()
+
+                Toggle("계획을 ‘무지개 공방’ 캘린더에 쓰기", isOn: $calendars.exportEnabled)
+
+                Group {
+                    if calendars.exportEnabled {
+                        Text("시각을 정한 계획 블록이 ‘무지개 공방’ 캘린더에 섭니다. 앱에서 옮기거나 지우면 캘린더도 따라가고, 캘린더에서 고친 것은 앱의 계획으로 되돌아갑니다. 루틴과 캘린더에서 가져온 일정은 쓰지 않으며, 다른 캘린더는 건드리지 않습니다.")
+                    } else {
+                        Text("켜면 ‘무지개 공방’ 캘린더를 만들어 계획 블록을 적습니다. 아이폰 캘린더와 위젯에서도 오늘 계획이 보입니다. 끄면 더 고치지 않으며, 필요 없으면 캘린더 앱에서 그 캘린더를 지우면 됩니다.")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            } else if calendars.canAsk {
+                // ⚠️ **이 단추에 '허용'이라고 적지 않는다.** 누르면 곧바로 시스템 권한 창이 뜨는데,
+                //    그 앞 단추가 '허용'이면 사람은 앱 안에서 이미 허락한 셈이 되어 시스템 창에서도
+                //    허용 쪽으로 떠밀린다. App Review가 이것 하나로 1.1.3(15)을 돌려보냈다
+                //    (5.1.1(iv), 2026-09-10). 권한 창 앞 단추에 쓸 수 있는 말은 '계속'·'다음'뿐이다.
+                //    빌드 단계의 `scripts/check-permission-wording.sh`가 그 낱말을 막는다.
+                //
+                //    설명이 **단추보다 먼저** 온다 — 무엇을 왜 보는지 읽고 나서 누르게 한다.
+                Text("맥 캘린더에 이미 적어 둔 회의·약속을 주간 계획으로 가져올 수 있습니다. 원하면 계획을 앱이 만든 ‘무지개 공방’ 캘린더에 적을 수도 있습니다. 다른 캘린더는 읽기만 하고 고치지 않습니다. 계속하면 macOS가 캘린더 접근 여부를 묻습니다.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Button {
+                    Task { await calendars.requestAccess() }
+                } label: {
+                    Label("계속", systemImage: "calendar")
+                }
+                .disabled(calendars.isWorking)
+            } else if calendars.status == .restricted {
+                // 자녀 보호·기기 관리로 막힌 경우. 사람이 켤 수 없으니 설정으로 보내지 않는다.
+                Text("이 맥에서는 캘린더 접근이 제한되어 있어 일정을 가져올 수 없습니다.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                // 거부한 뒤에는 다시 청해도 macOS가 창을 띄우지 않는다. 같은 단추를 세워 두면
+                // 눌러도 아무 일이 없는 단추가 된다 — 켜는 자리로 곧장 보낸다.
+                // 돌아오면 `CalendarBridge`가 상태를 다시 읽어 이 묶음이 저절로 바뀐다.
+                Text("캘린더 접근이 꺼져 있어 일정을 가져올 수 없습니다. 가져오고 싶을 때 시스템 설정 → 개인정보 보호 및 보안 → 캘린더에서 '무지개 공방'을 켜면 됩니다. 켜지 않아도 다른 기능은 그대로 쓸 수 있습니다.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Button {
+                    openURL(CalendarBridge.privacySettingsURL)
+                } label: {
+                    Label("시스템 설정 열기", systemImage: "gearshape")
+                }
+            }
+
+            if let message = calendars.failureMessage {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .transition(.disclose)
+            }
+        } header: {
+            Text("캘린더")
+        }
+        // 권한을 허용하면 이 묶음이 통째로 다른 것이 된다. 갈아 끼우는 결을 준다.
+        .animation(Motion.disclose, value: calendars.hasAccess)
+        .animation(Motion.disclose, value: calendars.calendars.count)
+        .animation(Motion.disclose, value: calendars.failureMessage)
+    }
+
+    /// **지금 무엇을 쓰고 있는가, 그리고 산 것을 되찾는 자리.**
+    ///
+    /// 등급은 팔기 전에도 **언제나 보인다.** "내가 프로인가 무료인가"는 살 수 있는지와
+    /// 상관없이 사람이 늘 궁금해하는 것이고, 문의가 왔을 때 서로 가리킬 자리도 필요하다.
+    /// 살 수 있을 때만 사고·되찾는 단추가 붙는다 — 살 수도 없는 것의 단추는 고장으로 읽힌다.
+    private var purchaseSection: some View {
+        Section {
+            HStack {
+                Image(systemName: !purchases.isKnown ? "hourglass"
+                                  : (isPaid ? "checkmark.seal.fill" : "leaf"))
+                    .foregroundStyle(isPaid ? (Color(hex: Rainbow.indigo) ?? .indigo)
+                                            : (Color(hex: Rainbow.green) ?? .green))
+                Text("버전")
+                Spacer()
+                // 아직 애플에게 답을 못 받았으면 '무료'라고 단정하지 않는다 —
+                // 산 사람이 첫 실행에서 무료라고 읽으면 그건 거짓말이다.
+                Text(tierName)
+                    .foregroundStyle(isPaid ? .primary : .secondary)
+                    .fontWeight(isPaid ? .semibold : .regular)
+            }
+
+            // 동기화는 값을 받지 않는다고 **적어 둔다.** 한때 이걸 팔려 했던 앱이라,
+            // 말하지 않으면 산 사람만 아이폰에 보이는 줄 안다 (→ TodoAccess.swift).
+            HStack {
+                Text("아이폰과 오가기")
+                Spacer()
+                Text("무료")
+                    .foregroundStyle(.secondary)
+            }
+
+            // **살 수 있을 때만 단추를 낸다** — 그 판정을 플래그가 아니라
+            // **상품이 실제로 불러와졌는가**로 한다. 애플이 상품을 내주면 살 수 있는 것이다.
+            // Pro 가 아니면 언제나 위 칸으로 가는 길이 있다 (Plus 를 쓰는 사람에게는 Pro).
+            if purchases.offersPro, let product = purchases.featuredProduct, !isPro {
+                Button {
+                    showingPaywall = true
+                } label: {
+                    Label("요금제 보기 · 연 \(product.displayPrice)부터", systemImage: "sparkles")
+                }
+            }
+
+            // **구독 중일 때만** 평생으로 옮겨 가는 길 (→ LeeoGraduationOfferView).
+            // 구독에 묶였다고 느끼는 사람이 언제든 나갈 수 있어야 한다.
+            if purchases.offersPro, purchases.subscription != nil, !purchases.ownsLifetimePro {
+                Button {
+                    showingGraduation = true
+                } label: {
+                    Label(LeeoLadderText.switchToLifetimeEntry, systemImage: "graduationcap")
+                }
+            }
+
+            if purchases.offersPro, !purchases.products.isEmpty || isPaid {
+                Button {
+                    Task { await purchases.restore() }
+                } label: {
+                    Label("구매 복원", systemImage: "arrow.clockwise")
+                }
+                .disabled(purchases.isWorking)
+            }
+
+            // 받은 프로모션 코드를 여기서 바로 쓴다. 이미 Pro 면 쓸 일이 없다.
+            if purchases.offersPro, !isPro, OfferCode.isAvailable {
+                Button {
+                    showingOfferCode = true
+                } label: {
+                    Label("코드 사용", systemImage: "ticket")
+                }
+                .disabled(purchases.isWorking)
+            }
+
+            if let message = purchases.failureMessage, purchases.offersPro {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .transition(.disclose)
+            }
+
+            Text(tierNote)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        } header: {
+            Text("요금")
+        }
+        // 사고 나면 단추가 내려가고 문구가 바뀐다. 그 순간이 툭 갈리지 않게.
+        .animation(Motion.disclose, value: purchases.tier)
+        .animation(Motion.disclose, value: purchases.failureMessage)
+    }
+
+    /// **무엇을 보내는지 먼저 말하고, 그 다음에 끌 수 있게 한다** (→ Telemetry.swift).
+    ///
+    /// 스위치만 있고 설명이 없으면 사람은 최악을 상상한다. 실제로 나가는 것은
+    /// 개수와 버전뿐이고 적은 내용은 한 글자도 안 가는데, 그 사실을 말하지 않으면
+    /// 끄는 것 말고는 확인할 길이 없다.
+    private var usageSection: some View {
+        Section {
+            Toggle("익명 사용 통계 보내기", isOn: Binding(
+                get: { !usageOptOut },
+                set: { usageOptOut = !$0 }
+            ))
+
+            Text("나가는 것: 앱 버전과 macOS 버전, 언어, 실행 횟수, 할 일·계획·루틴의 **개수**, 그리고 '할 일을 적었다' 같은 행동의 이름뿐입니다.\n나가지 않는 것: 적은 내용, 제목, 이름, 이메일, 애플 계정, 기기를 가리키는 어떤 값도 보내지 않습니다. 설치할 때 만든 무작위 번호 하나로만 묶이고, 앱을 지우면 그 번호도 사라집니다.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if devMode {
+                NavigationLink {
+                    LeeoUsageStatsView<WeekBlocksSpec>()
+                } label: {
+                    Label("사용 통계 보기 (개발자)", systemImage: "chart.bar")
+                }
+                // 내보내기 전에 계약(상품·정책 링크·분석·스위치)이 맞는지 이 맥에서 바로 본다.
+                NavigationLink {
+                    PreflightReportView()
+                } label: {
+                    Label { Text(verbatim: "Preflight") } icon: { Image(systemName: "checklist.checked") }
+                }
+            }
+        } header: {
+            Text("사용 통계")
+        } footer: {
+            Text("끄면 이 기기에서는 아무것도 나가지 않습니다. 이미 보낸 기록의 삭제를 원하시면 개발자에게 알려 주세요.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    /// 지금 칸 (→ MacEntitlement.swift).
+    private var isPro: Bool { purchases.isPro }
+    private var isPaid: Bool { purchases.tier > .free }
+
+    /// 아직 애플에게 답을 못 받았으면 '무료'라고 단정하지 않는다.
+    /// 산 사람이 첫 실행에서 무료라고 읽으면 그건 거짓말이다.
+    private var tierName: String {
+        guard purchases.isKnown else { return String(localized: "확인 중…") }
+        switch purchases.tier {
+        case .free: return String(localized: "무료")
+        case .plus: return String(localized: "Plus")
+        case .pro: return String(localized: "Pro")
+        }
+    }
+
+    private var tierNote: String {
+        if isPro {
+            return String(localized: "Plus의 모든 것과 일정 공유가 열려 있고, 아이폰 앱도 Pro로 열립니다. 같은 Apple 계정의 다른 맥에서도 열립니다.")
+        }
+        if purchases.tier == .plus {
+            return String(localized: "8주 추세와 요일별·시간대별 결, 계획 대비 실제, 다른 주 계획 가져오기가 열려 있습니다. 일정 공유는 Pro에서 엽니다.")
+        }
+        if purchases.offersPro {
+            return String(localized: "계획·루틴·할 일·회고·타이머·캘린더 가져오기·아이폰과 오가기는 계속 무료이고, 추세도 지난 2주까지는 무료로 보입니다. Plus는 8주 추세와 다른 주 계획 가져오기를, Pro는 여기에 일정 공유를 더합니다. 기기를 바꿨다면 복원으로 되찾습니다.")
+        }
+        return String(localized: "지금 쓰시는 모든 기능은 무료입니다.")
+    }
+
+    private func ruleRow(_ field: LocalizedStringKey, _ rule: LocalizedStringKey) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text(field)
+                .font(.callout.weight(.medium))
+                .frame(width: 72, alignment: .leading)
+            Text(rule)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - 선물
+
+/// 설정의 **선물** 줄. 요금 칸 바로 아래에 선다.
+///
+/// - 보내기: Pro 를 다른 사람에게 보낸다(보내는 사람은 소모성 선물 상품을 산다).
+/// - 받기: 받은 코드를 넣는다. 받는 사람은 Pro 평생(`WeekBlocksSpec.proLifetimeID`)을 산 것과 같아진다.
+///
+/// ⚠️ 상품이 App Store 에서 와야 줄이 선다(`isAvailable`). App Store Connect 에 상품을 만들기 전에
+///    이 빌드가 나가도 눌러도 안 되는 줄은 보이지 않는다. 단, 이미 결제했거나 주고받은 선물이 있는
+///    사람에게는 늘 보인다 — 상품을 못 불러온 날에도 코드를 다시 보거나 문의까지 갈 길이 있어야 한다.
+/// ⚠️ 문구는 LeeoKit 카탈로그(`LeeoGiftText`)에 있다 — 24개 언어가 이미 들어 있다.
+/// ⚠️ 엔진(`LeeoGiftStore`)은 따로 관찰해야 한다. 상품은 앱이 뜬 뒤에 오는데 `PurchaseManager` 는
+///    그 변화를 옮겨 적지 않는다.
+private struct GiftRows: View {
+    @ObservedObject var gift: LeeoGiftStore
+    let isPro: Bool
+    @State private var showSupport = false
+
+    var body: some View {
+        if gift.isAvailable || gift.pendingCount > 0 || !gift.sentGifts.isEmpty || gift.redeemed != nil {
+            Section {
+                NavigationLink {
+                    // 선물이 안 되면 결제 번호·코드를 붙여 문의하게 한다 — 막힌 사람을 놓치지 않게.
+                    LeeoGiftView<WeekBlocksSpec>(gift: gift, showsRedeemLink: false,
+                                                 onContactSupport: { showSupport = true })
+                } label: {
+                    Label(LeeoGiftText.sendEntry, systemImage: "gift.fill")
+                }
+                // 이미 Pro 인 사람은 받을 것이 없다 — 받은 적이 있으면 그 기록을 볼 수 있게만 남긴다.
+                if !isPro || gift.redeemed != nil {
+                    NavigationLink {
+                        LeeoGiftRedeemView<WeekBlocksSpec>(gift: gift,
+                                                           onContactSupport: { showSupport = true })
+                    } label: {
+                        Label(LeeoGiftText.redeemEntry, systemImage: "giftcard")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSupport) {
+                NavigationStack {
+                    LeeoFeedbackView<WeekBlocksSpec>(initialType: .bug, extraInfo: gift.supportLines,
+                                                     initialCategory: .purchase)
+                }
+                .frame(minWidth: 480, minHeight: 560)
+            }
+        }
+    }
+}
+
+// MARK: - 팁
+
+/// 설정의 **개발자 응원하기** 줄. 판매 중인 팁이 없으면 칸째 숨는다 — 빈 칸이 서지 않게.
+private struct TipRow: View {
+    @ObservedObject var tipJar: LeeoTipJar
+
+    var body: some View {
+        if tipJar.isAvailable {
+            Section {
+                LeeoTipJarLink<WeekBlocksSpec>(tipJar: tipJar)
+            }
+        }
+    }
+}
+
+// MARK: - 개발자 문의
+struct DeveloperContactSection: View {
+    var body: some View {
+        Section {
+            Link(destination: URL(string: "mailto:leeo@kakao.com")!) {
+                Label("이메일로 문의하기", systemImage: "envelope")
+            }
+            Link(destination: URL(string: "https://instagram.com/lee25_ios")!) {
+                Label("인스타그램 DM (@lee25_ios)", systemImage: "paperplane")
+            }
+        } header: {
+            Text("개발자에게 문의")
+        } footer: {
+            Text("버그 제보와 기능 제안을 환영합니다.")
+        }
+    }
+}
