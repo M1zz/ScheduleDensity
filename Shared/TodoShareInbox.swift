@@ -2,7 +2,10 @@ import Foundation
 
 // 앱 타깃과 공유 익스텐션(TodoShareExtension)이 함께 컴파일하는 파일.
 //
-// 다른 앱에서 '욕망의 무지개'로 공유하면 익스텐션이 작은 창을 띄우고, 거기서 확정한
+// 아이폰 · 맥 두 앱과 두 공유 익스텐션이 이 파일 하나를 쓴다 (Shared/).
+// App Group은 기기 안에서만 통하는 통로라 아이폰↔맥 사이를 잇지 않는다 — 기기 간은 CloudKit이 맡는다.
+//
+// 다른 앱에서 이 앱으로 공유하면 익스텐션이 작은 창을 띄우고, 거기서 확정한
 // 할 일을 여기 '받은 상자'에 쌓아둔다. 앱은 켜질 때마다 상자를 비워 SwiftData에 넣는다.
 //
 // 왜 바로 SwiftData에 안 넣는가:
@@ -41,10 +44,15 @@ struct SharedTodoDraft: Codable, Identifiable {
 
 /// 공유 익스텐션 → 앱 사이의 App Group 통로.
 enum TodoShareInbox {
-    /// ⚠️ 앱·위젯·공유 익스텐션 세 타깃의 entitlements에 똑같이 들어 있어야 한다.
-    ///    (TodoWidgetBridge.appGroupID와 같은 값이다. 위젯 타깃은 이 파일을 컴파일하지
-    ///     않으므로 상수를 공유하지 못하고 각자 들고 있다 — 한쪽을 고치면 같이 고칠 것.)
+    /// ⚠️ 앱·위젯·공유 익스텐션의 entitlements에 똑같이 들어 있어야 한다.
+    ///    (아이폰은 TodoWidgetBridge.appGroupID와 같은 값이다. 위젯 타깃은 이 파일을 컴파일하지
+    ///     않으므로 상수를 각자 들고 있다 — 한쪽을 고치면 같이 고칠 것.)
+    ///    맥의 App Group ID는 팀 ID가 앞에 붙어야 한다.
+    #if os(macOS)
+    static let appGroupID = "QGAQ3AY3R3.group.com.devkoan.ScheduleDensity"
+    #else
     static let appGroupID = "group.com.devkoan.ScheduleDensity"
+    #endif
 
     private static let fileName = "todo-share-inbox.json"
 
@@ -62,7 +70,7 @@ enum TodoShareInbox {
     @discardableResult
     static func add(_ draft: SharedTodoDraft) -> Bool {
         guard let url = fileURL else {
-            print("⚠️ [Share] App Group 컨테이너를 찾을 수 없습니다: \(appGroupID)")
+            AppLog.sharing.error("App Group 컨테이너를 찾을 수 없습니다: \(appGroupID, privacy: .public)")
             return false
         }
         var ok = false
@@ -115,7 +123,7 @@ enum TodoShareInbox {
             body(url)
         }
         if let coordinationError {
-            print("⚠️ [Share] 받은 상자 접근 실패: \(coordinationError)")
+            AppLog.sharing.error("받은 상자 접근 실패: \(String(describing: coordinationError), privacy: .public)")
         }
     }
 
@@ -130,7 +138,7 @@ enum TodoShareInbox {
             try JSONEncoder().encode(drafts).write(to: url, options: .atomic)
             return true
         } catch {
-            print("⚠️ [Share] 받은 상자 저장 실패: \(error)")
+            AppLog.sharing.error("받은 상자 저장 실패: \(String(describing: error), privacy: .public)")
             return false
         }
     }

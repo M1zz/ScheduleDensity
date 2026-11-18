@@ -190,7 +190,8 @@ targets:
     sources:
       - path: TodoShare
       # 앱과 함께 쓰는 파일만 골라 넣는다.
-      - path: ScheduleDensityApp/Shared/TodoShareInbox.swift
+      - path: Shared/TodoShareInbox.swift
+      - path: Shared/AppLog.swift
       # TodoLabel 정의. 모델에 얹힌 확장은 BacklogItem+Label.swift로 떼어냈으므로
       # 이 파일만으로 충분하다 (SwiftData 모델이 따라오지 않는다).
       - path: ScheduleDensityApp/Shared/TodoSplitAdvisor.swift
@@ -307,8 +308,8 @@ targets:
     platform: macOS
     sources:
       - path: macOS/TodoShare
-      - path: macOS/WeekBlocks/TodoShareInbox.swift
-      - path: macOS/WeekBlocks/AppLog.swift
+      - path: Shared/TodoShareInbox.swift
+      - path: Shared/AppLog.swift
       - path: macOS/WeekBlocks/Motion.swift
       - path: macOS/WeekBlocks/TodoSplitAdvisor.swift
       - path: macOS/WeekBlocks/Models.swift

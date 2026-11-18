@@ -1,6 +1,6 @@
 //
 //  VaultViews.swift
-//  무지개 공방
+//  욕망의 무지개 · 무지개 공방 (두 앱이 이 파일 하나를 쓴다 — Shared/)
 //
 //  금고(→ DataVault.swift)가 사람에게 말하는 자리 둘.
 //   · 되살리기 창 — 없어진 것을 보여 주고 되살릴지 묻는다.
@@ -61,7 +61,11 @@ struct VaultRecoverySheet: View {
                         group("계획 블록", m.blocks.map(\.title))
                         group("루틴", m.routines.map(\.name))
                         group("분류", m.categories.map(\.name))
+                        #if os(macOS)
                         group("장기 플랜", m.rainbowEvents.map(\.title))
+                        #else
+                        group("무지개 일정", m.rainbowEvents.map(\.title))
+                        #endif
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }

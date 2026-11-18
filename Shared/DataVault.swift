@@ -1,6 +1,6 @@
 //
 //  DataVault.swift
-//  ScheduleDensityApp
+//  욕망의 무지개 · 무지개 공방 (두 앱이 이 파일 하나를 쓴다 — Shared/)
 //
 //  **사람이 적은 것은 어떤 업데이트·동기화·버튼을 거쳐도 잃지 않는다.**
 //
@@ -22,9 +22,7 @@
 //
 //  ⚠️ 되살리기는 **없는 것만 더한다.** 지금 있는 것을 덮거나 지우지 않는다. 같은 것이 둘이
 //     되는 것은 고칠 수 있지만, 덮어서 잃은 것은 못 고친다.
-//  ⚠️ 맥 '무지개 공방'의 같은 이름 파일과 **글자 하나까지 같게** 둔다 (머리말만 다르다).
-//     값의 모양(Row)이 같아야 한쪽에서 뜬 백업을 다른 쪽에서 읽을 수 있다.
-//     한쪽에서 뜬 백업을 다른 쪽에서 읽을 수 있어야 하기 때문이다.
+//  ⚠️ 값의 모양(Row)을 바꾸면 옛 백업을 못 읽는다. 칸은 더하기만 하고 기본값을 둔다.
 //
 
 import Foundation
@@ -114,13 +112,13 @@ enum DataVault {
                 if a != b { ok = false }
             } catch {
                 ok = false
-                AppLog.store.warning("⚠️ [Vault] 스토어 파일 사본 실패(\(url.lastPathComponent)): \(String(describing: error), privacy: .public)")
+                AppLog.vault.error("스토어 파일 사본 실패(\(url.lastPathComponent, privacy: .public)): \(String(describing: error), privacy: .public)")
             }
         }
         if ok {
-            AppLog.store.notice("🧱 [Vault] 스토어 파일 사본(\(reason, privacy: .public)) → \(dir.lastPathComponent, privacy: .public)")
+            AppLog.vault.info("스토어 파일 사본(\(reason, privacy: .public)) → \(dir.lastPathComponent, privacy: .public)")
         } else {
-            AppLog.store.warning("⚠️ [Vault] 스토어 파일 사본이 온전하지 않다(\(reason, privacy: .public)) — 폴더는 남겨 둔다")
+            AppLog.vault.error("스토어 파일 사본이 온전하지 않다(\(reason, privacy: .public)) — 폴더는 남겨 둔다")
         }
         return ok ? dir : nil
     }
@@ -135,12 +133,12 @@ enum DataVault {
         // 옮기기 전에 먼저 베낀다. 옮기다 반쯤 실패해도 원래 자리에 남은 것과 사본이 함께 있다.
         for url in existing {
             do { try fm.copyItem(at: url, to: dir.appending(path: url.lastPathComponent)) } catch {
-                AppLog.store.warning("⚠️ [Vault] 옮기기 전 사본 실패 — 버리지 않는다: \(String(describing: error), privacy: .public)")
+                AppLog.vault.error("옮기기 전 사본 실패 — 버리지 않는다: \(String(describing: error), privacy: .public)")
                 return false
             }
         }
         for url in existing { try? fm.removeItem(at: url) }
-        AppLog.store.notice("📦 [Vault] 스토어 파일을 금고로 옮겼다(\(reason)) → \(dir.lastPathComponent)")
+        AppLog.vault.info("스토어 파일을 금고로 옮겼다(\(reason, privacy: .public)) → \(dir.lastPathComponent, privacy: .public)")
         return true
     }
 
@@ -205,6 +203,8 @@ enum DataVault {
     @MainActor
     @discardableResult
     static func writeSnapshot(_ context: ModelContext, reason: String, force: Bool = false) -> URL? {
+        let signpost = AppLog.signposter.beginInterval("VaultSnapshot")
+        defer { AppLog.signposter.endInterval("VaultSnapshot", signpost) }
         let snap = capture(context, reason: reason)
 
         // 같은 내용을 또 쓰지 않는다 — 내용만 견준다(뜬 시각·까닭은 빼고).
@@ -217,11 +217,11 @@ enum DataVault {
         do {
             try encoder.encode(snap).write(to: url, options: .atomic)
         } catch {
-            AppLog.store.warning("⚠️ [Vault] 스냅숏 쓰기 실패: \(String(describing: error), privacy: .public)")
+            AppLog.vault.error("스냅숏 쓰기 실패: \(String(describing: error), privacy: .public)")
             return nil
         }
         UserDefaults.standard.set(digest, forKey: lastDigestKey)
-        AppLog.store.notice("🗄 [Vault] 스냅숏(\(reason)) — 할 일 \(snap.items.count) · 프로젝트 \(snap.projects.count) · 블록 \(snap.blocks.count)")
+        AppLog.vault.info("스냅숏(\(reason, privacy: .public)) — 할 일 \(snap.items.count, privacy: .public) · 프로젝트 \(snap.projects.count, privacy: .public) · 블록 \(snap.blocks.count, privacy: .public)")
         pruneSnapshots()
         mirrorToICloudDrive(url)
         return url
@@ -421,11 +421,11 @@ enum DataVault {
         do {
             try context.save()
         } catch {
-            AppLog.store.warning("⚠️ [Vault] 되살리기 저장 실패: \(String(describing: error), privacy: .public)")
+            AppLog.vault.error("되살리기 저장 실패: \(String(describing: error), privacy: .public)")
             return 0
         }
         writeSnapshot(context, reason: "after-restore", force: true)
-        AppLog.store.notice("🚑 [Vault] \(m.total)개를 되살렸다 (기준: \(m.base.lastPathComponent))")
+        AppLog.vault.info("\(m.total, privacy: .public)개를 되살렸다 (기준: \(m.base.lastPathComponent, privacy: .public))")
         return m.total
     }
 
