@@ -1,6 +1,6 @@
 //
 //  TodoSharing.swift
-//  ScheduleDensityApp
+//  욕망의 무지개 · 무지개 공방 (두 앱이 이 파일 하나를 쓴다 — Shared/)
 //
 //  **올라가는 것은 못 막는다. 그리면 안 되는 것은 안 그리면 된다.**
 //
@@ -38,7 +38,6 @@ import SwiftData
 ///
 /// 할 일에만 걸려 있던 규칙을 계획 블록·루틴까지 넓히면서 세 모델이 같은 두 칸을 갖게
 /// 됐다. 규칙을 세 번 쓰면 언젠가 한 벌만 고쳐져 어긋나므로 하나로 묶는다.
-/// ⚠️ 맥('무지개 공방')의 같은 이름 파일과 규칙이 **글자까지 같아야** 한다.
 protocol SharedRecord: AnyObject {
     var isShared: Bool { get set }
     var originInstallID: String { get set }
@@ -74,7 +73,6 @@ enum TodoSharing {
     /// 한때 '남이 잠긴 채로 적어 둔 줄'(`!isShared && !isMine`)을 감췄다. 동기화가 무료가 된 뒤에도
     /// 그 커튼이 남아, 잠겨 있던 때 적은 줄은 상대 기기에서 영영 안 보였다 — 맥과 아이폰이 서로
     /// **둘 다 가진 것만** 보여 주는 꼴이었다. 이제 스토어에 내려온 것은 전부 그린다(합집합).
-    /// ⚠️ 맥('무지개 공방')의 같은 이름 함수도 같은 값을 돌려준다. 한쪽만 다시 거르면 또 어긋난다.
     /// 부르는 자리는 그대로 둔다 — 거르는 곳을 다시 한 군데로 찾을 수 있게.
     static func isVisible(_ item: some SharedRecord) -> Bool {
         true
@@ -93,14 +91,14 @@ enum TodoSharing {
     ///
     /// 화면은 이제 깃발을 안 보지만(→ `isVisible`), 아직 업데이트 안 한 상대 앱은 본다.
     /// 잠겨 있던 때 `false`로 찍힌 줄을 열어 두어야 그쪽에서도 다 보인다.
-    /// 할 일·계획 블록·루틴 세 모델을 모두 연다 — 맥의 `flipMine`과 같은 범위.
+    /// 할 일·계획 블록·루틴 세 모델을 모두 연다 — 모델을 늘리면 여기도 늘릴 것.
     static func openMyItems(in context: ModelContext) {
         let n = open(BacklogItem.self, in: context)
             + open(PlanBlock.self, in: context)
             + open(Routine.self, in: context)
         guard n > 0 else { return }
         try? context.save()
-        print("🔓 [Sharing] 이 기기의 것 \(n)개를 함께 쓰기로 열었다")
+        AppLog.sharing.info("이 기기의 것 \(n, privacy: .public)개를 함께 쓰기로 열었다")
     }
 
     private static func open<T: PersistentModel & SharedRecord>(_ type: T.Type, in context: ModelContext) -> Int {

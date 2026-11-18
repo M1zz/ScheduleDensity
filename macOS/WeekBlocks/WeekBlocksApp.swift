@@ -191,9 +191,8 @@ struct WeekBlocksApp: App {
                 // 페이월을 열 때만 읽던 시절에는 산 사람이 잠긴 화면을 먼저 봐야 했다.
                 .task {
                     await PurchaseManager.shared.refresh()
-                    // 영수증을 읽은 **뒤에** 맞춘다. 순서가 뒤집히면 헌 거울을 보고
-                    // 산 사람의 줄을 닫는다 (→ TodoSharing.swift).
-                    TodoSharing.reconcileMySharing(in: TodoStore.shared.context)
+                    // 동기화는 무료다 — 이 기기에서 난 줄을 모두 연다 (→ TodoSharing.swift).
+                    TodoSharing.openMyItems(in: TodoStore.shared.context)
                     // 이 설치가 지금 어떤 모습인지 한 줄로 올린다 (→ Telemetry.swift).
                     // 스토어가 선 뒤라야 개수를 셀 수 있어서 init이 아니라 여기다.
                     // 끈 사람에게는 아무것도 나가지 않는다.

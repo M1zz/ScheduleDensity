@@ -568,7 +568,7 @@ struct SettingsView: View {
             }
 
             // 동기화는 값을 받지 않는다고 **적어 둔다.** 한때 이걸 팔려 했던 앱이라,
-            // 말하지 않으면 산 사람만 아이폰에 보이는 줄 안다 (→ TodoAccess.swift).
+            // 말하지 않으면 산 사람만 아이폰에 보이는 줄 안다 (→ TodoSharing.stamp).
             HStack {
                 Text("아이폰과 오가기")
                 Spacer()
