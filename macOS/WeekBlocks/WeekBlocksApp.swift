@@ -161,6 +161,8 @@ struct WeekBlocksApp: App {
                 // 서체를 따로 고른 글씨(`design:` 지정)는 그대로 둔다.
                 .fontDesign(.rounded)
                 .leeoSatisfactionCheck(WeekBlocksSpec.self)
+                // 유료가 되면 콘페티, 모든 사용자가 한 번은 감사를 받는다 (LeeoKit 3.46).
+                .leeoCelebrations(appName: WeekBlocksSpec.displayName)
                 // 개발자가 보낸 의견에 답장하면, 앱이 앞으로 올 때 답장을 시트로 보여 준다 (LeeoKit).
                 .leeoFeedbackReplyNotice(WeekBlocksSpec.self)
                 // 업데이트 뒤 처음 열 때 한 번 "새로 생긴 것" (→ WhatsNewView.swift).

@@ -1,5 +1,199 @@
 # 릴리즈 노트
 
+## 1.2.0
+
+### 앱스토어 (한국어)
+
+```
+이제 맥에서도 욕망의 무지개를 쓸 수 있어요
+한 번 구매하면 아이폰과 맥에서 모두 열려요
+아이폰과 맥에서 할 일과 일정이 똑같이 보여요
+```
+
+### 앱스토어 (English)
+
+```
+Rainbow of Desire is now on the Mac
+Buy once and unlock it on iPhone and Mac
+Your to-dos and plans match on every device
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+Rainbow of Desire is now on the Mac
+Buy once and unlock it on iPhone and Mac
+Your to-dos and plans match on every device
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+現在也能在 Mac 上使用了
+購買一次，iPhone 和 Mac 都能解鎖
+待辦事項和行程在各裝置上完全一致
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+现在也能在 Mac 上使用了
+购买一次，iPhone 和 Mac 都能解锁
+待办事项和日程在各设备上完全一致
+```
+
+### 앱스토어 (일본어)
+
+```
+Mac でも使えるようになりました
+一度の購入で iPhone と Mac の両方で使えます
+ToDo と予定がどのデバイスでも同じに表示されます
+```
+
+### 앱스토어 (독일어)
+
+```
+Jetzt auch auf dem Mac
+Einmal kaufen, auf iPhone und Mac freigeschaltet
+Aufgaben und Pläne sind überall gleich
+```
+
+### 앱스토어 (스페인어)
+
+```
+Ahora también en el Mac
+Compra una vez y desbloquéalo en iPhone y Mac
+Tus tareas y planes coinciden en todos tus dispositivos
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Désormais aussi sur Mac
+Un seul achat pour l’iPhone et le Mac
+Vos tâches et plans sont identiques partout
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Ora disponibile anche su Mac
+Acquista una volta e sblocca su iPhone e Mac
+Attività e piani uguali su tutti i dispositivi
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Agora também no Mac
+Compre uma vez e desbloqueie no iPhone e no Mac
+Suas tarefas e planos iguais em todos os aparelhos
+```
+
+### 앱스토어 (러시아어)
+
+```
+Теперь и на Mac
+Одна покупка открывает iPhone и Mac
+Задачи и планы совпадают на всех устройствах
+```
+
+### 앱스토어 (체코어)
+
+```
+Nově také na Macu
+Jeden nákup odemkne iPhone i Mac
+Úkoly a plány jsou všude stejné
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Nu også på Mac
+Køb én gang, og lås op på iPhone og Mac
+Dine opgaver og planer er ens overalt
+```
+
+### 앱스토어 (그리스어)
+
+```
+Τώρα και στο Mac
+Μία αγορά ξεκλειδώνει iPhone και Mac
+Εργασίες και πλάνα ίδια σε κάθε συσκευή
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Nyt myös Macilla
+Yksi osto avaa iPhonen ja Macin
+Tehtävät ja suunnitelmat ovat samat kaikkialla
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Kini hadir juga di Mac
+Beli sekali, terbuka di iPhone dan Mac
+Tugas dan rencana sama di semua perangkat
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Nå også på Mac
+Kjøp én gang og lås opp på iPhone og Mac
+Oppgaver og planer er like overalt
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Nu ook op de Mac
+Eén keer kopen, ontgrendeld op iPhone en Mac
+Je taken en plannen zijn overal hetzelfde
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Teraz także na Macu
+Jeden zakup odblokowuje iPhone’a i Maca
+Zadania i plany są takie same wszędzie
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Nu även på Mac
+Köp en gång och lås upp på iPhone och Mac
+Dina uppgifter och planer är lika överallt
+```
+
+### 앱스토어 (태국어)
+
+```
+ใช้งานบน Mac ได้แล้ว
+ซื้อครั้งเดียว ใช้ได้ทั้ง iPhone และ Mac
+งานและแผนตรงกันทุกอุปกรณ์
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Artık Mac’te de
+Bir kez satın al, iPhone ve Mac’te aç
+Görevlerin ve planların her cihazda aynı
+```
+
+### 앱스토어 (베트남어)
+
+```
+Giờ đã có trên Mac
+Mua một lần, mở khóa trên iPhone và Mac
+Việc cần làm và kế hoạch giống nhau trên mọi thiết bị
+```
+
 ## 1.1.19
 
 ### 앱스토어 (한국어)
