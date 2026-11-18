@@ -18993,6 +18993,148 @@
         }
       }
     },
+    "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다." : {
+      "localizations" : {
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Čas není zapsaný, takže zatím nevíme, jestli se to uzavře do pěti minut."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der er ingen tid angivet, så det vides endnu ikke, om den lukker på fem minutter."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es ist keine Dauer eingetragen, deshalb ist noch offen, ob es in fünf Minuten fertig wird."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Δεν έχει γραφτεί χρόνος, οπότε δεν είναι ακόμη γνωστό αν κλείνει σε πέντε λεπτά."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No time is written down, so there's no telling yet whether it closes in five minutes."
+          }
+        },
+        "en-GB" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No time is written down, so there's no telling yet whether it closes in five minutes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay tiempo anotado, así que todavía no se sabe si se cierra en cinco minutos."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aikaa ei ole kirjattu, joten vielä ei tiedetä, valmistuuko se viidessä minuutissa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune durée indiquée : impossible de savoir encore si cela se boucle en cinq minutes."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waktunya belum ditulis, jadi belum diketahui apakah tuntas dalam lima menit."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non hai indicato una durata, quindi non si sa ancora se si chiude in cinque minuti."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時間が書かれていないので、5分で閉じられるかはまだ分かりません。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det er ikke angitt noen tid, så det er ennå ikke kjent om den avsluttes på fem minutter."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er staat geen tijd bij, dus nog niet te zeggen of het binnen vijf minuten af is."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie zapisano czasu, więc jeszcze nie wiadomo, czy zamknie się w pięć minut."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não há tempo anotado, então ainda não dá para saber se fecha em cinco minutos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Время не указано, поэтому пока неясно, закроется ли шаг за пять минут."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen tid är angiven, så det går ännu inte att säga om det blir klart på fem minuter."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ยังไม่ได้ใส่เวลา จึงยังไม่รู้ว่าจบได้ใน 5 นาทีหรือไม่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süre yazılmadığı için beş dakikada kapanıp kapanmadığı henüz bilinmiyor."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chưa ghi thời gian nên chưa biết có khép lại được trong năm phút không."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没写下时间，所以还不知道能不能在五分钟内完成。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "還沒寫下時間，所以還不知道能不能在五分鐘內完成。"
+          }
+        }
+      }
+    },
     "요일 칸" : {
       "localizations" : {
         "cs" : {

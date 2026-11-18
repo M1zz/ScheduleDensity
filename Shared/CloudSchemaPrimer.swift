@@ -1,23 +1,32 @@
 //
 //  CloudSchemaPrimer.swift
-//  ScheduleDensityApp
+//  욕망의 무지개 · 무지개 공방
 //
 //  **모델에 있는 모든 필드를 CloudKit 스키마에 만들어 둔다.** (디버그 전용)
+//
+//  아이폰 · 맥이 이 파일 하나를 쓴다 (Shared/). 두 앱이 같은 컨테이너를 쓰므로
+//  어느 쪽에서 올려도 같은 스키마가 생긴다.
 //
 //  CloudKit은 **값이 실제로 쓰인 필드만** 만든다. 옵셔널 필드에 한 번도 값을 안 넣으면
 //  스키마에 그 칸이 안 생기고, Development → Production 배포에도 안 실려 간다.
 //  그러면 출시 뒤 사용자가 그 값을 **처음 넣는 순간** 서버가 모르는 필드라며 거절하고,
 //  거절 하나가 미러링 초기화를 통째로 실패시켜 동기화가 멈춘다. 조용히, 그 사람에게만.
 //
-//    var isShared: Bool = true      → 값이 있으니 칸이 생긴다
-//    var completedAt: Date? = nil   → nil 이면 안 보내서 칸이 안 생긴다  ⚠️
+//    var isShared: Bool = true          → 값이 있으니 칸이 생긴다
+//    var calendarEventID: String? = nil → nil 이면 안 보내서 칸이 안 생긴다  ⚠️
 //
-//  손으로 기능을 하나씩 다 써 보는 것으로는 이걸 못 막는다. 빠뜨리기 쉽고,
-//  빠뜨린 것은 눈에 안 보인다. 그래서 **모든 옵셔널에 값을 채운 표본을 한 벌 만들어
-//  올리고, 올라간 것을 확인한 뒤 지운다.** 레코드는 지워도 스키마는 남는다.
+//  손으로 기능을 하나씩 다 써 보는 것으로는 이걸 못 막는다. 빠뜨리기 쉽고, 빠뜨린 것은
+//  눈에 안 보인다. 그래서 **모든 옵셔널에 값을 채운 표본을 한 벌 만들어 올리고, 올라간 뒤
+//  지운다.** 레코드는 지워도 스키마는 남는다.
 //
-//  ⚠️ 디버그 빌드에서만, Development 환경에서만 쓸 것. 표본이 잠깐 목록에 보였다
-//     사라진다. Production에서는 애초에 필드가 자동 생성되지 않으므로 소용도 없다.
+//  ⚠️ 디버그 빌드에서만, Development 환경에서만 쓸 것. 표본이 잠깐 목록에 보였다 사라진다.
+//     Production에서는 애초에 필드가 자동 생성되지 않으므로 소용도 없다.
+//
+//  ⚠️ **모델에 칸을 더할 때마다 여기도 함께 고칠 것.** 안 고치면 이 파일이 있으나 마나다.
+//     지금 채우는 것: BacklogItem·PlanBlock의 옵셔널 전부, 세 모델
+//     (BacklogItem·PlanBlock·Routine)의 함께 쓰기 칸(isShared·originInstallID),
+//     ProMark 타입 자체와 그 옵셔널(validUntil · tier), Project 타입 자체와 그 옵셔널(completedAt),
+//     BacklogItem.projectID, RainbowEvent 타입 자체와 그 옵셔널 다섯 칸, 그리고 DeletionMark 타입.
 //
 
 #if DEBUG
@@ -83,27 +92,45 @@ enum CloudSchemaPrimer {
         block.reviewStatusRaw = "sample"
         block.reviewNote = "sample"
         block.reviewedAt = now
-        // 맥의 캘린더 가져오기가 더한 칸. 아이폰은 안 쓰지만 스키마는 함께 쓴다.
+        // 캘린더 가져오기가 더한 칸 (→ CalendarImport.swift). 이 줄이 없으면 이 필드는
+        // 실제로 캘린더를 가져와 본 사람의 기기에서만 생긴다.
         block.calendarEventID = "schema-sample-event"
-        // 맥이 타이머를 멈출 때 남기는 '다음 첫 동작' 칸 (→ PlanBlock.nextAction).
+        // 멈출 때 남기는 '다음 첫 동작' 칸 (→ PlanBlock.nextAction).
         block.nextAction = "schema-sample-next"
+        // 알약 아이콘 칸 (→ PlanBlock.iconName). 아이콘을 한 번이라도 누른 사람에게서만 생긴다.
+        block.iconName = "star.fill"
+        // 걸린 시간 칸 (→ PlanBlock.actualMinutes). '걸린 시간 재기'를 켜고 잰 사람에게서만 생긴다.
+        block.actualMinutes = 1
+        // 계획·루틴에도 걸린 함께 쓰기 칸 (→ TodoSharing.swift).
         block.isShared = true
         block.originInstallID = "schema-sample-install"
-        // 알약 아이콘 칸 (→ PlanBlock.iconName). 맥에서 아이콘을 누른 사람에게서만 생긴다.
-        block.iconName = "star.fill"
-        // 걸린 시간 칸 (→ PlanBlock.actualMinutes). 맥에서 '걸린 시간 재기'로 잰 사람에게서만 생긴다.
-        block.actualMinutes = 1
+
+        let routine = Routine(name: marker, kind: .quota)
+        routine.weeklyHours = 1
+        routine.sessionsPerDay = 1
+        // 회차별 기본 시각 칸 (→ Routine.sessionStartsRaw). 편집기에서 시각을 고친 사람에게서만 생긴다.
+        routine.sessionStartsRaw = "12"
+        routine.isShared = true
+        routine.originInstallID = "schema-sample-install"
+
+        // 한쪽에서 샀다는 표 (→ ProMark.swift). 이 타입은 Pro를 산 사람만 적으므로, 여기서
+        // 안 만들면 Development 스키마에 타입부터 없다. 끝나는 날은 **이미 지난 날**로 둔다 —
+        // 올라가 있는 25초 사이에 아이폰이 이 표를 보고 Pro를 열면 안 된다.
+        // 등급(tier) 칸도 여기서 생긴다 (init 이 "pro" 를 적는다).
+        let mark = ProMark(platform: .current, productID: marker,
+                           validUntil: Date(timeIntervalSince1970: 0))
 
         // 지운 것의 표 (→ DeletionMark.swift). 무엇을 지워 봐야 생기는 타입이라 표본으로 세운다.
+        // 열쇠가 실제 것과 겹치지 않게 표본 이름을 쓴다.
         let tomb = DeletionMark(key: "item:\(marker)", originInstallID: "schema-sample-install")
 
-        for model in [category as any PersistentModel, project, item, block, rainbow, tomb] {
+        for model in [category as any PersistentModel, project, item, block, routine, mark, rainbow, tomb] {
             context.insert(model)
         }
         do {
             try context.save()
         } catch {
-            return Report(created: 0, deleted: 0, note: String(localized: "표본을 못 만들었습니다: \(error.localizedDescription)"))
+            return Report(created: 0, deleted: 0, note: "표본을 못 만들었습니다: \(error)")
         }
 
         // 내보내기가 돌 시간을 준다. 이 사이에 서버에 칸이 생긴다.
@@ -111,12 +138,14 @@ enum CloudSchemaPrimer {
 
         // ── 치운다. 스키마는 남는다. ────────────────────────────────────────
         var deleted = 0
-        for model in [category as any PersistentModel, project, item, block, rainbow, tomb] {
+        for model in [category as any PersistentModel, project, item, block, routine, mark, rainbow, tomb] {
             context.delete(model)
             deleted += 1
         }
         try? context.save()
 
+        #if os(iOS)
+        // 아이폰은 내보내기 결과를 기록해 둔다 (→ CloudSyncLog.swift).
         let sent = CloudSyncLog.shared.exporting
         let note: String
         if let sent, sent.succeeded {
@@ -126,7 +155,11 @@ enum CloudSchemaPrimer {
         } else {
             note = String(localized: "아직 내보내기 결과가 없습니다. 잠시 뒤 '동기화 진단'을 다시 보세요.")
         }
-        return Report(created: 6, deleted: deleted, note: note)
+        return Report(created: deleted, deleted: deleted, note: note)
+        #else
+        return Report(created: deleted, deleted: deleted,
+                      note: "표본을 올렸다 지웠습니다. 콘솔의 Development 스키마에 칸이 생겼는지 확인한 뒤 Production으로 배포하세요.")
+        #endif
     }
 }
 

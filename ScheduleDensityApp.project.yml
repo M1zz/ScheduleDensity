@@ -194,7 +194,7 @@ targets:
       - path: Shared/AppLog.swift
       # TodoLabel 정의. 모델에 얹힌 확장은 BacklogItem+Label.swift로 떼어냈으므로
       # 이 파일만으로 충분하다 (SwiftData 모델이 따라오지 않는다).
-      - path: ScheduleDensityApp/Shared/TodoSplitAdvisor.swift
+      - path: Shared/TodoSplitAdvisor.swift
       # formatDuration, Date.currentWeekStart
       - path: Shared/Models.swift
     settings:
@@ -311,7 +311,7 @@ targets:
       - path: Shared/TodoShareInbox.swift
       - path: Shared/AppLog.swift
       - path: macOS/WeekBlocks/Motion.swift
-      - path: macOS/WeekBlocks/TodoSplitAdvisor.swift
+      - path: Shared/TodoSplitAdvisor.swift
       - path: Shared/Models.swift
     postBuildScripts:
       - name: 한국어 원문 표 넣기
