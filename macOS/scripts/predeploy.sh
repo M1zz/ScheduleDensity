@@ -17,9 +17,10 @@
 # 함께 돈다 — 타겟의 preBuildScripts 라서 이 빌드가 통과하면 그것도 통과한 것이다.
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+# 프로젝트는 레포 맨 위에 하나다 (아이폰 · 맥 타깃이 함께 든다). 맥 코드는 macOS/ 아래.
+cd "$(dirname "$0")/../.."
 
-PROJECT="WeekBlocks.xcodeproj"
+PROJECT="ScheduleDensityApp.xcodeproj"
 SCHEME="WeekBlocks"
 
 echo "🔍 배포 전 검사 — $SCHEME (Release, macOS)"

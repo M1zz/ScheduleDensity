@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "607BF99F81936CE909A366CF"
+               BlueprintIdentifier = "C4717B7B1636D3E1D7E644E8"
                BuildableName = "&#x1106;&#x116e;&#x110c;&#x1175;&#x1100;&#x1162; &#x1100;&#x1169;&#x11bc;&#x1107;&#x1161;&#x11bc;.app"
                BlueprintName = "WeekBlocks"
-               ReferencedContainer = "container:WeekBlocks.xcodeproj">
+               ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -30,10 +30,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607BF99F81936CE909A366CF"
+            BlueprintIdentifier = "C4717B7B1636D3E1D7E644E8"
             BuildableName = "&#x1106;&#x116e;&#x110c;&#x1175;&#x1100;&#x1162; &#x1100;&#x1169;&#x11bc;&#x1107;&#x1161;&#x11bc;.app"
             BlueprintName = "WeekBlocks"
-            ReferencedContainer = "container:WeekBlocks.xcodeproj">
+            ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -42,20 +42,20 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9D1B2422726F9EAD5D6D459C"
+               BlueprintIdentifier = "CFFC40D65C905FBBEF762A83"
                BuildableName = "WeekBlocksTests.xctest"
                BlueprintName = "WeekBlocksTests"
-               ReferencedContainer = "container:WeekBlocks.xcodeproj">
+               ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "65C43C4E7BACC564CBF97293"
+               BlueprintIdentifier = "8F3DF6F72CF1BB6E3795F347"
                BuildableName = "WeekBlocksUITests.xctest"
                BlueprintName = "WeekBlocksUITests"
-               ReferencedContainer = "container:WeekBlocks.xcodeproj">
+               ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -74,14 +74,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607BF99F81936CE909A366CF"
+            BlueprintIdentifier = "C4717B7B1636D3E1D7E644E8"
             BuildableName = "&#x1106;&#x116e;&#x110c;&#x1175;&#x1100;&#x1162; &#x1100;&#x1169;&#x11bc;&#x1107;&#x1161;&#x11bc;.app"
             BlueprintName = "WeekBlocks"
-            ReferencedContainer = "container:WeekBlocks.xcodeproj">
+            ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../WeekBlocks.storekit">
+         identifier = "../../macOS/WeekBlocks.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
@@ -94,10 +94,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "607BF99F81936CE909A366CF"
+            BlueprintIdentifier = "C4717B7B1636D3E1D7E644E8"
             BuildableName = "&#x1106;&#x116e;&#x110c;&#x1175;&#x1100;&#x1162; &#x1100;&#x1169;&#x11bc;&#x1107;&#x1161;&#x11bc;.app"
             BlueprintName = "WeekBlocks"
-            ReferencedContainer = "container:WeekBlocks.xcodeproj">
+            ReferencedContainer = "container:ScheduleDensityApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

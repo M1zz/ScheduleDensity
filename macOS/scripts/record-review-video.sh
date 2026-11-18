@@ -14,7 +14,7 @@ DD="$WORK/dd"
 BUNDLE=com.example.ScheduleDensityApp
 
 echo "▸ 빌드"
-xcodebuild -project WeekBlocks.xcodeproj -scheme WeekBlocks -destination 'platform=macOS' \
+xcodebuild -project ../ScheduleDensityApp.xcodeproj -scheme WeekBlocks -destination 'platform=macOS' \
   -derivedDataPath "$DD" build-for-testing -quiet
 APP="$(find "$DD/Build/Products/Debug" -maxdepth 1 -name '*.app' ! -name '*Runner*' | head -1)"
 
@@ -22,7 +22,7 @@ pkill -x WeekBlocks 2>/dev/null || true
 sleep 1
 
 echo "▸ 시험 손 대기"
-TEST_RUNNER_REVIEW_DEMO=1 xcodebuild -project WeekBlocks.xcodeproj -scheme WeekBlocks \
+TEST_RUNNER_REVIEW_DEMO=1 xcodebuild -project ../ScheduleDensityApp.xcodeproj -scheme WeekBlocks \
   -destination 'platform=macOS' -derivedDataPath "$DD" test-without-building \
   -only-testing:WeekBlocksUITests/ReviewDemoUITests > "$WORK/test.log" 2>&1 &
 XB=$!

@@ -16,7 +16,8 @@
 #
 set -euo pipefail
 
-ROOT="${SRCROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
+# 맥 코드 폴더(macOS/). 프로젝트가 레포 맨 위로 옮겨 SRCROOT 는 이제 여기가 아니다.
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 files=()
