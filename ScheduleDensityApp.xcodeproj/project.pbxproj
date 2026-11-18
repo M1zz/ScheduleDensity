@@ -597,7 +597,6 @@
 		ED4EC0DFD0BC272357249D7C /* MacEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacEntitlement.swift; sourceTree = "<group>"; };
 		EDE2BE20CC2D5A5D12D36A4D /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
 		EDF674923A141F19CD56EF10 /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
-		EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		EE8E24BB61AC534A0517FC98 /* CategoryManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryManagerView.swift; sourceTree = "<group>"; };
 		EEDF66AE07075BE60CB5E082 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		EF011048734C0513008149AB /* RainbowEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowEvent.swift; sourceTree = "<group>"; };
@@ -862,14 +861,6 @@
 			path = ScheduleDensityApp;
 			sourceTree = "<group>";
 		};
-		3B43A6B5BB7C83785865F146 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */,
-			);
-			path = Config;
-			sourceTree = "<group>";
-		};
 		40774C920FA04997EFA0DA66 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
@@ -918,7 +909,6 @@
 			isa = PBXGroup;
 			children = (
 				F6E07D57CD82E3C5BD584851 /* WeekBlocks.storekit */,
-				3B43A6B5BB7C83785865F146 /* Config */,
 				F779C55921AE2FD9195F6024 /* TimerWidget */,
 				2818CE57A6BF8803ED35DF10 /* TodoShare */,
 				AD50C5558D657BC07DDB6B03 /* WeekBlocks */,
@@ -1998,7 +1988,6 @@
 		};
 		399B477A5804F047F5E72953 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -2017,7 +2006,6 @@
 		};
 		3D6946E8936AD318410B6B18 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = macOS/TodoShare/TodoShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -2106,7 +2094,6 @@
 		};
 		745A1287466ADC8717F4D359 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = macOS/TimerWidget/TimerWidget.entitlements;
@@ -2207,7 +2194,6 @@
 		};
 		964912A7854576D5C419D7BC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -2236,7 +2222,6 @@
 		};
 		9FD8AD5B86B0ABEF14D6B503 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = macOS/TodoShare/TodoShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -2259,7 +2244,6 @@
 		};
 		A04B3AB14AA3B03C2C109537 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = macOS/TimerWidget/TimerWidget.entitlements;
@@ -2283,7 +2267,6 @@
 		};
 		A62D75ED78D5E329F64EE5C6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -2336,7 +2319,6 @@
 		};
 		B4274E98588E8A390D1399E3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -2373,7 +2355,6 @@
 		};
 		B7515DAAB35DB44D4C2326F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -2410,7 +2391,6 @@
 		};
 		F7BB86B6272B7DBE73390885 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EE88ABEA55D02C06C67A5ECB /* Version.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

@@ -247,15 +247,11 @@ targets:
 
   # ───────────────────────────── macOS ─────────────────────────────
   # 맥 앱 '무지개 공방'. 아이폰과 같은 번들 ID · 같은 iCloud · 같은 영수증 (한 레코드 · 유니버설 구매).
-  # 코드는 macOS/ 아래, 버전은 macOS/Config/Version.xcconfig 가 정한다 (타깃마다 configFiles —
-  # 아이폰과 마케팅 버전이 아직 달라서다).
+  # 코드는 macOS/ 아래. 버전은 아이폰과 하나다 (→ Config/Version.xcconfig, DeployBar 가 두 바퀴 모두 이것으로 낸다).
 
   WeekBlocks:
     type: application
     platform: macOS
-    configFiles:
-      Debug: macOS/Config/Version.xcconfig
-      Release: macOS/Config/Version.xcconfig
     sources:
       - path: macOS/WeekBlocks
     dependencies:
@@ -306,9 +302,6 @@ targets:
   MacTodoShareExtension:
     type: app-extension
     platform: macOS
-    configFiles:
-      Debug: macOS/Config/Version.xcconfig
-      Release: macOS/Config/Version.xcconfig
     sources:
       - path: macOS/TodoShare
       - path: macOS/WeekBlocks/TodoShareInbox.swift
@@ -344,9 +337,6 @@ targets:
   TimerWidgetExtension:
     type: app-extension
     platform: macOS
-    configFiles:
-      Debug: macOS/Config/Version.xcconfig
-      Release: macOS/Config/Version.xcconfig
     sources:
       - path: macOS/TimerWidget
       - path: macOS/WeekBlocks/TimerWidgetSnapshot.swift
@@ -382,9 +372,6 @@ targets:
   WeekBlocksTests:
     type: bundle.unit-test
     platform: macOS
-    configFiles:
-      Debug: macOS/Config/Version.xcconfig
-      Release: macOS/Config/Version.xcconfig
     sources:
       - path: macOS/WeekBlocksTests
     dependencies:
@@ -402,9 +389,6 @@ targets:
   WeekBlocksUITests:
     type: bundle.ui-testing
     platform: macOS
-    configFiles:
-      Debug: macOS/Config/Version.xcconfig
-      Release: macOS/Config/Version.xcconfig
     sources:
       - path: macOS/WeekBlocksUITests
     dependencies:
