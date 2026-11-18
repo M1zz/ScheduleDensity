@@ -32,6 +32,8 @@ enum AppLog {
     static let sync = Logger(subsystem: subsystem, category: "Sync")
     /// 화면에서 일어나는 일.
     static let ui = Logger(subsystem: subsystem, category: "UI")
+    /// 백업 금고 · 지운 표 (Shared/ 의 VaultMonitor · DeletionMark 가 쓴다 — 맥 AppLog 에도 같은 이름이 있다)
+    static let vault = Logger(subsystem: subsystem, category: "Vault")
 
     /// 핵심 작업의 걸린 시간. 구간 이름은 `StaticString` 이라 한 번 정하면 그대로 쓴다.
     static let signposter = OSSignposter(subsystem: subsystem, category: .pointsOfInterest)

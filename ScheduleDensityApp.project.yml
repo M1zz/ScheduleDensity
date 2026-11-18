@@ -101,6 +101,8 @@ targets:
       - path: ScheduleDensityApp/AppIcon.icon
         type: file
         buildPhase: resources
+      # 아이폰 · 맥이 함께 쓰는 파일 (데이터 모델 · iCloud 표 · 금고). 한 벌뿐이다.
+      - path: Shared
     dependencies:
       - package: LeeoKit
       - target: TodoWidgetExtension
@@ -254,6 +256,7 @@ targets:
     platform: macOS
     sources:
       - path: macOS/WeekBlocks
+      - path: Shared
     dependencies:
       - package: LeeoKit
       - target: MacTodoShareExtension

@@ -1,3 +1,10 @@
+//
+//  RoutineOccurrence.swift
+//  욕망의 무지개 · 무지개 공방 (두 앱이 이 파일 하나를 쓴다 — Shared/)
+//
+//  ⚠️ 같은 CloudKit private DB 의 같은 레코드 타입이다. 고치면 두 앱이 함께 바뀐다.
+//     (iOS 는 읽기 전용이다.)
+//
 import Foundation
 import SwiftData
 

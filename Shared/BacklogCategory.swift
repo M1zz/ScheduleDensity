@@ -33,6 +33,7 @@ let categoryIconOptions: [String] = [
     "tag", "briefcase", "person", "heart", "book", "house",
     "cart", "dumbbell", "laptopcomputer", "phone", "star", "flag",
     "leaf", "paintbrush", "music.note", "gamecontroller",
+    "antenna.radiowaves.left.and.right",
 ]
 
 // MARK: - 프로젝트
@@ -43,8 +44,8 @@ let categoryIconOptions: [String] = [
 /// 않고, 프로젝트는 끝난다. 할 일 하나가 '업무'이면서 '테크맵'일 수 있어야 해서 분류에
 /// 종류를 더하지 않고 따로 세웠다.
 ///
-/// ⚠️ 맥 '무지개 공방'(WeekBlocks)의 같은 파일에 **글자 하나까지 같은 정의**가 있다.
-///    같은 CloudKit 스키마를 쓰므로 칸을 더하거나 빼면 양쪽을 함께 고친다 (→ README).
+/// ⚠️ 아이폰 · 맥이 **이 파일 하나**를 함께 쓴다 (Shared/). 같은 CloudKit 스키마라
+///    칸을 더하거나 빼면 두 앱이 함께 바뀐다 — 두 타깃을 다 빌드해 볼 것.
 ///    CloudKit 미러링 규칙대로 모든 칸에 기본값이 있고, 관계 대신 uuid 문자열로 잇는다
 ///    (할 일 쪽 `BacklogItem.projectID`).
 @Model
