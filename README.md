@@ -1,4 +1,4 @@
-# 욕망의 무지개 (iOS)
+# 욕망의 무지개 (iOS · macOS)
 
 일정이 겹칠수록 색이 진해지는 주간 밀도 뷰와, 지금 시작할 수 있는 것부터 집는 할 일 관리.
 
@@ -6,8 +6,9 @@
 - **개인정보 처리방침** — https://m1zz.github.io/ScheduleDensity/privacy.html
 - **릴리즈 노트** — [docs/RELEASE_NOTES.md](docs/RELEASE_NOTES.md)
 
-맥앱 **무지개 공방(macOS)** 은 별도 저장소입니다 → https://github.com/M1zz/WeekBlocks
-같은 CloudKit 컨테이너를 쓰므로 두 앱을 함께 수정해야 하는 변경이 많습니다.
+아이폰 앱과 맥 앱(무지개 공방)이 **한 저장소 · 한 프로젝트 · App Store 한 레코드**입니다.
+번들 ID 는 `com.example.ScheduleDensityApp` 하나(유니버설 구매), 스킴은 아이폰 `ScheduleDensityApp` · 맥 `WeekBlocks`.
+맥 코드는 옛 저장소(https://github.com/M1zz/WeekBlocks, 보관용)에서 커밋 기록째 `macOS/` 로 옮겼습니다.
 
 ## 화면
 
@@ -112,14 +113,11 @@ xcodebuild -project ScheduleDensityApp.xcodeproj -scheme ScheduleDensityApp \
 ## 구조
 
 ```
+Shared/              아이폰 · 맥이 한 벌을 함께 컴파일 (CloudKit 모델 전부 · 금고 · 쪼개기 판정 · 공유 상자 …)
+macOS/               맥 앱 '무지개 공방' (WeekBlocks · 공유 확장 · 타이머 위젯 · 시험)
 ScheduleDensityApp/
-├── Models/          Event 등 SwiftData 모델
-├── Shared/          두 앱이 함께 쓰는 것 (아래 주의 참고)
-│   ├── TodoSplitAdvisor.swift   두 질문 판정 + 쪼개기 조언
-│   ├── TodoTree.swift           단계 트리, 시간 합산, 진행률
-│   ├── BacklogItem+Fragment.swift  두 질문에 직접 답한 것(labelRaw 재사용)
-│   ├── TodoTips.swift           TipKit 팁
-│   └── TodoShareInbox.swift     공유 익스텐션 -> 앱 통로
+├── Models/          Event (아이폰 전용, 로컬 스토어)
+├── Shared/          아이폰 앱과 위젯이 함께 쓰는 것
 ├── Views/           화면
 ├── Services/        위젯 스냅샷, 공유 받은 것 처리
 TodoWidget/          위젯 익스텐션
@@ -127,22 +125,18 @@ TodoShare/           공유 익스텐션
 docs/                GitHub Pages (소개 · 개인정보 · 릴리즈 노트)
 ```
 
-## 두 저장소를 함께 고쳐야 하는 것
+## 두 앱이 함께 쓰는 것
 
-다음 파일은 [WeekBlocks](https://github.com/M1zz/WeekBlocks) 저장소에 **같은 내용으로 복제**되어 있다.
-한쪽만 고치면 두 앱의 동작이 갈라진다.
+`Shared/` 의 파일은 두 앱이 **한 벌**을 컴파일한다. 고치면 두 앱이 함께 바뀌므로
+맥(`WeekBlocks`)과 아이폰(`ScheduleDensityApp`) 스킴을 둘 다 빌드해 본다.
 
-- `TodoSplitAdvisor.swift`
-- `TodoTree.swift`
-- `TodoTips.swift`
-- `BacklogItem+Fragment.swift`
-- `BacklogItem+StepOrder.swift` — ⚠️ **아직 iOS에만 있다.** 맥은 묶음의 `order:` 값을
-  '답 없음'으로 지나가므로 깨지지는 않지만, 순서 없는 묶음도 사슬로 세운다.
-  옮길 때 `TodoTree.currentStep`도 같이 고칠 것
+- 플랫폼마다 달라야 하는 줄은 `#if os(macOS)` 로 가른다 (예: App Group ID).
+- 맥 화면만 쓰는 도우미는 `macOS/WeekBlocks/…+Mac.swift` 로 뗀다 (예: `PlanBlock+Mac.swift`).
+- CloudKit 스키마라 칸은 **더하기만** 하고, 모든 칸에 기본값을 둔다. 칸을 더하면 `CloudSchemaPrimer` 도 고친다.
+- 문구는 앱마다 번역 표가 따로다 (`ScheduleDensityApp/Localizable.xcstrings`, `macOS/WeekBlocks/Localizable.xcstrings`).
+  `Shared/` 에 새 문구를 넣으면 두 표에 다 넣는다.
 
-`BacklogItem` / `BacklogCategory` / `Project` 는 같은 CloudKit 스키마를 쓰므로 **필드 추가·삭제는 반드시 양쪽 동시에** 한다.
-`Project` 정의는 두 저장소의 `BacklogCategory.swift` 맨 아래에 **글자 하나까지 같게** 있다.
-맥에만 있는 전파 계약 필드처럼 한쪽에만 있는 필드는 옵셔널 또는 기본값이어야 한다.
+타이머 · 타임라인 · 위젯 스냅샷(`ScheduleClock`, `TaskTimer`, `TimerWidgetSnapshot`)과 화면은 플랫폼마다 따로 둔다.
 
 ## 데이터
 
