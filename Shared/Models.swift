@@ -1,33 +1,25 @@
+//
+//  Models.swift
+//  욕망의 무지개 · 무지개 공방 (두 앱과 두 공유 확장이 이 파일 하나를 쓴다 — Shared/)
+//
+//  요일 · 시간대 · 주 계산 · 시간 표기. SwiftData 모델은 따로 있다.
+//
 import Foundation
 
 enum DayOfWeek: Int, Codable, CaseIterable, Identifiable {
     case mon = 0, tue, wed, thu, fri, sat, sun
     var id: Int { rawValue }
 
-    var shortLabel: String {
-        switch self {
-        case .mon: String(localized: "월", comment: "요일 한 글자")
-        case .tue: String(localized: "화", comment: "요일 한 글자")
-        case .wed: String(localized: "수", comment: "요일 한 글자")
-        case .thu: String(localized: "목", comment: "요일 한 글자")
-        case .fri: String(localized: "금", comment: "요일 한 글자")
-        case .sat: String(localized: "토", comment: "요일 한 글자")
-        case .sun: String(localized: "일", comment: "요일 한 글자")
-        }
-    }
+    /// 달력이 기기 언어로 들고 있는 요일 이름을 그대로 쓴다 (0=월 … 6=일).
+    private var calendarIndex: Int { self == .sun ? 0 : rawValue + 1 }
 
-    /// ⚠️ 짧은 이름에 '요일'을 붙여 만들지 않는다. 영어는 "Mon" + 무언가가 아니라
-    ///    "Monday"라는 다른 낱말이라, 이어 붙이면 번역이 불가능해진다.
+    var shortLabel: String {
+        let names = Calendar.current.shortWeekdaySymbols
+        return calendarIndex < names.count ? names[calendarIndex] : ""
+    }
     var longLabel: String {
-        switch self {
-        case .mon: String(localized: "월요일")
-        case .tue: String(localized: "화요일")
-        case .wed: String(localized: "수요일")
-        case .thu: String(localized: "목요일")
-        case .fri: String(localized: "금요일")
-        case .sat: String(localized: "토요일")
-        case .sun: String(localized: "일요일")
-        }
+        let names = Calendar.current.weekdaySymbols
+        return calendarIndex < names.count ? names[calendarIndex] : shortLabel
     }
 
     /// 그 날이 무슨 요일인가. 이 앱의 한 주는 월요일에서 시작한다.
@@ -162,6 +154,13 @@ extension Date {
         cal.firstWeekday = 2 // Monday
         let comps = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date())
         return cal.date(from: comps) ?? Date()
+    }
+
+    /// 이번 주 마지막 날(일요일) 00:00. "이번 주까지"라는 마감에 쓴다.
+    static var endOfThisWeek: Date {
+        var cal = Calendar(identifier: .iso8601)
+        cal.firstWeekday = 2
+        return cal.date(byAdding: .day, value: 6, to: currentWeekStart) ?? Date()
     }
 
     func weekStart() -> Date {

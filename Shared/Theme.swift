@@ -1,11 +1,11 @@
 import SwiftUI
 
-// MARK: - 무지개 공방 디자인 토큰
+// MARK: - 디자인 토큰 (아이폰 · 맥이 이 파일 하나를 쓴다 — Shared/)
 //
-// iOS 앱 '욕망의 무지개'(ScheduleDensity)와 컬러를 통일하기 위한 토큰.
+// 두 앱이 같은 색을 쓰도록 한 곳에 둔다.
 // 팔레트는 iOS `ScheduleViewModel.laneColors`(Apple 시스템 색)와 1:1로 맞춘다.
 
-// `Color(hex:)`는 위젯 익스텐션과 공유하기 위해 ColorHex.swift로 분리했다.
+// `Color(hex:)` 는 위젯과 함께 쓰려고 ColorHex.swift 에 둔다.
 
 /// iOS `laneColors`와 동일한 7색 무지개 팔레트 (Apple 시스템 색).
 enum Rainbow {
@@ -24,35 +24,47 @@ enum Rainbow {
     ]
 }
 
-// MARK: - 모델 색상 헬퍼 (SwiftUI 의존 — macOS 전용, iOS 타깃엔 공유하지 않음)
+// MARK: - 모델 색상 헬퍼
 
 extension Routine {
     var displayColor: Color { paletteColor(colorName) }
 }
 
-/// 팔레트 색상 이름 → hex 문자열. 팔레트에 없는 이름이면 nil(= 액센트 색으로 폴백).
-/// 위젯 스냅샷처럼 Color를 직렬화할 수 없는 곳에서 쓴다.
-func paletteHex(_ name: String) -> String? {
-    switch name {
-    case "red":    return Rainbow.red
-    case "orange": return Rainbow.orange
-    case "yellow": return Rainbow.yellow
-    case "green":  return Rainbow.green
-    case "blue":   return Rainbow.blue
-    case "indigo": return Rainbow.indigo
-    case "purple": return Rainbow.purple
-    case "pink":   return "#FF2D55"   // systemPink (레거시 데이터 호환)
-    case "teal":   return "#30B0C7"   // systemTeal
-    case "cyan":   return "#32ADE6"   // systemCyan
-    default:       return nil
-    }
-}
-
 /// 팔레트 색상 이름 → SwiftUI Color (Routine·BacklogCategory 공용)
 /// iOS '욕망의 무지개' 팔레트(Apple 시스템 색)와 hex까지 통일.
 func paletteColor(_ name: String) -> Color {
-    guard let hex = paletteHex(name) else { return .accentColor }
-    return Color(hex: hex) ?? .accentColor
+    paletteHex(name).flatMap { Color(hex: $0) } ?? .accentColor
+}
+
+/// 팔레트 이름 → hex. 모르는 이름이면 nil(= 액센트). 위젯처럼 색을 글자로 건네야 하는 곳이 쓴다.
+func paletteHex(_ name: String) -> String? {
+    switch name {
+    case "red":    Rainbow.red
+    case "orange": Rainbow.orange
+    case "yellow": Rainbow.yellow
+    case "green":  Rainbow.green
+    case "blue":   Rainbow.blue
+    case "indigo": Rainbow.indigo
+    case "purple": Rainbow.purple
+    case "pink":   "#FF2D55"   // systemPink (레거시 데이터 호환)
+    case "teal":   "#30B0C7"   // systemTeal
+    case "cyan":   "#32ADE6"   // systemCyan
+    default:       nil
+    }
+}
+
+/// 팔레트 이름 → 사람이 읽는 색 이름. 색 동그라미에는 글자가 없어서, VoiceOver·도움말이 이 이름을 말한다.
+func paletteDisplayName(_ name: String) -> String {
+    switch name {
+    case "red":    String(localized: "빨강")
+    case "orange": String(localized: "주황")
+    case "yellow": String(localized: "노랑")
+    case "green":  String(localized: "초록")
+    case "blue":   String(localized: "파랑")
+    case "indigo": String(localized: "남색")
+    case "purple": String(localized: "보라")
+    default:       name
+    }
 }
 
 // 컬러 피커 옵션 — iOS와 동일한 7색 무지개를 스펙트럼 순서로 노출.

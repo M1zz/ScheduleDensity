@@ -152,7 +152,7 @@ targets:
       # 앱과 함께 쓰는 파일만 골라 넣는다 (SwiftData 모델은 위젯에 필요 없다).
       - path: ScheduleDensityApp/Shared/TodoWidgetSnapshot.swift
       - path: ScheduleDensityApp/Shared/RainbowWidgetSnapshot.swift
-      - path: ScheduleDensityApp/Shared/ColorHex.swift
+      - path: Shared/ColorHex.swift
       # 제어센터 컨트롤이 앱에 '적을 준비 해둬'를 건네는 통로. 인텐트가 앱 타깃과
       # 위젯 타깃 양쪽에 있어야 하므로(→ QuickTodoControl.swift), 통로도 양쪽에 든다.
       - path: ScheduleDensityApp/Shared/QuickTodoBridge.swift
@@ -196,7 +196,7 @@ targets:
       # 이 파일만으로 충분하다 (SwiftData 모델이 따라오지 않는다).
       - path: ScheduleDensityApp/Shared/TodoSplitAdvisor.swift
       # formatDuration, Date.currentWeekStart
-      - path: ScheduleDensityApp/Shared/Models.swift
+      - path: Shared/Models.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoShare
@@ -312,7 +312,7 @@ targets:
       - path: Shared/AppLog.swift
       - path: macOS/WeekBlocks/Motion.swift
       - path: macOS/WeekBlocks/TodoSplitAdvisor.swift
-      - path: macOS/WeekBlocks/Models.swift
+      - path: Shared/Models.swift
     postBuildScripts:
       - name: 한국어 원문 표 넣기
         script: '"$SRCROOT/macOS/scripts/source-language-strings.py" "$SRCROOT/macOS/TodoShare/Localizable.xcstrings" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/ko.lproj/Localizable.strings"'
