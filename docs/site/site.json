@@ -33,6 +33,7 @@
     {"code": "sv", "path": "sv/", "name": "Svenska"},
     {"code": "th", "path": "th/", "name": "ไทย"},
     {"code": "tr", "path": "tr/", "name": "Türkçe"},
-    {"code": "vi", "path": "vi/", "name": "Tiếng Việt"}
+    {"code": "vi", "path": "vi/", "name": "Tiếng Việt"},
+    {"code": "ar", "path": "ar/", "name": "العربية"}
   ]
 }
