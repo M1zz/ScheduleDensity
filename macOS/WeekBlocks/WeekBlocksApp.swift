@@ -171,6 +171,8 @@ struct WeekBlocksApp: App {
                 // **둥근 서체.** 알약·동그라미와 글씨가 같은 결이어야 말랑하게 읽힌다.
                 // 서체를 따로 고른 글씨(`design:` 지정)는 그대로 둔다.
                 .fontDesign(.rounded)
+                // App Store 이벤트 링크(<번들 ID>://paywall)로 열리면 요금제를 띄운다 (LeeoKit).
+                .leeoPaywallLink { PaywallView(reason: "settings") }
                 .leeoSatisfactionCheck(WeekBlocksSpec.self)
                 // 유료가 되면 콘페티, 모든 사용자가 한 번은 감사를 받는다 (LeeoKit 3.46).
                 .leeoCelebrations(appName: WeekBlocksSpec.displayName)

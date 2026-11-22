@@ -555,6 +555,8 @@ struct ScheduleDensityApp: App {
     var body: some Scene {
         WindowGroup {
             presentedRoot
+            // App Store 이벤트 링크(<번들 ID>://paywall)로 열리면 요금제를 띄운다 (LeeoKit).
+            .leeoPaywallLink { PaywallView() }
             // 첫 화면이 섰다. 몇 초 버티면 이번 실행은 무사히 뜬 것으로 적는다 (→ LaunchSafety).
             .task {
                 LaunchSafety.launchGuard.markLaunchSucceededAfterSurvivalDelay()
