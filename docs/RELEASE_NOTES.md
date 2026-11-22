@@ -1,5 +1,207 @@
 # 릴리즈 노트
 
+## 1.2.1
+
+### 앱스토어 (한국어)
+
+```
+이제 아랍어로도 쓸 수 있어요
+맥 앱 아이콘이 아이폰과 같은 무지개가 됐어요
+맥 독에 앱 이름이 내 언어로 보여요
+```
+
+### 앱스토어 (English)
+
+```
+Now available in Arabic
+The Mac app icon now matches the iPhone
+The Dock shows the name in your language
+```
+
+### 앱스토어 (영국 영어 en-GB)
+
+```
+Now available in Arabic
+The Mac app icon now matches the iPhone
+The Dock shows the name in your language
+```
+
+### 앱스토어 (중국어 번체)
+
+```
+現在也支援阿拉伯文
+Mac App 圖像改成與 iPhone 相同的彩虹
+Dock 中的 App 名稱會以你的語言顯示
+```
+
+### 앱스토어 (중국어 간체)
+
+```
+现已支持阿拉伯语
+Mac App 图标换成与 iPhone 相同的彩虹
+程序坞中的 App 名称会以你的语言显示
+```
+
+### 앱스토어 (일본어)
+
+```
+アラビア語に対応しました
+Mac アプリのアイコンが iPhone と同じ虹に
+Dock のアプリ名がお使いの言語で表示されます
+```
+
+### 앱스토어 (독일어)
+
+```
+Jetzt auch auf Arabisch
+Das Mac-Symbol gleicht jetzt dem iPhone
+Im Dock steht der Name in deiner Sprache
+```
+
+### 앱스토어 (스페인어)
+
+```
+Ya disponible en árabe
+El icono en Mac ya es como en iPhone
+El Dock muestra el nombre en tu idioma
+```
+
+### 앱스토어 (프랑스어)
+
+```
+Désormais disponible en arabe
+L’icône Mac est la même que sur iPhone
+Le Dock affiche le nom dans votre langue
+```
+
+### 앱스토어 (이탈리아어)
+
+```
+Ora disponibile anche in arabo
+L’icona su Mac ora è come su iPhone
+Il Dock mostra il nome nella tua lingua
+```
+
+### 앱스토어 (포르투갈어(브라질))
+
+```
+Agora também em árabe
+O ícone no Mac agora é como no iPhone
+O Dock mostra o nome no seu idioma
+```
+
+### 앱스토어 (러시아어)
+
+```
+Теперь доступен арабский язык
+Значок на Mac теперь как на iPhone
+Dock показывает название на вашем языке
+```
+
+### 앱스토어 (체코어)
+
+```
+Nově také v arabštině
+Ikona na Macu je teď jako na iPhonu
+Dock ukazuje název ve vašem jazyce
+```
+
+### 앱스토어 (덴마크어)
+
+```
+Nu også på arabisk
+Mac-ikonet ligner nu det på iPhone
+Dock viser navnet på dit sprog
+```
+
+### 앱스토어 (그리스어)
+
+```
+Τώρα και στα αραβικά
+Το εικονίδιο στο Mac ίδιο με το iPhone
+Το Dock δείχνει το όνομα στη γλώσσα σου
+```
+
+### 앱스토어 (핀란드어)
+
+```
+Nyt myös arabiaksi
+Macin kuvake on nyt sama kuin iPhonessa
+Dock näyttää nimen omalla kielelläsi
+```
+
+### 앱스토어 (인도네시아어)
+
+```
+Kini tersedia dalam bahasa Arab
+Ikon di Mac kini sama dengan di iPhone
+Dock menampilkan nama dalam bahasamu
+```
+
+### 앱스토어 (노르웨이어(보크말))
+
+```
+Nå også på arabisk
+Mac-ikonet er nå likt det på iPhone
+Dock viser navnet på ditt språk
+```
+
+### 앱스토어 (네덜란드어)
+
+```
+Nu ook in het Arabisch
+Het Mac-icoon is nu gelijk aan de iPhone
+Het Dock toont de naam in jouw taal
+```
+
+### 앱스토어 (폴란드어)
+
+```
+Teraz także po arabsku
+Ikona na Macu jest teraz jak na iPhonie
+Dock pokazuje nazwę w Twoim języku
+```
+
+### 앱스토어 (스웨덴어)
+
+```
+Nu även på arabiska
+Mac-symbolen är nu samma som på iPhone
+Dock visar namnet på ditt språk
+```
+
+### 앱스토어 (태국어)
+
+```
+รองรับภาษาอาหรับแล้ว
+ไอคอนบน Mac เหมือนกับบน iPhone แล้ว
+Dock แสดงชื่อแอปเป็นภาษาของคุณ
+```
+
+### 앱스토어 (튀르키예어)
+
+```
+Artık Arapça da var
+Mac simgesi artık iPhone ile aynı
+Dock, adı senin dilinde gösteriyor
+```
+
+### 앱스토어 (베트남어)
+
+```
+Nay đã có tiếng Ả Rập
+Biểu tượng trên Mac giờ giống iPhone
+Dock hiển thị tên bằng ngôn ngữ của bạn
+```
+
+### 앱스토어 (아랍어)
+
+```
+أصبح التطبيق متوفرًا بالعربية
+أيقونة تطبيق Mac أصبحت مثل أيقونة iPhone
+يظهر اسم التطبيق في Dock بلغتك
+```
+
 ## 1.2.0
 
 ### 앱스토어 (한국어)
