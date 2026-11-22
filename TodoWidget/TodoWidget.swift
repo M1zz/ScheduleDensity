@@ -64,7 +64,15 @@ struct TodoWidget: Widget {
     }
 }
 
+/// 앱의 시작점. 화면을 세우기 전에 아랍어의 숫자 · 달력부터 맞춘다 (→ ArabicLocale.swift).
 @main
+enum WidgetLaunch {
+    static func main() {
+        ArabicLocale.applyIfNeeded()
+        RainbowWidgetBundle.main()
+    }
+}
+
 struct RainbowWidgetBundle: WidgetBundle {
     var body: some Widget {
         TodoWidget()

@@ -2738,13 +2738,13 @@ struct GapFillPopover: View {
                 .frame(width: 26, alignment: .leading)
 
             HStack(spacing: 6) {
-                stepButton("chevron.left", enabled: canStepStart(-1)) { stepStart(-1) }
+                stepButton("chevron.backward", enabled: canStepStart(-1)) { stepStart(-1) }
                 Text(formatHour(start))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText())
                     .frame(minWidth: 52)
-                stepButton("chevron.right", enabled: canStepStart(1)) { stepStart(1) }
+                stepButton("chevron.forward", enabled: canStepStart(1)) { stepStart(1) }
             }
             // 화살표 둘은 이름이 없다 — VoiceOver 에는 '시작' 한 칸으로, 위·아래로 15분씩.
             .accessibilityElement(children: .ignore)

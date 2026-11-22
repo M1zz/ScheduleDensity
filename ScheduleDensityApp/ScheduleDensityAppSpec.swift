@@ -32,6 +32,9 @@ enum ScheduleDensityAppSpec: LeeoAppSpec {
         // 간체(zh-Hans)는 앱이 번역돼 있지 않아 영어로 뜨므로 페이지도 영어로 보낸다.
         case "zh" where language.script?.identifier == "Hant":
             return base + "zh-Hant/"
+        // 아랍어는 오른쪽에서 왼쪽으로 쓴 제 페이지가 있다 (docs/ar/).
+        case "ar":
+            return base + "ar/"
         default:
             return base + "en/"
         }

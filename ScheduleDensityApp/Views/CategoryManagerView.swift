@@ -150,7 +150,7 @@ struct CategoryManagerView: View {
             Button {
                 editing = category
             } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .scaledFont(size: 13, weight: .semibold)
                     .foregroundStyle(.tertiary)
             }

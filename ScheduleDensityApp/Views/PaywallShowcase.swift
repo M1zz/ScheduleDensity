@@ -179,7 +179,7 @@ private struct CalendarImportArt: View {
                     .font(.system(size: 52))
                     .foregroundStyle(.red)
             }
-            Image(systemName: "arrow.right")
+            Image(systemName: "arrow.forward")
                 .font(.title2.weight(.heavy))
                 .foregroundStyle(Color.accentColor)
             ArtCard(width: 130) {

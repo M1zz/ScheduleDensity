@@ -9,7 +9,7 @@
 //  못 읽는다 — "Default Korean, cannot find an option to select English." 그래서 앱 안에 두고,
 //  **글자는 늘 여러 말로** 적는다 (Language · 언어 · 語言). 무엇을 고르는 자리인지 어느 쪽이든 읽혀야 한다.
 //  語言은 번체지만 간체를 쓰는 사람도 읽는다 — 글자를 더 늘리면 메뉴가 길어진다.
-//  고르는 목록의 언어 이름은 저마다 그 언어로 적는다(Deutsch, 日本語 …). 1.1.10 부터 23개.
+//  고르는 목록의 언어 이름은 저마다 그 언어로 적는다(Deutsch, 日本語 …). 1.1.10 부터 23개, 1.2.1 부터 아랍어까지 24개.
 //
 //  고른 값은 시스템 설정의 앱별 언어와 **같은 자리**(이 앱의 AppleLanguages)에 적는다.
 //  그래서 어느 쪽에서 바꿔도 서로 맞는다. 언어는 앱이 켜질 때 정해지므로 다시 열어야 바뀐다.
@@ -42,6 +42,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case thai = "th"
     case turkish = "tr"
     case vietnamese = "vi"
+    case arabic = "ar"
 
     var id: String { rawValue }
 
@@ -72,6 +73,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .thai:       "ไทย"
         case .turkish:    "Türkçe"
         case .vietnamese: "Tiếng Việt"
+        case .arabic:     "العربية"
         }
     }
 
@@ -127,5 +129,15 @@ struct AppLanguageMenu: View {
         } label: {
             Label { Text(verbatim: "Language · 언어 · 語言") } icon: { Image(systemName: "globe") }
         }
+    }
+}
+
+extension View {
+    /// 아랍어면 창 안을 오른쪽에서 왼쪽으로 세운다.
+    /// 맥은 `AppleLanguages` 를 아랍어로 바꿔도 SwiftUI 창이 왼쪽에서 오른쪽으로 서는 일이 있어서,
+    /// 창마다 직접 정한다. 시트는 이 값을 물려받는다.
+    /// `chevron.backward` · `arrow.forward` 같은 방향 그림도 이 값을 따라 뒤집힌다.
+    func appLayoutDirection() -> some View {
+        environment(\.layoutDirection, ArabicLocale.isActive ? .rightToLeft : .leftToRight)
     }
 }

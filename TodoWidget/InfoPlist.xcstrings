@@ -4,6 +4,12 @@
     "CFBundleDisplayName" : {
       "comment" : "Bundle display name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المهام"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -153,6 +159,12 @@
     "CFBundleName" : {
       "comment" : "Bundle name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TodoWidgetExtension"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",

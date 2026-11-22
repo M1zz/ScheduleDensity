@@ -51,7 +51,7 @@ struct WeekDensityView: View {
             Button(action: {
                 viewModel.moveToPreviousWeek()
             }) {
-                Image(systemName: "chevron.left")
+                Image(systemName: "chevron.backward")
                     .font(.title3)
                     .foregroundColor(.primary)
             }
@@ -76,7 +76,7 @@ struct WeekDensityView: View {
             Button(action: {
                 viewModel.moveToNextWeek()
             }) {
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.title3)
                     .foregroundColor(.primary)
             }

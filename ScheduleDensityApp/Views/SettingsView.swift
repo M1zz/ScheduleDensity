@@ -401,7 +401,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -423,7 +423,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -451,7 +451,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -475,7 +475,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             if !purchases.allows(.calendarImport) { ProLockBadge(for: .calendarImport) }
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -652,7 +652,7 @@ struct SettingsView: View {
                                     ProgressView()
                                         .scaleEffect(0.8)
                                 } else {
-                                    Image(systemName: "arrow.right.circle")
+                                    Image(systemName: "arrow.forward.circle")
                                         .foregroundColor(.purple)
                                 }
                             }
@@ -675,7 +675,7 @@ struct SettingsView: View {
                                 ForEach(Array(balanceSuggestions.keys.prefix(3)), id: \.color) { event in
                                     if let newDate = balanceSuggestions[event] {
                                         HStack(alignment: .top, spacing: 8) {
-                                            Image(systemName: "arrow.right")
+                                            Image(systemName: "arrow.forward")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
                                             VStack(alignment: .leading, spacing: 2) {
@@ -685,7 +685,7 @@ struct SettingsView: View {
                                                 HStack(spacing: 4) {
                                                     Text(formatDateShort(event.startDate))
                                                         .font(.caption2)
-                                                    Image(systemName: "arrow.right")
+                                                    Image(systemName: "arrow.forward")
                                                         .font(.caption2)
                                                     Text(formatDateShort(newDate))
                                                         .font(.caption2)
@@ -751,7 +751,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -911,7 +911,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -937,7 +937,7 @@ struct SettingsView: View {
                             }
                             Spacer()
                             if !purchases.allows(.statistics) { ProLockBadge(for: .statistics) }
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -1238,7 +1238,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -1264,7 +1264,7 @@ struct SettingsView: View {
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .scaledFont(size: 14, weight: .semibold)
                                 .foregroundColor(.secondary)
                         }

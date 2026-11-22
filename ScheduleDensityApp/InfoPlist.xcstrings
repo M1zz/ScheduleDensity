@@ -4,6 +4,12 @@
     "CFBundleDisplayName" : {
       "comment" : "Bundle display name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow of Desire"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -153,6 +159,12 @@
     "CFBundleName" : {
       "comment" : "Bundle name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ScheduleDensityApp"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -302,6 +314,12 @@
     "NSCalendarsFullAccessUsageDescription" : {
       "comment" : "Privacy - Calendars Full Access Usage Description",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يقرأ التطبيق التقاويم التي تختارها لعرض أحداثها على قوس قزح. لا يُكتب أي شيء في تقاويمك، ولا تُرسل الأحداث إلى أي مكان."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -451,6 +469,12 @@
     "NSCalendarsUsageDescription" : {
       "comment" : "Privacy - Calendars Usage Description",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يقرأ التطبيق أحداث التقويم لقياس كثافة جدولك. تبقى البيانات على هذا الجهاز ولا تُرسل إلى أي مكان."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",

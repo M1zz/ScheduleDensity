@@ -390,7 +390,7 @@ private struct TutorialUnlockScene: View {
             // 지금 있는 두 가지.
             HStack(spacing: 10) {
                 Label("할 일", systemImage: "square.and.pencil")
-                Image(systemName: "arrow.right").foregroundStyle(.secondary)
+                Image(systemName: "arrow.forward").foregroundStyle(.secondary)
                 Label("요일 칸", systemImage: "calendar")
             }
             .font(.title3.weight(.semibold))

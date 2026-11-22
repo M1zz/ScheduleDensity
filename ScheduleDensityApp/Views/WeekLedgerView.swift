@@ -105,7 +105,7 @@ struct WeekLedgerView: View {
                         // 잠긴 주로 넘어가려 하면, 넘기는 대신 그 자리에서 판다.
                         if canGoBack { shownWeek = previousWeek } else { showingPaywall = true }
                     } label: {
-                        Image(systemName: canGoBack ? "chevron.left" : "lock")
+                        Image(systemName: canGoBack ? "chevron.backward" : "lock")
                     }
                     .accessibilityLabel("지난 주")
 
@@ -113,7 +113,7 @@ struct WeekLedgerView: View {
                         shownWeek = Calendar(identifier: .iso8601)
                             .date(byAdding: .day, value: 7, to: week) ?? week
                     } label: {
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "chevron.forward")
                     }
                     .disabled(isThisWeek)
                     .accessibilityLabel("다음 주")

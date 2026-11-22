@@ -53,7 +53,7 @@ struct TodoDetailLink<Label: View>: View {
             } label: {
                 HStack(spacing: 8) {
                     label()
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.body.weight(.semibold))
                         .foregroundStyle(.tertiary)
                 }

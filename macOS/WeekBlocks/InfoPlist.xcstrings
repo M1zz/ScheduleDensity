@@ -4,6 +4,12 @@
     "CFBundleDisplayName" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow Craft"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -153,6 +159,12 @@
     "CFBundleName" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rainbow Craft"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -302,6 +314,12 @@
     "NSCalendarsFullAccessUsageDescription" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يجلب التطبيق أحداث تقويم Mac إلى خطتك الأسبوعية. وإن أردت، يكتب خطتك في تقويم منفصل باسم «Rainbow Craft» ينشئه التطبيق، ولا يغيّر تقاويمك الأخرى أبدًا."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

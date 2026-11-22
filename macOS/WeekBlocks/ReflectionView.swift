@@ -419,8 +419,8 @@ struct ReflectionView: View {
                     }
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: "chevron.right")
-                            .rotationEffect(.degrees(expanded ? 90 : 0))
+                        Image(systemName: "chevron.forward")
+                            .disclosureTurn(expanded)
                         Text("루틴·배경 일정 \(others.count)개")
                         Spacer()
                     }

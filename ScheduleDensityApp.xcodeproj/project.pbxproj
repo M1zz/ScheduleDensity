@@ -65,6 +65,7 @@
 		343B9250F2ED453581DAB227 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8E76C086DD610B6E6FDF5BC5 /* InfoPlist.xcstrings */; };
 		34A0EC8B0A706939563B6C1D /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB99E2E5FB474F18ADACDB3E /* TimerView.swift */; };
 		34DAD7231133774754F5C9F2 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 66F83109177C87ECC54FC849 /* InfoPlist.xcstrings */; };
+		353A6373A445ABF95E547BF8 /* ArabicLocale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8108248B735AB774568D1C44 /* ArabicLocale.swift */; };
 		37A10B3B1B10FA55EA95966B /* ProMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F9A6B98DF3C76F86DDA731 /* ProMark.swift */; };
 		39B7F517B57BFC12E20B1C76 /* TimerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 50797A41EFC929A45D6BFD91 /* TimerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3A0BE61CB6884885266F8707 /* BacklogItem+StepOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99BFB02ACA6DEF46EB897AC /* BacklogItem+StepOrder.swift */; };
@@ -84,6 +85,7 @@
 		43F8A0C5BD2530B8C30C96C3 /* StartTimerControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 132A2ABF0A9E705D0EFF8B71 /* StartTimerControl.swift */; };
 		443024BD72A4B938D5C39930 /* ColorHex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A1E3A39CA1FE8DA1C86EE6 /* ColorHex.swift */; };
 		44ABD8322F18B6BAA4E4AF80 /* ProMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F9A6B98DF3C76F86DDA731 /* ProMark.swift */; };
+		454C6369C56A91363B93FE1B /* ArabicLocale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8108248B735AB774568D1C44 /* ArabicLocale.swift */; };
 		45F965EE180DED9E296FEA40 /* ReflectionTrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47EAAEC27D51E45FEF3278D /* ReflectionTrendsView.swift */; };
 		4623DF355A00F01D00BBBB1E /* BacklogCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E859713F479B56C69E5D9AB1 /* BacklogCategory.swift */; };
 		4665B848AF9EBDA7DC0B2158 /* ReviewShot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E79C288422C30CDA559C7F /* ReviewShot.swift */; };
@@ -92,6 +94,7 @@
 		4E6FBBF0402004CA36FC1C3C /* LaunchEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FAD6DB241446D76966BE53 /* LaunchEnvironment.swift */; };
 		4E7790D3A3CD384C66EA3CF6 /* DurationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 468DFED19A56D5255E4E63D9 /* DurationPicker.swift */; };
 		5026DBD76AADE916345F26A6 /* IPadScreenshotDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D35CD8FA6F3C39E761D4F6 /* IPadScreenshotDemo.swift */; };
+		5161D3BD74FBF3E4098A1F35 /* ArabicLocale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8108248B735AB774568D1C44 /* ArabicLocale.swift */; };
 		51E2D031312EC6001BCC848B /* TodoArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0913AF014705CF42B5A7C188 /* TodoArchive.swift */; };
 		527B9804DF786573CA2878F0 /* CalendarExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CEFFA1E5B849AA535D46382 /* CalendarExport.swift */; };
 		5390E76678BF8A12D2C019B7 /* RainbowEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51613652922D4FA79BA2DC2 /* RainbowEvent.swift */; };
@@ -189,6 +192,7 @@
 		AD981FACEF11D81D10379ADC /* TimerWidgetSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5F614A05FBCBB13C8329E44 /* TimerWidgetSync.swift */; };
 		ADA02A8205E892FA137A4C81 /* ScheduleShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BC3A6E73464097A7DEA1703 /* ScheduleShareView.swift */; };
 		AFE36D937CA367E0D6E70FC5 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6480DB63F0CE66697B4675D /* WhatsNewView.swift */; };
+		B028D119867D6C5D012418B2 /* ArabicLocale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8108248B735AB774568D1C44 /* ArabicLocale.swift */; };
 		B0B763F0084160170439EBAA /* QuickTodoControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44EAF9C0B39BD23B314B2ED9 /* QuickTodoControl.swift */; };
 		B2F0F4FA430E0D88FAC77569 /* RainbowLane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8654F872D9B538B84E2953B0 /* RainbowLane.swift */; };
 		B39E8C7B16E1792F4F7AFC2F /* TodoShareInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C253410DEB1C984EA4B031A8 /* TodoShareInbox.swift */; };
@@ -474,6 +478,7 @@
 		7BBB2D06AC909CB432EBA228 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		7D4EC95853402AB8797F7041 /* BacklogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BacklogItem.swift; sourceTree = "<group>"; };
 		7F639EF2609D3366C4F4C482 /* MacCompanionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacCompanionView.swift; sourceTree = "<group>"; };
+		8108248B735AB774568D1C44 /* ArabicLocale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArabicLocale.swift; sourceTree = "<group>"; };
 		82AA5977A04ACF9EED7C7BCA /* ProEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProEntitlement.swift; sourceTree = "<group>"; };
 		83C0D6AA7C0C4872C883DA44 /* ScheduleDensityApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDensityApp.swift; sourceTree = "<group>"; };
 		858E4758B03396C312CD7CE0 /* CalendarImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarImport.swift; sourceTree = "<group>"; };
@@ -853,6 +858,7 @@
 			isa = PBXGroup;
 			children = (
 				0D0C62DF411290916F011B02 /* AppLog.swift */,
+				8108248B735AB774568D1C44 /* ArabicLocale.swift */,
 				E859713F479B56C69E5D9AB1 /* BacklogCategory.swift */,
 				7D4EC95853402AB8797F7041 /* BacklogItem.swift */,
 				01FFAF50078A525A81E39D4B /* BacklogItem+Fragment.swift */,
@@ -1337,6 +1343,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				ar,
 				cs,
 				da,
 				de,
@@ -1571,6 +1578,7 @@
 				8C6CD4ED6D469E5163F37ADA /* AllDaySpans.swift in Sources */,
 				EF8901B59FEA51772454910D /* AppLanguage.swift in Sources */,
 				C4E4D6B2FAB1C54A0DE605DE /* AppLog.swift in Sources */,
+				454C6369C56A91363B93FE1B /* ArabicLocale.swift in Sources */,
 				D0012087A3C2FB04402D1099 /* BacklogCategory.swift in Sources */,
 				BF705F2CE8256644AEB8F001 /* BacklogItem+Fragment.swift in Sources */,
 				3A0BE61CB6884885266F8707 /* BacklogItem+StepOrder.swift in Sources */,
@@ -1656,6 +1664,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B028D119867D6C5D012418B2 /* ArabicLocale.swift in Sources */,
 				443024BD72A4B938D5C39930 /* ColorHex.swift in Sources */,
 				0B6581ED5CA549E4585C7B2A /* FragmentWidget.swift in Sources */,
 				724AD07DF1EAA1C6AB948BB0 /* ProEntitlement.swift in Sources */,
@@ -1678,6 +1687,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				353A6373A445ABF95E547BF8 /* ArabicLocale.swift in Sources */,
 				BD2072480DCFD26BF0A74CE6 /* TimerWidget.swift in Sources */,
 				68504EFA230EE0EBFF39B1C5 /* TimerWidgetSnapshot.swift in Sources */,
 			);
@@ -1737,6 +1747,7 @@
 				D09E590CED7A515146FC1A74 /* AccessibilitySupport.swift in Sources */,
 				FFDEF631BCCCA1BB741BFB1A /* AddEventView.swift in Sources */,
 				924C6520196E8EA002146417 /* AppLog.swift in Sources */,
+				5161D3BD74FBF3E4098A1F35 /* ArabicLocale.swift in Sources */,
 				4623DF355A00F01D00BBBB1E /* BacklogCategory.swift in Sources */,
 				8CD27B0F096D7982F663A31E /* BacklogItem+Fragment.swift in Sources */,
 				2D5C8CE55F3577F5066A6FD0 /* BacklogItem+StepOrder.swift in Sources */,

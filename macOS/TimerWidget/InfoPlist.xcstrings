@@ -4,6 +4,12 @@
     "CFBundleDisplayName" : {
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مؤقت Rainbow Craft"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

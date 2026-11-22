@@ -178,9 +178,9 @@ struct TodoStepsView: View {
                         .foregroundStyle(.green)
                     Text(showsFinished ? "끝낸 단계 접기" : "끝낸 단계 \(finishedCount)개")
                         .foregroundStyle(.secondary)
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .imageScale(.small)
-                        .rotationEffect(.degrees(showsFinished ? 90 : 0))
+                        .disclosureTurn(showsFinished)
                         .foregroundStyle(.tertiary)
                     Spacer()
                 }

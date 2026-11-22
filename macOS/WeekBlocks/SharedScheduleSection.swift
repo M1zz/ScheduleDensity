@@ -240,7 +240,7 @@ private struct ReceivedScheduleCard: View {
                     forward = false
                     withAnimation(Motion.screen) { index = safeIndex - 1 }
                 } label: {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: "chevron.backward")
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel("지난주")
@@ -257,7 +257,7 @@ private struct ReceivedScheduleCard: View {
                     forward = true
                     withAnimation(Motion.screen) { index = safeIndex + 1 }
                 } label: {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel("다음 주")

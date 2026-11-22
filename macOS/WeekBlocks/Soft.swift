@@ -173,7 +173,7 @@ struct ProgressCheck: View {
                             .foregroundStyle(.white)
                             .transition(.pop)
                     } else if hovering {
-                        Image(systemName: stepped ? "arrow.right" : "checkmark")
+                        Image(systemName: stepped ? "arrow.forward" : "checkmark")
                             .font(.system(size: size * 0.4, weight: .bold))
                             .foregroundStyle(color)
                             .transition(.pop)
@@ -258,5 +258,15 @@ extension View {
     func landingBounce(_ landed: Bool) -> some View {
         scaleEffect(landed ? 1.07 : 1)
             .animation(Motion.squish, value: landed)
+    }
+}
+
+// MARK: - 펼침 화살표
+
+extension View {
+    /// 펼침 화살표(`chevron.forward`)를 펼쳤을 때 아래를 보게 돌린다.
+    /// 아랍어처럼 오른쪽에서 왼쪽으로 읽으면 화살표가 왼쪽을 보므로 반대로 돌아야 아래를 본다.
+    func disclosureTurn(_ open: Bool) -> some View {
+        rotationEffect(.degrees(open ? (ArabicLocale.isActive ? -90 : 90) : 0))
     }
 }

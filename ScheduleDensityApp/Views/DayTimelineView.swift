@@ -113,10 +113,10 @@ struct DayTimeAnalysisView: View {
                     if !isToday {
                         Button("오늘") { onStep(0) }
                     }
-                    Button { onStep(-1) } label: { Image(systemName: "chevron.left") }
+                    Button { onStep(-1) } label: { Image(systemName: "chevron.backward") }
                         .accessibilityLabel("전날")
                         .accessibilityInputLabels([Text("전날"), Text("이전")])
-                    Button { onStep(1) } label: { Image(systemName: "chevron.right") }
+                    Button { onStep(1) } label: { Image(systemName: "chevron.forward") }
                         .accessibilityLabel("다음 날")
                         .accessibilityInputLabels([Text("다음 날"), Text("다음")])
                 }

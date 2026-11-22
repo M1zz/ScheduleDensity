@@ -191,7 +191,7 @@ struct BoltMeaningView: View {
                         .scaledFont(size: 15)
                         .tracking(-0.3)
                     Spacer(minLength: 8)
-                    Image(systemName: "arrow.right")
+                    Image(systemName: "arrow.forward")
                         .scaledFont(size: 12, weight: .semibold)
                         .foregroundStyle(.tertiary)
                 }

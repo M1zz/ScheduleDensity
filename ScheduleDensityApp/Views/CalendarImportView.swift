@@ -344,7 +344,7 @@ struct CalendarImportView: View {
                     }
                 }) {
                     HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: "chevron.backward")
                         Text("캘린더 선택")
                     }
                     .font(.subheadline)

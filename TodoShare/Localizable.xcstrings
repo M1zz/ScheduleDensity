@@ -3,6 +3,12 @@
   "strings" : {
     "%@ 실제로 하기" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنفيذ %@ فعليًا"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -151,6 +157,12 @@
     },
     "%@짜리라 조각 안에 들어갑니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مدتها %@، لذا تتسع لها قطعة صغيرة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -299,6 +311,12 @@
     },
     "%@짜리라 조각에 안 들어갑니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مدتها %@، لذا لا تتسع لها قطعة صغيرة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -447,6 +465,12 @@
     },
     "%@짜리입니다. 한 자리에서도 안 닫힙니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مدتها %@. لن تُغلق حتى في جلسة واحدة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -595,6 +619,12 @@
     },
     "%lld개 단계가 2시간을 넘습니다. 끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطوات تتجاوز ساعتين: %lld. قسّمها إلى حجم يمكن إغلاقه. الخطوة غير المكتملة تسحب انتباهك إلى الساعة التالية."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -743,6 +773,12 @@
     },
     "%lld분" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld د"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -891,6 +927,12 @@
     },
     "%lld시간" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld س"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1039,6 +1081,12 @@
     },
     "%lld시간 %lld분" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld س %lld د"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1187,6 +1235,12 @@
     },
     "'보내기·발행하기·제출하기'처럼 끝을 닫는 단계를 마지막에 두세요. 90% 끝난 일의 마지막 10%는 조각의 가장 좋은 용도이고, 닫아두면 그 뒤의 덩어리 시간까지 깨끗해집니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ضع خطوة الإغلاق في النهاية، مثل الإرسال أو النشر أو التقديم. آخر 10% من عمل أُنجز منه 90% هو أفضل استخدام لقطعة صغيرة، وإغلاقه يُبقي وقت الكتلة التالي نظيفًا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1335,6 +1389,12 @@
     },
     "5분 안에 끝까지 가나요?" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل تكتمل حتى النهاية في 5 دقائق؟"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1483,6 +1543,12 @@
     },
     "5분이 생겼을 때 집을 단계가 없습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد خطوة يمكن التقاطها حين تتوفر 5 دقائق"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1631,6 +1697,12 @@
     },
     "‘%@’은(는) 한 번에 안 끝납니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» لن تنتهي دفعة واحدة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1779,6 +1851,12 @@
     },
     "‘%@’이(가) ‘%@’보다 뒤입니다. 정해지지 않은 채 시작한 작업은 조각에서도 덩어리에서도 닫히지 않습니다. 결정 단계를 앞으로 옮기세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» تأتي بعد «%@». العمل الذي يبدأ قبل اتخاذ القرار لا يُغلق في قطعة صغيرة ولا في كتلة. انقل خطوة القرار إلى وقت أبكر."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1927,6 +2005,12 @@
     },
     "건너뜀" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم التخطي"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2075,6 +2159,12 @@
     },
     "결정이 작업 뒤에 있습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القرار يأتي بعد العمل"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2223,6 +2313,12 @@
     },
     "고정 시간대" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ساعات ثابتة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2371,6 +2467,12 @@
     },
     "글쓰기·구현·설계처럼 맥락을 다시 불러와야 하는 일은 조각 크기로 잡아두면 시동만 걸다 끝납니다. 시간을 늘리거나, 그 앞에 '준비' 조각 단계를 따로 두세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الكتابة والبرمجة والتصميم، أي العمل الذي يحتاج إلى استعادة سياقه، إذا وُضع في حجم قطعة صغيرة يضيع وقته في الإحماء فقط. امنحه وقتًا أطول، أو ضع قبله خطوة «تحضير» صغيرة مستقلة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2519,6 +2621,12 @@
     },
     "끊기면 다시 올라와야 합니다. 방해 없는 시간에 두세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إذا انقطع، عليك أن تصعد من جديد. امنحه وقتًا بلا مقاطعة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2667,6 +2775,12 @@
     },
     "끝나지 않은 일은 잔여물이 되어 그다음 덩어리 시간까지 갉아먹습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العمل غير المكتمل يترك أثرًا يقتطع من وقت الكتلة التالية."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2815,6 +2929,12 @@
     },
     "끝을 닫는 단계. 짬이 나면 바로 집을 수 있습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطوة الإغلاق. التقطها متى توفر لك وقت قصير."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2963,6 +3083,12 @@
     },
     "끝이 닫히는 크기로 더 쪼개세요. 하다 만 단계는 다음 시간까지 주의를 끌고 갑니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قسّمها أكثر إلى حجم يمكن إغلاقه. الخطوة غير المكتملة تسحب انتباهك إلى الساعة التالية."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3111,6 +3237,12 @@
     },
     "끝이 정해져 있어 여기서 닫힙니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نهايتها محددة، لذا تُغلق هنا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3259,6 +3391,12 @@
     },
     "끝이 정해져 있지 않아 안 닫힙니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ليس لها نهاية محددة، لذا لا تُغلق."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3407,6 +3545,12 @@
     },
     "다시 붙잡는 데만 평균 23분이 듭니다. 조각에 넣으면 시동만 걸다 끝나니, 시간을 늘리거나 덩어리 시간에 두세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العودة إلى العمل وحدها تستغرق 23 دقيقة في المتوسط. في قطعة صغيرة لن تتجاوز الإحماء، فامنحه وقتًا أطول أو ضعه في كتلة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3555,6 +3699,12 @@
     },
     "달성" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحقق"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3703,6 +3853,12 @@
     },
     "덩어리" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كتلة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3851,6 +4007,12 @@
     },
     "덩어리입니다. 지켜 둔 시간에 두세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذه كتلة. امنحها وقتًا محجوزًا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3999,6 +4161,12 @@
     },
     "링크·자료를 펼쳐만 둡니다. 본 작업의 시동 비용을 여기서 미리 냅니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتح الروابط والملفات فقط. هنا تدفع مقدمًا عناء البدء بالعمل الفعلي."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4147,6 +4315,12 @@
     },
     "마무리해서 보내기" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنهاء والإرسال"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4295,6 +4469,12 @@
     },
     "마지막을 닫는 단계가 없습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد خطوة تُغلق النهاية"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4443,6 +4623,12 @@
     },
     "맥락을 다시 읽어 와야 하는 일은 조각에서 시동만 걸다 끝납니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العمل الذي يحتاج إلى استعادة سياقه يستهلك القطعة الصغيرة كلها في الإحماء."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4591,6 +4777,12 @@
     },
     "모든 단계가 자리를 잡아야 하는 크기입니다. 자료 모아두기·한 줄 메모처럼 조각에서 닫히는 단계를 하나 만들어두면, 흘려보내던 틈이 이 할 일에 쓰입니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كل الخطوات هنا تحتاج إلى جلسة مخصصة. أضف خطوة واحدة تُغلق في قطعة صغيرة، مثل جمع المراجع أو كتابة ملاحظة من سطر واحد، فتصبح الفجوات التي كانت تضيع مفيدة لهذه المهمة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4739,6 +4931,12 @@
     },
     "몸으로 하는 일은 나눠 해도 쌓입니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العمل البدني يتراكم حتى لو قُسّم."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -4887,6 +5085,12 @@
     },
     "몸으로 하는 일이라 시동이 없습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عمل بدني، فلا يحتاج إلى إحماء."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5035,6 +5239,12 @@
     },
     "무엇을 할지 정하기" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحديد ما ستفعله"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5183,6 +5393,12 @@
     },
     "뭘 할지 고르는 동안 조각이 끝납니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنتهي الفجوة قبل أن تنتهي من الاختيار."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5331,6 +5547,12 @@
     },
     "뭘 할지 고르는 동안 조각이 끝납니다. 결정은 덩어리에서 하고, 정해진 것만 조각 단계로 보내세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنتهي الفجوة قبل أن تنتهي من الاختيار. اتخذ القرارات في كتلة، ولا ترسل إلى خطوات القطع الصغيرة إلا ما حُسم."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5479,6 +5701,12 @@
     },
     "배수구" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المصرف"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5627,6 +5855,12 @@
     },
     "부분 달성" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحقق جزئيًا"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5775,6 +6009,12 @@
     },
     "시간을 안 적어 두어서, 5분 안에 닫히는지 아직 모릅니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يُدوَّن وقت، لذا لا يُعرف بعد إن كانت تنتهي خلال 5 دقائق."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5923,6 +6163,12 @@
     },
     "시동 없이 바로 시작되나요?" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل تبدأ مباشرة دون إحماء؟"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6071,6 +6317,12 @@
     },
     "심야" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آخر الليل"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6219,6 +6471,12 @@
     },
     "심야 (23시 이후)" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آخر الليل (بعد 11 مساءً)"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6367,6 +6625,12 @@
     },
     "아침" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصباح"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6515,6 +6779,12 @@
     },
     "아침 (06–12시)" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصباح (6 ص–12 م)"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6663,6 +6933,12 @@
     },
     "안 정한 것이 먼저 막고 있습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أمر لم يُحسم بعد يعيقه أولًا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6811,6 +7087,12 @@
     },
     "안 정해진 게 남아 있으면 아래 단계가 전부 안 열립니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إن بقي أمر لم يُحسم، فلن تُفتح أي من الخطوات أدناه."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -6959,6 +7241,12 @@
     },
     "앞에서 막고 있는 것이 안 보입니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا يبدو أن شيئًا يعيقه."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7107,6 +7395,12 @@
     },
     "어디까지 했는지 다시 읽어 와야 시작됩니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عليك أن تستعيد أين توقفت قبل أن تبدأ."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7255,6 +7549,12 @@
     },
     "오후" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بعد الظهر"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7403,6 +7703,12 @@
     },
     "오후 (12–18시)" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بعد الظهر (12–6 م)"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7551,6 +7857,12 @@
     },
     "이 일" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا العمل"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7699,6 +8011,12 @@
     },
     "이 페이지에서 가져왔습니다. 이름은 고쳐 쓸 수 있습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم جلبها من هذه الصفحة. يمكنك تغيير الاسم."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7847,6 +8165,12 @@
     },
     "이건 할 일이 아니라 조각이 새어 나가는 곳입니다. 단계로 두면 진행률만 부풉니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا ليس عملًا — بل هو المكان الذي تتسرب منه قطعك الصغيرة. إن أبقيته خطوة، فلن يفعل سوى تضخيم نسبة التقدم."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -7995,6 +8319,12 @@
     },
     "저녁" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المساء"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8143,6 +8473,12 @@
     },
     "저녁 (18–23시)" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المساء (6–11 م)"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8291,6 +8627,12 @@
     },
     "조각" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قطعة صغيرة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8439,6 +8781,12 @@
     },
     "조각 시간은 총량으로 환산되지 않습니다. 5분 열두 번은 60분이 아닙니다. 그래서 '5분이 생겼을 때 집을 수 있는 단계'와 '지킨 시간에만 하는 단계'를 처음부터 나눠 두는 편이 낫습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القطع الصغيرة من الوقت لا تتحول إلى مجموع. اثنتا عشرة فترة من 5 دقائق ليست 60 دقيقة. لذا من الأفضل أن تفصل منذ البداية بين «الخطوات التي تنجزها حين تتاح 5 دقائق» و«الخطوات التي تحتاج إلى وقت محجوز»."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8587,6 +8935,12 @@
     },
     "조각과 덩어리가 나뉘어 있습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القطع الصغيرة والكتل مفصولة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8735,6 +9089,12 @@
     },
     "조각에서 집을 수 있는 단계가 %lld개, 지킨 시간에 할 단계가 %lld개입니다. 5분이 생기면 조각 단계를, 확보한 시간에는 덩어리 단계를 하시면 됩니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطوات تُنجز في قطعة صغيرة: %lld، وخطوات تحتاج إلى وقت محجوز: %lld. حين تتاح 5 دقائق خذ قطعة صغيرة، وحين يكون لديك وقت محجوز خذ كتلة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -8883,6 +9243,12 @@
     },
     "조각입니다. 5분이 나면 이걸 집으면 됩니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذه قطعة صغيرة. حين تتاح 5 دقائق، خذها."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9031,6 +9397,12 @@
     },
     "주간 쿼터 (시간 유연)" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حصة أسبوعية (ساعات مرنة)"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9179,6 +9551,12 @@
     },
     "직접 정한 답입니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذه إجابتك أنت."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9327,6 +9705,12 @@
     },
     "짧게 잡아 두어도 여기서 끝나지는 않습니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حتى مع وقت قصير محدد، لن ينتهي هنا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9475,6 +9859,48 @@
     },
     "짧게 잡힌 덩어리 작업이 %lld개 있습니다" : {
       "localizations" : {
+        "ar" : {
+          "variations" : {
+            "plural" : {
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld عمل بحجم كتلة خُصص له وقت أقل من اللازم"
+                }
+              },
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "عمل واحد بحجم كتلة خُصص له وقت أقل من اللازم"
+                }
+              },
+              "two" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "عملان بحجم كتلة خُصص لهما وقت أقل من اللازم"
+                }
+              },
+              "few" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld أعمال بحجم كتلة خُصص لها وقت أقل من اللازم"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld عملًا بحجم كتلة خُصص لها وقت أقل من اللازم"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld عمل بحجم كتلة خُصص لها وقت أقل من اللازم"
+                }
+              }
+            }
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9623,6 +10049,12 @@
     },
     "짧은 덩어리" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كتلة قصيرة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9771,6 +10203,12 @@
     },
     "짧은 덩어리입니다. 앉아야 하지만 한 자리에서 끝납니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذه كتلة قصيرة. تحتاج إلى الجلوس لها، لكنها تنتهي في جلسة واحدة."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -9919,6 +10357,12 @@
     },
     "쪼개기 전에 한 가지" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أمر واحد قبل التقسيم"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10067,6 +10511,12 @@
     },
     "추가" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إضافة"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10215,6 +10665,12 @@
     },
     "취소" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10363,6 +10819,12 @@
     },
     "판정 기준 3" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القاعدة 3"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10511,6 +10973,12 @@
     },
     "필요한 것 모아두기" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جمع ما تحتاج إليه"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10659,6 +11127,12 @@
     },
     "한 번에 못 끝내는 크기입니다. 끝이 닫히도록 더 쪼개지 않으면 '하다 만 상태'가 다음 시간까지 따라옵니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا أكبر من أن يُنجز دفعة واحدة. ما لم تقسّمه إلى ما يمكن إغلاقه، ستلاحقك حالة «نصف منجز» إلى المرة التالية."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10807,6 +11281,12 @@
     },
     "할 것이 정해져 있어 바로 손이 갑니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ما يجب فعله محسوم، لذا يمكنك البدء."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -10955,6 +11435,12 @@
     },
     "할 일" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المهام"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11103,6 +11589,12 @@
     },
     "할 일로" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلى المهام"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -11251,6 +11743,12 @@
     },
     "할 일을 저장하지 못했습니다. 앱을 한 번 열고 다시 시도해 주세요." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذّر حفظ المهمة. افتح التطبيق مرة ثم حاول مجددًا."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",

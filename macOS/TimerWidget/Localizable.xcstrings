@@ -3,6 +3,12 @@
   "strings" : {
     "집중" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تركيز"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -145,6 +151,12 @@
     },
     "%@에 끝" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ينتهي %@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -287,6 +299,12 @@
     },
     "멈춤" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متوقف مؤقتًا"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -429,6 +447,12 @@
     },
     "지금은 일정이 없습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد أحداث الآن"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -571,6 +595,12 @@
     },
     "다음" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التالي"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -713,6 +743,12 @@
     },
     "남은 일정이 없습니다" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا أحداث متبقية"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -855,6 +891,12 @@
     },
     "지금 타이머" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مؤقت الآن"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -997,6 +1039,12 @@
     },
     "지금 하고 있는 일정과 남은 시간을 타임라인 그대로 보여 줍니다." : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يعرض ما تعمل عليه الآن والوقت المتبقي، كما في المخطط الزمني."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

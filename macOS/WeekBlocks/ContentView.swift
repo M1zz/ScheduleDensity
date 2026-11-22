@@ -738,7 +738,7 @@ struct ContentView: View {
             }
 
             Button { step(-1) } label: {
-                Image(systemName: "chevron.left").font(.body.weight(.semibold))
+                Image(systemName: "chevron.backward").font(.body.weight(.semibold))
             }
             .buttonStyle(.borderless)
             // 화살표뿐인 단추 — VoiceOver 가 읽을 이름과 음성 제어로 부를 이름을 단다.
@@ -755,7 +755,7 @@ struct ContentView: View {
                 .contentTransition(.numericText())
 
             Button { step(1) } label: {
-                Image(systemName: "chevron.right").font(.body.weight(.semibold))
+                Image(systemName: "chevron.forward").font(.body.weight(.semibold))
             }
             .buttonStyle(.borderless)
             .help(scope == .day ? Text("다음 날") : Text("다음 주"))

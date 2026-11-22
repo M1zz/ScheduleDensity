@@ -175,7 +175,7 @@ struct AllDayBar: View {
     var body: some View {
         Button(action: onOpen) {
             HStack(spacing: 5) {
-                if clippedLeft { Image(systemName: "chevron.left").font(.system(size: 10, weight: .bold)) }
+                if clippedLeft { Image(systemName: "chevron.backward").font(.system(size: 10, weight: .bold)) }
                 Image(systemName: span.looksLikeDayOff ? "sun.max" : (span.isBackground ? "calendar" : "checklist"))
                     .font(.system(size: 12, weight: .semibold))
                 Text(span.title)
@@ -188,7 +188,7 @@ struct AllDayBar: View {
                         .opacity(0.75)
                 }
                 Spacer(minLength: 0)
-                if clippedRight { Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)) }
+                if clippedRight { Image(systemName: "chevron.forward").font(.system(size: 10, weight: .bold)) }
             }
             .foregroundStyle(span.isBackground ? Color.primary.opacity(0.75) : color)
             .padding(.horizontal, 8)

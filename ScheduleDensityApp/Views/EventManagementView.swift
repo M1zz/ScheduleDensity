@@ -306,7 +306,7 @@ struct EventManagementRow: View {
                 Spacer()
 
                 // 수정 아이콘 (터치 가능 표시)
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .scaledFont(size: 14, weight: .semibold)
                     .foregroundColor(.secondary)
             }

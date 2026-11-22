@@ -44,7 +44,15 @@ enum WeekBlocksWindow {
     static let timer = "timer"
 }
 
+/// 앱의 시작점. 화면을 세우기 전에 아랍어의 숫자 · 달력부터 맞춘다 (→ ArabicLocale.swift).
 @main
+enum AppLaunch {
+    static func main() {
+        ArabicLocale.applyIfNeeded()
+        WeekBlocksApp.main()
+    }
+}
+
 struct WeekBlocksApp: App {
     @NSApplicationDelegateAdaptor(MacAppDelegate.self) private var appDelegate
     @Environment(\.scenePhase) private var scenePhase
@@ -111,6 +119,7 @@ struct WeekBlocksApp: App {
             } else {
                 mainWindow
                     .storeFallbackNotice()
+                    .appLayoutDirection()
             }
         }
         .modelContainer(container)
@@ -136,6 +145,7 @@ struct WeekBlocksApp: App {
         Window("할 일", id: WeekBlocksWindow.todos) {
             TodoWindowView()
                 .fontDesign(.rounded)
+                .appLayoutDirection()
         }
         .modelContainer(container)
         .defaultSize(width: 560, height: 620)
@@ -147,6 +157,7 @@ struct WeekBlocksApp: App {
         Window("타이머", id: WeekBlocksWindow.timer) {
             TimerWindowView()
                 .fontDesign(.rounded)
+                .appLayoutDirection()
         }
         .modelContainer(container)
         .defaultSize(width: 400, height: 500)

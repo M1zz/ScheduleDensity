@@ -164,6 +164,8 @@ targets:
       - path: ScheduleDensityApp/Shared/TimerActivity.swift
       # 홈·잠금 화면 타이머 위젯이 읽는 스냅샷 (→ TimerWidgetSnapshot.swift).
       - path: ScheduleDensityApp/Shared/TimerWidgetSnapshot.swift
+      # 아랍어에서 숫자 · 달력을 앱과 같게 (→ ArabicLocale.swift).
+      - path: Shared/ArabicLocale.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.ScheduleDensityApp.TodoWidget
@@ -360,6 +362,7 @@ targets:
     sources:
       - path: macOS/TimerWidget
       - path: macOS/WeekBlocks/TimerWidgetSnapshot.swift
+      - path: Shared/ArabicLocale.swift
     dependencies:
       - sdk: WidgetKit.framework
       - sdk: SwiftUI.framework

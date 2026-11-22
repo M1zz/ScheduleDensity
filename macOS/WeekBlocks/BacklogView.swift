@@ -642,9 +642,9 @@ struct BacklogSection: View {
         return HStack(spacing: 8) {
             // 접기·펴기. 머리글의 나머지를 누르면 프로젝트가 열리므로 이 화살표만 따로 받는다.
             Button { toggleCollapsed(key) } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.body.weight(.semibold))
-                    .rotationEffect(.degrees(isCollapsed ? 0 : 90))
+                    .disclosureTurn(!isCollapsed)
                     .foregroundStyle(.secondary)
                     .frame(width: 18, height: 18)
                     .contentShape(Rectangle())
@@ -1005,7 +1005,7 @@ struct BacklogSection: View {
                 withAnimation(Motion.disclose) { showsPlaced.toggle() }
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: showsPlaced ? "chevron.down" : "chevron.right")
+                    Image(systemName: showsPlaced ? "chevron.down" : "chevron.forward")
                         .font(.system(size: 10, weight: .semibold))
                     Image(systemName: "calendar")
                         .font(.system(size: 11))
@@ -2561,7 +2561,7 @@ struct ProjectOverviewCard: View {
                     .foregroundStyle(.secondary)
                 if let next = status.next {
                     HStack(spacing: 4) {
-                        Image(systemName: "arrow.right.circle")
+                        Image(systemName: "arrow.forward.circle")
                         Text(next).lineLimit(1)
                     }
                     .font(.body)
