@@ -81,6 +81,16 @@ body.ja .row .title, body.ja .steprow .sname { line-height:1.35; }
 /* Thai stacks vowels and tone marks above and below the line, so it needs
    more leading than Latin or the marks clip into the next line. */
 body.th, body.th .screen { font-family:-apple-system, "Thonburi", "Noto Sans Thai", sans-serif; }
+/* Arabic: the system Arabic face. No negative tracking, it would glue the joined letters together. */
+body.ar, body.ar .screen { font-family:"SF Arabic", -apple-system, "Geeza Pro", "Noto Sans Arabic", sans-serif; }
+body.ar * { letter-spacing:0 !important; }
+/* The scaled screen is placed from the top-left corner of its clip; only its contents read right to left. */
+[dir=rtl] .phone .clip { direction:ltr; }
+[dir=rtl] .screen { direction:rtl; }
+/* Back sits on the right and points right; disclosure chevrons point left, as on an Arabic iPhone. */
+[dir=rtl] .navbar .lead { left:auto; right:16px; }
+[dir=rtl] .navbar .trail { right:auto; left:16px; }
+[dir=rtl] .ico-chev, [dir=rtl] .ico-chevL { transform:scaleX(-1); }
 body.th .cap h1 { line-height:1.3; letter-spacing:0; }
 body.th .cap p  { line-height:1.55; }
 body.th .row .title, body.th .steprow .sname { line-height:1.4; }
@@ -414,7 +424,7 @@ const P = {
 function ico(n, s, c, mode) {
   const stroke = (mode === 'f') ? 'none' : c;
   const fill   = (mode === 'f') ? c : 'none';
-  return `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}">${P[n]}</svg>`;
+  return `<svg class="ico-${n}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" stroke="${stroke}">${P[n]}</svg>`;
 }
 /** rainbow arcs — the app's tab symbol. */
 function rainbowIco(s, c) {
@@ -2769,6 +2779,107 @@ ko: {
      'Cầu vồng, chia nhỏ, hai câu hỏi.<br>Rainbow Pro chỉ thêm năm tính năng phụ.'],
   ],
 },
+/* Arabic (Saudi App Store). Written from ko, terms follow the app's ar catalog:
+   قوس قزح · المهام · الخطوات · قطعة صغيرة · كتلة · البرق · وقت محجوز.
+   The page turns right-to-left for this set (dir="rtl" below). */
+'ar': {
+  tabs: { todo:'المهام', rainbow:'قوس قزح' },
+  grid: {
+    title:'كثافة الأحداث', date:'التاريخ',
+    wd:['اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت','أحد'],
+    day:(m,d) => `${m}/${d}`,
+    work:'يوم عمل', span:'ممتد حتى الموعد النهائي',
+  },
+  list: {
+    title:'مهام هذا الأسبوع',
+    lede:'ما يمكنك التقاطه الآن &mdash; لا ينتظر دوره.',
+    rows:[
+      ['bolt',  'الإقرار الضريبي',  'تصوير الفواتير',            ''],
+      ['bolt',  '',                 'الرد على دانة بشأن الجمعة',  ''],
+      ['donut', 'تقرير الربع الثالث','فتح ملف الربع الماضي',      'due:الخميس'],
+      ['idle',  '',                 'تجديد استعارة كتب المكتبة',  ''],
+      ['idle',  '',                 'سقي النباتات',               ''],
+      ['step',  'رف المطبخ',        'صنفرة الحواف المقطوعة',      'today'],
+      ['plain', '',                 'التخطيط لرحلة العُلا',        'due:3/14'],
+      ['step0', 'موقع الأعمال',     'اختيار المشاريع المعروضة',    ''],
+    ],
+    todayBadge:'اليوم',
+    doneHead:'مكتملة &middot; 2',
+    done:[['', 'حجز موعد طبيب الأسنان'], ['رف المطبخ', 'قياس الجدار']],
+  },
+  q: {
+    task:'تقرير الربع الثالث', sheet:'خطوة', done:'تم',
+    step:'فتح ملف الربع الماضي', dur:'تستغرق 5 دقائق تقريبًا',
+    head:'هل يمكنك التقاطها في 5 دقائق؟',
+    yes:'نعم', no:'لا',
+    one:['هل تبدأ فورًا دون إحماء؟',
+         'العمل الذي يتطلب استعادة السياق يستهلك الفراغ كله في الإحماء.',
+         'Mark 2008'],
+    two:['هل تنتهي خلال 5 دقائق؟',
+         'العمل الذي يبقى مفتوحًا يترك أثرًا يقتطع من الوقت المحجوز التالي.',
+         'Leroy 2009'],
+    verdict:'نعم على السؤالين &mdash; إنها قطعة صغيرة.',
+    verdictSub:'تنتقل إلى أعلى القائمة ولا تنتظر دورها.',
+    note:'يجيب التطبيق عن السؤالين حين تدوّن الخطوة. ما عليك إلا قلب ما أخطأ فيه.',
+    revert:'العودة إلى حكم التطبيق',
+  },
+  steps: {
+    back:'المهام', task:'تقرير الربع الثالث',
+    meta:['المجموع 3 س 20 د', 'اكتملت خطوة من 5'],
+    head:'الخطوات', order:'هل تنتظر الخطوات<br>بعضها؟',
+    inOrder:'بالترتيب', anyOrder:'دون ترتيب', pick:'التقاط في 5 دقائق',
+    rows:[
+      ['done', 'استخراج أرقام مارس', '', '30 د'],
+      ['bolt', 'فتح ملف الربع الماضي', '', '5 د'],
+      ['idle', 'كتابة المقدمة',
+       'تحتاج إلى إحماء &mdash; عليك قراءة الربع الماضي أولًا.', '1 س 30 د'],
+      ['idle', 'رسم المخطط حسب المنطقة',
+       'تتجاوز 5 دقائق، فتحتاج إلى وقت محجوز.', '1 س'],
+      ['bolt', 'إرسالها إلى منى', '', '5 د'],
+    ],
+    sumNote:'الوقت يُجمع من الخطوات، ولا يُكتب في الأعلى.',
+    total:'3 س 20 د',
+    dragNote:'اضغط مطولًا على خطوة واسحبها لتغيير الترتيب.',
+  },
+  wg: {
+    bolt:'البرق &mdash; 3 في 5 دقائق',
+    lines:[['تصوير الفواتير','5 د'],
+           ['فتح ملف الربع الماضي','5 د'],
+           ['الرد على دانة بشأن الجمعة','2 د']],
+    rainbow:'قوس قزح', today:'اليوم &middot; 3 جارية', load:'4 س محجوزة &middot; 46%',
+    todo:'المهام', parent:'تقرير الربع الثالث', step:'فتح ملف الربع الماضي',
+    progress:'الخطوة 2 من 4 &middot; 5 أخرى',
+    apps:[['Rainbow','التقويم','الملاحظات','الصحة'],
+          ['الرسائل','الإعدادات','الصور','بودكاست'],
+          ['الموسيقى','الطقس','الملفات','الخرائط']],
+  },
+  price: {
+    title:'فتح كل شيء',
+    freeTag:'مجاني دائمًا', freeHead:'كل ما وُجد التطبيق من أجله',
+    free:[['قوس قزح', 'ترى مدى ازدحام الأسابيع القادمة.'],
+          ['تقسيم المهام', 'تقسّم المهمة إلى خطوات حتى تصبح في متناول يدك.'],
+          ['السؤالان', 'يحدد التطبيق القطع الصغيرة ويذكر السبب.'],
+          ['ترتيب الخطوات', 'تحدد مرة لكل مجموعة إن كانت الخطوات تنتظر بعضها.']],
+    proTag:'RAINBOW PRO', proHead:'خمس إضافات إن أردتها',
+    pro:['أدوات الشاشة الرئيسية والقفل','الاستيراد من التقويم','مشاركة الأحداث',
+         'إحصاءات الأحداث','سجل الاسترداد'],
+    buy:'فتح كل شيء', once:'سنوي (أسبوع مجاني) &middot; شهري &middot; مدى الحياة',
+  },
+  shots:[
+    ['قوس قزح', 'اعرف ازدحام أسبوعك<br>قبل أن يبدأ',
+     'لكل حدث سطر. وكلما تداخلت الأحداث، ازداد اللون عمقًا.'],
+    ['المهام', 'ابدأ بما يمكنك<br>البدء به الآن',
+     'ما يمكنك التقاطه الآن يبقى في الأعلى، ولا ينتظر دوره.'],
+    ['السؤالان', 'سؤالان<br>ويُحسم الأمر',
+     'هل تبدأ دون إحماء؟ هل تنتهي في 5 دقائق؟<br>نعم على الاثنين، فهي قطعة صغيرة.'],
+    ['الخطوات', 'قسّمها<br>والوقت يجمع نفسه',
+     'الوقت مرتبط بالخطوات.<br>ومجموع المهمة هو مجموع خطواتها.'],
+    ['الأدوات', 'لديك 5 دقائق؟<br>إليك ما يناسبها',
+     'على الشاشة الرئيسية وشاشة القفل، تعرض أداة البرق ما يمكنك التقاطه الآن فقط.'],
+    ['المجاني وPro', 'الأساس<br>مجاني',
+     'قوس قزح والتقسيم والسؤالان.<br>وRainbow Pro يضيف خمس إضافات فقط.'],
+  ],
+},
 };
 
 /* en-GB: the app's British strings match the US ones on these screens except
@@ -2794,6 +2905,8 @@ document.body.classList.add(LANG);
 // back to Japanese or Korean glyph variants, and hyphenation needs the
 // language too. (ko / en keep the page default so their renders stay as they were.)
 if (LANG !== 'en' && LANG !== 'ko') document.documentElement.lang = LANG;
+// Arabic reads right to left: the whole artboard (captions and the mock app) mirrors, as the app does.
+if (LANG === 'ar') document.documentElement.dir = 'rtl';
 </script>
 <script>
 /* ═══ 1. THE RAINBOW — density grid ════════════════════════════

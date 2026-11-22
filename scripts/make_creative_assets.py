@@ -59,6 +59,7 @@ SEARCH = {
     "sv": ("Veckoplanerare", "Se veckan<br>innan den kommer", "Ju mer som överlappar, desto djupare färg"),
     "th": ("วางแผนรายสัปดาห์", "สัปดาห์นี้แน่นแค่ไหน<br>เห็นได้ทันที", "ยิ่งงานซ้อนกัน สียิ่งเข้ม"),
     "tr": ("Haftalık planlayıcı", "Haftayı gelmeden<br>önce görün", "Planlar çakıştıkça renk koyulaşır"),
+    "ar": ("مخطط أسبوعي", "اعرف ازدحام أسبوعك<br>قبل أن يبدأ", "كلما تداخلت الأحداث، ازداد اللون عمقًا"),
     "vi": ("Lập kế hoạch tuần", "Tuần này kín cỡ nào?<br>Nhìn là biết", "Lịch càng chồng, màu càng đậm"),
 }
 
@@ -89,6 +90,7 @@ HEADER = {
     "th": ("แพลนเนอร์รายสัปดาห์", "สัปดาห์ที่ยุ่ง<br>เห็นก่อนด้วยสี"),
     "tr": ("Haftalık ajanda", "Yoğun haftayı<br>önceden görün"),
     "vi": ("Kế hoạch tuần", "Tuần bận rộn,<br>nhìn màu là thấy trước"),
+    "ar": ("مخطط أسبوعي", "أسبوع مزدحم؟<br>تراه بالألوان أولًا"),
 }
 
 # 무지개 격자 색(앱 RainbowPalette, AppStore/screenshots.html 과 같다)
@@ -105,6 +107,7 @@ body { background:linear-gradient(175deg,#f2f6ff 0%%,#dfe8ff 100%%); position:re
 :lang(zh-Hans) body, body:lang(zh-Hans) { font-family:"PingFang SC", -apple-system, sans-serif; line-break:strict; }
 :lang(ja) body, body:lang(ja) { font-family:"Hiragino Sans", -apple-system, sans-serif; line-break:strict; }
 :lang(th) body, body:lang(th) { font-family:-apple-system, "Thonburi", sans-serif; }
+:lang(ar) body, body:lang(ar) { font-family:"SF Arabic", -apple-system, "Geeza Pro", sans-serif; }
 .wash { position:absolute; left:0; right:0; bottom:0; background:linear-gradient(180deg, transparent, rgba(0,122,255,.20)); }
 .glow { position:absolute; border-radius:50%%; filter:blur(160px); pointer-events:none; }
 .text { position:absolute; display:flex; flex-direction:column; justify-content:center; }
@@ -115,6 +118,9 @@ body { background:linear-gradient(175deg,#f2f6ff 0%%,#dfe8ff 100%%); position:re
 :lang(th) .headline { line-height:1.32; letter-spacing:0; }
 :lang(th) .sub { line-height:1.55; }
 :lang(ko) .headline { line-height:1.2; }
+/* 아랍어: 이어 쓰는 글자라 자간을 좁히면 낱말이 붙는다. 줄 간격은 넉넉히. */
+:lang(ar) .headline, :lang(ar) .eyebrow, :lang(ar) .sub { letter-spacing:0; }
+:lang(ar) .headline { line-height:1.3; }
 :lang(ko) .headline, :lang(ko) .sub, :lang(ko) .eyebrow { word-break:keep-all; }
 .phone { position:absolute;
   background:linear-gradient(160deg,#3a3a3f,#111114 30%%,#141418 70%%,#45454b);
@@ -203,6 +209,10 @@ def search_html(lang):
     col = int(sw * 0.58)
     ph_w = 1000
     ph_left = l + col + int(sw * 0.03)
+    text_left = l
+    if lang in RTL:   # 오른쪽부터 읽는 말은 글을 오른쪽, 기기를 왼쪽에 둔다
+        text_left = r - col
+        ph_left = r - col - int(sw * 0.03) - ph_w
     deco = tiles([(3330, 300, 150, 0, .85, 8), (3520, 560, 110, 2, .85, -6), (3380, 820, 130, 3, .8, 4),
                   (3600, 1150, 120, 4, .75, -10), (3300, 1520, 100, 5, .7, 6), (3560, 1850, 140, 6, .7, -4),
                   (300, 2050, 120, 1, .55, -8), (520, 2280, 90, 4, .5, 10)])
@@ -211,7 +221,7 @@ def search_html(lang):
 <div class="glow" style="left:{ph_left - 300}px;top:700px;width:1600px;height:1600px;background:rgba(88,86,214,.14)"></div>
 {deco}
 {phone(screen(lang, "01-rainbow"), ph_left, t - 420, ph_w, 0)}
-<div class="text" style="left:{l}px;top:{t}px;width:{col}px;height:{sh}px">
+<div class="text" style="left:{text_left}px;top:{t}px;width:{col}px;height:{sh}px">
   <div class="eyebrow" style="font-size:92px">{eyebrow}</div>
   <div class="headline" data-max="230" data-min="130" style="margin-top:40px">{headline}</div>
   <div class="sub" style="font-size:80px;margin-top:56px">{sub}</div>
@@ -237,6 +247,9 @@ def header_html(lang):
 </div>"""
 
 
+RTL = {"ar"}
+
+
 def html_lang(lang):
     return {"zh-Hans": "zh-Hans", "zh-Hant": "zh-Hant"}.get(lang, lang)
 
@@ -258,7 +271,12 @@ def chrome(args, log, done, timeout=300):
                 ok = True
                 break
             if proc.poll() is not None:
-                ok = done()
+                # Chrome 이 먼저 끝나도 결과를 몇 번 더 본다 — PNG 는 크기가 세 번 같아야 다 쓴 것으로 친다.
+                for _ in range(4):
+                    ok = done()
+                    if ok:
+                        break
+                    time.sleep(0.5)
                 break
         try:
             os.killpg(proc.pid, signal.SIGKILL)
@@ -273,7 +291,8 @@ def chrome(args, log, done, timeout=300):
 def render(lang, kind):
     W, H, _ = SPEC[kind]
     body = search_html(lang) if kind == "search" else header_html(lang)
-    page = (f'<!doctype html><html lang="{html_lang(lang)}"><head><meta charset="utf-8"><style>'
+    direction = ' dir="rtl"' if lang in RTL else ''
+    page = (f'<!doctype html><html lang="{html_lang(lang)}"{direction}><head><meta charset="utf-8"><style>'
             f'{BASE_CSS % {"W": W, "H": H}}</style></head><body>{body}{FIT_JS}</body></html>')
     html_path = pathlib.Path(tempfile.gettempdir()) / f"rainbow-of-desire-creative-{lang}-{kind}.html"
     html_path.write_text(page, encoding="utf-8")

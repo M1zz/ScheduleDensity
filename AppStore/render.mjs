@@ -49,7 +49,7 @@ const ALL_LOCALES = [
   { lang: 'ko', dir: 'ko' },
   { lang: 'zh-Hant', dir: 'zh-Hant' },   // Traditional Chinese (Taiwan)
   ...['zh-Hans', 'ja', 'de', 'es', 'fr', 'it', 'pt-BR', 'ru', 'cs', 'da', 'el',
-      'fi', 'id', 'nb', 'nl', 'pl', 'sv', 'th', 'tr', 'vi'].map(lang => ({ lang, dir: lang })),
+      'fi', 'id', 'nb', 'nl', 'pl', 'sv', 'th', 'tr', 'vi', 'ar'].map(lang => ({ lang, dir: lang })),
 ];
 // Optional filter: `node AppStore/render.mjs zh-Hant` re-renders one set and
 // leaves the others' PNGs untouched.
@@ -76,7 +76,8 @@ const DUO_KEY = '1398x2034';
 // marketing folders use the store locale; Norwegian is kept under both nb and no.
 const MARKETING_DIRS = { 'en-US': ['en'], nb: ['nb', 'no'] };
 
-const browser = await chromium.launch();
+// PW_CHANNEL=chrome draws with the installed Google Chrome instead of Playwright's own Chromium.
+const browser = await chromium.launch(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {});
 for (const { lang, dir } of LOCALES) {
   for (const { key, w, h } of SIZES) {
     const outDir = path.join(here, dir, key);

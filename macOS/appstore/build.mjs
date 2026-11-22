@@ -87,7 +87,7 @@ const ICONS = {
   cursor:    '<path d="M5.5 3.2 18.4 12l-5.2.9 3 5.7-2.4 1.2-2.9-5.7-3.4 3.6Z" fill="#fff" stroke="rgba(0,0,0,.55)" stroke-width="1.2"/>',
 }
 const ic = (n, cls = 'icb') =>
-  `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`
+  `<svg class="${cls} i-${n}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[n]}</svg>`
 
 // ── palette (Theme.swift) ───────────────────────────────────────────────────
 const C = { red:'#FF3B30', orange:'#FF9500', yellow:'#FFCC00', green:'#34C759',
@@ -400,23 +400,23 @@ function freeHours(i) {
 
 /** Block-view column items: the timeline order, with meals that overlap folded away. */
 function columnFor(L, i) {
-  const out = [{ k:'r', name:L.rSleep, sub:'7h', c:C.indigo, icon:'moon' }]
+  const out = [{ k:'r', name:L.rSleep, sub:hr(L, '7'), c:C.indigo, icon:'moon' }]
   const occupied = [[0, 7], ...(hasGym(i) ? [[7, 8]] : []), ...(isWeekday(i) ? [[9, 18]] : []),
                     ...BLOCKS[i].map(b => [b.at, b.at + b.h]), [23, 24]]
   const overlaps = (a, b) => occupied.some(([x, y]) => a < y - 1e-6 && x < b - 1e-6)
   const evts = []
-  if (hasGym(i)) evts.push({ at:7, o:0, v:{ k:'r', name:L.rGym, sub:'1h', c:C.orange, icon:'run' } })
-  if (isWeekday(i)) evts.push({ at:9, o:0, v:{ k:'r', name:L.rWork, sub:'9h', c:C.blue, icon:'calendar' } })
+  if (hasGym(i)) evts.push({ at:7, o:0, v:{ k:'r', name:L.rGym, sub:hr(L, '1'), c:C.orange, icon:'run' } })
+  if (isWeekday(i)) evts.push({ at:9, o:0, v:{ k:'r', name:L.rWork, sub:hr(L, '9'), c:C.blue, icon:'calendar' } })
   for (const m of MEALS)
     if (!overlaps(m, m + 0.8333))
-      evts.push({ at:m, o:2, v:{ k:'q', name:L.rMeals, sub:'0.8h', c:C.green, icon:'fork' } })
+      evts.push({ at:m, o:2, v:{ k:'q', name:L.rMeals, sub:hr(L, '0.8'), c:C.green, icon:'fork' } })
   for (const b of BLOCKS[i]) evts.push({ at:b.at, o:1, v:{ k:'b', t:L.blocks[b.b], h:b.h, ok:b.ok } })
   evts.sort((x, y) => x.at - y.at || x.o - y.o)
 
   const cut = i === TODAY ? evts.findIndex(e => e.at > NOW) : -1
   evts.forEach((e, n) => { if (n === cut) out.push({ k:'now' }); out.push(e.v) })
   if (i === TODAY && cut < 0) out.push({ k:'now' })
-  out.push({ k:'r', name:L.rSleep, sub:'1h', c:C.indigo, icon:'moon' })
+  out.push({ k:'r', name:L.rSleep, sub:hr(L, '1'), c:C.indigo, icon:'moon' })
   return out
 }
 
@@ -459,11 +459,11 @@ const summary = L => `
   <div>
     <div class="metrics">
       <div class="metric"><div class="lbl">${L.mWeek}</div>
-        <div class="val">168<span>h</span></div><div class="sub">${L.mWeekSub}</div></div>
+        <div class="val">168<span>${L.h || 'h'}</span></div><div class="sub">${L.mWeekSub}</div></div>
       <div class="metric"><div class="lbl">${L.mFixed}</div>
-        <div class="val">121.5<span>h</span></div><div class="sub">${L.mFixedSub}</div></div>
+        <div class="val">121.5<span>${L.h || 'h'}</span></div><div class="sub">${L.mFixedSub}</div></div>
       <div class="metric"><div class="lbl">${L.mFree}</div>
-        <div class="val">46.5<span>h</span></div><div class="sub">${L.mFreeSub}</div></div>
+        <div class="val">46.5<span>${L.h || 'h'}</span></div><div class="sub">${L.mFreeSub}</div></div>
     </div>
     <div class="bar" style="margin-top:10px">
       <i style="width:${ROUTINE_H / 168 * 100}%;background:rgba(0,0,0,.4)"></i>
@@ -477,11 +477,13 @@ const summary = L => `
     </div>
   </div>`
 
-const chip = it => it.k === 'now'
+// 시간 단위는 그 언어로 (아랍어 '7 س'). 없으면 앱의 다른 언어처럼 'h'.
+const hr = (L, v) => `${v}${L.h || 'h'}`
+const chip = L => it => it.k === 'now'
   ? `<div class="nowline"><i></i><u></u><span>14:36</span></div>`
   : it.k === 'b'
     ? `<div class="bchip" style="--c:${it.ok ? C.blue : C.orange}">
-         <div class="brow"><span class="btitle">${it.t}</span><span class="bdur">${h1(it.h).replace('.0', '')}h</span></div>
+         <div class="brow"><span class="btitle">${it.t}</span><span class="bdur">${h1(it.h).replace('.0', '')}${L.h || 'h'}</span></div>
        </div>`
     : `<div class="chip ${it.k === 'q' ? 'quota' : ''}" style="--c:${it.c}">
          ${ic(it.icon, '')}
@@ -496,7 +498,7 @@ const weekGrid = (L, dropCol = -1) => `
         <div class="col ${i === dropCol ? 'drop' : ''}">
           <div class="dayhead ${i === TODAY ? 'today' : ''}">
             <div class="d">${L.days[i]}</div><div class="n">${n}</div></div>
-          <div class="items">${columnFor(L, i).map(chip).join('')}</div>
+          <div class="items">${columnFor(L, i).map(chip(L)).join('')}</div>
           <div class="addbtn">${ic('plus', '')}</div>
         </div>`).join('')}
     </div>
@@ -618,7 +620,7 @@ const stepsSheet = L => `
               ${k === 'frag' ? `<div class="tag frag" style="display:inline-flex;margin-top:4px">
                    ${ic('boltFill', '')}${L.fragment}</div>` : ''}
             </div>
-            <div class="hrs">${hr} h</div><div class="pct">${pc}%</div>
+            <div class="hrs">${hr} ${(L.h || 'h').trim()}</div><div class="pct">${pc}%</div>
           </div>`).join('')}
       </div>
       <div class="hr"></div>
@@ -719,12 +721,13 @@ const EXTRA = `
          border-radius:12px; overflow:hidden; box-shadow:0 26px 60px rgba(0,0,0,.34) }
 .float { position:absolute; top:78px; right:26px; z-index:3 }
 .float .win { box-shadow:0 26px 60px rgba(0,0,0,.38) }
+[dir=rtl] .i-chevL, [dir=rtl] .i-chevR { transform:scaleX(-1) }   /* 이전 · 다음은 글 방향을 따른다 */
 `
 
 const page = L => {
   const list = shots(L)
   return `<!doctype html>
-<html lang="${L.lang}"><head><meta charset="utf-8">
+<html lang="${L.lang}"${L.dir ? ` dir="${L.dir}"` : ''}><head><meta charset="utf-8">
 <title>${L.app} — App Store screenshots (${L.lang})</title>
 <link rel="stylesheet" href="style.css"><style>${EXTRA}</style></head>
 <body>
@@ -749,10 +752,6 @@ for (const file of readdirSync(join(HERE, 'strings')).filter(f => f.endsWith('.j
 }
 
 const LOCALES = process.env.ONLY ? process.env.ONLY.split(',') : Object.keys(STRINGS)
-// App Store Connect 의 로케일 이름. 이 폴더를 DeployBar 가 그대로 그 언어 칸에 올린다.
-const STORE_LOCALE = { en:'en-US', 'en-GB':'en-GB', ko:'ko', 'zh-Hant':'zh-Hant', 'zh-Hans':'zh-Hans',
-  ja:'ja', de:'de-DE', es:'es-ES', fr:'fr-FR', it:'it', 'pt-BR':'pt-BR', ru:'ru', cs:'cs', da:'da',
-  el:'el', fi:'fi', id:'id', nb:'nb', nl:'nl-NL', pl:'pl', sv:'sv', th:'th', tr:'tr', vi:'vi' }
 for (const loc of LOCALES) {
   writeFileSync(join(HERE, `index-${loc}.html`), page(STRINGS[loc]))
   console.log(`wrote index-${loc}.html`)
@@ -766,7 +765,9 @@ if (!process.argv.includes('--html')) {
   const browser = await chromium.launch(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {})
   const page_ = await browser.newPage({ viewport:{ width:1440, height:900 }, deviceScaleFactor:2 })
   for (const loc of LOCALES) {
-    const outDir = join(HERE, '..', 'docs', 'screenshots', 'marketing', STORE_LOCALE[loc])
+    // 아이폰 · 맥 그림이 한 폴더에 산다 (레포 docs/screenshots/marketing/<언어>/mac-0N-….png).
+    // DeployBar 가 픽셀 크기로 기기를 가른다.
+    const outDir = join(HERE, '..', '..', 'docs', 'screenshots', 'marketing', loc)
     mkdirSync(outDir, { recursive: true })
     await page_.goto('file://' + join(HERE, `index-${loc}.html`))
     await page_.waitForTimeout(700)
@@ -781,7 +782,7 @@ if (!process.argv.includes('--html')) {
     })
     console.log(`${loc}: fit ${fit}`)
     for (const s of shots(STRINGS[loc])) {
-      const path = join(outDir, `${s.id}.png`)
+      const path = join(outDir, `mac-${s.id}.png`)
       await page_.locator(`[id="${s.id}"]`).screenshot({ path })
       console.log('rendered', path)
     }
