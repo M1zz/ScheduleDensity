@@ -170,7 +170,7 @@ Khi có ưu đãi, ứng dụng sẽ báo cho bạn
 Lần đăng ký đầu tiên có giá ưu đãi
 Bạn có thể ẩn thông báo trong 3 ngày
 
-### App Store (ar, ar)
+### 앱스토어 (아랍어)
 
 عروض App Store تفتح الخطط مباشرة
 نخبرك بالعروض عند فتح التطبيق
