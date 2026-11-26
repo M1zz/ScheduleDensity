@@ -5,38 +5,53 @@
       "extractionState" : "extracted_with_value",
       "localizations" : {
         "ar" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "ما أكثر أيامي ازدحامًا هذا الأسبوع في ${applicationName}"
+            "values" : [
+              "ما أكثر أيامي ازدحامًا هذا الأسبوع في ${applicationName}",
+              "أكثر الأيام ازدحامًا في ${applicationName}"
+            ]
           }
         },
         "cs" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Který den mám nejnabitější v ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Který den mám nejnabitější v ${applicationName}",
+              "${applicationName} nejnabitější den"
+            ]
           }
         },
         "da" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hvad er min travleste dag i ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Hvad er min travleste dag i ${applicationName}",
+              "${applicationName} travleste dag"
+            ]
           }
         },
         "de" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Was ist mein vollster Tag in ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Was ist mein vollster Tag in ${applicationName}",
+              "${applicationName} vollster Tag"
+            ]
           }
         },
         "el" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ποια είναι η πιο φορτωμένη μέρα μου στο ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ποια είναι η πιο φορτωμένη μέρα μου στο ${applicationName}",
+              "${applicationName} πιο φορτωμένη μέρα"
+            ]
           }
         },
         "en" : {
           "stringSet" : {
-            "state" : "new",
+            "state" : "translated",
             "values" : [
               "What’s my busiest day in ${applicationName}",
               "${applicationName} busiest day"
@@ -44,266 +59,174 @@
           }
         },
         "en-GB" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "What’s my busiest day in ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "What’s my busiest day in ${applicationName}",
+              "${applicationName} busiest day"
+            ]
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "¿Cuál es mi día más cargado en ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "¿Cuál es mi día más cargado en ${applicationName}",
+              "${applicationName} día más cargado"
+            ]
           }
         },
         "fi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Mikä on kiireisin päiväni ${applicationName}issa"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Mikä on kiireisin päiväni ${applicationName}issa",
+              "${applicationName} kiireisin päivä"
+            ]
           }
         },
         "fr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Quel est mon jour le plus chargé dans ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Quel est mon jour le plus chargé dans ${applicationName}",
+              "${applicationName} jour le plus chargé"
+            ]
           }
         },
         "id" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kapan hari tersibuk saya di ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Kapan hari tersibuk saya di ${applicationName}",
+              "${applicationName} hari tersibuk"
+            ]
           }
         },
         "it" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Qual è il mio giorno più pieno in ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Qual è il mio giorno più pieno in ${applicationName}",
+              "${applicationName} giorno più pieno"
+            ]
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "${applicationName}で一番忙しい日は？"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}で一番忙しい日は？",
+              "${applicationName}一番忙しい日"
+            ]
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "${applicationName} 이번 주 제일 빽빽한 날 언제야"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} 이번 주 제일 빽빽한 날 언제야",
+              "${applicationName} 빽빽한 날"
+            ]
           }
         },
         "nb" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Hva er min travleste dag i ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Hva er min travleste dag i ${applicationName}",
+              "${applicationName} travleste dag"
+            ]
           }
         },
         "nl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Wat is mijn drukste dag in ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Wat is mijn drukste dag in ${applicationName}",
+              "${applicationName} drukste dag"
+            ]
           }
         },
         "pl" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Który dzień mam najbardziej zajęty w ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Który dzień mam najbardziej zajęty w ${applicationName}",
+              "${applicationName} najbardziej zajęty dzień"
+            ]
           }
         },
         "pt-BR" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Qual é meu dia mais cheio no ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Qual é meu dia mais cheio no ${applicationName}",
+              "${applicationName} dia mais cheio"
+            ]
           }
         },
         "ru" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Какой у меня самый загруженный день в ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Какой у меня самый загруженный день в ${applicationName}",
+              "${applicationName} самый загруженный день"
+            ]
           }
         },
         "sv" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Vilken är min mest fullspäckade dag i ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Vilken är min mest fullspäckade dag i ${applicationName}",
+              "${applicationName} mest fullspäckade dag"
+            ]
           }
         },
         "th" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "วันไหนแน่นที่สุดใน ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "วันไหนแน่นที่สุดใน ${applicationName}",
+              "${applicationName} วันที่แน่นที่สุด"
+            ]
           }
         },
         "tr" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "${applicationName} içinde en yoğun günüm hangisi"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} içinde en yoğun günüm hangisi",
+              "${applicationName} en yoğun gün"
+            ]
           }
         },
         "vi" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ngày nào tôi bận nhất trong ${applicationName}"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ngày nào tôi bận nhất trong ${applicationName}",
+              "${applicationName} ngày bận nhất"
+            ]
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "${applicationName}我哪天最忙"
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}我哪天最忙",
+              "${applicationName}最忙的一天"
+            ]
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "${applicationName}我哪天最忙"
-          }
-        }
-      }
-    },
-    "${applicationName} busiest day" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
+          "stringSet" : {
             "state" : "translated",
-            "value" : "أكثر الأيام ازدحامًا في ${applicationName}"
-          }
-        },
-        "cs" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} nejnabitější den"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} travleste dag"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} vollster Tag"
-          }
-        },
-        "el" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} πιο φορτωμένη μέρα"
-          }
-        },
-        "en-GB" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} busiest day"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} día más cargado"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} kiireisin päivä"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} jour le plus chargé"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} hari tersibuk"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} giorno più pieno"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName}一番忙しい日"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} 빽빽한 날"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} travleste dag"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} drukste dag"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} najbardziej zajęty dzień"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} dia mais cheio"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} самый загруженный день"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} mest fullspäckade dag"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} วันที่แน่นที่สุด"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} en yoğun gün"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName} ngày bận nhất"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName}最忙的一天"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "${applicationName}最忙的一天"
+            "values" : [
+              "${applicationName}我哪天最忙",
+              "${applicationName}最忙的一天"
+            ]
           }
         }
       }
