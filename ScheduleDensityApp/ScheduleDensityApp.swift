@@ -507,6 +507,9 @@ struct ScheduleDensityApp: App {
             set: { _ in })
         ) {
             WelcomeTutorialView { startWriting in
+                // 허브 품질 탭의 온보딩 칸. 맥과 같은 이름(onboarding_finished)으로 남긴다.
+                // 튜토리얼은 처음 온 사람에게 한 번만 뜬다 (→ FirstRunGate).
+                LeeoAnalyticsCenter.track(.custom(name: startWriting ? "onboarding_finished" : "onboarding_skipped", parameters: [:]))
                 firstRunStage = FirstRunStage.focus.rawValue
                 // 닫히고 나서 빈 줄을 연다. 할 일 화면이 받아 첫 줄에 커서를 둔다 (→ QuickTodoBridge).
                 if startWriting {
